@@ -42,6 +42,8 @@ class TestLogic: public PlaygroundRunner {
 			wgl = (WglRunner *) this->getContainer()->getRunner(0);
 			audio = (AudioRunner *)this->getContainer()->getRunner(3);
 
+			Source *oggSource = audio->createSource("background.ogg");
+
 			Source *backgroundSource = audio->createSource("background.wav");
 			if(backgroundSource != null)
 				audio->playSource(backgroundSource);

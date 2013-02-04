@@ -81,11 +81,6 @@ class Win32apiRunner: public PlaygroundRunner {
 
 			logger->debug("Window Created");
 
-			// Show it
-			ShowWindow(hWnd, SW_SHOW);
-
-			logger->debug("Window made visible");
-
 			return true;
 		}
 
@@ -94,6 +89,12 @@ class Win32apiRunner: public PlaygroundRunner {
 			GetWindowRect(hWnd, &rect);
 
 			this->resizeWindow(rect.bottom - rect.top, rect.right - rect.left);
+
+			// Show it
+			ShowWindow(hWnd, SW_SHOW);
+
+			logger->debug("Window made visible");
+
 			return true;
 		}
 
