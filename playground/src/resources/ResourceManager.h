@@ -72,7 +72,8 @@ class ResourceManager {
 				}
 
 				return response;
-			}
+			} else
+				logger->debug("Getting '[%s]' '[%s]' from cache", mimeType.c_str(), fileParser.getFilename().c_str());
 			return cached;
 		}
 		void dispose(Resource *resource)

@@ -10,7 +10,7 @@ class Exception {
 	protected:
 		String msg;
 
-		void setMessage(const char *format, va_list *args)
+		void setMessageWithVarArgs(const char *format, va_list *args)
 		{
 			char textBuffer[256];
 
@@ -28,7 +28,7 @@ class Exception {
 		Exception(const char *format, ...) {
 			va_list args;
 			va_start(args, format);
-			this->setMessage(format, args);
+			this->setMessageWithVarArgs(format, &args);
 			va_end(args);
 		}
 		std::string toString() {
@@ -40,7 +40,7 @@ class Exception {
 			va_list args;
 			va_start(args, format);
 
-			this->setMessage(format, args);
+			this->setMessageWithVarArgs(format, &args);
 			va_end(args);
 
 		}

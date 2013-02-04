@@ -20,11 +20,54 @@ class FileParser {
 		FILE * fileStream;
 		Logger *logger;
 
+		const char *tokenSeparator;
+		const char *blanks;
+
+		boolean isInSet(char character, const char *set) {
+			const char *currentTokenSeparator = set;
+			while(*currentTokenSeparator != '\0') {
+				if(*currentTokenSeparator == character)
+					return true;
+
+				currentTokenSeparator++;
+			}
+
+			return false;
+		}
+
+		boolean isTokenSeparator(char character)
+		{
+			return isInSet(character, tokenSeparator);
+		}
+
+		boolean isBlank(char character)
+		{
+			return isInSet(character, blanks);
+		}
+
+		void takeUntilEOL() {
+			char caracter;
+			while((caracter = fgetc(getStream())) != '\n');
+		}
+
+		void takeBlanks() {
+			while(isBlank(fgetc(getStream())));
+
+			if(feof(getStream()))
+				fseek(getStream(), 0, SEEK_END);
+			else
+				fseek(getStream(), -1, SEEK_CUR);
+		}
+
+
 	public:
 		FileParser(const String filename)
 		{
 			this->filename = filename;
 			this->fileStream = null;
+
+			tokenSeparator = "	# ()[]{},.:;<>+-*/^¨=|&!¿?\n\r\"\'\\ÿ";
+			blanks = " \n\r\t,";
 
 			logger = Logger::getLogger("resources/FileParser.h");
 		}
@@ -69,6 +112,31 @@ class FileParser {
 			}
 			return fileStream;
 		}
+
+		String peekToken() {
+			return "";
+		}
+
+		String takeToken() {
+			char tokenBuffer[256];
+
+			char *token = tokenBuffer;
+
+			unsigned short longitud = 0;
+
+			takeBlanks();
+			while(!isTokenSeparator(*token = fgetc(getStream()))) {
+				token++;
+				longitud++;
+			}
+			if(longitud == 0) *(token+1) = '\0';
+			else {
+				*token = '\0';
+				fseek(getStream(), -1, SEEK_CUR);
+			}
+			return(token);
+		}
+
 
 	};
 
