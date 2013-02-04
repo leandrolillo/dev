@@ -31,63 +31,52 @@ class OggResourceAdapter : public ResourceAdapter {
 		}
 
 		#define OGG_BUFFER_SIZE 4096 * 4
-		virtual Resource *load(String filename) {
-			FILE * oggFile;
+		virtual Resource *load(FileParser &fileParser) {
+			OggVorbis_File oggStream;
+			vorbis_info *vorbisInfo;
+			vorbis_comment *vorbisComment;
 
-				OggVorbis_File oggStream;
-				vorbis_info *vorbisInfo;
-				vorbis_comment *vorbisComment;
+			if(ov_open(fileParser.getStream(), &oggStream, NULL, 0)  < 0) {
+				logger->error("Error opening ogg stream [%s]", fileParser.getFilename().c_str());
+				return(null);
+			}
 
+			vorbisInfo = ov_info(&oggStream, -1);
+			vorbisComment = ov_comment(&oggStream, -1);
 
-				if((oggFile = fopen("d:/Lean/dev/media/audio/background.ogg", "rb")) == null) {
-					logger->error("Error opening ogg file [%s]", filename.c_str());
-					return(null);
-				}
-				if(ov_open(oggFile, &oggStream, NULL, 0)  < 0) {
-					logger->error("Error opening ogg stream [%s]", filename.c_str());
-					fclose(oggFile);
-					return(null);
-				}
+			logger->debug("Vorbis file info:");
+			for(int index = 0; index < vorbisComment->comments; index++)
+				logger->debug("	%s", vorbisComment->user_comments[index]);
 
-				vorbisInfo = ov_info(&oggStream, -1);
-				vorbisComment = ov_comment(&oggStream, -1);
+			OggResource * resource = new OggResource(0);
 
-				logger->debug("Vorbis file info:");
-				for(int index = 0; index < vorbisComment->comments; index++)
-					logger->debug("	%s", vorbisComment->user_comments[index]);
+			resource->setFormat(vorbisInfo->channels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16);
+			resource->setFrequency(vorbisInfo->rate);
 
-				OggResource * resource = new OggResource(0);
+			char array[OGG_BUFFER_SIZE];
+			int endian = 0;                         // 0 for Little-Endian, 1 for Big-Endian
+			int word_size = 2;
+			int isSigned = 1;
+			int bitStream = 1;
+			std::vector <char> *bufferData = new std::vector<char>();
+			long bytes;
 
-				resource->setFormat(vorbisInfo->channels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16);
-				resource->setFrequency(vorbisInfo->rate);
+			while ( (bytes = ov_read(&oggStream, array, OGG_BUFFER_SIZE, endian, word_size, isSigned, &bitStream)) > 0) {
+				bufferData->insert(bufferData->end(), array, array + bytes);
+			}
 
-				char array[OGG_BUFFER_SIZE];
-				int endian = 0;                         // 0 for Little-Endian, 1 for Big-Endian
-				int word_size = 2;
-				int isSigned = 1;
-				int bitStream = 1;
-				std::vector <char> *bufferData = new std::vector<char>();
-				long bytes;
+			logger->debug("Read %d bytes", bufferData->size());
 
-				while ( (bytes = ov_read(&oggStream, array, OGG_BUFFER_SIZE, endian, word_size, isSigned, &bitStream)) > 0) {
-					bufferData->insert(bufferData->end(), array, array + bytes);
-				}
+			ov_clear(&oggStream);
 
-				logger->debug("Read %d bytes", bufferData->size());
+			if(bytes < 0) {
+				logger->error("Error reading ogg file [%s] data", fileParser.getFilename().c_str());
+				return(null);
+			}
 
-				ov_clear(&oggStream);
-
-				if(bytes < 0) {
-					logger->error("Error reading ogg file [%s] data", filename.c_str());
-					fclose(oggFile);
-					return(null);
-				}
-
-				fclose(oggFile);
-
-				resource->setData(bufferData);
-				resource->setSize(bufferData->size());
-				return(resource);
+			resource->setData(bufferData);
+			resource->setSize(bufferData->size());
+			return(resource);
 		}
 		virtual void dispose(Resource *resource) {
 			OggResource *oggResource = (OggResource *)resource;
@@ -101,3 +90,4 @@ class OggResourceAdapter : public ResourceAdapter {
 
 
 #endif /* OGGRESOURCEADAPTER_H_ */
+

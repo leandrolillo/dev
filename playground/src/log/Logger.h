@@ -14,6 +14,7 @@
 #include <time.h>
 #include<sys/stat.h>
 #include <vector>
+#include <string.h>
 
 class Logger {
 	private:
@@ -106,7 +107,7 @@ class Logger {
 		void printMessage(const char *type, const char * formato, va_list *args) {
 			FILE *fileHandler = getFileHandler();
 			if(fileHandler != null) {
-				char textBuffer[100];
+				char textBuffer[256];
 				strftime(textBuffer, sizeof(textBuffer), "%d/%m/%Y %H:%M:%S", getCurrentTime());
 				fprintf(fileHandler, "%s - %s - %s: ", textBuffer, type, basename.c_str());
 				printf("%s - %s: ", textBuffer, basename.c_str());
@@ -146,8 +147,7 @@ class Logger {
 			printMessage("SEVERE ", formato, &args);
 			va_end(args);
 
-			perror("ERROR: ");
-
+			printMessage("SEVERE: ", strerror(errno), null);
 		}
 	public:
 		static std::vector<Logger *>loggers;

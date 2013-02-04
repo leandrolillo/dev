@@ -26,16 +26,10 @@ class PngResourceAdapter: public ResourceAdapter {
 		virtual const std::vector<String> getSupportedMimeTypes() {
 			return supportedMimeTypes;
 		}
-		virtual Resource *load(String filename) {
-			FILE *infile;
+		virtual Resource *load(FileParser &fileParser) {
 			unsigned char *pBitmap;
 			unsigned long width, height;
 			int  bit_depth;
-
-			if((infile = fopen(filename.c_str(), "rb")) == NULL) {
-				logger->error( "Could not open file [%s]", filename.c_str());
-				return(null);
-			}
 
 			png_structp png_ptr;
 			png_infop info_ptr;
@@ -43,12 +37,11 @@ class PngResourceAdapter: public ResourceAdapter {
 
 			unsigned char sig[8];
 
-			fread(sig, 1, 8, infile);
+			fileParser.read(sig, 1, 8);
 			if (!png_check_sig(sig, 8)) {
 				logger->error( "Not a valid png file");
 				return(null);   /* bad signature */
 			}
-
 
 			/* could pass pointers to user-defined error handlers instead of NULLs: */
 			if(!(png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, null, null, null))) {
@@ -67,8 +60,7 @@ class PngResourceAdapter: public ResourceAdapter {
 				return(null);
 			}
 
-
-			png_init_io(png_ptr, infile);
+			png_init_io(png_ptr, fileParser.getStream());
 			png_set_sig_bytes(png_ptr, 8);  /* we already read the 8 signature bytes */
 
 			png_read_info(png_ptr, info_ptr);  /* read all PNG info up to image data */
@@ -150,7 +142,6 @@ class PngResourceAdapter: public ResourceAdapter {
 
 			bit_depth = 32;
 			delete image_data;
-			fclose(infile);
 
 			PngResource *resource = new PngResource(0);
 			resource->setAlto(height);

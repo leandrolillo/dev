@@ -26,8 +26,8 @@ class TextureResourceAdapter: public ResourceAdapter {
 		virtual const std::vector<String> getSupportedMimeTypes() {
 			return supportedMimeTypes;
 		}
-		virtual Resource *load(String filename) {
-			ImageResource *imageResource = (ImageResource *)this->getResourceManager()->load(filename);
+		virtual Resource *load(FileParser &fileParser) {
+			ImageResource *imageResource = (ImageResource *)this->getResourceManager()->load(fileParser);
 
 			if(imageResource != null) {
 				unsigned int textureHandler = 0;
@@ -44,7 +44,7 @@ class TextureResourceAdapter: public ResourceAdapter {
 				if(glGetError() == null)
 					return new TextureResource(textureHandler);
 				else {
-					logger->error("Error loading texture [%s]: [%s]", filename.c_str(), glGetError());
+					logger->error("Error loading texture [%s]: [%s]", fileParser.getFilename().c_str(), glGetError());
 					glDeleteTextures(1, &textureHandler);
 				}
 			}

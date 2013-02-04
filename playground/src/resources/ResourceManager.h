@@ -2,6 +2,7 @@
 #define RESOURCEMANAGER_H_
 
 #include "Resource.h"
+#include "FileParser.h"
 #include "ResourceAdapter.h"
 #include "log/Logger.h"
 #include<set>
@@ -42,20 +43,31 @@ class ResourceManager {
 			return load(fileName, guessMimeType(fileName));
 		}
 
-		Resource *load(String fileName, String mimeType)
+		Resource *load(FileParser &fileParser)
 		{
-			Resource *cached = resourceCache[getCacheKey(fileName, mimeType)];
+			return load(fileParser, guessMimeType(fileParser.getFilename()));
+		}
+
+		Resource *load(String fileName, const String &mimeType)
+		{
+			FileParser fileParser = FileParser(normalize(fileName));
+			return load(fileParser, mimeType);
+		}
+
+		Resource *load(FileParser &fileParser, const String &mimeType)
+		{
+			Resource *cached = resourceCache[getCacheKey(fileParser.getFilename(), mimeType)];
 			if(cached == null)
 			{
 				Resource *response = null;
 
 				if(adapters[mimeType] != null) {
-					logger->debug("Loading '[%s]' '[%s]'", mimeType.c_str(), normalize(fileName).c_str());
+					logger->debug("Loading '[%s]' '[%s]'", mimeType.c_str(), fileParser.getFilename().c_str());
 
-					response = adapters[mimeType]->load(normalize(fileName));
+					response = adapters[mimeType]->load(fileParser);
 					if(response != null) {
-						response->setFileName(normalize(fileName));
-						resourceCache[getCacheKey(fileName, mimeType)] = response;
+						response->setFileName(fileParser.getFilename());
+						resourceCache[getCacheKey(fileParser.getFilename(), mimeType)] = response;
 					}
 				}
 

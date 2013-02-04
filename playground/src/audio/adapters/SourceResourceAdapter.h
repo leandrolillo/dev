@@ -25,27 +25,27 @@ class SourceResourceAdapter: public ResourceAdapter {
 		virtual const std::vector<String> getSupportedMimeTypes() {
 			return supportedMimeTypes;
 		}
-		virtual Resource *load(String filename) {
+		virtual Resource *load(FileParser &fileParser) {
 			ALenum error = 0;
 
-			logger->debug("loading audio/source from [%s]", filename.c_str());
+			logger->debug("loading audio/source from [%s]", fileParser.getFilename().c_str());
 
-			BufferResource * buffer = (BufferResource *)getResourceManager()->load(filename.c_str(), "audio/buffer");
+			BufferResource * buffer = (BufferResource *)getResourceManager()->load(fileParser.getFilename().c_str(), "audio/buffer");
 			if(buffer == null) {
-				logger->error("Error creating source: could not load buffer for [%s]", filename.c_str());
+				logger->error("Error creating source: could not load buffer for [%s]", fileParser.getFilename().c_str());
 				return null;
 			}
 
 			ALuint sourceId;
 			alGenSources(1, &sourceId);
 			if((error = alGetError()) != AL_NO_ERROR) {
-				logger->error("Error creating source for [%s]: %d", filename.c_str(), error);
+				logger->error("Error creating source for [%s]: %d", fileParser.getFilename().c_str(), error);
 				return null;
 			}
 
 			alSourcei (sourceId, AL_BUFFER, (ALuint) buffer->getId());
 			if((error = alGetError()) != AL_NO_ERROR) {
-				logger->error("Error setting properties for source [%s]: %d", filename.c_str(), error);
+				logger->error("Error setting properties for source [%s]: %d", fileParser.getFilename().c_str(), error);
 				return(null);
 			}
 

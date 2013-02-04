@@ -42,17 +42,12 @@ class WavResourceAdapter: public ResourceAdapter {
 		virtual const std::vector<String> getSupportedMimeTypes() {
 			return supportedMimeTypes;
 		}
-		virtual Resource *load(String filename) {
-			logger->debug("Loading file [%s]", filename.c_str());
+		virtual Resource *load(FileParser &fileParser) {
+			logger->debug("Loading file [%s]", fileParser.getFilename().c_str());
 
-			FILE *archivo;
 			WAV_header header;
-			if((archivo = fopen(filename.c_str(), "rb")) == null) {
-				logger->error("Error al abrir el archivo [%s]", filename.c_str());
-				return null;
-			}
 
-			if(fread(&header, sizeof(header), 1, archivo) == 0) {
+			if(fileParser.read(&header, sizeof(header), 1) == 0) {
 				logger->error("Error al leer el header");
 				return null;
 			}
@@ -60,10 +55,10 @@ class WavResourceAdapter: public ResourceAdapter {
 			char array[OGG_BUFFER_SIZE];
 			std::vector <char> *bufferData = new std::vector<char>();
 
-			long bytes;
+			long bytesRead;
 
-			while((bytes = fread(array, sizeof(char), OGG_BUFFER_SIZE, archivo)) > 0 && bufferData->size() < header.dataLen)
-					bufferData->insert(bufferData->end(), array, array+bytes);
+			while((bytesRead = fileParser.read(array, sizeof(char), OGG_BUFFER_SIZE)) > 0 && bufferData->size() < header.dataLen)
+					bufferData->insert(bufferData->end(), array, array+bytesRead);
 
 
 			AudioResource *audioResource = new AudioResource(0, "audio/wav");
@@ -71,8 +66,6 @@ class WavResourceAdapter: public ResourceAdapter {
 			audioResource->setFrequency(header.numberOfSamplesPerSec);
 			audioResource->setSize(bufferData->size());
 			audioResource->setData(bufferData);
-
-			fclose(archivo);
 
 			return audioResource;
 		}

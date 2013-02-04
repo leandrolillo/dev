@@ -25,19 +25,19 @@ class BufferResourceAdapter: public ResourceAdapter {
 		virtual const std::vector<String> getSupportedMimeTypes() {
 			return supportedMimeTypes;
 		}
-		virtual Resource *load(String filename) {
+		virtual Resource *load(FileParser &fileParser) {
 			ALenum error = 0;
 
-			AudioResource * audioResource = (AudioResource *)this->getResourceManager()->load(filename);
+			AudioResource * audioResource = (AudioResource *)this->getResourceManager()->load(fileParser);
 			if(audioResource == null) {
-				logger->error("Error loading bufferResource: could not load audio from [%s]", filename.c_str());
+				logger->error("Error loading bufferResource: could not load audio from [%s]", fileParser.getFilename().c_str());
 				return(null);
 			}
 			ALuint ALbuffer = 0;
 
 			alGenBuffers(1, &ALbuffer);
 			if((error = alGetError()) != AL_NO_ERROR) {
-				logger->error("Error creating resource for [%s]: %d", filename.c_str(), error);
+				logger->error("Error creating resource for [%s]: %d", fileParser.getFilename().c_str(), error);
 				return null;
 			}
 
@@ -47,7 +47,7 @@ class BufferResourceAdapter: public ResourceAdapter {
 
 			alBufferData(ALbuffer, audioResource->getFormat(), &(*data)[0], audioResource->getSize(),audioResource->getFrequency());
 			if(alGetError() != AL_NO_ERROR) {
-				logger->error("Error setting buffer data for [%s]: %d", filename.c_str(), error);
+				logger->error("Error setting buffer data for [%s]: %d", fileParser.getFilename().c_str(), error);
 				alDeleteBuffers(1, &ALbuffer);
 				return(null);
 			}

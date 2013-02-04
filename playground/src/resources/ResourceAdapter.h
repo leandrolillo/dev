@@ -20,7 +20,7 @@ class ResourceAdapter
 		ResourceManager *resourceManager;
 	public:
 		virtual const std::vector<String> getSupportedMimeTypes() = 0;
-		virtual Resource *load(const String filename) = 0;
+		virtual Resource *load(FileParser &fileParser) = 0;
 		virtual void dispose(Resource *resource) = 0;
 		virtual ~ResourceAdapter() {}
 

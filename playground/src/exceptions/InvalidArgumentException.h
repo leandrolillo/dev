@@ -6,13 +6,12 @@
 	class InvalidArgumentException : public Exception
 	{
 		public:
-			InvalidArgumentException(std::string msg)
+			InvalidArgumentException(const char *format, ...)
 			{
-				std::string message("Invalid ArgumentException");
-				message += ": ";
-				message += msg;
-				
-				this->setMessage(message);
+				va_list args;
+				va_start(args, format);
+				this->setMessage(format, args);
+				va_end(args);
 			}
 			
 		private:

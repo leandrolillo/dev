@@ -1,0 +1,21 @@
+TODOs:
+
+separar conceptos audio (audioresource, wavresource, oggresource, etc.) de openal y video (imageresource, jpeg y png resources, etc.) de opengl.
+ver mejor manera de manejar audio resource void *pdata;
+revisar opciones de resourceAdapter::load(string filename) ::load(file *fileHandler) y ::load(Stream stream);
+formato simple para definición de geometría, animaciones, etc.
+manejo de configuración
+Manejo de recursos (texturas, buffers y sources, geometría, etc.)
+arcball e interacción con objetos en pantalla
+integrar con clases math y refactorizar nombres y uso (para objetos readonly)
+refactorizar clases ordenando getters/setters y métodos heredados
+implementar uso excepciones manejo de errores
+desglosar playground en librerías
+
+multithreading
+
+physics
+
+ir pensando programas para aplicar el playground
+global defense
+ghosts and goblins
