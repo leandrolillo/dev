@@ -82,7 +82,7 @@ class TestLogic: public PlaygroundRunner {
 			}
 			try {
 				testLoadBuffer();
-			} catch (Exception e) {
+			} catch (Exception &e) {
 				logger->error("Load BUFFER test failed: %s", e.toString().c_str());
 				testsInError++;
 			}
@@ -110,6 +110,21 @@ class TestLogic: public PlaygroundRunner {
 				logger->error("Load WAV test failed: %s", e.toString().c_str());
 				testsInError++;
 			}
+
+			try {
+				testInvalidResource();
+			} catch (Exception &e) {
+				logger->error("Invalid Resource test failed: %s", e.toString().c_str());
+				testsInError++;
+			}
+
+			try {
+				testFileParser();
+			} catch (Exception &e) {
+				logger->error("File Parser test failed: %s", e.toString().c_str());
+				testsInError++;
+			}
+
 
 			logger->debug("\n\nTESTS: %d tests in error\n\n", testsInError);
 		}
@@ -150,6 +165,51 @@ class TestLogic: public PlaygroundRunner {
 			throw Exception(message.c_str());
 		}
 
+		void testInvalidResource()
+		{
+			try {
+				Resource *resource = this->getContainer()->getResourceManager()->load("tests/fake.wav");
+				assertFail("Invalid Argument Exception expected");
+			} catch (InvalidArgumentException &invalidArgumentException) {
+				;
+			}
+
+			try {
+				Resource *resource = this->getContainer()->getResourceManager()->load("tests/fake.nomimetype");
+				assertFail("Invalid Argument Exception expected");
+			} catch (InvalidArgumentException &exception) {
+				;
+			}
+
+		}
+		void testFileParser()
+		{
+			String token;
+
+			FileParser commentFileParser(this->getContainer()->getResourceManager()->normalize("tests/commentFileToParse.txt"));
+			assertEquals("Unexpected token", eof, commentFileParser.peekToken());
+			assertEquals("Unexpected token", eof, commentFileParser.takeToken());
+			commentFileParser.close();
+
+			FileParser emptyFileParser(this->getContainer()->getResourceManager()->normalize("tests/emptyFileToParse.txt"));
+			assertEquals("Unexpected token", eof, emptyFileParser.peekToken());
+			assertEquals("Unexpected token", eof, emptyFileParser.takeToken());
+			commentFileParser.close();
+
+			FileParser fileParser(this->getContainer()->getResourceManager()->normalize("tests/fileToParse.txt"));
+			assertEquals("Unexpected token", "{", fileParser.peekToken());
+			assertEquals("Unexpected token", "{", fileParser.takeToken());
+			assertEquals("Unexpected token", "\"", fileParser.takeToken());
+			assertEquals("Unexpected token", "property", fileParser.takeToken());
+			assertEquals("Unexpected token", "\"", fileParser.takeToken());
+			assertEquals("Unexpected token", ":", fileParser.takeToken());
+			assertEquals("Unexpected token", "\"", fileParser.takeToken());
+			assertEquals("Unexpected token", "value", fileParser.takeToken());
+			assertEquals("Unexpected token", "\"", fileParser.takeToken());
+			assertEquals("Unexpected token", "}", fileParser.takeToken());
+			assertEquals("Unexpected token", eof, fileParser.peekToken());
+			assertEquals("Unexpected token", eof, fileParser.takeToken());
+		}
 		void testLoadWav()
 		{
 			AudioResource *resource = (AudioResource *)this->getContainer()->getResourceManager()->load("tests/audio.wav");

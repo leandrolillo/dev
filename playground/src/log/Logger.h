@@ -147,7 +147,7 @@ class Logger {
 			printMessage("SEVERE ", formato, &args);
 			va_end(args);
 
-			printMessage("SEVERE: ", strerror(errno), &args);
+			printMessage("", strerror(errno), &args);
 		}
 	public:
 		static std::vector<Logger *>loggers;

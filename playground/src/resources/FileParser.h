@@ -14,6 +14,9 @@
 #include <string>
 #include<stdio.h>
 
+#define eof "ÿ"
+#define eol "\n"
+
 class FileParser {
 	private:
 		String filename;
@@ -22,6 +25,7 @@ class FileParser {
 
 		const char *tokenSeparator;
 		const char *blanks;
+		char commentChar;
 
 		boolean isInSet(char character, const char *set) {
 			const char *currentTokenSeparator = set;
@@ -47,7 +51,7 @@ class FileParser {
 
 		void takeUntilEOL() {
 			char caracter;
-			while((caracter = fgetc(getStream())) != '\n');
+			while((caracter = fgetc(getStream())) != '\n' && caracter != 'ÿ');
 		}
 
 		void takeBlanks() {
@@ -58,6 +62,26 @@ class FileParser {
 			else
 				fseek(getStream(), -1, SEEK_CUR);
 		}
+		
+		void takeBlanksAndComments() {
+			char character;
+			char exit;
+			
+			do {
+				exit = true;
+				while(isBlank(character = fgetc(getStream())));
+				if(character == commentChar) {
+					takeUntilEOL();
+					exit = false;
+				}
+			} while(!exit);
+
+			if(feof(getStream()))
+				fseek(getStream(), 0, SEEK_END);
+			else
+				fseek(getStream(), -1, SEEK_CUR);
+		}
+
 
 
 	public:
@@ -68,6 +92,7 @@ class FileParser {
 
 			tokenSeparator = "	# ()[]{},.:;<>+-*/^¨=|&!¿?\n\r\"\'\\ÿ";
 			blanks = " \n\r\t,";
+			commentChar = '#';
 
 			logger = Logger::getLogger("resources/FileParser.h");
 		}
@@ -104,7 +129,7 @@ class FileParser {
 
 				if((fileStream = fopen(filename.c_str(), "rb")) == null) {
 					logger->error("Error al abrir el archivo [%s]", filename.c_str());
-					throw Exception("Error al abrir el archivo [%s]", filename.c_str());
+					throw InvalidArgumentException("Error al abrir el archivo [%s]", filename.c_str());
 
 				}
 
@@ -114,7 +139,18 @@ class FileParser {
 		}
 
 		String peekToken() {
-			return "";
+			fpos_t position;
+
+			if(fgetpos(getStream(), &position) != 0)
+				throw new Exception("Could not save stream position");
+
+			String token = takeToken();
+
+			if(fsetpos(getStream(), &position)!= 0)
+				throw new Exception("Could not restore stream position");
+
+			return token;
+
 		}
 
 		String takeToken() {
@@ -124,7 +160,7 @@ class FileParser {
 
 			unsigned short longitud = 0;
 
-			takeBlanks();
+			takeBlanksAndComments();
 			while(!isTokenSeparator(*token = fgetc(getStream()))) {
 				token++;
 				longitud++;
@@ -134,7 +170,7 @@ class FileParser {
 				*token = '\0';
 				fseek(getStream(), -1, SEEK_CUR);
 			}
-			return(token);
+			return(tokenBuffer);
 		}
 
 

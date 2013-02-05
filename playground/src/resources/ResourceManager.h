@@ -111,7 +111,6 @@ class ResourceManager {
 			adapters.clear();
 			resourceAdaptersSet.clear();
 		}
-	private:
 		const String normalize(const String &fileName) const
 		{
 			if(fileName.substr(0, 1) == "/")
@@ -119,6 +118,8 @@ class ResourceManager {
 
 			return rootFolder + fileName;
 		}
+
+	private:
 
 		const String getCacheKey(const String &filename, const String &mimeType) const
 		{
@@ -149,8 +150,8 @@ class ResourceManager {
 				}
 			}
 
-			logger->debug("guessMimeType: mime type is for [%s] [%s]", fileName.c_str(), "unknown");
-			return "unknown";
+			logger->error("Could not determine mimetype for [%s]", fileName.c_str());
+			throw InvalidArgumentException("Could not determine mimetype for [%s]", fileName.c_str());
 		}
 
 };
