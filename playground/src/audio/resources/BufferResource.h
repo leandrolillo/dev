@@ -13,7 +13,7 @@
 class BufferResource : public Resource
 {
 	public:
-		BufferResource(unsigned int id) : Resource(id, "audio/source") {
+		BufferResource(unsigned int id) : Resource(id, "audio/buffer") {
 		}
 };
 
