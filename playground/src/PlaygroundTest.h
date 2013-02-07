@@ -34,6 +34,7 @@ class PlaygroundTests: public TestRunner {
 			this->addTest(static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadTexture));
 			this->addTest(static_cast<void (TestRunner::*)()>(&PlaygroundTests::testInvalidResource));
 			this->addTest(static_cast<void (TestRunner::*)()>(&PlaygroundTests::testFileParser));
+			this->addTest(static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadGeometry));
 
 			return true;
 		}
@@ -138,6 +139,13 @@ class PlaygroundTests: public TestRunner {
 			assertTrue("TEXTURE resource not loaded", resource != null);
 			assertTrue("TEXTURE id not set properly", resource->getId() != 0);
 			assertEquals("TEXTURE mimetype invalid", "video/texture", resource->getMimeType());
+		}
+
+		void testLoadGeometry()	{
+			GeometryResource *resource = (GeometryResource *)this->getContainer()->getResourceManager()->load("tests/geometry.json", "video/geometry");
+
+			assertTrue("GEOMETRY resource not loaded", resource != null);
+			assertEquals("GEOMETRY mimetype invalid", "video/geometry", resource->getMimeType());
 		}
 };
 
@@ -246,7 +254,7 @@ class PlaygroundTest: public PlaygroundWin32 {
 			PlaygroundWin32::init();
 
 			this->addRunner(new PlaygroundTests());
-			this->addRunner(new PlaygroundDemo());
+			//this->addRunner(new PlaygroundDemo());
 		}
 };
 #endif

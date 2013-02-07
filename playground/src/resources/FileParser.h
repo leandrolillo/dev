@@ -27,6 +27,21 @@ class FileParser {
 		const char *blanks;
 		char commentChar;
 
+		unsigned int line;
+		unsigned int column;
+
+		int readByte()
+		{
+			int byte = fgetc(getStream());
+			if((char)byte == '\n') {
+				line++;
+				column = 0;
+			} else
+				column++;
+
+			return byte;
+		}
+
 		boolean isInSet(char character, const char *set) {
 			const char *currentTokenSeparator = set;
 			while(*currentTokenSeparator != '\0') {
@@ -51,11 +66,11 @@ class FileParser {
 
 		void takeUntilEOL() {
 			char caracter;
-			while((caracter = fgetc(getStream())) != '\n' && caracter != 'ÿ');
+			while((caracter = readByte()) != '\n' && caracter != 'ÿ');
 		}
 
 		void takeBlanks() {
-			while(isBlank(fgetc(getStream())));
+			while(isBlank(readByte()));
 
 			if(feof(getStream()))
 				fseek(getStream(), 0, SEEK_END);
@@ -69,7 +84,7 @@ class FileParser {
 			
 			do {
 				exit = true;
-				while(isBlank(character = fgetc(getStream())));
+				while(isBlank(character = readByte()));
 				if(character == commentChar) {
 					takeUntilEOL();
 					exit = false;
@@ -93,6 +108,9 @@ class FileParser {
 			tokenSeparator = "	# ()[]{},.:;<>+-*/^¨=|&!¿?\n\r\"\'\\ÿ";
 			blanks = " \n\r\t,";
 			commentChar = '#';
+
+			line = 1;
+			column = 1;
 
 			logger = Logger::getLogger("resources/FileParser.h");
 		}
@@ -139,6 +157,9 @@ class FileParser {
 		}
 
 		String peekToken() {
+			unsigned int lineBackup = line;
+			unsigned int columnBackup = column;
+
 			fpos_t position;
 
 			if(fgetpos(getStream(), &position) != 0)
@@ -148,6 +169,9 @@ class FileParser {
 
 			if(fsetpos(getStream(), &position)!= 0)
 				throw new Exception("Could not restore stream position");
+
+			line = lineBackup;
+			column = columnBackup;
 
 			return token;
 
@@ -161,7 +185,7 @@ class FileParser {
 			unsigned short longitud = 0;
 
 			takeBlanksAndComments();
-			while(!isTokenSeparator(*token = fgetc(getStream()))) {
+			while(!isTokenSeparator(*token = readByte())) {
 				token++;
 				longitud++;
 			}
@@ -173,7 +197,15 @@ class FileParser {
 			return(tokenBuffer);
 		}
 
+		unsigned int getColumn() const
+		{
+			return column;
+		}
 
+		unsigned int getLine() const
+		{
+			return line;
+		}
 	};
 
 #endif /* FILEPARSER_H_ */

@@ -5,6 +5,7 @@
 #include "FileParser.h"
 #include "ResourceAdapter.h"
 #include "log/Logger.h"
+#include "exceptions/Exception.h"
 #include<set>
 #include<vector>
 #include<map>
@@ -56,25 +57,26 @@ class ResourceManager {
 
 		Resource *load(FileParser &fileParser, const String &mimeType)
 		{
-			Resource *cached = resourceCache[getCacheKey(fileParser.getFilename(), mimeType)];
-			if(cached == null)
-			{
-				Resource *response = null;
+				Resource *cached = resourceCache[getCacheKey(fileParser.getFilename(), mimeType)];
+				if(cached == null)
+				{
+					Resource *response = null;
 
-				if(adapters[mimeType] != null) {
-					logger->debug("Loading '[%s]' '[%s]'", mimeType.c_str(), fileParser.getFilename().c_str());
+					if(adapters[mimeType] != null) {
+						logger->debug("Loading [%s] [%s]", mimeType.c_str(), fileParser.getFilename().c_str());
 
-					response = adapters[mimeType]->load(fileParser);
-					if(response != null) {
-						response->setFileName(fileParser.getFilename());
-						resourceCache[getCacheKey(fileParser.getFilename(), mimeType)] = response;
-					}
-				}
+						response = adapters[mimeType]->load(fileParser);
+						if(response != null) {
+							response->setFileName(fileParser.getFilename());
+							resourceCache[getCacheKey(fileParser.getFilename(), mimeType)] = response;
+						}
+					} else
+						logger->error("No adapter found for mimetype [%s] - file not loaded [%s]", mimeType.c_str(), fileParser.getFilename().c_str());
 
-				return response;
-			} else
-				logger->debug("Getting '[%s]' '[%s]' from cache", mimeType.c_str(), fileParser.getFilename().c_str());
-			return cached;
+					return response;
+				} else
+					logger->debug("Getting [%s] [%s] from cache", mimeType.c_str(), fileParser.getFilename().c_str());
+				return cached;
 		}
 		void dispose(Resource *resource)
 		{

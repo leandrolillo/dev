@@ -32,9 +32,13 @@ class Exception {
 			va_end(args);
 		}
 		std::string toString() {
-			return this->msg;
+			return getMessage();
 		}
 
+		std::string getMessage()
+		{
+			return this->msg;
+		}
 		void setMessage(const char *format, ...)
 		{
 			va_list args;

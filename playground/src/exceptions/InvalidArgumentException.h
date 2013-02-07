@@ -10,7 +10,7 @@
 			{
 				va_list args;
 				va_start(args, format);
-				this->setMessage(format, args);
+				this->setMessageWithVarArgs(format, &args);
 				va_end(args);
 			}
 			

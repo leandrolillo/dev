@@ -174,12 +174,12 @@ class Playground {
 								runners.begin(); currentRunnerIterator != runners.end();
 								currentRunnerIterator++) {
 							if (!(*currentRunnerIterator)->afterInit()) {
-								return true;
+								return false;
 							}
 			}
 
 
-			status = RUNNERS_INITIALIZED;
+			return true;
 		}
 
 		virtual void run() {

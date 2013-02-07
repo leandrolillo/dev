@@ -17,6 +17,8 @@
 #include "adapters/PngResourceAdapter.h"
 #include "adapters/JpegResourceAdapter.h"
 #include "adapters/TextureResourceAdapter.h"
+#include "adapters/GeometryResourceAdapter.h"
+#include "adapters/VertexBufferAdapter.h"
 
 #define axis_length 1.0f
 
@@ -38,6 +40,8 @@ class VideoRunner: public PlaygroundRunner {
 			this->getContainer()->getResourceManager()->addAdapter(new PngResourceAdapter());
 			this->getContainer()->getResourceManager()->addAdapter(new JpegResourceAdapter());
 			this->getContainer()->getResourceManager()->addAdapter(new TextureResourceAdapter());
+			this->getContainer()->getResourceManager()->addAdapter(new GeometryResourceAdapter());
+			this->getContainer()->getResourceManager()->addAdapter(new VertexBufferResourceAdapter());
 
 			glClearColor(0.0, 0.5, 0.0, 0.0);
 			glShadeModel(GL_FLAT/*GL_SMOOTH*/);
