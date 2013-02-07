@@ -4,165 +4,38 @@
 #include "win32/PlaygroundWin32.h"
 #include "video/videoRunner.h"
 #include "audio/audioRunner.h"
+#include "test/TestRunner.h"
 #include <stdio.h>
 
 #include"math/Math3d.h"
 
-class TestLogic: public PlaygroundRunner {
-	private:
-		VideoRunner *video;
-		WglRunner *wgl;
-		AudioRunner *audio;
-
+class PlaygroundTests: public TestRunner {
 		Logger *logger;
-
-		//Graphical stuff
-		vector posicion;
-		TextureResource *textureResource;
-		TextureResource *anotherTextureResource;
 	public:
 		static const unsigned char ID = 100;
 
 	public:
-		TestLogic() {
-			video = null;
-			wgl = null;
-			audio = null;
-
+		PlaygroundTests() {
 			logger = Logger::getLogger("PlaygroundTest.h");
-
-			posicion = vector(0.0, -1.0f, -5.0);
-			textureResource = null;
-			anotherTextureResource = null;
-		}
-
-		virtual unsigned char getInterests() {
-			return KEY_DOWN | MOUSE_MOVE;
 		}
 
 		virtual unsigned char getId() {
-			return TestLogic::ID;
+
+			return PlaygroundTests::ID;
 		}
 
 		virtual boolean init() {
-			video = (VideoRunner *) this->getContainer()->getRunner(1);
-			wgl = (WglRunner *) this->getContainer()->getRunner(0);
-			audio = (AudioRunner *)this->getContainer()->getRunner(3);
-
-
-			//tests
-			doTests();
-
-			// demo stuff
-			Source *backgroundSource = audio->createSource("background.wav");
-			if(backgroundSource != null)
-				audio->playSource(backgroundSource);
-
-			textureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("imagenes/ss/MB.PNG", "video/texture");
-			anotherTextureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("imagenes/ss/REBECCA_ROMIJN_STAMOS0118.JPG", "video/texture");
+			this->addTest(static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadWav));
+			this->addTest(static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadOgg));
+			this->addTest(static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadBuffer));
+			this->addTest(static_cast<void (TestRunner::*)()>(&PlaygroundTests::testCreateSource));
+			this->addTest(static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadPng));
+			this->addTest(static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadJpeg));
+			this->addTest(static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadTexture));
+			this->addTest(static_cast<void (TestRunner::*)()>(&PlaygroundTests::testInvalidResource));
+			this->addTest(static_cast<void (TestRunner::*)()>(&PlaygroundTests::testFileParser));
 
 			return true;
-		}
-
-		void doTests() {
-			unsigned int testsInError = 0;
-			logger->debug("\n\nRunning Test...\n\n");
-			try {
-				testLoadWav();
-			} catch (Exception &e) {
-				logger->error("Load WAV test failed: %s", e.toString().c_str());
-				testsInError++;
-			}
-
-			try {
-				testLoadOgg();
-			} catch (Exception &e) {
-				logger->error("Load OGG test failed: %s", e.toString().c_str());
-				testsInError++;
-			}
-			try {
-				testLoadBuffer();
-			} catch (Exception &e) {
-				logger->error("Load BUFFER test failed: %s", e.toString().c_str());
-				testsInError++;
-			}
-			try {
-				testCreateSource();
-			} catch (Exception &e) {
-				logger->error("Load SOURCE test failed: %s", e.toString().c_str());
-				testsInError++;
-			}
-			try {
-				testLoadPng();
-			} catch (Exception &e) {
-				logger->error("Load PNG test failed: %s", e.toString().c_str());
-				testsInError++;
-			}
-			try {
-				testLoadJpeg();
-			} catch (Exception &e) {
-				logger->error("Load JPEG test failed: %s", e.toString().c_str());
-				testsInError++;
-			}
-			try {
-				testLoadTexture();
-			} catch (Exception &e) {
-				logger->error("Load WAV test failed: %s", e.toString().c_str());
-				testsInError++;
-			}
-
-			try {
-				testInvalidResource();
-			} catch (Exception &e) {
-				logger->error("Invalid Resource test failed: %s", e.toString().c_str());
-				testsInError++;
-			}
-
-			try {
-				testFileParser();
-			} catch (Exception &e) {
-				logger->error("File Parser test failed: %s", e.toString().c_str());
-				testsInError++;
-			}
-
-
-			logger->debug("\n\nTESTS: %d tests in error\n\n", testsInError);
-		}
-
-		void assertTrue(boolean condition)
-		{
-			assertTrue("", condition);
-		}
-		void assertTrue(String message, boolean condition)
-		{
-			if(!condition)
-			assertFail(message);
-		}
-
-		void assertEquals(String message, const String &expected, const String &actual)
-		{
-			assertTrue(message + ". Expected: [" + expected + "]. Actual: [" + actual + "]", expected == actual);
-		}
-
-		void assertEquals(String message, unsigned int expected, unsigned int actual)
-		{
-			char buffer[256];
-			sprintf(buffer, "%s. Expected: [%d]. Actual: [%d]", message.c_str(), expected, actual);
-			assertTrue(buffer, expected == actual);
-		}
-
-		void assertFalse(String message, boolean condition)
-		{
-			if(condition)
-			assertFail(message);
-		}
-		void assertFalse(boolean condition)
-		{
-			assertFalse("", condition);
-		}
-
-		void assertFail(String message) {
-			throw Exception(message.c_str());
 		}
 
 		void testInvalidResource()
@@ -266,6 +139,61 @@ class TestLogic: public PlaygroundRunner {
 			assertTrue("TEXTURE id not set properly", resource->getId() != 0);
 			assertEquals("TEXTURE mimetype invalid", "video/texture", resource->getMimeType());
 		}
+};
+
+class PlaygroundDemo : public PlaygroundRunner {
+	private:
+		VideoRunner *video;
+		WglRunner *wgl;
+		AudioRunner *audio;
+
+		Logger *logger;
+
+		//Graphical stuff
+		vector posicion;
+		TextureResource *textureResource;
+		TextureResource *anotherTextureResource;
+	public:
+		static const unsigned char ID = 101;
+
+	public:
+		PlaygroundDemo() {
+			video = null;
+			wgl = null;
+			audio = null;
+
+			logger = Logger::getLogger("PlaygroundTest.h");
+
+			posicion = vector(0.0, -1.0f, -5.0);
+			textureResource = null;
+			anotherTextureResource = null;
+		}
+
+		virtual unsigned char getInterests() {
+			return KEY_DOWN | MOUSE_MOVE;
+		}
+
+		virtual unsigned char getId() {
+
+			return PlaygroundDemo::ID;
+		}
+
+		virtual boolean init() {
+			video = (VideoRunner *) this->getContainer()->getRunner(1);
+			wgl = (WglRunner *) this->getContainer()->getRunner(0);
+			audio = (AudioRunner *)this->getContainer()->getRunner(3);
+
+
+			// demo stuff
+			Source *backgroundSource = audio->createSource("background.wav");
+			if(backgroundSource != null)
+				audio->playSource(backgroundSource);
+
+			textureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("imagenes/ss/MB.PNG", "video/texture");
+			anotherTextureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("imagenes/ss/REBECCA_ROMIJN_STAMOS0118.JPG", "video/texture");
+
+			return false;
+		}
 
 		virtual LoopResult doLoop() {
 			glLoadIdentity();
@@ -311,11 +239,12 @@ class TestLogic: public PlaygroundRunner {
 		}
 
 };
+
 class PlaygroundTest: public PlaygroundWin32 {
 	public:
 		void init() {
 			PlaygroundWin32::init();
-			this->addRunner(new TestLogic());
+			this->addRunner(new PlaygroundTests());
 
 		}
 };
