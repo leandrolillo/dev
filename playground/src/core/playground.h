@@ -139,17 +139,15 @@ class Playground {
 
 		// creación de los hilos
 		virtual void init() {
-			status = INITIALIZED;
 			logger->debug("framework initialized");
 		}
 
-		virtual void initRunners() {
+		virtual boolean initRunners() {
 			for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
 					runners.begin(); currentRunnerIterator != runners.end();
 					currentRunnerIterator++) {
 				if (!(*currentRunnerIterator)->init()) {
-					status = RUNNERS_BROKEN;
-					return;
+					return false;
 				}
 
 				unsigned char interests =
@@ -176,8 +174,7 @@ class Playground {
 								runners.begin(); currentRunnerIterator != runners.end();
 								currentRunnerIterator++) {
 							if (!(*currentRunnerIterator)->afterInit()) {
-								status = RUNNERS_BROKEN;
-								return;
+								return true;
 							}
 			}
 
@@ -186,8 +183,17 @@ class Playground {
 		}
 
 		virtual void run() {
-			if (status == INITIALIZED)
-				initRunners();
+			if(status == CREATED) {
+				init();
+				status = INITIALIZED;
+			}
+
+			if (status == INITIALIZED) {
+				if(initRunners())
+					status = RUNNERS_INITIALIZED;
+				else
+					status = RUNNERS_BROKEN;
+			}
 
 			if (status == RUNNERS_INITIALIZED || status == STOPPED) {
 				status = RUNNING;

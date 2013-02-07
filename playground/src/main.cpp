@@ -10,8 +10,6 @@
 int main() {
 	PlaygroundTest playground;
 
-	playground.init();
-
 	playground.run();
 
 	return 0;

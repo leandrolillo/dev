@@ -38,33 +38,32 @@ class TestRunner: public PlaygroundRunner {
 		virtual void doTests() {
 			unsigned int testsInError = 0;
 			logger->info("\n\nRunning [%d] Tests...\n\n", tests.size());
-			try {
+			for(std::list<void (TestRunner::*)()>::iterator iterator = tests.begin(); iterator != tests.end(); iterator++)
+			{
+				try {
 
-				for(std::list<void (TestRunner::*)()>::iterator iterator = tests.begin(); iterator != tests.end(); iterator++)
-				{
-					void (TestRunner::*currentTest)();
-					currentTest = *iterator;
+				void (TestRunner::*currentTest)();
+				currentTest = *iterator;
 
-					(this->*currentTest)();
+				(this->*currentTest)();
+				} catch (Exception &e) {
+					logger->error("Test failed: %s", e.toString().c_str());
+					testsInError++;
 				}
 
-			} catch (Exception &e) {
-				logger->error("Test failed: %s", e.toString().c_str());
-				testsInError++;
 			}
 
 			logger->info("\n\nTESTS: %d tests in error\n\n", testsInError);
 		}
 
-		virtual LoopResult doLoop()
-		{
+		virtual boolean afterInit()	{
 			before();
 			//tests
 			doTests();
 
 			after();
 
-			return STOP;
+			return true;
 		}
 
 		void assertTrue(boolean condition)

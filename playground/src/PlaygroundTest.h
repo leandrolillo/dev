@@ -192,7 +192,7 @@ class PlaygroundDemo : public PlaygroundRunner {
 			textureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("imagenes/ss/MB.PNG", "video/texture");
 			anotherTextureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("imagenes/ss/REBECCA_ROMIJN_STAMOS0118.JPG", "video/texture");
 
-			return false;
+			return true;
 		}
 
 		virtual LoopResult doLoop() {
@@ -244,8 +244,9 @@ class PlaygroundTest: public PlaygroundWin32 {
 	public:
 		void init() {
 			PlaygroundWin32::init();
-			this->addRunner(new PlaygroundTests());
 
+			this->addRunner(new PlaygroundTests());
+			this->addRunner(new PlaygroundDemo());
 		}
 };
 #endif
