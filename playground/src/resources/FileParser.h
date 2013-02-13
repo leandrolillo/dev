@@ -30,17 +30,11 @@ class FileParser {
 		unsigned int line;
 		unsigned int column;
 
-		int readByte()
-		{
-			int byte = fgetc(getStream());
-			if((char)byte == '\n') {
-				line++;
-				column = 0;
-			} else
-				column++;
+		//TODO: Move this to a stack and make its methods public
+		unsigned int lineBackup;
+		unsigned int columnBackup;
+		fpos_t position;
 
-			return byte;
-		}
 
 		boolean isInSet(char character, const char *set) {
 			const char *currentTokenSeparator = set;
@@ -66,11 +60,11 @@ class FileParser {
 
 		void takeUntilEOL() {
 			char caracter;
-			while((caracter = readByte()) != '\n' && caracter != 'ÿ');
+			while((caracter = takeByte()) != '\n' && caracter != 'ÿ');
 		}
 
 		void takeBlanks() {
-			while(isBlank(readByte()));
+			while(isBlank(takeByte()));
 
 			if(feof(getStream()))
 				fseek(getStream(), 0, SEEK_END);
@@ -84,7 +78,7 @@ class FileParser {
 			
 			do {
 				exit = true;
-				while(isBlank(character = readByte()));
+				while(isBlank(character = takeByte()));
 				if(character == commentChar) {
 					takeUntilEOL();
 					exit = false;
@@ -97,7 +91,21 @@ class FileParser {
 				fseek(getStream(), -1, SEEK_CUR);
 		}
 
+		void popPosition() {
+			line = lineBackup;
+			column = columnBackup;
 
+			if(fsetpos(getStream(), &position)!= 0)
+				throw new Exception("Could not restore stream position");
+		}
+		void pushPosition() {
+			lineBackup = line;
+			columnBackup = column;
+
+			if(fgetpos(getStream(), &position) != 0)
+				throw new Exception("Could not save stream position");
+
+		}
 
 	public:
 		FileParser(const String filename)
@@ -105,12 +113,14 @@ class FileParser {
 			this->filename = filename;
 			this->fileStream = null;
 
-			tokenSeparator = "	# ()[]{},.:;<>+-*/^¨=|&!¿?\n\r\"\'\\ÿ";
-			blanks = " \n\r\t,";
-			commentChar = '#';
+			this->setDefaultSpecialCharacters();
 
+			position = -1;
 			line = 1;
 			column = 1;
+			lineBackup = line;
+			columnBackup = column;
+
 
 			logger = Logger::getLogger("resources/FileParser.h");
 		}
@@ -156,25 +166,33 @@ class FileParser {
 			return fileStream;
 		}
 
+		int peekByte()
+		{
+			pushPosition();
+			int byte = takeByte();
+			popPosition();
+
+			return byte;
+		}
+
+		int takeByte()
+		{
+			int byte = fgetc(getStream());
+			if((char)byte == '\n') {
+				line++;
+				column = 0;
+			} else
+				column++;
+
+			return byte;
+		}
+
+
 		String peekToken() {
-			unsigned int lineBackup = line;
-			unsigned int columnBackup = column;
-
-			fpos_t position;
-
-			if(fgetpos(getStream(), &position) != 0)
-				throw new Exception("Could not save stream position");
-
+			pushPosition();
 			String token = takeToken();
-
-			if(fsetpos(getStream(), &position)!= 0)
-				throw new Exception("Could not restore stream position");
-
-			line = lineBackup;
-			column = columnBackup;
-
+			popPosition();
 			return token;
-
 		}
 
 		String takeToken() {
@@ -185,7 +203,7 @@ class FileParser {
 			unsigned short longitud = 0;
 
 			takeBlanksAndComments();
-			while(!isTokenSeparator(*token = readByte())) {
+			while(!isTokenSeparator(*token = takeByte())) {
 				token++;
 				longitud++;
 			}
@@ -205,6 +223,24 @@ class FileParser {
 		unsigned int getLine() const
 		{
 			return line;
+		}
+
+		const char* getTokenSeparator() const
+		{
+			return tokenSeparator;
+		}
+
+		void setTokenSeparator(const char* tokenSeparator)
+		{
+			this->tokenSeparator = tokenSeparator;
+		}
+
+		void setDefaultSpecialCharacters()
+		{
+			tokenSeparator = "	# ()[]{},.:;<>+-*/^¨=|&!¿?\n\r\"\'\\ÿ";
+			blanks = " \n\r\t";
+			commentChar = '#';
+
 		}
 	};
 

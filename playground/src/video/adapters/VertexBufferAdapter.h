@@ -25,6 +25,10 @@ class VertexBufferResourceAdapter: public ResourceAdapter {
 			return supportedMimeTypes;
 		}
 		virtual Resource *load(FileParser &fileParser) {
+			GeometryResource *geometry = (GeometryResource *) this->getResourceManager()->load(fileParser, "video/geometry");
+
+			//TODO: create vertex buffer;
+
 			VertexBufferResource *resource = new VertexBufferResource(0);
 			return resource;
 		}

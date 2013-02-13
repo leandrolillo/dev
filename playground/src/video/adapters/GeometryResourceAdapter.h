@@ -20,7 +20,7 @@ class GeometryResourceAdapter: public ResourceAdapter {
 	public:
 		GeometryResourceAdapter() {
 			supportedMimeTypes.push_back("video/geometry");
-			logger = Logger::getLogger("video/VertexBufferResourceAdapter.h");
+			logger = Logger::getLogger("video/GeometryResourceAdapter.h");
 		}
 		virtual const std::vector<String> getSupportedMimeTypes() {
 			return supportedMimeTypes;
@@ -34,22 +34,39 @@ class GeometryResourceAdapter: public ResourceAdapter {
 			parser->readStartObject();
 			while((token = parser->readToken()) != END_OBJECT && token != eof)
 			{
-				if(token == "vertex") {
+				if(token == "vertices") {
 					parser->readValueSeparator();
-					parser->readVectorArray();
+					resource->setVertices(parser->readVector2Array());
+					log("vertices = ", resource->getVertices());
 				} else if (token == "textureCoordinates") {
 					parser->readValueSeparator();
-					parser->readVectorArray();
+					resource->setTextureCoordinates(parser->readVector2Array());
 				}
 				else if (token == "normals") {
 					parser->readValueSeparator();
-					parser->readVectorArray();
+					resource->setNormals(parser->readVector2Array());
 				}
 			}
 			return resource;
 		}
 		virtual void dispose(Resource *resource) {
 			GeometryResource *geometryResource = (GeometryResource *)resource;
+		}
+
+		void log(String prefix, std::vector<vector2> array)
+		{
+			char vectorBuffer[256];
+
+			prefix.append(" [");
+
+			for(std::vector<vector2>::iterator current = array.begin(); current != array.end(); current++) {
+				sprintf(vectorBuffer, "<%.2f, %.2f> ", (*current).x, (*current).y);
+				prefix.append(vectorBuffer);
+			}
+
+			prefix.append(" ]");
+			logger->debug(prefix.c_str());
+
 		}
 };
 
