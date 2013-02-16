@@ -41,41 +41,63 @@ class ResourceManager {
 
 		Resource *load(String fileName)
 		{
-			return load(fileName, guessMimeType(fileName));
+			try {
+				return load(fileName, guessMimeType(fileName));
+			} catch (Exception &e) {
+				logger->error("Error loading resource [%s]: [%s]", fileName.c_str(), e.getMessage().c_str());
+			}
+
+			return null;
 		}
 
 		Resource *load(FileParser &fileParser)
 		{
-			return load(fileParser, guessMimeType(fileParser.getFilename()));
+			try {
+				return load(fileParser, guessMimeType(fileParser.getFilename()));
+			} catch (Exception &e) {
+				logger->error("Error loading resource [%s]: [%s]", fileParser.getFilename().c_str(), e.getMessage().c_str());
+			}
+			return null;
 		}
 
 		Resource *load(String fileName, const String &mimeType)
 		{
-			FileParser fileParser = FileParser(normalize(fileName));
-			return load(fileParser, mimeType);
+			try {
+				FileParser fileParser = FileParser(normalize(fileName));
+				return load(fileParser, mimeType);
+			} catch (Exception &e) {
+				logger->error("Error loading resource [%s] [%s]: [%s]", mimeType.c_str(), fileName.c_str(), e.getMessage().c_str());
+			}
+			return null;
 		}
 
 		Resource *load(FileParser &fileParser, const String &mimeType)
 		{
 				Resource *cached = resourceCache[getCacheKey(fileParser.getFilename(), mimeType)];
-				if(cached == null)
-				{
-					Resource *response = null;
+				try {
 
-					if(adapters[mimeType] != null) {
-						logger->debug("Loading [%s] [%s]", mimeType.c_str(), fileParser.getFilename().c_str());
+					if(cached == null)
+					{
+						Resource *response = null;
 
-						response = adapters[mimeType]->load(fileParser);
-						if(response != null) {
-							response->setFileName(fileParser.getFilename());
-							resourceCache[getCacheKey(fileParser.getFilename(), mimeType)] = response;
-						}
+						if(adapters[mimeType] != null) {
+							logger->debug("Loading [%s] [%s]", mimeType.c_str(), fileParser.getFilename().c_str());
+
+								response = adapters[mimeType]->load(fileParser);
+								if(response != null) {
+									response->setFileName(fileParser.getFilename());
+									resourceCache[getCacheKey(fileParser.getFilename(), mimeType)] = response;
+								}
+						} else
+							logger->error("No adapter found for mimetype [%s] - file not loaded [%s]", mimeType.c_str(), fileParser.getFilename().c_str());
+
+						return response;
 					} else
-						logger->error("No adapter found for mimetype [%s] - file not loaded [%s]", mimeType.c_str(), fileParser.getFilename().c_str());
+						logger->debug("Getting [%s] [%s] from cache", mimeType.c_str(), fileParser.getFilename().c_str());
+				} catch (Exception &e) {
+					logger->error("Error loading resource [%s] [%s]: [%s]", mimeType.c_str(), fileParser.getFilename().c_str(), e.getMessage().c_str());
+				}
 
-					return response;
-				} else
-					logger->debug("Getting [%s] [%s] from cache", mimeType.c_str(), fileParser.getFilename().c_str());
 				return cached;
 		}
 		void dispose(Resource *resource)

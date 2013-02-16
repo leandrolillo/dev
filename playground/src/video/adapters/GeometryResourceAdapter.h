@@ -41,10 +41,14 @@ class GeometryResourceAdapter: public ResourceAdapter {
 				} else if (token == "textureCoordinates") {
 					parser->readValueSeparator();
 					resource->setTextureCoordinates(parser->readVector2Array());
-				}
-				else if (token == "normals") {
+				} else if (token == "normals") {
 					parser->readValueSeparator();
 					resource->setNormals(parser->readVector2Array());
+				} else if (token == "texture") {
+					parser->readValueSeparator();
+					String textureFile = parser->readString();
+					logger->debug("texture [%s]", textureFile.c_str());
+					resource->setTextureFile(textureFile);
 				}
 			}
 			return resource;

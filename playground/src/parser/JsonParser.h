@@ -79,6 +79,18 @@ class JsonParser
 			return readElement(END_OBJECT, "EndObject");
 		}
 
+		String readString()
+		{
+			String value;
+			readElement("\"", "StartString");
+
+			char character;
+			while((character = fileParser.takeByte()) != '\"' && character != EOF)
+				value += character;
+
+			return value;
+		}
+
 		unsigned int readUnsignedInteger()
 		{
 			unsigned int value = 0;

@@ -41,19 +41,11 @@ class PlaygroundTests: public TestRunner {
 
 		void testInvalidResource()
 		{
-			try {
 				Resource *resource = this->getContainer()->getResourceManager()->load("tests/fake.wav");
-				assertFail("Invalid Argument Exception expected");
-			} catch (InvalidArgumentException &invalidArgumentException) {
-				;
-			}
+				assertEquals("Null resource expected", null, resource);
 
-			try {
-				Resource *resource = this->getContainer()->getResourceManager()->load("tests/fake.nomimetype");
-				assertFail("Invalid Argument Exception expected");
-			} catch (InvalidArgumentException &exception) {
-				;
-			}
+				resource = this->getContainer()->getResourceManager()->load("tests/fake.nomimetype");
+				assertEquals("Null resource expected", null, resource);
 
 		}
 		void testFileParser()
@@ -147,6 +139,14 @@ class PlaygroundTests: public TestRunner {
 			assertTrue("GEOMETRY resource not loaded", resource != null);
 			assertEquals("GEOMETRY mimetype invalid", "video/geometry", resource->getMimeType());
 		}
+
+		void testLoadVertexBuffer()	{
+			VertexBufferResource *resource = (VertexBufferResource *)this->getContainer()->getResourceManager()->load("tests/geometry.json", "video/vertexBuffer");
+
+			assertTrue("VertexBuffer resource not loaded", resource != null);
+			assertEquals("VertexBuffer mimetype invalid", "video/vertexBuffer", resource->getMimeType());
+		}
+
 };
 
 class PlaygroundDemo : public PlaygroundRunner {
@@ -207,11 +207,17 @@ class PlaygroundDemo : public PlaygroundRunner {
 			glLoadIdentity();
 
 			glTranslatef(posicion.x, posicion.y, posicion.z);
-			glBindTexture(GL_TEXTURE_2D, textureResource->getId());
+
+			if(textureResource != null)
+				glBindTexture(GL_TEXTURE_2D, textureResource->getId());
+
 			video->glPlane(posicion, vector(0, 1, 0), vector(0.0, 0.0f, 0.0f), 3, 3);
 
 			video->glAxis();
-			glBindTexture(GL_TEXTURE_2D, anotherTextureResource->getId());
+
+			if(anotherTextureResource != null)
+				glBindTexture(GL_TEXTURE_2D, anotherTextureResource->getId());
+
 			glBegin(GL_TRIANGLE_FAN);
 				glTexCoord2f(0.0f, 0.0f);
 				glVertex3f(0.0f, 0.0f, 1.0f);
@@ -254,7 +260,7 @@ class PlaygroundTest: public PlaygroundWin32 {
 			PlaygroundWin32::init();
 
 			this->addRunner(new PlaygroundTests());
-			//this->addRunner(new PlaygroundDemo());
+			this->addRunner(new PlaygroundDemo());
 		}
 };
 #endif

@@ -135,10 +135,12 @@ class Logger {
 
 		void debug(const char *formato, ...)
 		{
+#ifdef DEBUG
 			va_list args;
 			va_start(args, formato);
 			printMessage("DEBUG ", formato, &args);
 			va_end(args);
+#endif
 		}
 		void error(const char *formato, ...)
 		{
@@ -147,7 +149,8 @@ class Logger {
 			printMessage("SEVERE ", formato, &args);
 			va_end(args);
 
-			printMessage("", strerror(errno), &args);
+			if(strlen(strerror(errno)) > 0)
+				printMessage("Error Message", strerror(errno), &args);
 		}
 	public:
 		static std::vector<Logger *>loggers;

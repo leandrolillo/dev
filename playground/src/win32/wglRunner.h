@@ -8,8 +8,9 @@
 #ifndef VIDEORUNNER_H_
 #define WGLRUNNER_H_
 
-#include <gl\gl.h>
-#include <gl\glu.h>
+#include <gl/glew.h>
+#include <gl/wglew.h>
+#include <gl/gl.h>
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 
@@ -115,6 +116,46 @@ class WglRunner: public Win32apiRunner {
 				}
 
 				logger->debug("Rendering context set");
+
+				GLenum error = glewInit(); // Enable GLEW
+				if (error != GLEW_OK) {
+					printLastError("Error initializing glew");
+					return false;
+				}
+				logger->debug("glew initialized");
+
+				if (wglewIsSupported("WGL_ARB_create_context")) {
+					logger->debug("opengl 3.2 supported");
+
+					int attributes[] = { WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
+										 WGL_CONTEXT_MINOR_VERSION_ARB, 1,
+										 WGL_CONTEXT_FLAGS_ARB,  WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
+										 0  };
+
+					HGLRC oldRenderingContext = this->hRenderingContext;
+
+					if((this->hRenderingContext = wglCreateContextAttribsARB(this->hDeviceContext, null, attributes)) == null){
+						logger->error("Error creating glew rendering context");
+						return false;
+					}
+					logger->debug("glew rendering context created [%d] - disabling previous rendering context [%d]", hRenderingContext, oldRenderingContext);
+
+					wglMakeCurrent(null, null); // Remove the temporary context from being active
+					wglDeleteContext(oldRenderingContext); // Delete the temporary OpenGL 2.1 context
+
+					if(!wglMakeCurrent(this->hDeviceContext, this->hRenderingContext)) {
+						printLastError("Error setting glew rendering context");
+						return false;
+					}
+					logger->debug("glew rendering context set");
+				}
+
+				int majorVersion;
+				int minorVersion;
+				glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
+				glGetIntegerv(GL_MINOR_VERSION, &minorVersion);
+
+				logger->info("OpenGL %d.%d initialized", majorVersion, minorVersion);
 
 				return true;
 			}

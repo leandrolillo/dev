@@ -16,12 +16,11 @@ class GeometryResource : public Resource
 		std::vector<vector2> vertices;
 		std::vector<vector2> normals;
 		std::vector<vector2> textureCoordinates;
-		int textureId;
+		String textureFile;
 	public:
 		GeometryResource(unsigned int id) : Resource(id, "video/geometry")
 		{
-			textureId = 0;
-
+			textureFile = "";
 		}
 
 		const std::vector<vector2>& getNormals() const {
@@ -40,22 +39,24 @@ class GeometryResource : public Resource
 			this->textureCoordinates = textureCoordinates;
 		}
 
-		int getTextureId() const {
-			return textureId;
-		}
-
-		void setTextureId(int textureId) {
-			this->textureId = textureId;
-		}
-
-		const std::vector<vector2>& getVertices() const {
+		std::vector<vector2>& getVertices() {
 			return vertices;
 		}
 
 		void setVertices(const std::vector<vector2>& vertex) {
 			this->vertices = vertex;
 		}
-};
+
+		const String& getTextureFile() const
+		{
+			return textureFile;
+		}
+
+		void setTextureFile(const String & textureFile)
+		{
+			this->textureFile = textureFile;
+		}
+	};
 
 
 

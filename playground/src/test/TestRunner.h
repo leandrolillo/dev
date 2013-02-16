@@ -81,6 +81,11 @@ class TestRunner: public PlaygroundRunner {
 			assertTrue(message + ". Expected: [" + expected + "]. Actual: [" + actual + "]", expected == actual);
 		}
 
+		void assertEquals(String message, void *expected, void *actual)
+		{
+			assertTrue(message, expected == actual);
+		}
+
 		void assertEquals(String message, unsigned int expected, unsigned int actual)
 		{
 			char buffer[256];
