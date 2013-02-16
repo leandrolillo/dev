@@ -98,6 +98,12 @@ class Logger {
 			return fileHandler;
 		}
 
+		void flush() {
+			FILE *fileHandler = getFileHandler();
+
+			fflush(fileHandler);
+		}
+
 
 		Logger()
 		{
@@ -131,6 +137,7 @@ class Logger {
 			va_start(args, formato);
 			printMessage("FINE ", formato, &args);
 			va_end(args);
+			this->flush();
 		}
 
 		void debug(const char *formato, ...)
@@ -140,6 +147,7 @@ class Logger {
 			va_start(args, formato);
 			printMessage("DEBUG ", formato, &args);
 			va_end(args);
+			this->flush();
 #endif
 		}
 		void error(const char *formato, ...)
@@ -149,8 +157,12 @@ class Logger {
 			printMessage("SEVERE ", formato, &args);
 			va_end(args);
 
-			if(strlen(strerror(errno)) > 0)
+			if(errno != 0 && strlen(strerror(errno)) > 0) {
 				printMessage("Error Message", strerror(errno), &args);
+				errno = 0;
+			}
+
+			this->flush();
 		}
 	public:
 		static std::vector<Logger *>loggers;

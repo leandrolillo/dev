@@ -142,10 +142,10 @@ class PlaygroundTests: public TestRunner {
 		}
 
 		void testLoadVertexBuffer()	{
-			VertexBufferResource *resource = (VertexBufferResource *)this->getContainer()->getResourceManager()->load("tests/geometry.json", "video/vertexBuffer");
+			VertexArrayResource *resource = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("tests/geometry.json", "video/vertexArray");
 
 			assertTrue("VertexBuffer resource not loaded", resource != null);
-			assertEquals("VertexBuffer mimetype invalid", "video/vertexBuffer", resource->getMimeType());
+			assertEquals("VertexBuffer mimetype invalid", "video/vertexArray", resource->getMimeType());
 		}
 
 };
@@ -162,6 +162,7 @@ class PlaygroundDemo : public PlaygroundRunner {
 		vector posicion;
 		TextureResource *textureResource;
 		TextureResource *anotherTextureResource;
+		VertexArrayResource *vertexArrayResource;
 	public:
 		static const unsigned char ID = 101;
 
@@ -194,13 +195,14 @@ class PlaygroundDemo : public PlaygroundRunner {
 
 
 			// demo stuff
-			Source *backgroundSource = audio->createSource("background.wav");
+			Source *backgroundSource = audio->createSource("background.ogg");
 			if(backgroundSource != null)
 				audio->playSource(backgroundSource);
 
-			textureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("imagenes/ss/MB.PNG", "video/texture");
-			anotherTextureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("imagenes/ss/REBECCA_ROMIJN_STAMOS0118.JPG", "video/texture");
+			textureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("images/ss/MB.PNG", "video/texture");
+			anotherTextureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("images/ss/REBECCA_ROMIJN_STAMOS0118.JPG", "video/texture");
 
+			vertexArrayResource = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/triangle.json", "video/vertexArray");
 			return true;
 		}
 
@@ -219,19 +221,24 @@ class PlaygroundDemo : public PlaygroundRunner {
 			if(anotherTextureResource != null)
 				glBindTexture(GL_TEXTURE_2D, anotherTextureResource->getId());
 
-			glBegin(GL_TRIANGLE_FAN);
-				glTexCoord2f(0.0f, 0.0f);
-				glVertex3f(0.0f, 0.0f, 1.0f);
+			if(vertexArrayResource != null) {
+				glBindVertexArray(vertexArrayResource->getId());
+				glDrawArrays(GL_TRIANGLE_STRIP, 0, 1);
+			}
 
-				glTexCoord2f(0.0f, 1.0f);
-				glVertex3f(0.0f, 1.0f, 1.0f);
-
-				glTexCoord2f(1.0f, 1.0f);
-				glVertex3f(1.0f, 1.0f, 1.0f);
-
-				glTexCoord2f(1.0f, 0.0f);
-				glVertex3f(1.0f, 0.0f, 1.0f);
-			glEnd();
+//			glBegin(GL_TRIANGLE_FAN);
+//				glTexCoord2f(0.0f, 0.0f);
+//				glVertex3f(0.0f, 0.0f, 1.0f);
+//
+//				glTexCoord2f(0.0f, 1.0f);
+//				glVertex3f(0.0f, 1.0f, 1.0f);
+//
+//				glTexCoord2f(1.0f, 1.0f);
+//				glVertex3f(1.0f, 1.0f, 1.0f);
+//
+//				glTexCoord2f(1.0f, 0.0f);
+//				glVertex3f(1.0f, 0.0f, 1.0f);
+//			glEnd();
 
 
 			return CONTINUE;
@@ -260,8 +267,8 @@ class PlaygroundTest: public PlaygroundWin32 {
 		void init() {
 			PlaygroundWin32::init();
 
-			this->addRunner(new PlaygroundTests());
 			this->addRunner(new PlaygroundDemo());
+			this->addRunner(new PlaygroundTests());
 		}
 };
 #endif

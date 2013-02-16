@@ -50,7 +50,7 @@ class TestRunner: public PlaygroundRunner {
 
 					logger->info("[%s] PASSED.\n", iterator->first.c_str());
 				} catch (Exception &e) {
-					logger->error("Test [%s] FAILED: %s", iterator->first.c_str(), e.toString().c_str());
+					logger->error("Test [%s] FAILED: %s\n", iterator->first.c_str(), e.toString().c_str());
 					testsInError++;
 				}
 

@@ -28,10 +28,13 @@ class TextureResourceAdapter: public ResourceAdapter {
 		}
 		virtual Resource *load(FileParser &fileParser) {
 			ImageResource *imageResource = (ImageResource *)this->getResourceManager()->load(fileParser);
+			TextureResource *resource = null;
 
 			if(imageResource != null) {
 				unsigned int textureHandler = 0;
+				glGetError();
 				glGenTextures(1, &textureHandler);
+				resource = new TextureResource(textureHandler);
 				glBindTexture(GL_TEXTURE_2D, textureHandler);
 				if(imageResource->getBpp() == 32)
 					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageResource->getAncho(), imageResource->getAlto(), 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, imageResource->getData());
@@ -43,15 +46,15 @@ class TextureResourceAdapter: public ResourceAdapter {
 
 				glBindTexture(GL_TEXTURE_2D, 0);
 
-				if(glGetError() == null)
-					return new TextureResource(textureHandler);
-				else {
-					logger->error("Error loading texture [%s]: [%s]", fileParser.getFilename().c_str(), glGetError());
-					glDeleteTextures(1, &textureHandler);
+				GLenum glError = glGetError();
+				if(glError != GL_NO_ERROR) {
+					logger->error("Error loading texture [%s]: 0x[%x]", fileParser.getFilename().c_str(), glError);
+					dispose(resource);
+					return null;
 				}
 			}
 
-			return null;
+			return resource;
 		}
 		virtual void dispose(Resource *resource) {
 			TextureResource *textureResource = (TextureResource *)resource;

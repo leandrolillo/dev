@@ -15,7 +15,7 @@
 #include <map>
 
 enum PlaygroundStatus {
-	CREATED, INITIALIZED, RUNNERS_BROKEN, RUNNERS_INITIALIZED, RUNNING, STOPPED
+	CREATED, INITIALIZED, RUNNERS_BROKEN, RUNNERS_INITIALIZED, RUNNING, STOPPED, ERROR
 };
 
 enum LoopResult {
@@ -208,27 +208,32 @@ class Playground {
 		}
 
 		virtual void loop() {
-			for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
-					runners.begin(); currentRunnerIterator != runners.end();
-					currentRunnerIterator++)
-				(*currentRunnerIterator)->beforeLoop();
+			try {
+				for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
+						runners.begin(); currentRunnerIterator != runners.end();
+						currentRunnerIterator++)
+					(*currentRunnerIterator)->beforeLoop();
 
-			for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
-					runners.begin(); currentRunnerIterator != runners.end();
-					currentRunnerIterator++) {
-				LoopResult result = (*currentRunnerIterator)->doLoop();
+				for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
+						runners.begin(); currentRunnerIterator != runners.end();
+						currentRunnerIterator++) {
+					LoopResult result = (*currentRunnerIterator)->doLoop();
 
-				if (result != CONTINUE) {
-					if (result == STOP)
-						this->status = STOPPED;
-					break;
+					if (result != CONTINUE) {
+						if (result == STOP)
+							this->status = STOPPED;
+						break;
+					}
 				}
-			}
 
-			for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
-					runners.begin(); currentRunnerIterator != runners.end();
-					currentRunnerIterator++)
-				(*currentRunnerIterator)->afterLoop();
+				for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
+						runners.begin(); currentRunnerIterator != runners.end();
+						currentRunnerIterator++)
+					(*currentRunnerIterator)->afterLoop();
+			} catch (Exception &exception) {
+				logger->error("Loop broken: [%s]", exception.getMessage().c_str());
+				this->status = ERROR;
+			}
 		}
 
 		void resize(unsigned int height, unsigned width) {

@@ -45,7 +45,7 @@ class BufferResourceAdapter: public ResourceAdapter {
 
 			logger->debug("About to read %d bytes", data->size());
 
-			alBufferData(ALbuffer, audioResource->getFormat(), &(*data)[0], audioResource->getSize(),audioResource->getFrequency());
+			alBufferData(ALbuffer, audioResource->getFormat(), data->data(), audioResource->getSize(),audioResource->getFrequency());
 			if(alGetError() != AL_NO_ERROR) {
 				logger->error("Error setting buffer data for [%s]: %d", fileParser.getFilename().c_str(), error);
 				alDeleteBuffers(1, &ALbuffer);
