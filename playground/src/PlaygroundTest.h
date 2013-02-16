@@ -25,16 +25,17 @@ class PlaygroundTests: public TestRunner {
 		}
 
 		virtual boolean init() {
-			this->addTest(static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadWav));
-			this->addTest(static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadOgg));
-			this->addTest(static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadBuffer));
-			this->addTest(static_cast<void (TestRunner::*)()>(&PlaygroundTests::testCreateSource));
-			this->addTest(static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadPng));
-			this->addTest(static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadJpeg));
-			this->addTest(static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadTexture));
-			this->addTest(static_cast<void (TestRunner::*)()>(&PlaygroundTests::testInvalidResource));
-			this->addTest(static_cast<void (TestRunner::*)()>(&PlaygroundTests::testFileParser));
-			this->addTest(static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadGeometry));
+			this->addTest("testLoadWav", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadWav));
+			this->addTest("testLoadOgg", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadOgg));
+			this->addTest("testLoadBuffer", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadBuffer));
+			this->addTest("testCreateSource", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testCreateSource));
+			this->addTest("testLoadPng", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadPng));
+			this->addTest("testLoadJpeg", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadJpeg));
+			this->addTest("testLoadTexture", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadTexture));
+			this->addTest("testLoadInvalidResource", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testInvalidResource));
+			this->addTest("testFileParser", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testFileParser));
+			this->addTest("testLoadGeometry", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadGeometry));
+			this->addTest("testLoadVertexBuffer", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadVertexBuffer));
 
 			return true;
 		}

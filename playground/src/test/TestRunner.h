@@ -13,7 +13,7 @@
 
 class TestRunner: public PlaygroundRunner {
 	private:
-		std::list<void (TestRunner::*)()> tests;
+		std::map<String, void (TestRunner::*)()> tests;
 		Logger *logger;
 	public:
 		static const unsigned char ID = 100;
@@ -23,9 +23,9 @@ class TestRunner: public PlaygroundRunner {
 		{
 			logger = Logger::getLogger("test/TestRunner.h");
 		}
-		void addTest(void (TestRunner::*testFunction)())
+		void addTest(String name, void (TestRunner::*testFunction)())
 		{
-			tests.push_back(testFunction);
+			tests[name] = testFunction;
 		}
 		virtual unsigned char getId() {
 			return TestRunner::ID;
@@ -38,16 +38,19 @@ class TestRunner: public PlaygroundRunner {
 		virtual void doTests() {
 			unsigned int testsInError = 0;
 			logger->info("\n\nRunning [%d] Tests...\n\n", tests.size());
-			for(std::list<void (TestRunner::*)()>::iterator iterator = tests.begin(); iterator != tests.end(); iterator++)
+
+			for(std::map<String, void (TestRunner::*)()>::iterator iterator = tests.begin(); iterator != tests.end(); iterator++)
 			{
 				try {
+					logger->info("TEST [%s]...", iterator->first.c_str());
+					void (TestRunner::*currentTest)();
+					currentTest = iterator->second;
 
-				void (TestRunner::*currentTest)();
-				currentTest = *iterator;
+					(this->*currentTest)();
 
-				(this->*currentTest)();
+					logger->info("[%s] PASSED.\n", iterator->first.c_str());
 				} catch (Exception &e) {
-					logger->error("Test failed: %s", e.toString().c_str());
+					logger->error("Test [%s] FAILED: %s", iterator->first.c_str(), e.toString().c_str());
 					testsInError++;
 				}
 
