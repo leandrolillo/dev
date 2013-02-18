@@ -34,6 +34,11 @@ class VertexArrayResource : public Resource
 		const std::vector<unsigned int>& getVertexAttribPointers() const {
 			return vertexAttribPointers;
 		}
+
+		void clearVertexAttribPointers()
+		{
+			vertexAttribPointers.clear();
+		}
 };
 
 

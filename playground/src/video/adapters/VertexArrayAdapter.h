@@ -39,14 +39,26 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 
 				glBindVertexArray(resource->getId());
 
+				GLenum glError = glGetError();
+				if(glError != GL_NO_ERROR) {
+					logger->error("Error creating vertex array [%s]: 0x[%x]", fileParser.getFilename().c_str(), glError);
+					dispose(resource);
+					return null;
+				}
+
 				// create vertex buffer
 				unsigned int vertexBuffer;
 				glGenBuffers(1, &vertexBuffer); // Generate our Vertex Buffer Object
-				for(std::vector<vector2>::iterator iterator = geometry->getVertices().begin(); iterator != geometry->getVertices().end(); iterator++)
-					glBufferData(GL_ARRAY_BUFFER, 2 * sizeof(real), (float *)*iterator,  GL_STATIC_DRAW);
+				glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer); // bind to GL_ARAY_BUFFER, as we're about to call glBufferData(GL_ARAY_BUFFER)
+				glBufferData(GL_ARRAY_BUFFER, geometry->getVertices().size() * sizeof(vector2), (float *)geometry->getVertices().data(),  GL_STATIC_DRAW);
 
-				// bind vertex buffer to vertex array
-				glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+				glError = glGetError();
+				if(glError != GL_NO_ERROR) {
+					logger->error("Error loading vertex buffer [%s]: 0x[%x]", fileParser.getFilename().c_str(), glError);
+					dispose(resource);
+					return null;
+				}
+
 				unsigned int vertexPointer = resource->addBuffer(vertexBuffer);
 				glVertexAttribPointer((GLuint)vertexPointer, 2, GL_FLOAT, GL_FALSE, 0, 0);
 				glEnableVertexAttribArray(vertexPointer);
@@ -55,9 +67,9 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 				glBindBuffer(GL_ARRAY_BUFFER, 0);
 				glBindVertexArray(0);
 
-				GLenum glError = glGetError();
+				glError = glGetError();
 				if(glError != GL_NO_ERROR) {
-					logger->error("Error loading vertex array [%s]: 0x[%x]", fileParser.getFilename().c_str(), glError);
+					logger->error("Error relating vertex array and vertex buffer [%s]: 0x[%x]", fileParser.getFilename().c_str(), glError);
 					dispose(resource);
 					return null;
 				}
@@ -69,17 +81,22 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 		virtual void dispose(Resource *resource) {
 			VertexArrayResource *vertexArrayResource = (VertexArrayResource *)resource;
 
-			glBindVertexArray(vertexArrayResource->getId());
-			for(unsigned int index = 0; index < vertexArrayResource->getVertexAttribPointers().size(); index++) {
-				glDisableVertexAttribArray(index);
-				unsigned int vertexBuffer = vertexArrayResource->getVertexAttribPointers()[index];
-				glDeleteBuffers(1, &vertexBuffer);
+			if(vertexArrayResource->getId() != 0) {
+				glBindVertexArray(vertexArrayResource->getId());
+				for(unsigned int index = 0; index < vertexArrayResource->getVertexAttribPointers().size(); index++) {
+					glDisableVertexAttribArray(index);
+					unsigned int vertexBuffer = vertexArrayResource->getVertexAttribPointers()[index];
+					glDeleteBuffers(1, &vertexBuffer);
+				}
+
+				vertexArrayResource->clearVertexAttribPointers();
+
+				unsigned int vertexArray = vertexArrayResource->getId();
+				glDeleteVertexArrays(1, &vertexArray);
+
+				glBindVertexArray(0);
+				vertexArrayResource->setId(0);
 			}
-
-			unsigned int vertexArray = vertexArrayResource->getId();
-			glDeleteVertexArrays(1, &vertexArray);
-
-			glBindVertexArray(0);
 		}
 };
 #endif /* VERTEXBUFFERADAPTER_H_ */

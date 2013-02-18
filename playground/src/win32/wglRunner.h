@@ -125,7 +125,7 @@ class WglRunner: public Win32apiRunner {
 				logger->debug("glew initialized");
 
 				if (wglewIsSupported("WGL_ARB_create_context")) {
-					logger->debug("opengl 3.2 supported");
+					logger->debug("WGL_ARG_Create_Context supported");
 
 					int attributes[] = { WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
 										 WGL_CONTEXT_MINOR_VERSION_ARB, 1,
@@ -155,7 +155,7 @@ class WglRunner: public Win32apiRunner {
 				glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
 				glGetIntegerv(GL_MINOR_VERSION, &minorVersion);
 
-				logger->info("OpenGL %d.%d initialized", majorVersion, minorVersion);
+				logger->info("OpenGL [%d.%d] / [%s] initialized", majorVersion, minorVersion, glGetString(GL_VERSION));
 
 				return true;
 			}

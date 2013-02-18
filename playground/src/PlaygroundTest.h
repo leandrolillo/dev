@@ -35,7 +35,7 @@ class PlaygroundTests: public TestRunner {
 			this->addTest("testLoadInvalidResource", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testInvalidResource));
 			this->addTest("testFileParser", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testFileParser));
 			this->addTest("testLoadGeometry", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadGeometry));
-			this->addTest("testLoadVertexBuffer", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadVertexBuffer));
+			this->addTest("testLoadVertexArray", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadVertexBuffer));
 
 			return true;
 		}
@@ -144,8 +144,8 @@ class PlaygroundTests: public TestRunner {
 		void testLoadVertexBuffer()	{
 			VertexArrayResource *resource = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("tests/geometry.json", "video/vertexArray");
 
-			assertTrue("VertexBuffer resource not loaded", resource != null);
-			assertEquals("VertexBuffer mimetype invalid", "video/vertexArray", resource->getMimeType());
+			assertTrue("VertexArray resource not loaded", resource != null);
+			assertEquals("VertexArray mimetype invalid", "video/vertexArray", resource->getMimeType());
 		}
 
 };
@@ -214,7 +214,7 @@ class PlaygroundDemo : public PlaygroundRunner {
 			if(textureResource != null)
 				glBindTexture(GL_TEXTURE_2D, textureResource->getId());
 
-			video->glPlane(posicion, vector(0, 1, 0), vector(0.0, 0.0f, 0.0f), 3, 3);
+//			video->glPlane(posicion, vector(0, 1, 0), vector(0.0, 0.0f, 0.0f), 3, 3);
 
 			video->glAxis();
 
@@ -223,7 +223,7 @@ class PlaygroundDemo : public PlaygroundRunner {
 
 			if(vertexArrayResource != null) {
 				glBindVertexArray(vertexArrayResource->getId());
-				glDrawArrays(GL_TRIANGLE_STRIP, 0, 1);
+				glDrawArrays(GL_TRIANGLE_STRIP, 0, 3);
 			}
 
 //			glBegin(GL_TRIANGLE_FAN);
