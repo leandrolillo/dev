@@ -172,6 +172,10 @@ class ResourceManager {
 					logger->debug("guessMimeType: mime type for [%s] is [%s]", fileName.c_str(), "image/png");
 					return "image/png";
 				}
+				else if (extension == "tga") {
+					logger->debug("guessMimeType: mime type for [%s] is [%s]", fileName.c_str(), "image/tga");
+					return "image/tga";
+				}
 			}
 
 			logger->error("Could not determine mimetype for [%s]", fileName.c_str());

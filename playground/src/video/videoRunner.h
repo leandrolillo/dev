@@ -16,6 +16,7 @@
 
 #include "adapters/PngResourceAdapter.h"
 #include "adapters/JpegResourceAdapter.h"
+#include "adapters/TgaResourceAdapter.h"
 #include "adapters/TextureResourceAdapter.h"
 #include "adapters/GeometryResourceAdapter.h"
 #include "adapters/VertexArrayAdapter.h"
@@ -39,6 +40,7 @@ class VideoRunner: public PlaygroundRunner {
 		virtual boolean init() {
 			this->getContainer()->getResourceManager()->addAdapter(new PngResourceAdapter());
 			this->getContainer()->getResourceManager()->addAdapter(new JpegResourceAdapter());
+			this->getContainer()->getResourceManager()->addAdapter(new TgaResourceAdapter());
 			this->getContainer()->getResourceManager()->addAdapter(new TextureResourceAdapter());
 			this->getContainer()->getResourceManager()->addAdapter(new GeometryResourceAdapter());
 			this->getContainer()->getResourceManager()->addAdapter(new VertexArrayResourceAdapter());

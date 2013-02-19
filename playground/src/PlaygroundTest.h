@@ -31,6 +31,7 @@ class PlaygroundTests: public TestRunner {
 			this->addTest("testCreateSource", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testCreateSource));
 			this->addTest("testLoadPng", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadPng));
 			this->addTest("testLoadJpeg", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadJpeg));
+			this->addTest("testLoadTga", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadTga));
 			this->addTest("testLoadTexture", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadTexture));
 			this->addTest("testLoadInvalidResource", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testInvalidResource));
 			this->addTest("testFileParser", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testFileParser));
@@ -126,12 +127,36 @@ class PlaygroundTests: public TestRunner {
 			assertEquals("JPEG mimetype invalid", "image/jpeg", resource->getMimeType());
 		}
 
+		void testLoadTga()		{
+			TgaResource *resource = (TgaResource *)this->getContainer()->getResourceManager()->load("tests/image.tga");
+
+			assertTrue("TGA resource not loaded", resource != null);
+			assertTrue("TGA data not set properly", resource->getData() != null);
+			assertEquals("TGA Invalid width", 400, resource->getAncho());
+			assertEquals("TGA Invalid height", 300, resource->getAlto());
+			assertEquals("TGA mimetype invalid", "image/tga", resource->getMimeType());
+		}
+
 		void testLoadTexture()		{
 			TextureResource *resource = (TextureResource *)this->getContainer()->getResourceManager()->load("tests/image.png", "video/texture");
 
 			assertTrue("TEXTURE resource not loaded", resource != null);
 			assertTrue("TEXTURE id not set properly", resource->getId() != 0);
 			assertEquals("TEXTURE mimetype invalid", "video/texture", resource->getMimeType());
+
+			resource = (TextureResource *)this->getContainer()->getResourceManager()->load("tests/image.jpg", "video/texture");
+
+			assertTrue("TEXTURE resource not loaded", resource != null);
+			assertTrue("TEXTURE id not set properly", resource->getId() != 0);
+			assertEquals("TEXTURE mimetype invalid", "video/texture", resource->getMimeType());
+
+			resource = (TextureResource *)this->getContainer()->getResourceManager()->load("tests/image.tga", "video/texture");
+
+			assertTrue("TEXTURE resource not loaded", resource != null);
+			assertTrue("TEXTURE id not set properly", resource->getId() != 0);
+			assertEquals("TEXTURE mimetype invalid", "video/texture", resource->getMimeType());
+
+
 		}
 
 		void testLoadGeometry()	{

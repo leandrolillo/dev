@@ -10,25 +10,6 @@
 
 #include "resources/ResourceAdapter.h"
 
-typedef struct {
-		DWORD rId;	       //tiene que decir RIFF
-		DWORD rLen;       //longitud archivo
-
-		DWORD waveId; 	//Dice WAVE
-
-		DWORD formatId;	//Dice fmt --> format del chunk de datos
-		DWORD formatLen;	//longitud de los datos en fmt
-		WORD formatTag;	//Wave format. Tipo de encriptamiento.
-		WORD numberOfChannels;		//Canales 1 = mono, 2 stereo
-		DWORD numberOfSamplesPerSec;	//Playback Frecuency
-		DWORD numberOfAvgBytesPerSec;	// =nChannels * nSamplesPerSec * (nBitsPerSample/8)
-		WORD numberBlockAlign;	//nBlockAlign = nChannels * (nBitsPerSample / 8)
-		WORD numberBytesPerSample;	//Format specific data area
-
-		DWORD dataId;	//Dice data
-		DWORD dataLen;	//longitud de los datos;
-} WAV_header;
-
 class WavResourceAdapter: public ResourceAdapter {
 	private:
 		std::vector<String> supportedMimeTypes;
@@ -42,26 +23,51 @@ class WavResourceAdapter: public ResourceAdapter {
 		virtual const std::vector<String> getSupportedMimeTypes() {
 			return supportedMimeTypes;
 		}
+
+		#define WAV_BUFFER_SIZE 4096 * 4
 		virtual Resource *load(FileParser &fileParser) {
-			logger->debug("Loading file [%s]", fileParser.getFilename().c_str());
+			AudioResource *audioResource = new AudioResource(0, "audio/wav");
 
-			WAV_header header;
+			struct wavHeader {
+				DWORD rId;	       //tiene que decir RIFF
+				DWORD rLen;       //longitud archivo
 
-			if(fileParser.read(&header, sizeof(header), 1) == 0) {
-				logger->error("Error al leer el header");
+				DWORD waveId; 	//Dice WAVE
+
+				DWORD formatId;	//Dice fmt --> format del chunk de datos
+				DWORD formatLen;	//longitud de los datos en fmt
+				WORD formatTag;	//Wave format. Tipo de encriptamiento.
+				WORD numberOfChannels;		//Canales 1 = mono, 2 stereo
+				DWORD numberOfSamplesPerSec;	//Playback Frecuency
+				DWORD numberOfAvgBytesPerSec;	// =nChannels * nSamplesPerSec * (nBitsPerSample/8)
+				WORD numberBlockAlign;	//nBlockAlign = nChannels * (nBitsPerSample / 8)
+				WORD numberBytesPerSample;	//Format specific data area
+
+				DWORD dataId;	//Dice data
+				DWORD dataLen;	//longitud de los datos;
+			} header;
+
+			if(fileParser.read(&header, sizeof(header), 1) != 1) {
+				logger->error("[%s] has an incomplete WAV header", fileParser.getFilename().c_str());
 				return null;
 			}
 
-			char array[OGG_BUFFER_SIZE];
+			char array[WAV_BUFFER_SIZE];
 			std::vector <char> *bufferData = new std::vector<char>();
 
 			long bytesRead;
 
-			while((bytesRead = fileParser.read(array, sizeof(char), OGG_BUFFER_SIZE)) > 0 && bufferData->size() < header.dataLen)
+			while((bytesRead = fileParser.read(array, sizeof(char), WAV_BUFFER_SIZE)) > 0 && bufferData->size() < header.dataLen)
 					bufferData->insert(bufferData->end(), array, array+bytesRead);
 
+			if(bufferData->size() != header.dataLen)
+			{
+				logger->error("[%s] Incomplete buffer data", fileParser.getFilename().c_str());
+				bufferData->clear();
+				delete bufferData;
+				return null;
+			}
 
-			AudioResource *audioResource = new AudioResource(0, "audio/wav");
 			audioResource->setFormat(header.numberOfChannels == 1 ? header.numberBytesPerSample == 1 ? AL_FORMAT_MONO8 : AL_FORMAT_MONO16 : header.numberBytesPerSample == 1 ? AL_FORMAT_STEREO8 : AL_FORMAT_STEREO16);
 			audioResource->setFrequency(header.numberOfSamplesPerSec);
 			audioResource->setSize(bufferData->size());
@@ -72,9 +78,13 @@ class WavResourceAdapter: public ResourceAdapter {
 		virtual void dispose(Resource *resource) {
 			AudioResource *audioResource = (AudioResource *)resource;
 
-			std::vector<char> *bufferData = (std::vector<char> *)audioResource->getData();
-			bufferData->clear();
-			delete bufferData;
+			if(audioResource->getData() != null)
+			{
+				std::vector<char> *bufferData = (std::vector<char> *)audioResource->getData();
+				bufferData->clear();
+				delete bufferData;
+				audioResource->setData(null);
+			}
 		}
 	};
 
