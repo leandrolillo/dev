@@ -248,7 +248,8 @@ class PlaygroundDemo : public PlaygroundRunner {
 
 			if(vertexArrayResource != null) {
 				glBindVertexArray(vertexArrayResource->getId());
-				glDrawArrays(GL_TRIANGLE_STRIP, 0, 3);
+				glDrawElements(GL_TRIANGLE_STRIP, vertexArrayResource->getVertexAttribPointers()[1].getCount(), GL_UNSIGNED_INT, 0);
+				//glDrawArrays(GL_TRIANGLE_STRIP, vertexArrayResource->getVertexAttribPointers().front().getStart(), vertexArrayResource->getVertexAttribPointers().front().getCount());
 			}
 
 //			glBegin(GL_TRIANGLE_FAN);

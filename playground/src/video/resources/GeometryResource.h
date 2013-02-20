@@ -14,6 +14,7 @@ class GeometryResource : public Resource
 {
 	private:
 		std::vector<vector2> vertices;
+		std::vector<unsigned int> indexes;
 		std::vector<vector2> normals;
 		std::vector<vector2> textureCoordinates;
 		std::vector<vector3> colors;
@@ -32,7 +33,7 @@ class GeometryResource : public Resource
 			this->normals = normals;
 		}
 
-		const std::vector<vector2>& getTextureCoordinates() const {
+		std::vector<vector2>& getTextureCoordinates() {
 			return textureCoordinates;
 		}
 
@@ -58,7 +59,7 @@ class GeometryResource : public Resource
 			this->textureFile = textureFile;
 		}
 
-		const std::vector<vector3>& getColors() const
+		std::vector<vector3>& getColors()
 		{
 			return colors;
 		}
@@ -66,6 +67,16 @@ class GeometryResource : public Resource
 		void setColors(const std::vector<vector3>& colors)
 		{
 			this->colors = colors;
+		}
+
+		std::vector<unsigned int>& getIndexes()
+		{
+			return indexes;
+		}
+
+		void setIndexes(const std::vector<unsigned int>& indexes)
+		{
+			this->indexes = indexes;
 		}
 	};
 

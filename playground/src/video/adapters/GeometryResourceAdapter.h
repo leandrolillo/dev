@@ -17,6 +17,30 @@ class GeometryResourceAdapter: public ResourceAdapter {
 	private:
 		std::vector<String> supportedMimeTypes;
 		Logger *logger;
+	private:
+		void buildVerticesArray(GeometryResource *resource, std::vector<vector2> &vertices)
+		{
+			if(resource != null && vertices.size() > 0) {
+				for(std::vector<vector2>::iterator source = vertices.begin(); source != vertices.end(); source ++)
+				{
+					unsigned int index = 0;
+					boolean preExisting = false;
+					for(std::vector<vector2>::iterator destination = resource->getVertices().begin(); destination != resource->getVertices().end(); destination++)
+					{
+						if(*source == *destination) {
+							resource->getIndexes().push_back(index);
+							preExisting = true;
+							break;
+						}
+						index++;
+					}
+					if(!preExisting) {
+						resource->getVertices().push_back(*source);
+						resource->getIndexes().push_back(resource->getIndexes().size());
+					}
+				}
+			}
+		}
 	public:
 		GeometryResourceAdapter() {
 			supportedMimeTypes.push_back("video/geometry");
@@ -36,7 +60,8 @@ class GeometryResourceAdapter: public ResourceAdapter {
 			{
 				if(token == "vertices") {
 					parser->readValueSeparator();
-					resource->setVertices(parser->readVector2Array());
+					std::vector<vector2> vertices = parser->readVector2Array();
+					buildVerticesArray(resource, vertices);
 					log("vertices = ", resource->getVertices());
 				} else if (token == "textureCoordinates") {
 					parser->readValueSeparator();
