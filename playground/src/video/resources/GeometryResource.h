@@ -16,6 +16,7 @@ class GeometryResource : public Resource
 		std::vector<vector2> vertices;
 		std::vector<vector2> normals;
 		std::vector<vector2> textureCoordinates;
+		std::vector<vector3> colors;
 		String textureFile;
 	public:
 		GeometryResource(unsigned int id) : Resource(id, "video/geometry")
@@ -55,6 +56,16 @@ class GeometryResource : public Resource
 		void setTextureFile(const String & textureFile)
 		{
 			this->textureFile = textureFile;
+		}
+
+		const std::vector<vector3>& getColors() const
+		{
+			return colors;
+		}
+
+		void setColors(const std::vector<vector3>& colors)
+		{
+			this->colors = colors;
 		}
 	};
 

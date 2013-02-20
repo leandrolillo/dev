@@ -183,9 +183,9 @@ class JsonParser
 		vector3 readVector3()
 		{
 			String token;
-			real x = 0.;
-			real y = .0;
-			real z = -0.;
+			real x = 0.0;
+			real y = 0.0;
+			real z = 0.0;
 
 			readStartVector();
 			x = readReal();
@@ -193,7 +193,6 @@ class JsonParser
 			y = readReal();
 			readElement(",", "comma");
 			z = readReal();
-			readElement(",", "comma");
 			readEndVector();
 
 			return vector3(x, y ,z);
@@ -202,8 +201,8 @@ class JsonParser
 		vector2 readVector2()
 		{
 			String token;
-			real x = 0.;
-			real y = .0;
+			real x = 0.0;
+			real y = 0.0;
 
 			readStartVector();
 			x = readReal();
@@ -216,14 +215,14 @@ class JsonParser
 
 		std::vector<vector2> readVector2Array()
 		{
-			std::vector<vector2>vector2Array;
+			std::vector<vector2>vectorArray;
 
 			readStartArray();
 			String token;
 
 			while((token = fileParser.peekToken()) != END_ARRAY && token != eof) {
 				vector2 vec = readVector2();
-				vector2Array.push_back(vec);
+				vectorArray.push_back(vec);
 
 				if((token = fileParser.peekToken()) == ",")
 					fileParser.takeToken();
@@ -233,7 +232,29 @@ class JsonParser
 
 			readEndArray();
 
-			return vector2Array;
+			return vectorArray;
+		}
+
+		std::vector<vector3> readVector3Array()
+		{
+			std::vector<vector3>vectorArray;
+
+			readStartArray();
+			String token;
+
+			while((token = fileParser.peekToken()) != END_ARRAY && token != eof) {
+				vector3 vec = readVector3();
+				vectorArray.push_back(vec);
+
+				if((token = fileParser.peekToken()) == ",")
+					fileParser.takeToken();
+
+					//throw ParsingException("Unexpected %s at (%d, %d)", token.c_str(), fileParser.getLine(), fileParser.getColumn());
+			}
+
+			readEndArray();
+
+			return vectorArray;
 		}
 
 };

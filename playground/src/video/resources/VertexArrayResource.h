@@ -10,6 +10,12 @@
 
 #include "resources/Resource.h"
 
+class VertexAttribPointer {
+		unsigned int pointer;
+		unsigned int start;
+		unsigned int count;
+};
+
 class VertexArrayResource : public Resource
 {
 	private:

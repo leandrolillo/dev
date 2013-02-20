@@ -49,6 +49,9 @@ class GeometryResourceAdapter: public ResourceAdapter {
 					String textureFile = parser->readString();
 					logger->debug("texture [%s]", textureFile.c_str());
 					resource->setTextureFile(textureFile);
+				} else if (token == "colors") {
+					parser->readValueSeparator();
+					resource->setColors(parser->readVector3Array());
 				}
 			}
 			return resource;

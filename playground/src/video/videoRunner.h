@@ -9,7 +9,6 @@
 #define VIDEORUNNER_H_
 
 #include <gl\gl.h>
-#include <GL/glu.h>
 
 #include "core/playground.h"
 #include "math/Math3d.h"
@@ -68,11 +67,19 @@ class VideoRunner: public PlaygroundRunner {
 			glViewport(0, 0, (GLsizei) width, (GLsizei) height);
 			glMatrixMode(GL_PROJECTION);
 			glLoadIdentity();
-			gluPerspective(60.0, (GLfloat) width / (GLfloat) height, 1.0,
+			glPerspective(60.0, (GLfloat) width / (GLfloat) height, 1.0,
 					200.0);
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 
+		}
+
+		void glPerspective(double fovy, double aspect, double zNear, double zFar)
+		{
+			GLdouble fW, fH;
+			fH = tan( fovy / 360.0 * M_PI ) * zNear;
+			fW = fH * aspect;
+			glFrustum( -fW, fW, -fH, fH, zNear, zFar );
 		}
 
 		void glPlane(vector posicion, vector normal, vector origen,
