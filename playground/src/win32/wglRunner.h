@@ -124,9 +124,11 @@ class WglRunner: public Win32apiRunner {
 				}
 				logger->debug("glew initialized");
 
-				if (wglewIsSupported("WGL_ARB_create_context")) {
-					logger->debug("WGL_ARG_Create_Context supported");
-
+				if(!GLEW_VERSION_2_0)
+				{
+					logger->error("OpenGL version 2.0 required");
+					return false;
+				} else {
 					int attributes[] = { WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
 										 WGL_CONTEXT_MINOR_VERSION_ARB, 1,
 										 WGL_CONTEXT_FLAGS_ARB,  WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,

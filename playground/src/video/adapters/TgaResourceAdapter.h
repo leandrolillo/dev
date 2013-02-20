@@ -69,7 +69,7 @@ class TgaResourceAdapter: public ResourceAdapter {
 				}
 
 			unsigned int color_map_size = le_short(header.color_map_length) * (header.color_map_depth/8);
-			for (int i = 0; i < color_map_size; ++i)
+			for (unsigned int i = 0; i < color_map_size; ++i)
 				if (fileParser.takeByte() == EOF) {
 					logger->error("%s has incomplete color map\n", fileParser.getFilename().c_str());
 					return null;

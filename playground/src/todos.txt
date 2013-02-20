@@ -1,10 +1,13 @@
 TODOs:
 
-separar conceptos audio (audioresource, wavresource, oggresource, etc.) de openal y video (imageresource, jpeg y png resources, etc.) de opengl.
-ver mejor manera de manejar audio resource void *pdata;
-revisar opciones de resourceAdapter::load(string filename) ::load(file *fileHandler) y ::load(Stream stream);
+- manejo de configuración
+- permitir que resourceAdapters hagan la resolución de mimetype para un nombre de archivo -> sino aunque los adapters se pueden agregar fácil, tengo que agregar hardcodeado el mimetype en el resource loader. 
+- separar conceptos audio (audioresource, wavresource, oggresource, etc.) de openal y video (imageresource, jpeg y png resources, etc.) de opengl.
+- ver mejor manera de manejar audio resource void *pdata;
+
+- abstraer audio en openal / dsound y video en opengl / d3d.
+
 formato simple para definición de geometría, animaciones, etc.
-manejo de configuración
 Manejo de recursos (texturas, buffers y sources, geometría, etc.)
 arcball e interacción con objetos en pantalla
 integrar con clases math y refactorizar nombres y uso (para objetos readonly)
