@@ -37,6 +37,8 @@ class PlaygroundTests: public TestRunner {
 			this->addTest("testFileParser", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testFileParser));
 			this->addTest("testLoadGeometry", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadGeometry));
 			this->addTest("testLoadVertexArray", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadVertexBuffer));
+			this->addTest("testLoadShader", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadShaders));
+			this->addTest("testLoadShaderProgram", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadShaderProgram));
 
 			return true;
 		}
@@ -173,6 +175,20 @@ class PlaygroundTests: public TestRunner {
 			assertEquals("VertexArray mimetype invalid", "video/vertexArray", resource->getMimeType());
 		}
 
+		void testLoadShaders()	{
+			ShaderResource *resource = (ShaderResource *)this->getContainer()->getResourceManager()->load("tests/vertexShader.glsl", "video/vertexShader");
+
+			assertTrue("Shader resource not loaded", resource != null);
+			assertEquals("Shader mimetype invalid", "video/vertexShader", resource->getMimeType());
+		}
+
+		void testLoadShaderProgram()	{
+			ShaderProgramResource *resource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("tests/shaderProgram.json", "video/shaderProgram");
+
+			assertTrue("Shader Program resource not loaded", resource != null);
+			assertEquals("Shader Program mimetype invalid", "video/shaderProgram", resource->getMimeType());
+		}
+
 };
 
 class PlaygroundDemo : public PlaygroundRunner {
@@ -188,6 +204,7 @@ class PlaygroundDemo : public PlaygroundRunner {
 		TextureResource *textureResource;
 		TextureResource *anotherTextureResource;
 		VertexArrayResource *vertexArrayResource;
+		ShaderProgramResource *shaderProgramResource;
 	public:
 		static const unsigned char ID = 101;
 
@@ -228,6 +245,15 @@ class PlaygroundDemo : public PlaygroundRunner {
 			anotherTextureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("images/ss/REBECCA_ROMIJN_STAMOS0118.JPG", "video/texture");
 
 			vertexArrayResource = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/triangle.json", "video/vertexArray");
+
+			shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/simple.program.json", "video/shaderProgram");
+			if(shaderProgramResource != null)
+			{
+				glUseProgram(shaderProgramResource->getId());
+
+				logger->debug("Using program [%d]", shaderProgramResource->getId());
+
+			}
 			return true;
 		}
 

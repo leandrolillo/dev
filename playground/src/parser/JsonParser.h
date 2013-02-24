@@ -215,14 +215,14 @@ class JsonParser
 
 		std::vector<vector2> readVector2Array()
 		{
-			std::vector<vector2>vectorArray;
+			std::vector<vector2>array;
 
 			readStartArray();
 			String token;
 
 			while((token = fileParser.peekToken()) != END_ARRAY && token != eof) {
 				vector2 vec = readVector2();
-				vectorArray.push_back(vec);
+				array.push_back(vec);
 
 				if((token = fileParser.peekToken()) == ",")
 					fileParser.takeToken();
@@ -232,19 +232,19 @@ class JsonParser
 
 			readEndArray();
 
-			return vectorArray;
+			return array;
 		}
 
 		std::vector<vector3> readVector3Array()
 		{
-			std::vector<vector3>vectorArray;
+			std::vector<vector3>array;
 
 			readStartArray();
 			String token;
 
 			while((token = fileParser.peekToken()) != END_ARRAY && token != eof) {
 				vector3 vec = readVector3();
-				vectorArray.push_back(vec);
+				array.push_back(vec);
 
 				if((token = fileParser.peekToken()) == ",")
 					fileParser.takeToken();
@@ -254,7 +254,27 @@ class JsonParser
 
 			readEndArray();
 
-			return vectorArray;
+			return array;
+		}
+
+		std::vector<String> readStringArray()
+		{
+			std::vector<String>array;
+
+			readStartArray();
+			String token;
+
+			while((token = fileParser.peekToken()) != END_ARRAY && token != eof) {
+				String string = readString();
+				array.push_back(string);
+
+				if((token = fileParser.peekToken()) == ",")
+					fileParser.takeToken();
+			}
+
+			readEndArray();
+
+			return array;
 		}
 
 };

@@ -187,6 +187,25 @@ class FileParser {
 			return byte;
 		}
 
+		String peekLine() {
+			pushPosition();
+			String line = takeLine();
+			popPosition();
+
+			return line;
+		}
+		String takeLine()
+		{
+			String line;
+			char caracter[2];
+			caracter[1] = '\0';
+
+			while((caracter[0] = takeByte()) != '\n' && caracter[0] != 'ÿ');
+				line.append(caracter);
+
+			return line;
+		}
+
 
 		String peekToken() {
 			pushPosition();
@@ -240,7 +259,14 @@ class FileParser {
 			tokenSeparator = "	# ()[]{},.:;<>+-*/^¨=|&!¿?\n\r\"\'\\ÿ";
 			blanks = " \n\r\t";
 			commentChar = '#';
-
+		}
+		unsigned int size()
+		{
+			pushPosition();
+			fseek(getStream(), 0, SEEK_END);
+			unsigned int size = ftell(getStream());
+			popPosition();
+			return size;
 		}
 	};
 

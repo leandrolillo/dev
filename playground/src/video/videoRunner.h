@@ -19,6 +19,8 @@
 #include "adapters/TextureResourceAdapter.h"
 #include "adapters/GeometryResourceAdapter.h"
 #include "adapters/VertexArrayAdapter.h"
+#include "adapters/ShaderResourceAdapter.h"
+#include "adapters/ShaderProgramResourceAdapter.h"
 
 #define axis_length 1.0f
 
@@ -29,7 +31,7 @@ class VideoRunner: public PlaygroundRunner {
 		static const unsigned char ID = 1;
 	public:
 		VideoRunner() {
-			logger = Logger::getLogger("video/JpegResourceAdapter.h");
+			logger = Logger::getLogger("video/videoRunner.h");
 		}
 
 		virtual unsigned char getId() {
@@ -43,6 +45,8 @@ class VideoRunner: public PlaygroundRunner {
 			this->getContainer()->getResourceManager()->addAdapter(new TextureResourceAdapter());
 			this->getContainer()->getResourceManager()->addAdapter(new GeometryResourceAdapter());
 			this->getContainer()->getResourceManager()->addAdapter(new VertexArrayResourceAdapter());
+			this->getContainer()->getResourceManager()->addAdapter(new ShaderResourceAdapter());
+			this->getContainer()->getResourceManager()->addAdapter(new ShaderProgramResourceAdapter());
 
 			glClearColor(0.0, 0.5, 0.0, 0.0);
 			glShadeModel(GL_FLAT/*GL_SMOOTH*/);
@@ -189,7 +193,6 @@ class VideoRunner: public PlaygroundRunner {
 			glVertex3f(-0.2f, 0.0f, axis_length - 0.2f);
 			glEnd();
 		}
-
 };
 
 #endif /* VIDEORUNNER_H_ */

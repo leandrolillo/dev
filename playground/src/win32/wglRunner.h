@@ -157,7 +157,14 @@ class WglRunner: public Win32apiRunner {
 				glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
 				glGetIntegerv(GL_MINOR_VERSION, &minorVersion);
 
-				logger->info("OpenGL [%d.%d] / [%s] initialized", majorVersion, minorVersion, glGetString(GL_VERSION));
+				logger->info("OpenGL [%d.%d] initialized\nVersion: [%s]\nGLSL Version: [%s]\nGLEW Version [%s]\nVendor: [%s]\nRenderer: [%s]",
+						majorVersion,
+						minorVersion,
+						glGetString(GL_VERSION),
+						"Unknown", //glGetString(GL_SHADER_LANGUAGE_VERSION)
+						glewGetString(GLEW_VERSION),
+						glGetString(GL_VENDOR),
+						glGetString(GL_RENDERER));
 
 				return true;
 			}

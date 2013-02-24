@@ -12,7 +12,6 @@
 #include "../resources/ImageResource.h"
 #include "../resources/TextureResource.h"
 #include <gl/gl.h>
-#include <gl/glext.h>
 
 class TextureResourceAdapter: public ResourceAdapter {
 	private:
