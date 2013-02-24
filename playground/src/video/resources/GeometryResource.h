@@ -25,7 +25,7 @@ class GeometryResource : public Resource
 			textureFile = "";
 		}
 
-		const std::vector<vector2>& getNormals() const {
+		std::vector<vector2>& getNormals() {
 			return normals;
 		}
 
@@ -37,8 +37,8 @@ class GeometryResource : public Resource
 			return textureCoordinates;
 		}
 
-		void setTextureCoordinates(const std::vector<vector2>& textureCoordinates) {
-			this->textureCoordinates = textureCoordinates;
+		void setTextureCoordinates(const std::vector<vector2>& texCoordinates) {
+			this->textureCoordinates = texCoordinates;
 		}
 
 		std::vector<vector2>& getVertices() {

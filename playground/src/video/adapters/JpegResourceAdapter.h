@@ -32,13 +32,13 @@ class JpegResourceAdapter: public ResourceAdapter {
 			JPEG_CORE_PROPERTIES jcprops;
 
 			if((jerr = ijlInit(&jcprops)) != IJL_OK) {
-				logger->error("Error al intentar inicializar las estructuras de ijl");
+				logger->error("Error al intentar inicializar las estructuras de ijl: [%s]", ijlErrorStr(jerr));
 				return(null);
 			}
 
 			jcprops.JPGFile = fileParser.getFilename().c_str();
 			if((jerr = ijlRead(&jcprops, IJL_JFILE_READPARAMS)) != IJL_OK) {
-				logger->error("Error al intentar leer el archivo [%s]", fileParser.getFilename().c_str());
+				logger->error("Error al intentar leer el archivo [%s]: [%s]", fileParser.getFilename().c_str(), ijlErrorStr(jerr));
 				ijlFree(&jcprops);
 				return(null);
 			};
@@ -80,7 +80,7 @@ class JpegResourceAdapter: public ResourceAdapter {
 			}
 
 			if((jerr = ijlRead(&jcprops, IJL_JFILE_READWHOLEIMAGE)) != IJL_OK) {
-				logger->error("Error al intentar decodificar la imagen: [%d]\n", jerr);
+				logger->error("Error al intentar decodificar la imagen: [%d]\n", ijlErrorStr(jerr));
 				ijlFree(&jcprops);
 				return(null);
 			}

@@ -86,6 +86,7 @@ class ResourceManager {
 								response = adapters[mimeType]->load(fileParser, mimeType);
 								if(response != null) {
 									response->setFileName(fileParser.getFilename());
+									response->setMimeType(mimeType);
 									resourceCache[getCacheKey(fileParser.getFilename(), mimeType)] = response;
 								}
 						} else

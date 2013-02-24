@@ -49,7 +49,8 @@ class VideoRunner: public PlaygroundRunner {
 			this->getContainer()->getResourceManager()->addAdapter(new ShaderProgramResourceAdapter());
 
 			glClearColor(0.0, 0.5, 0.0, 0.0);
-			glShadeModel(GL_FLAT/*GL_SMOOTH*/);
+			//glShadeModel(GL_FLAT);
+			glShadeModel(GL_SMOOTH);
 			glEnable(GL_DEPTH_TEST);
 			//glEnable(GL_BLEND);
 			//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -84,6 +85,29 @@ class VideoRunner: public PlaygroundRunner {
 			fH = tan( fovy / 360.0 * M_PI ) * zNear;
 			fW = fH * aspect;
 			glFrustum( -fW, fW, -fH, fH, zNear, zFar );
+		}
+
+		void glDrawGeometry(GeometryResource *geometry)
+		{
+			if(geometry != null) {
+				glBegin(GL_TRIANGLES);
+				for(unsigned int index = 0; index < geometry->getIndexes().size(); index++)
+				{
+					unsigned int currentIndex = geometry->getIndexes()[index];
+					glVertex2fv((float *)geometry->getVertices()[currentIndex]);
+
+					if(currentIndex < geometry->getColors().size())
+						glColor3fv((float *)geometry->getColors()[currentIndex]);
+
+					if(currentIndex < geometry->getTextureCoordinates().size())
+						glTexCoord2fv((float *)geometry->getTextureCoordinates()[currentIndex]);
+
+					if(currentIndex < geometry->getNormals().size())
+						glNormal3f(geometry->getTextureCoordinates()[currentIndex].x, geometry->getTextureCoordinates()[currentIndex].y, 0.0);
+
+				}
+				glEnd();
+			}
 		}
 
 		void glPlane(vector posicion, vector normal, vector origen,

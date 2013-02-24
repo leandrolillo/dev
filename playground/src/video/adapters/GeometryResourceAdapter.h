@@ -62,7 +62,6 @@ class GeometryResourceAdapter: public ResourceAdapter {
 					parser->readValueSeparator();
 					std::vector<vector2> vertices = parser->readVector2Array();
 					buildVerticesArray(resource, vertices);
-					log("vertices = ", resource->getVertices());
 				} else if (token == "textureCoordinates") {
 					parser->readValueSeparator();
 					resource->setTextureCoordinates(parser->readVector2Array());
@@ -79,10 +78,19 @@ class GeometryResourceAdapter: public ResourceAdapter {
 					resource->setColors(parser->readVector3Array());
 				}
 			}
+			log("vertices = ", resource->getVertices());
+			log("colors = ", resource->getColors());
+			log("normals = ", resource->getNormals());
+			log("textureCoordinates = ", resource->getTextureCoordinates());
+
 			return resource;
 		}
 		virtual void dispose(Resource *resource) {
 			GeometryResource *geometryResource = (GeometryResource *)resource;
+			geometryResource->getVertices().clear();
+			geometryResource->getColors().clear();
+			geometryResource->getNormals().clear();
+			geometryResource->getTextureCoordinates().clear();
 		}
 
 		void log(String prefix, std::vector<vector2> array)
@@ -93,6 +101,22 @@ class GeometryResourceAdapter: public ResourceAdapter {
 
 			for(std::vector<vector2>::iterator current = array.begin(); current != array.end(); current++) {
 				sprintf(vectorBuffer, "<%.2f, %.2f> ", (*current).x, (*current).y);
+				prefix.append(vectorBuffer);
+			}
+
+			prefix.append(" ]");
+			logger->debug(prefix.c_str());
+
+		}
+
+		void log(String prefix, std::vector<vector3> array)
+		{
+			char vectorBuffer[256];
+
+			prefix.append(" [");
+
+			for(std::vector<vector3>::iterator current = array.begin(); current != array.end(); current++) {
+				sprintf(vectorBuffer, "<%.2f, %.2f, %.2f> ", (*current).x, (*current).y, (*current).z);
 				prefix.append(vectorBuffer);
 			}
 

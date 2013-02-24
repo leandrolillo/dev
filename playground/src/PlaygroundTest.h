@@ -166,6 +166,10 @@ class PlaygroundTests: public TestRunner {
 
 			assertTrue("GEOMETRY resource not loaded", resource != null);
 			assertEquals("GEOMETRY mimetype invalid", "video/geometry", resource->getMimeType());
+			assertEquals("Incorrect number of vertices", 10, resource->getVertices().size());
+			assertEquals("Incorrect number of colors", 3, resource->getColors().size());
+			assertEquals("Incorrect number of texture coordinates", 3, resource->getTextureCoordinates().size());
+			assertEquals("Incorrect number of normals", 3, resource->getNormals().size());
 		}
 
 		void testLoadVertexBuffer()	{
@@ -205,6 +209,7 @@ class PlaygroundDemo : public PlaygroundRunner {
 		TextureResource *anotherTextureResource;
 		VertexArrayResource *vertexArrayResource;
 		ShaderProgramResource *shaderProgramResource;
+		GeometryResource *geometryResource;
 	public:
 		static const unsigned char ID = 101;
 
@@ -219,6 +224,9 @@ class PlaygroundDemo : public PlaygroundRunner {
 			posicion = vector(0.0, -1.0f, -5.0);
 			textureResource = null;
 			anotherTextureResource = null;
+			vertexArrayResource = null;
+			shaderProgramResource = null;
+			geometryResource = null;
 		}
 
 		virtual unsigned char getInterests() {
@@ -226,7 +234,6 @@ class PlaygroundDemo : public PlaygroundRunner {
 		}
 
 		virtual unsigned char getId() {
-
 			return PlaygroundDemo::ID;
 		}
 
@@ -241,31 +248,30 @@ class PlaygroundDemo : public PlaygroundRunner {
 			if(backgroundSource != null)
 				audio->playSource(backgroundSource);
 
-			textureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("images/ss/MB.PNG", "video/texture");
-			anotherTextureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("images/ss/REBECCA_ROMIJN_STAMOS0118.JPG", "video/texture");
+			textureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("images/ss1/MB.PNG", "video/texture");
+			anotherTextureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("images/ss1/rrs.JPeG", "video/texture");
 
 			vertexArrayResource = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/triangle.json", "video/vertexArray");
 
-			shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/colored.program.json", "video/shaderProgram");
-			if(shaderProgramResource != null)
-			{
-				glUseProgram(shaderProgramResource->getId());
+			shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/textured.program.json", "video/shaderProgram");
 
-				logger->debug("Using program [%d]", shaderProgramResource->getId());
+			geometryResource = (GeometryResource *)this->getContainer()->getResourceManager()->load("geometry/triangle.json", "video/geometry");
 
-			}
 			return true;
 		}
 
 		virtual LoopResult doLoop() {
-			glLoadIdentity();
+			if(shaderProgramResource != null)
+				glUseProgram(shaderProgramResource->getId());
 
-			glTranslatef(posicion.x, posicion.y, posicion.z);
+			glLoadIdentity();
 
 			if(textureResource != null)
 				glBindTexture(GL_TEXTURE_2D, textureResource->getId());
 
 //			video->glPlane(posicion, vector(0, 1, 0), vector(0.0, 0.0f, 0.0f), 3, 3);
+
+			glTranslatef(posicion.x, posicion.y, posicion.z);
 
 			video->glAxis();
 
@@ -278,20 +284,16 @@ class PlaygroundDemo : public PlaygroundRunner {
 				//glDrawArrays(GL_TRIANGLE_STRIP, vertexArrayResource->getVertexAttribPointers().front().getStart(), vertexArrayResource->getVertexAttribPointers().front().getCount());
 			}
 
-//			glBegin(GL_TRIANGLE_FAN);
-//				glTexCoord2f(0.0f, 0.0f);
-//				glVertex3f(0.0f, 0.0f, 1.0f);
-//
-//				glTexCoord2f(0.0f, 1.0f);
-//				glVertex3f(0.0f, 1.0f, 1.0f);
-//
-//				glTexCoord2f(1.0f, 1.0f);
-//				glVertex3f(1.0f, 1.0f, 1.0f);
-//
-//				glTexCoord2f(1.0f, 0.0f);
-//				glVertex3f(1.0f, 0.0f, 1.0f);
-//			glEnd();
+			glTranslatef(2.0, 0.0, 0.0);
 
+			if(geometryResource != null)
+				video->glDrawGeometry(geometryResource);
+
+			glUseProgram(0);
+			glTranslatef(2.0, 0.0, 0.0);
+
+			if(geometryResource != null)
+				video->glDrawGeometry(geometryResource);
 
 			return CONTINUE;
 		}

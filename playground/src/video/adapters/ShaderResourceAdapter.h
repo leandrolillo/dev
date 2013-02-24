@@ -74,7 +74,6 @@ class ShaderResourceAdapter: public ResourceAdapter {
 				logger->debug("[%s] compilation sucessful.", shaderType == GL_VERTEX_SHADER ? "Vertex Shader" : "Fragment Shader");
 			}
 
-
 			return resource;
 		}
 

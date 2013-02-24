@@ -91,15 +91,24 @@ class ShaderProgramResourceAdapter: public ResourceAdapter {
 				glAttachShader(resource->getId(), (*shaderIterator)->getId());
 
 			glLinkProgram(resource->getId());
-			glValidateProgram(resource->getId());
 
-			int linkSuccessfull = 0;
-			glGetProgramiv(resource->getId(), GL_LINK_STATUS, &linkSuccessfull);
-			if (!linkSuccessfull) {
-				logger->error("Failed to link program - [%d]: [%s]\n", linkSuccessfull, getInfoLog(resource->getId()).c_str());
+			int operationSuccessful = 0;
+			glGetProgramiv(resource->getId(), GL_LINK_STATUS, &operationSuccessful);
+			if (!operationSuccessful) {
+				logger->error("Failed to link program - [%d]: [%s]\n", operationSuccessful, getInfoLog(resource->getId()).c_str());
 				dispose(resource);
 				return 0;
 			}
+
+			glValidateProgram(resource->getId());
+			glGetProgramiv(resource->getId(), GL_VALIDATE_STATUS, &operationSuccessful);
+			if (!operationSuccessful) {
+				logger->error("Failed to validate program - [%d]: [%s]\n", operationSuccessful, getInfoLog(resource->getId()).c_str());
+				dispose(resource);
+				return 0;
+			}
+
+			logger->debug("Shader executable [%s] successfully linked and validated", fileParser.getFilename().c_str());
 
 			for(std::vector<ShaderResource *>::iterator shaderIterator = resource->getShaders().begin(); shaderIterator != resource->getShaders().end(); shaderIterator++)
 				glDetachShader(resource->getId(), (*shaderIterator)->getId());
