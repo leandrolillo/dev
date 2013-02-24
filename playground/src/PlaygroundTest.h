@@ -246,7 +246,7 @@ class PlaygroundDemo : public PlaygroundRunner {
 
 			vertexArrayResource = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/triangle.json", "video/vertexArray");
 
-			shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/simple.program.json", "video/shaderProgram");
+			shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/colored.program.json", "video/shaderProgram");
 			if(shaderProgramResource != null)
 			{
 				glUseProgram(shaderProgramResource->getId());

@@ -25,7 +25,7 @@ class WavResourceAdapter: public ResourceAdapter {
 		}
 
 		#define WAV_BUFFER_SIZE 4096 * 4
-		virtual Resource *load(FileParser &fileParser) {
+		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
 			AudioResource *audioResource = new AudioResource(0, "audio/wav");
 
 			struct wavHeader {

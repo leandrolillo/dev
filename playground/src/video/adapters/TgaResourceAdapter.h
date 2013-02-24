@@ -31,7 +31,7 @@ class TgaResourceAdapter: public ResourceAdapter {
 		virtual const std::vector<String> getSupportedMimeTypes() {
 			return supportedMimeTypes;
 		}
-		virtual Resource *load(FileParser &fileParser) {
+		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
 			TgaResource *resource = new TgaResource(0);
 
 			struct tgaHeader {

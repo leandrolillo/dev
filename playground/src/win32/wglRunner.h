@@ -161,7 +161,7 @@ class WglRunner: public Win32apiRunner {
 						majorVersion,
 						minorVersion,
 						glGetString(GL_VERSION),
-						"Unknown", //glGetString(GL_SHADER_LANGUAGE_VERSION)
+						glGetString(GL_SHADING_LANGUAGE_VERSION),
 						glewGetString(GLEW_VERSION),
 						glGetString(GL_VENDOR),
 						glGetString(GL_RENDERER));

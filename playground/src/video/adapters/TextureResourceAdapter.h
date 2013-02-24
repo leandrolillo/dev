@@ -25,7 +25,7 @@ class TextureResourceAdapter: public ResourceAdapter {
 		virtual const std::vector<String> getSupportedMimeTypes() {
 			return supportedMimeTypes;
 		}
-		virtual Resource *load(FileParser &fileParser) {
+		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
 			ImageResource *imageResource = (ImageResource *)this->getResourceManager()->load(fileParser);
 			TextureResource *resource = null;
 

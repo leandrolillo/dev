@@ -49,7 +49,7 @@ class GeometryResourceAdapter: public ResourceAdapter {
 		virtual const std::vector<String> getSupportedMimeTypes() {
 			return supportedMimeTypes;
 		}
-		virtual Resource *load(FileParser &fileParser) {
+		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
 			JsonParser *parser = new JsonParser(fileParser);
 
 			GeometryResource *resource = new GeometryResource(0);

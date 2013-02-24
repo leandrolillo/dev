@@ -31,7 +31,7 @@ class OggResourceAdapter : public ResourceAdapter {
 		}
 
 		#define OGG_BUFFER_SIZE 4096 * 4
-		virtual Resource *load(FileParser &fileParser) {
+		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
 			OggVorbis_File oggStream;
 			vorbis_info *vorbisInfo;
 			vorbis_comment *vorbisComment;

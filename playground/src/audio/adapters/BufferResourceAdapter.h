@@ -25,7 +25,7 @@ class BufferResourceAdapter: public ResourceAdapter {
 		virtual const std::vector<String> getSupportedMimeTypes() {
 			return supportedMimeTypes;
 		}
-		virtual Resource *load(FileParser &fileParser) {
+		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
 			ALenum error = 0;
 
 			AudioResource * audioResource = (AudioResource *)this->getResourceManager()->load(fileParser);

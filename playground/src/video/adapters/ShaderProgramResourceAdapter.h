@@ -49,7 +49,7 @@ class ShaderProgramResourceAdapter: public ResourceAdapter {
 			return supportedMimeTypes;
 		}
 		#define BUFFER_SIZE 256
-		virtual Resource *load(FileParser &fileParser) {
+		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
 			JsonParser *parser = new JsonParser(fileParser);
 
 			ShaderProgramResource *resource = null;
@@ -68,7 +68,7 @@ class ShaderProgramResourceAdapter: public ResourceAdapter {
 					for(std::vector<String>::iterator stringIterator = vertexShadersFiles.begin(); stringIterator != vertexShadersFiles.end(); stringIterator++) {
 						ShaderResource *shader = (ShaderResource *)getResourceManager()->load(*stringIterator, "video/vertexShader");
 						if(shader != null)
-							resource->getShaders().push_back((ShaderResource *)getResourceManager()->load(*stringIterator, "video/vertexShader"));
+							resource->getShaders().push_back(shader);
 						else
 							logger->error("Could not load shader [%s]", (*stringIterator).c_str());
 					}
@@ -78,9 +78,9 @@ class ShaderProgramResourceAdapter: public ResourceAdapter {
 					std::vector<String> vertexShadersFiles = parser->readStringArray();
 
 					for(std::vector<String>::iterator stringIterator = vertexShadersFiles.begin(); stringIterator != vertexShadersFiles.end(); stringIterator++) {
-						ShaderResource *shader = (ShaderResource *)getResourceManager()->load(*stringIterator, "video/vertexShader");
+						ShaderResource *shader = (ShaderResource *)getResourceManager()->load(*stringIterator, "video/fragmentShader");
 						if(shader != null)
-							resource->getShaders().push_back((ShaderResource *)getResourceManager()->load(*stringIterator, "video/fragmentShader"));
+							resource->getShaders().push_back(shader);
 						else
 							logger->error("Could not load shader [%s]", (*stringIterator).c_str());
 					}
@@ -93,13 +93,16 @@ class ShaderProgramResourceAdapter: public ResourceAdapter {
 			glLinkProgram(resource->getId());
 			glValidateProgram(resource->getId());
 
-			int glError = 0;
-			glGetProgramiv(resource->getId(), GL_LINK_STATUS, &glError);
-			if (!glError) {
-				logger->error("Failed to link program - [%d]: [%s]\n", glError, getInfoLog(resource->getId()).c_str());
+			int linkSuccessfull = 0;
+			glGetProgramiv(resource->getId(), GL_LINK_STATUS, &linkSuccessfull);
+			if (!linkSuccessfull) {
+				logger->error("Failed to link program - [%d]: [%s]\n", linkSuccessfull, getInfoLog(resource->getId()).c_str());
 				dispose(resource);
 				return 0;
 			}
+
+			for(std::vector<ShaderResource *>::iterator shaderIterator = resource->getShaders().begin(); shaderIterator != resource->getShaders().end(); shaderIterator++)
+				glDetachShader(resource->getId(), (*shaderIterator)->getId());
 
 			return resource;
 		}

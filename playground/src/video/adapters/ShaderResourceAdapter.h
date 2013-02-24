@@ -40,7 +40,7 @@ class ShaderResourceAdapter: public ResourceAdapter {
 			return supportedMimeTypes;
 		}
 		#define BUFFER_SIZE 256
-		virtual Resource *load(FileParser &fileParser) {
+		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
 			ShaderResource *resource = null;
 
 			int shaderSize = fileParser.size();
@@ -55,20 +55,25 @@ class ShaderResourceAdapter: public ResourceAdapter {
 
 			logger->debug("Shader code: \n%s", shaderCode);
 
-			unsigned int shaderId = glCreateShader(GL_VERTEX_SHADER);
+			unsigned int shaderType = (mimeType == "video/vertexShader" ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER);
+
+			unsigned int shaderId = glCreateShader(shaderType);
 			resource = new ShaderResource(shaderId);
 
 			glShaderSource(resource->getId(), 1, (const char**)&shaderCode, &shaderSize);
 
 			glCompileShader(resource->getId());
 
-			int glError = 0;
-			glGetShaderiv(resource->getId(), GL_COMPILE_STATUS, &glError);
-			if (!glError) {
-				logger->error("Failed to compile [%s] - [%d]: [%s]\n", fileParser.getFilename().c_str(), glError, getInfoLog(shaderId).c_str());
+			int compilationSuccessfull = 0;
+			glGetShaderiv(resource->getId(), GL_COMPILE_STATUS, &compilationSuccessfull);
+			if (!compilationSuccessfull) {
+				logger->error("Failed to compile [%s]: [%s]\n", shaderType == GL_VERTEX_SHADER ? "Vertex Shader" : "Fragment Shader", getInfoLog(shaderId).c_str());
 				dispose(resource);
 				return null;
+			} else {
+				logger->debug("[%s] compilation sucessful.", shaderType == GL_VERTEX_SHADER ? "Vertex Shader" : "Fragment Shader");
 			}
+
 
 			return resource;
 		}

@@ -83,7 +83,7 @@ class ResourceManager {
 						if(adapters[mimeType] != null) {
 							logger->debug("Loading [%s] [%s]", mimeType.c_str(), fileParser.getFilename().c_str());
 
-								response = adapters[mimeType]->load(fileParser);
+								response = adapters[mimeType]->load(fileParser, mimeType);
 								if(response != null) {
 									response->setFileName(fileParser.getFilename());
 									resourceCache[getCacheKey(fileParser.getFilename(), mimeType)] = response;
