@@ -24,6 +24,13 @@
 
 #define axis_length 1.0f
 
+#define VERTEX_LOCATION 0
+#define INDEX_LOCATION 1
+#define NORMAL_LOCATION 2
+#define TEXTURE_COORDINATE_LOCATION 3
+#define COLOR_LOCATION 4
+
+
 class VideoRunner: public PlaygroundRunner {
 	private:
 		Logger *logger;

@@ -248,15 +248,18 @@ class PlaygroundDemo : public PlaygroundRunner {
 			if(backgroundSource != null)
 				audio->playSource(backgroundSource);
 
-			textureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("images/ss1/MB.PNG", "video/texture");
-			anotherTextureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("images/ss1/rrs.JPeG", "video/texture");
-
-			vertexArrayResource = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/triangle.json", "video/vertexArray");
+			textureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("images/ss/MB.PNG", "video/texture");
+			anotherTextureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("images/rrs.JPeG", "video/texture");
+			geometryResource = (GeometryResource *)this->getContainer()->getResourceManager()->load("geometry/triangle.json", "video/geometry");
 
 			shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/textured.program.json", "video/shaderProgram");
 
-			geometryResource = (GeometryResource *)this->getContainer()->getResourceManager()->load("geometry/triangle.json", "video/geometry");
+			if(shaderProgramResource != null) {
+				logger->debug("using program [%d]", shaderProgramResource->getId());
+				glUseProgram(shaderProgramResource->getId());
+			vertexArrayResource = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/triangle.json", "video/vertexArray");
 
+			}
 			return true;
 		}
 
@@ -280,20 +283,19 @@ class PlaygroundDemo : public PlaygroundRunner {
 
 			if(vertexArrayResource != null) {
 				glBindVertexArray(vertexArrayResource->getId());
-				glDrawElements(GL_TRIANGLE_STRIP, vertexArrayResource->getVertexAttribPointers()[1].getCount(), GL_UNSIGNED_INT, 0);
-				//glDrawArrays(GL_TRIANGLE_STRIP, vertexArrayResource->getVertexAttribPointers().front().getStart(), vertexArrayResource->getVertexAttribPointers().front().getCount());
+				glDrawElements(GL_TRIANGLE_STRIP, vertexArrayResource->getAttribute(1).getCount(), GL_UNSIGNED_INT, 0);
 			}
 
-			glTranslatef(2.0, 0.0, 0.0);
-
-			if(geometryResource != null)
-				video->glDrawGeometry(geometryResource);
-
-			glUseProgram(0);
-			glTranslatef(2.0, 0.0, 0.0);
-
-			if(geometryResource != null)
-				video->glDrawGeometry(geometryResource);
+//			glTranslatef(2.0, 0.0, 0.0);
+//
+//			if(geometryResource != null)
+//				video->glDrawGeometry(geometryResource);
+//
+//			glUseProgram(0);
+//			glTranslatef(2.0, 0.0, 0.0);
+//
+//			if(geometryResource != null)
+//				video->glDrawGeometry(geometryResource);
 
 			return CONTINUE;
 		}

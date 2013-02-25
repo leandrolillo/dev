@@ -19,6 +19,7 @@ class GeometryResource : public Resource
 		std::vector<vector2> textureCoordinates;
 		std::vector<vector3> colors;
 		String textureFile;
+		unsigned int mode;
 	public:
 		GeometryResource(unsigned int id) : Resource(id, "video/geometry")
 		{

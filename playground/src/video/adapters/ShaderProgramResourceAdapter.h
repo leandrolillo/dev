@@ -50,6 +50,8 @@ class ShaderProgramResourceAdapter: public ResourceAdapter {
 		}
 		#define BUFFER_SIZE 256
 		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
+			GLenum glError = glGetError();
+
 			JsonParser *parser = new JsonParser(fileParser);
 
 			ShaderProgramResource *resource = null;
@@ -90,6 +92,13 @@ class ShaderProgramResourceAdapter: public ResourceAdapter {
 			for(std::vector<ShaderResource *>::iterator shaderIterator = resource->getShaders().begin(); shaderIterator != resource->getShaders().end(); shaderIterator++)
 				glAttachShader(resource->getId(), (*shaderIterator)->getId());
 
+			//TODO: remove attrib locations hardcoding.
+			glBindAttribLocation(resource->getId(), 0, "vertex");
+			glBindAttribLocation(resource->getId(), 1, "index");
+			glBindAttribLocation(resource->getId(), 2, "normal");
+			glBindAttribLocation(resource->getId(), 3, "textureCoordinate");
+			glBindAttribLocation(resource->getId(), 4, "color");
+
 			glLinkProgram(resource->getId());
 
 			int operationSuccessful = 0;
@@ -112,6 +121,21 @@ class ShaderProgramResourceAdapter: public ResourceAdapter {
 
 			for(std::vector<ShaderResource *>::iterator shaderIterator = resource->getShaders().begin(); shaderIterator != resource->getShaders().end(); shaderIterator++)
 				glDetachShader(resource->getId(), (*shaderIterator)->getId());
+
+
+			glError = glGetError();
+			if(glError != GL_NO_ERROR) {
+				logger->error("Error loading texture [%s]: 0x[%x]", fileParser.getFilename().c_str(), glError);
+				dispose(resource);
+				return null;
+			}
+
+			glUseProgram(resource->getId());
+			logger->debug("vertex attrib location = [%d]", glGetAttribLocation(resource->getId(), "vertex"));
+			logger->debug("index location = [%d]", glGetAttribLocation(resource->getId(), "index"));
+			logger->debug("normal attrib location = [%d]", glGetAttribLocation(resource->getId(), "normal"));
+			logger->debug("textureCoordinate attrib location = [%d]", glGetAttribLocation(resource->getId(), "textureCoordinate"));
+			logger->debug("color attrib location = [%d]", glGetAttribLocation(resource->getId(), "color"));
 
 			return resource;
 		}

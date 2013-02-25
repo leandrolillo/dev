@@ -18,6 +18,12 @@ class VertexAttribPointer {
 			this->start = start;
 			this->count = count;
 		}
+		VertexAttribPointer()
+		{
+			this->buffer = -1;
+			this->start = 0;
+			this->count = 0;
+		}
 		unsigned int getCount() const {
 			return count;
 		}
@@ -51,7 +57,7 @@ class VertexAttribPointer {
 class VertexArrayResource : public Resource
 {
 	private:
-		std::vector<VertexAttribPointer> vertexAttribPointers;
+		std::map<unsigned int, VertexAttribPointer> attributes;
 	public:
 		VertexArrayResource(unsigned int id) : Resource(id, "video/vertexArray")
 		{
@@ -61,21 +67,23 @@ class VertexArrayResource : public Resource
 		/**
 		 * stores vertex buffer in the next free vertexAttribPointer, and returns the pointer.
 		 */
-		unsigned int addBuffer(unsigned int vertexBuffer, unsigned int start, unsigned int count)
+		void addAttribute(unsigned int location, unsigned int vertexBuffer, unsigned int start, unsigned int count)
 		{
-			unsigned int vertexAttribPointer = vertexAttribPointers.size();
-			vertexAttribPointers.push_back(VertexAttribPointer(vertexBuffer, start, count));
-
-			return vertexAttribPointer;
+			attributes[location] = VertexAttribPointer(vertexBuffer, start, count);
 		}
 
-		const std::vector<VertexAttribPointer>& getVertexAttribPointers() const {
-			return vertexAttribPointers;
+
+		VertexAttribPointer &getAttribute(unsigned int location) {
+			return attributes[location];
+		}
+
+		std::map<unsigned int, VertexAttribPointer> &getAttributes() {
+			return attributes;
 		}
 
 		void clearVertexAttribPointers()
 		{
-			vertexAttribPointers.clear();
+			attributes.clear();
 		}
 };
 

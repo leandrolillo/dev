@@ -17,7 +17,7 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 		std::vector<String> supportedMimeTypes;
 		Logger *logger;
 	private:
-		boolean addBuffer(VertexArrayResource *resource, GLenum bufferDestination, const std::vector<vector2> &data)
+		boolean addBuffer(unsigned int attributeLocation, VertexArrayResource *resource, GLenum bufferDestination, const std::vector<vector2> &data)
 		{
 			if(data.size() > 0) {
 				logger->debug("Creating [%d] floats buffer", data.size());
@@ -34,20 +34,22 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 					return false;
 				}
 
-				unsigned int vertexPointer = resource->addBuffer(buffer, 0, data.size());
-				glVertexAttribPointer((GLuint)vertexPointer, 2, GL_FLOAT, GL_FALSE, 0, 0);
-				glEnableVertexAttribArray(vertexPointer);
+				if(attributeLocation >= 0) {
+					resource->addAttribute(attributeLocation, buffer, 0, data.size());
+					glVertexAttribPointer((GLuint)attributeLocation, 2, GL_FLOAT, GL_FALSE, 0, 0);
+					glEnableVertexAttribArray(attributeLocation);
+				}
 
 				glError = glGetError();
 				if(glError != GL_NO_ERROR) {
-					logger->error("Error relating vertex array and vertex buffer: 0x[%x]", glError);
+					logger->error("Error binding buffer [%d] to attribute Location [%d]: 0x[%x]", attributeLocation, buffer, glError);
 					return false;
 				}
 			}
 
 			return true;
 		}
-		boolean addBuffer(VertexArrayResource *resource, GLenum bufferDestination, const std::vector<vector3> &data)
+		boolean addBuffer(unsigned int attributeLocation, VertexArrayResource *resource, GLenum bufferDestination, const std::vector<vector3> &data)
 		{
 				logger->debug("Creating [%d] floats buffer", data.size());
 
@@ -63,26 +65,28 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 					return false;
 				}
 
-				unsigned int vertexPointer = resource->addBuffer(buffer, 0, data.size());
-				glVertexAttribPointer((GLuint)vertexPointer, 3, GL_FLOAT, GL_FALSE, 0, 0);
-				glEnableVertexAttribArray(vertexPointer);
+				if(attributeLocation >= 0) {
+					resource->addAttribute(attributeLocation, buffer, 0, data.size());
+					glVertexAttribPointer((GLuint)attributeLocation, 3, GL_FLOAT, GL_FALSE, 0, 0);
+					glEnableVertexAttribArray(attributeLocation);
+				}
 
 				glError = glGetError();
 				if(glError != GL_NO_ERROR) {
-					logger->error("Error relating vertex array and vertex buffer: 0x[%x]", glError);
+					logger->error("Error binding buffer [%d] to attribute location [%d]: 0x[%x]", attributeLocation, buffer, glError);
 					return false;
 				}
 
 				return true;
 		}
-		boolean addBuffer(VertexArrayResource *resource, GLenum bufferDestination, const std::vector<unsigned int> &data)
+		boolean addBuffer(unsigned int attributeLocation, VertexArrayResource *resource, GLenum bufferDestination, const std::vector<unsigned int> &data)
 		{
 				logger->debug("Creating [%d] floats buffer", data.size());
 
 				// create vertex buffer
 				unsigned int buffer;
 				glGenBuffers(1, &buffer); // Generate our Vertex Buffer Object
-				glBindBuffer(bufferDestination, buffer); // bind to GL_ARAY_BUFFER, as we're about to call glBufferData(GL_ARAY_BUFFER)
+				glBindBuffer(bufferDestination, buffer); // bind to GL_ARAY_BUFFER, as we're about to call glBufferData(GL_ARRAY_BUFFER)
 				glBufferData(bufferDestination, data.size() * sizeof(unsigned int), (unsigned int *)data.data(),  GL_STATIC_DRAW);
 
 				GLenum glError = glGetError();
@@ -91,13 +95,15 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 					return false;
 				}
 
-				unsigned int vertexPointer = resource->addBuffer(buffer, 0, data.size());
-				glVertexAttribPointer((GLuint)vertexPointer, 1, GL_UNSIGNED_INT, GL_FALSE, 0, 0);
-				glEnableVertexAttribArray(vertexPointer);
+				if(attributeLocation >= 0) {
+					resource->addAttribute(attributeLocation, buffer, 0, data.size());
+					glVertexAttribPointer((GLuint)attributeLocation, 1, GL_UNSIGNED_INT, GL_FALSE, 0, 0);
+					glEnableVertexAttribArray(attributeLocation);
+				}
 
 				glError = glGetError();
 				if(glError != GL_NO_ERROR) {
-					logger->error("Error relating vertex array and vertex buffer: 0x[%x]", glError);
+					logger->error("Error binding buffer [%d] to location [%d]: 0x[%x]", buffer, attributeLocation, glError);
 					return false;
 				}
 
@@ -134,56 +140,32 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 					return null;
 				}
 
-				if(!addBuffer(resource, GL_ARRAY_BUFFER, geometry->getVertices()))
+				if(!addBuffer(0, resource, GL_ARRAY_BUFFER, geometry->getVertices()))
 				{
 					dispose(resource);
 					return null;
 				}
 
-				if(!addBuffer(resource, GL_ELEMENT_ARRAY_BUFFER, geometry->getIndexes()))
+				if(!addBuffer(1, resource, GL_ELEMENT_ARRAY_BUFFER, geometry->getIndexes()))
 				{
 					dispose(resource);
 					return null;
 				}
 
-				if(!addBuffer(resource, GL_ARRAY_BUFFER, geometry->getNormals()))
+				if(!addBuffer(2, resource, GL_ARRAY_BUFFER, geometry->getNormals()))
 				{
 					dispose(resource);
 					return null;
 				}
 
-				if(!addBuffer(resource, GL_ARRAY_BUFFER, geometry->getTextureCoordinates()))
+				if(!addBuffer(3, resource, GL_ARRAY_BUFFER, geometry->getTextureCoordinates()))
 				{
 					dispose(resource);
 					return null;
 				}
 
-				if(!addBuffer(resource, GL_ARRAY_BUFFER, geometry->getColors()))
+				if(!addBuffer(4, resource, GL_ARRAY_BUFFER, geometry->getColors()))
 				{
-					dispose(resource);
-					return null;
-				}
-
-								// create vertex buffer
-				unsigned int colorBuffer;
-				glGenBuffers(1, &colorBuffer); // Generate our Vertex Buffer Object
-				glBindBuffer(GL_ARRAY_BUFFER, colorBuffer); // bind to GL_ARAY_BUFFER, as we're about to call glBufferData(GL_ARAY_BUFFER)
-				glBufferData(GL_ARRAY_BUFFER, geometry->getVertices().size() * sizeof(vector3), (float *)geometry->getColors().data(),  GL_STATIC_DRAW);
-
-				glError = glGetError();
-				if(glError != GL_NO_ERROR) {
-					logger->error("Error loading vertex buffer [%s]: 0x[%x]", fileParser.getFilename().c_str(), glError);
-					dispose(resource);
-					return null;
-				}
-
-				unsigned int colorPointer = resource->addBuffer(colorBuffer, 0, geometry->getColors().size());
-				glVertexAttribPointer((GLuint)colorPointer, 3, GL_FLOAT, GL_FALSE, 0, 0);
-				glEnableVertexAttribArray(colorPointer);
-
-				glError = glGetError();
-				if(glError != GL_NO_ERROR) {
-					logger->error("Error relating vertex array and vertex buffer [%s]: 0x[%x]", fileParser.getFilename().c_str(), glError);
 					dispose(resource);
 					return null;
 				}
@@ -201,10 +183,11 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 
 			if(vertexArrayResource->getId() != 0) {
 				glBindVertexArray(vertexArrayResource->getId());
-				for(unsigned int index = 0; index < vertexArrayResource->getVertexAttribPointers().size(); index++) {
-					glDisableVertexAttribArray(index);
-					VertexAttribPointer vertexAttribPointer = vertexArrayResource->getVertexAttribPointers()[index];
-					unsigned int buffer = vertexAttribPointer.getBuffer();
+
+				for(std::map<unsigned int, VertexAttribPointer>::iterator currentBuffer = vertexArrayResource->getAttributes().begin(); currentBuffer != vertexArrayResource->getAttributes().end(); currentBuffer++)
+				{
+					glDisableVertexAttribArray(currentBuffer->first);
+					unsigned int buffer = currentBuffer->second.getBuffer();
 					glDeleteBuffers(1, &buffer);
 				}
 
