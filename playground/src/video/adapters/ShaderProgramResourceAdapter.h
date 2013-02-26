@@ -18,6 +18,7 @@
 
 #include "resources/ResourceAdapter.h"
 #include "../resources/ShaderProgramResource.h"
+#include "VideoAdapter.h"
 #include <gl/gl.h>
 #include <gl/glew.h>
 
@@ -92,12 +93,11 @@ class ShaderProgramResourceAdapter: public ResourceAdapter {
 			for(std::vector<ShaderResource *>::iterator shaderIterator = resource->getShaders().begin(); shaderIterator != resource->getShaders().end(); shaderIterator++)
 				glAttachShader(resource->getId(), (*shaderIterator)->getId());
 
-			//TODO: remove attrib locations hardcoding.
-			glBindAttribLocation(resource->getId(), 0, "vertex");
-			glBindAttribLocation(resource->getId(), 1, "index");
-			glBindAttribLocation(resource->getId(), 2, "normal");
-			glBindAttribLocation(resource->getId(), 3, "textureCoordinate");
-			glBindAttribLocation(resource->getId(), 4, "color");
+			glBindAttribLocation(resource->getId(), VERTEX_LOCATION, "vertex");
+			glBindAttribLocation(resource->getId(), INDEX_LOCATION, "index");
+			glBindAttribLocation(resource->getId(), NORMAL_LOCATION, "normal");
+			glBindAttribLocation(resource->getId(), TEXTURE_COORDINATES_LOCATION, "textureCoordinate");
+			glBindAttribLocation(resource->getId(), COLOR_LOCATION, "color");
 
 			glLinkProgram(resource->getId());
 

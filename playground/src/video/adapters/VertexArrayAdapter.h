@@ -9,6 +9,7 @@
 #define VERTEXBUFFERADAPTER_H_
 #include "resources/ResourceAdapter.h"
 #include "../resources/VertexArrayResource.h"
+#include "VideoAdapter.h"
 #include <gl/gl.h>
 #include <gl/glext.h>
 
@@ -17,7 +18,7 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 		std::vector<String> supportedMimeTypes;
 		Logger *logger;
 	private:
-		boolean addBuffer(unsigned int attributeLocation, VertexArrayResource *resource, GLenum bufferDestination, const std::vector<vector2> &data)
+		boolean addBuffer(ShaderAttributeLocation attributeLocation, VertexArrayResource *resource, GLenum bufferDestination, const std::vector<vector2> &data)
 		{
 			if(data.size() > 0) {
 				logger->debug("Creating [%d] floats buffer", data.size());
@@ -49,7 +50,7 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 
 			return true;
 		}
-		boolean addBuffer(unsigned int attributeLocation, VertexArrayResource *resource, GLenum bufferDestination, const std::vector<vector3> &data)
+		boolean addBuffer(ShaderAttributeLocation attributeLocation, VertexArrayResource *resource, GLenum bufferDestination, const std::vector<vector3> &data)
 		{
 				logger->debug("Creating [%d] floats buffer", data.size());
 
@@ -79,7 +80,7 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 
 				return true;
 		}
-		boolean addBuffer(unsigned int attributeLocation, VertexArrayResource *resource, GLenum bufferDestination, const std::vector<unsigned int> &data)
+		boolean addBuffer(ShaderAttributeLocation attributeLocation, VertexArrayResource *resource, GLenum bufferDestination, const std::vector<unsigned int> &data)
 		{
 				logger->debug("Creating [%d] floats buffer", data.size());
 
@@ -144,31 +145,31 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 					return null;
 				}
 
-				if(!addBuffer(0, resource, GL_ARRAY_BUFFER, geometry->getVertices()))
+				if(!addBuffer(VERTEX_LOCATION, resource, GL_ARRAY_BUFFER, geometry->getVertices()))
 				{
 					dispose(resource);
 					return null;
 				}
 
-				if(!addBuffer(1, resource, GL_ELEMENT_ARRAY_BUFFER, geometry->getIndexes()))
+				if(!addBuffer(INDEX_LOCATION, resource, GL_ELEMENT_ARRAY_BUFFER, geometry->getIndexes()))
 				{
 					dispose(resource);
 					return null;
 				}
 
-				if(!addBuffer(2, resource, GL_ARRAY_BUFFER, geometry->getNormals()))
+				if(!addBuffer(NORMAL_LOCATION, resource, GL_ARRAY_BUFFER, geometry->getNormals()))
 				{
 					dispose(resource);
 					return null;
 				}
 
-				if(!addBuffer(3, resource, GL_ARRAY_BUFFER, geometry->getTextureCoordinates()))
+				if(!addBuffer(TEXTURE_COORDINATES_LOCATION, resource, GL_ARRAY_BUFFER, geometry->getTextureCoordinates()))
 				{
 					dispose(resource);
 					return null;
 				}
 
-				if(!addBuffer(4, resource, GL_ARRAY_BUFFER, geometry->getColors()))
+				if(!addBuffer(COLOR_LOCATION, resource, GL_ARRAY_BUFFER, geometry->getColors()))
 				{
 					dispose(resource);
 					return null;
