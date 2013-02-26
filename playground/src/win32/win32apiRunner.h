@@ -90,8 +90,8 @@ class Win32apiRunner: public PlaygroundRunner {
 
 			this->resizeWindow(rect.bottom - rect.top, rect.right - rect.left);
 
-			// Show it
-			ShowWindow(hWnd, SW_SHOW);
+//			// Show it
+			show(true);
 
 			logger->debug("Window made visible");
 
@@ -277,6 +277,10 @@ class Win32apiRunner: public PlaygroundRunner {
 			}
 
 			return (true);
+		}
+		void show(boolean show)
+		{
+			ShowWindow(this->getWnd(), show ? SW_SHOW : SW_HIDE);
 		}
 
 	protected:
