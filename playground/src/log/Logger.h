@@ -164,6 +164,15 @@ class Logger {
 
 			this->flush();
 		}
+
+		void warn(const char *formato, ...)
+		{
+			va_list args;
+			va_start(args, formato);
+			printMessage("WARNING ", formato, &args);
+			va_end(args);
+			this->flush();
+		}
 	public:
 		static std::vector<Logger *>loggers;
 		static Logger *getLogger(String basename)

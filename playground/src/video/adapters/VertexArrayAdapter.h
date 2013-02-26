@@ -130,6 +130,10 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 				unsigned int vertexArray;
 				glGenVertexArrays(1, &vertexArray);
 				VertexArrayResource *resource = new VertexArrayResource(vertexArray);
+				resource->setPrimitiveType(geometry->getType());
+				TextureResource *texture = (TextureResource *)this->getResourceManager()->load(geometry->getTextureFile(), "video/texture");
+				if(texture != null)
+					resource->setTexture(texture);
 
 				glBindVertexArray(resource->getId());
 

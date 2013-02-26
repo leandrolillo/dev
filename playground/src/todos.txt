@@ -1,5 +1,6 @@
 TODOs:
 
+- revisar manejo de rutas relativas desde los recursos ej rutas en geometry.json, en shader executables, etc.
 - manejo de configuración
 - permitir que resourceAdapters hagan la resolución de mimetype para un nombre de archivo -> sino aunque los adapters se pueden agregar fácil, tengo que agregar hardcodeado el mimetype en el resource loader. 
 - separar conceptos audio (audioresource, wavresource, oggresource, etc.) de openal y video (imageresource, jpeg y png resources, etc.) de opengl.

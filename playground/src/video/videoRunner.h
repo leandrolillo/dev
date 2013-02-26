@@ -94,6 +94,17 @@ class VideoRunner: public PlaygroundRunner {
 			glFrustum( -fW, fW, -fH, fH, zNear, zFar );
 		}
 
+		void glDrawVertexArray(VertexArrayResource *vertexArrayResource)
+		{
+			if(vertexArrayResource != null) {
+				if(vertexArrayResource->getTexture() != null)
+					glBindTexture(GL_TEXTURE_2D, vertexArrayResource->getTexture()->getId());
+				glBindVertexArray(vertexArrayResource->getId());
+				glDrawElements(vertexArrayResource->getPrimitiveType(), vertexArrayResource->getAttribute(1).getCount(), GL_UNSIGNED_INT, 0);
+			}
+
+		}
+
 		void glDrawGeometry(GeometryResource *geometry)
 		{
 			if(geometry != null) {

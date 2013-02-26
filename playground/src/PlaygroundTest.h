@@ -254,12 +254,8 @@ class PlaygroundDemo : public PlaygroundRunner {
 
 			shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/textured.program.json", "video/shaderProgram");
 
-			if(shaderProgramResource != null) {
-				logger->debug("using program [%d]", shaderProgramResource->getId());
-				glUseProgram(shaderProgramResource->getId());
 			vertexArrayResource = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/triangle.json", "video/vertexArray");
 
-			}
 			return true;
 		}
 
@@ -269,8 +265,8 @@ class PlaygroundDemo : public PlaygroundRunner {
 
 			glLoadIdentity();
 
-			if(textureResource != null)
-				glBindTexture(GL_TEXTURE_2D, textureResource->getId());
+//			if(textureResource != null)
+//				glBindTexture(GL_TEXTURE_2D, textureResource->getId());
 
 //			video->glPlane(posicion, vector(0, 1, 0), vector(0.0, 0.0f, 0.0f), 3, 3);
 
@@ -278,24 +274,10 @@ class PlaygroundDemo : public PlaygroundRunner {
 
 			video->glAxis();
 
-			if(anotherTextureResource != null)
-				glBindTexture(GL_TEXTURE_2D, anotherTextureResource->getId());
+//			if(anotherTextureResource != null)
+//				glBindTexture(GL_TEXTURE_2D, anotherTextureResource->getId());
 
-			if(vertexArrayResource != null) {
-				glBindVertexArray(vertexArrayResource->getId());
-				glDrawElements(GL_TRIANGLE_STRIP, vertexArrayResource->getAttribute(1).getCount(), GL_UNSIGNED_INT, 0);
-			}
-
-//			glTranslatef(2.0, 0.0, 0.0);
-//
-//			if(geometryResource != null)
-//				video->glDrawGeometry(geometryResource);
-//
-//			glUseProgram(0);
-//			glTranslatef(2.0, 0.0, 0.0);
-//
-//			if(geometryResource != null)
-//				video->glDrawGeometry(geometryResource);
+			video->glDrawVertexArray(vertexArrayResource);
 
 			return CONTINUE;
 		}

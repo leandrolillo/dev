@@ -10,6 +10,7 @@
 
 #include "resources/Resource.h"
 
+
 class GeometryResource : public Resource
 {
 	private:
@@ -19,11 +20,12 @@ class GeometryResource : public Resource
 		std::vector<vector2> textureCoordinates;
 		std::vector<vector3> colors;
 		String textureFile;
-		unsigned int mode;
+		unsigned int type;
 	public:
 		GeometryResource(unsigned int id) : Resource(id, "video/geometry")
 		{
 			textureFile = "";
+			type = 4;
 		}
 
 		std::vector<vector2>& getNormals() {
@@ -78,6 +80,16 @@ class GeometryResource : public Resource
 		void setIndexes(const std::vector<unsigned int>& indexes)
 		{
 			this->indexes = indexes;
+		}
+
+		unsigned int getType() const
+		{
+			return type;
+		}
+
+		void setType(unsigned int type)
+		{
+			this->type = type;
 		}
 	};
 

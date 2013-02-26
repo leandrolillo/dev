@@ -41,6 +41,27 @@ class GeometryResourceAdapter: public ResourceAdapter {
 				}
 			}
 		}
+		unsigned int valueOf(const String &typeString) {
+			if(typeString == "points")
+				return GL_POINTS;
+			else if(typeString == "points")
+				return GL_LINES;
+			else if(typeString == "lineLoop")
+				return GL_LINE_LOOP;
+			else if(typeString == "lineStrip")
+				return GL_LINE_STRIP;
+			else if(typeString == "triangles")
+				return GL_TRIANGLES;
+			else if(typeString == "triangleStrip")
+				return GL_TRIANGLE_STRIP;
+			else if(typeString == "triangleFan")
+				return GL_TRIANGLE_FAN;
+			else if(typeString == "quads")
+				return GL_QUADS;
+			else if(typeString == "quadStrip")
+				return GL_QUAD_STRIP;
+			else return GL_POLYGON;
+		}
 	public:
 		GeometryResourceAdapter() {
 			supportedMimeTypes.push_back("video/geometry");
@@ -76,13 +97,18 @@ class GeometryResourceAdapter: public ResourceAdapter {
 				} else if (token == "colors") {
 					parser->readValueSeparator();
 					resource->setColors(parser->readVector3Array());
-				}
+				} else if (token == "type") {
+					parser->readValueSeparator();
+					String typeString = parser->readString();
+					resource->setType(valueOf(typeString));
+				} else
+					logger->warn("Unexpected token: [%s]", token.c_str());
 			}
 			log("vertices = ", resource->getVertices());
 			log("colors = ", resource->getColors());
 			log("normals = ", resource->getNormals());
 			log("textureCoordinates = ", resource->getTextureCoordinates());
-
+			logger->debug("type = [%d]", resource->getType());
 			return resource;
 		}
 		virtual void dispose(Resource *resource) {
