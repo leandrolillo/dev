@@ -1,12 +1,17 @@
 TODOs:
 
+- 'theme' para los recursos: traducción de un nombre a una ruta o de una ruta a otra ruta.
 - revisar manejo de rutas relativas desde los recursos ej rutas en geometry.json, en shader executables, etc.
 - manejo de configuración
 - permitir que resourceAdapters hagan la resolución de mimetype para un nombre de archivo -> sino aunque los adapters se pueden agregar fácil, tengo que agregar hardcodeado el mimetype en el resource loader. 
 - separar conceptos audio (audioresource, wavresource, oggresource, etc.) de openal y video (imageresource, jpeg y png resources, etc.) de opengl.
 - ver mejor manera de manejar audio resource void *pdata;
-
+- etapa postprocess para los recursos, con postprocesadores registrables como los resourceadapters?
 - abstraer audio en openal / dsound y video en opengl / d3d.
+
+shaders:
+	- sombreado / luces
+	- materiales
 
 formato simple para definición de geometría, animaciones, etc.
 Manejo de recursos (texturas, buffers y sources, geometría, etc.)
@@ -14,7 +19,7 @@ arcball e interacción con objetos en pantalla
 integrar con clases math y refactorizar nombres y uso (para objetos readonly)
 refactorizar clases ordenando getters/setters y métodos heredados
 implementar uso excepciones manejo de errores
-desglosar playground en librerías
+*desglosar playground en librerías
 
 multithreading
 

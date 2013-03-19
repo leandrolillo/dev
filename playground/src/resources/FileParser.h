@@ -181,8 +181,9 @@ class FileParser {
 			if((char)byte == '\n') {
 				line++;
 				column = 0;
-			} else
+			} else if((char) byte != '\r' && (char)byte != '\0' && (char) byte != 'ÿ') {
 				column++;
+			}
 
 			return byte;
 		}

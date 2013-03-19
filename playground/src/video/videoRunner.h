@@ -59,6 +59,9 @@ class VideoRunner: public PlaygroundRunner {
 			//glShadeModel(GL_FLAT);
 			glShadeModel(GL_SMOOTH);
 			glEnable(GL_DEPTH_TEST);
+			glEnable(GL_CULL_FACE);
+			glCullFace(GL_BACK);
+
 			//glEnable(GL_BLEND);
 			//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
@@ -94,13 +97,16 @@ class VideoRunner: public PlaygroundRunner {
 			glFrustum( -fW, fW, -fH, fH, zNear, zFar );
 		}
 
+		/**
+		 * Expects [number of index] elements in every vertex array attribute. E.g. You can't have three vertices, six indices and six texture coordinates. See http://www.opengl.org/wiki/Vertex_Buffer_Object#Vertex_Stream
+		 */
 		void glDrawVertexArray(VertexArrayResource *vertexArrayResource)
 		{
 			if(vertexArrayResource != null) {
 				if(vertexArrayResource->getTexture() != null)
 					glBindTexture(GL_TEXTURE_2D, vertexArrayResource->getTexture()->getId());
 				glBindVertexArray(vertexArrayResource->getId());
-				glDrawElements(vertexArrayResource->getPrimitiveType(), vertexArrayResource->getAttribute(1).getCount(), GL_UNSIGNED_INT, 0);
+				glDrawElements(vertexArrayResource->getPrimitiveType(), vertexArrayResource->getAttribute(INDEX_LOCATION).getCount(), GL_UNSIGNED_INT, (GLvoid *)0);
 			}
 
 		}
@@ -108,11 +114,11 @@ class VideoRunner: public PlaygroundRunner {
 		void glDrawGeometry(GeometryResource *geometry)
 		{
 			if(geometry != null) {
-				glBegin(GL_TRIANGLES);
-				for(unsigned int index = 0; index < geometry->getIndexes().size(); index++)
+				glBegin(geometry->getType());
+				for(unsigned int index = 0; index < geometry->getIndices().size(); index++)
 				{
-					unsigned int currentIndex = geometry->getIndexes()[index];
-					glVertex2fv((float *)geometry->getVertices()[currentIndex]);
+					unsigned int currentIndex = geometry->getIndices()[index];
+					glVertex3fv((float *)geometry->getVertices()[currentIndex]);
 
 					if(currentIndex < geometry->getColors().size())
 						glColor3fv((float *)geometry->getColors()[currentIndex]);
@@ -125,6 +131,15 @@ class VideoRunner: public PlaygroundRunner {
 
 				}
 				glEnd();
+				glBegin(GL_LINES);
+				for(unsigned int index = 0; index < geometry->getIndices().size(); index++)
+				{
+					unsigned int currentIndex = geometry->getIndices()[index];
+					glVertex3fv((float *)geometry->getVertices()[currentIndex]);
+					glVertex3fv((float *)(geometry->getVertices()[currentIndex] + geometry->getNormals()[currentIndex]));
+				}
+				glEnd();
+
 			}
 		}
 

@@ -252,32 +252,43 @@ class PlaygroundDemo : public PlaygroundRunner {
 			anotherTextureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("images/rrs.JPeG", "video/texture");
 			geometryResource = (GeometryResource *)this->getContainer()->getResourceManager()->load("geometry/triangle.json", "video/geometry");
 
-			shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/textured.program.json", "video/shaderProgram");
+			shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/lighting.program.json", "video/shaderProgram");
 
 			vertexArrayResource = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/triangle.json", "video/vertexArray");
 
+			glEnable(GL_LIGHTING);
+
+			glLightModelfv(GL_LIGHT_MODEL_AMBIENT, (float *)vector4(0.2, 0.2, 0.2));
+
+			glEnable(GL_LIGHT0);
+			glLightfv(GL_LIGHT0, GL_POSITION, (float *)vector4(0.0, 0.0, 0.0, 1.0));
+			glLightfv(GL_LIGHT0, GL_AMBIENT_AND_DIFFUSE, (float *)vector3(1.0, 1.0, 1.0));
+
+			glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, (float *)vector3(0.2, 0.2, 0.2));
+			glMaterialfv(GL_FRONT, GL_EMISSION, (float *)vector3(0.2, 0.7, 0.2));
+			glMaterialfv(GL_FRONT, GL_SPECULAR, (float *)vector3(1.0, 1.0, 1.0));
+			glMaterialf(GL_FRONT, GL_SHININESS, 1.0);
 			return true;
 		}
 
 		virtual LoopResult doLoop() {
-			if(shaderProgramResource != null)
-				glUseProgram(shaderProgramResource->getId());
+			glUseProgram(0);
 
 			glLoadIdentity();
-
-//			if(textureResource != null)
-//				glBindTexture(GL_TEXTURE_2D, textureResource->getId());
-
-//			video->glPlane(posicion, vector(0, 1, 0), vector(0.0, 0.0f, 0.0f), 3, 3);
 
 			glTranslatef(posicion.x, posicion.y, posicion.z);
 
 			video->glAxis();
 
-//			if(anotherTextureResource != null)
-//				glBindTexture(GL_TEXTURE_2D, anotherTextureResource->getId());
+			video->glDrawGeometry(geometryResource);
+
+			glTranslatef(2.0, 0.0, 0.0);
+
+			if(shaderProgramResource != null)
+				glUseProgram(shaderProgramResource->getId());
 
 			video->glDrawVertexArray(vertexArrayResource);
+
 
 			return CONTINUE;
 		}
@@ -292,9 +303,10 @@ class PlaygroundDemo : public PlaygroundRunner {
 				case VK_ESCAPE:
 					this->getContainer()->stop();
 					break;
-				case VK_RETURN:
+				case 'f':
+				case 'F':
 					this->wgl->setFullscreen(!this->wgl->getFullscreen());
-					break;
+				break;
 			}
 		}
 

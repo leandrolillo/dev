@@ -9,14 +9,16 @@
 #define GEOMETRYRESOURCE_H_
 
 #include "resources/Resource.h"
+#include "../../math/Math3d.h"
+#include <vector>
 
 
 class GeometryResource : public Resource
 {
 	private:
-		std::vector<vector2> vertices;
-		std::vector<unsigned int> indexes;
-		std::vector<vector2> normals;
+		std::vector<vector3> vertices;
+		std::vector<unsigned int> indices;
+		std::vector<vector3> normals;
 		std::vector<vector2> textureCoordinates;
 		std::vector<vector3> colors;
 		String textureFile;
@@ -28,11 +30,11 @@ class GeometryResource : public Resource
 			type = 4;
 		}
 
-		std::vector<vector2>& getNormals() {
+		std::vector<vector3>& getNormals() {
 			return normals;
 		}
 
-		void setNormals(const std::vector<vector2>& normals) {
+		void setNormals(const std::vector<vector3>& normals) {
 			this->normals = normals;
 		}
 
@@ -44,11 +46,11 @@ class GeometryResource : public Resource
 			this->textureCoordinates = texCoordinates;
 		}
 
-		std::vector<vector2>& getVertices() {
+		std::vector<vector3>& getVertices() {
 			return vertices;
 		}
 
-		void setVertices(const std::vector<vector2>& vertex) {
+		void setVertices(const std::vector<vector3>& vertex) {
 			this->vertices = vertex;
 		}
 
@@ -72,14 +74,14 @@ class GeometryResource : public Resource
 			this->colors = colors;
 		}
 
-		std::vector<unsigned int>& getIndexes()
+		std::vector<unsigned int>& getIndices()
 		{
-			return indexes;
+			return indices;
 		}
 
-		void setIndexes(const std::vector<unsigned int>& indexes)
+		void setIndices(const std::vector<unsigned int>& indexes)
 		{
-			this->indexes = indexes;
+			this->indices = indexes;
 		}
 
 		unsigned int getType() const

@@ -43,6 +43,7 @@
 	//typedef float real;
 	typedef matriz_4x4 matriz;
 	typedef vector3 vector;
+	typedef cuaternion vector4;
 	//typedef vector3 vector2;
 	//typedef matriz_3x3 matriz_2x2;
 	
