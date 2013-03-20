@@ -1,5 +1,6 @@
 TODOs:
 
+- classpath loader? que sea quien busca los archivos a partir de uno o varios directorios base. Capaz de leer dentro de archivos comprimidos.
 - 'theme' para los recursos: traducción de un nombre a una ruta o de una ruta a otra ruta.
 - revisar manejo de rutas relativas desde los recursos ej rutas en geometry.json, en shader executables, etc.
 - manejo de configuración

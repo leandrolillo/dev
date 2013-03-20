@@ -110,11 +110,10 @@ class GeometryResourceAdapter: public ResourceAdapter {
 		void postProcess(GeometryResource *resource)
 		{
 			if(resource != null) {
-				buildIndicesArray(resource);
 				ensureNormals(resource);
 				ensureColors(resource);
+				buildIndicesArray(resource);
 			}
-
 		}
 
 		void buildVerticesArray(GeometryResource *resource, std::vector<vector3> &vertices)

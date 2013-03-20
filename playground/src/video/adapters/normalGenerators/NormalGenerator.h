@@ -16,6 +16,30 @@ class NormalGenerator
 {
 	public:
 		virtual const void generateNormals(GeometryResource *resource) = 0;
+
+	protected:
+	virtual const void compressVertices(std::vector<vector3> &unCompressed, std::vector<vector3> &compressed, std::vector<unsigned int> &indices)
+	{
+		for(std::vector<vector3>::iterator source = unCompressed.begin(); source != unCompressed.end(); source ++)
+				{
+					unsigned int index = 0;
+					boolean preExisting = false;
+					for(std::vector<vector3>::iterator destination = compressed.begin(); destination != compressed.end(); destination++)
+					{
+						if(*source == *destination) {
+							indices.push_back(index);
+							preExisting = true;
+							break;
+						}
+						index++;
+					}
+					if(!preExisting) {
+						compressed.push_back(*source);
+						indices.push_back(compressed.size() - 1);
+					}
+				}
+
+	}
 };
 class PerVertexGLTrianglesNormalGenerator : public NormalGenerator
 {
@@ -24,28 +48,35 @@ class PerVertexGLTrianglesNormalGenerator : public NormalGenerator
 	public:
 		PerVertexGLTrianglesNormalGenerator()
 		{
-			logger = Logger::getLogger("video/GeometryResourceAdapter.h");
+			logger = Logger::getLogger("video/normalGenerator/PerVertexGLTrianglesNormalGenerator.h");
 		}
 		const void generateNormals(GeometryResource *resource)
 		{
-			if(!resource->getIndices().empty() && !resource->getVertices().empty())
+			if(!resource->getVertices().empty())
 			{
+				std::vector<vector3> normals;
+				std::vector<vector3> vertices;
+				std::vector<unsigned int> indices;
+
+				this->compressVertices(resource->getVertices(), vertices, indices);
+
 				logger->debug("Generating normals PER VERTEX / GL_TRIANGLES");
 
-				if(!resource->getNormals().empty())
-					resource->getNormals().clear();
+				log("Vertices original = ", resource->getVertices());
+				log("Vertices compressed = ", vertices);
+				log("Indices = ", indices);
 
 				std::vector<unsigned int> divisor;
-				for(std::vector<vector3>::iterator iterator = resource->getVertices().begin(); iterator != resource->getVertices().end(); iterator++)
+				for(std::vector<vector3>::iterator iterator = vertices.begin(); iterator != vertices.end(); iterator++)
 				{
 					divisor.push_back(0);
-					resource->getNormals().push_back(vector(0, 0 ,0));
+					normals.push_back(vector(0, 0 ,0));
 				}
 
-				for(unsigned int currentVertexIndex = 0; currentVertexIndex < resource->getIndices().size(); currentVertexIndex+=3)
+				for(unsigned int currentVertexIndex = 0; currentVertexIndex < indices.size(); currentVertexIndex+=3)
 				{
-					vector tangente2 = resource->getVertices()[resource->getIndices()[currentVertexIndex + 2]] - resource->getVertices()[resource->getIndices()[currentVertexIndex]];
-					vector tangente1 = resource->getVertices()[resource->getIndices()[currentVertexIndex + 1]] - resource->getVertices()[resource->getIndices()[currentVertexIndex]];
+					vector tangente2 = vertices[indices[currentVertexIndex + 2]] - vertices[indices[currentVertexIndex]];
+					vector tangente1 = vertices[indices[currentVertexIndex + 1]] - vertices[indices[currentVertexIndex]];
 					vector normal = (tangente2 ^ tangente1).Normalizado();
 
 					logger->debug("Current Triangle: [%d], tangente1 = <%.2f, %.2f, %.2f>, tangente2=<%.2f, %.2f, %.2f>, normal=<%.2f, %.2f, %.2f>", currentVertexIndex,
@@ -53,21 +84,23 @@ class PerVertexGLTrianglesNormalGenerator : public NormalGenerator
 							tangente2.x, tangente2.y, tangente2.z,
 							normal.x, normal.y, normal.z);
 
-					resource->getNormals()[resource->getIndices()[currentVertexIndex]] += normal;
-					divisor[resource->getIndices()[currentVertexIndex]]++;
-					resource->getNormals()[resource->getIndices()[currentVertexIndex + 1]] += normal;
-					divisor[resource->getIndices()[currentVertexIndex + 1]]++;
-					resource->getNormals()[resource->getIndices()[currentVertexIndex + 2]] += normal;
-					divisor[resource->getIndices()[currentVertexIndex + 2]]++;
+					normals[indices[currentVertexIndex]] += normal;
+					divisor[indices[currentVertexIndex]]++;
+					normals[indices[currentVertexIndex + 1]] += normal;
+					divisor[indices[currentVertexIndex + 1]]++;
+					normals[indices[currentVertexIndex + 2]] += normal;
+					divisor[indices[currentVertexIndex + 2]]++;
 				}
 
-				log("Normals = ", resource->getNormals());
+				log("Normals = ", normals);
 				log("divisors = ", divisor);
 
-				for(unsigned int currentNormalIndex = 0; currentNormalIndex < resource->getNormals().size(); currentNormalIndex++)
-				{
-					resource->getNormals()[currentNormalIndex] = resource->getNormals()[currentNormalIndex] * (1.0f / divisor[currentNormalIndex]);
-				}
+				for(unsigned int currentNormalIndex = 0; currentNormalIndex < normals.size(); currentNormalIndex++)
+					normals[currentNormalIndex] *=  (1.0f / divisor[currentNormalIndex]);
+
+				resource->getNormals().clear();
+				for(std::vector<unsigned int>::iterator iterator = indices.begin(); iterator != indices.end(); iterator++)
+					resource->getNormals().push_back(normals[(*iterator)]);
 			}
 		}
 

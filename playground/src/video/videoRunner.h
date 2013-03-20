@@ -54,19 +54,6 @@ class VideoRunner: public PlaygroundRunner {
 			this->getContainer()->getResourceManager()->addAdapter(new VertexArrayResourceAdapter());
 			this->getContainer()->getResourceManager()->addAdapter(new ShaderResourceAdapter());
 			this->getContainer()->getResourceManager()->addAdapter(new ShaderProgramResourceAdapter());
-
-			glClearColor(0.0, 0.5, 0.0, 0.0);
-			//glShadeModel(GL_FLAT);
-			glShadeModel(GL_SMOOTH);
-			glEnable(GL_DEPTH_TEST);
-			glEnable(GL_CULL_FACE);
-			glCullFace(GL_BACK);
-
-			//glEnable(GL_BLEND);
-			//glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-			glEnable(GL_TEXTURE_2D);
-			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 			return true;
 		}
 		virtual void beforeLoop() {
@@ -131,6 +118,8 @@ class VideoRunner: public PlaygroundRunner {
 
 				}
 				glEnd();
+				glDisable(GL_LIGHTING);
+				glColor3f(0.0, 0.0, 0.0);
 				glBegin(GL_LINES);
 				for(unsigned int index = 0; index < geometry->getIndices().size(); index++)
 				{
@@ -139,6 +128,7 @@ class VideoRunner: public PlaygroundRunner {
 					glVertex3fv((float *)(geometry->getVertices()[currentIndex] + geometry->getNormals()[currentIndex]));
 				}
 				glEnd();
+				glEnable(GL_LIGHTING);
 
 			}
 		}
