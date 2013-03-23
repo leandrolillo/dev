@@ -133,6 +133,74 @@ class VideoRunner: public PlaygroundRunner {
 			}
 		}
 
+		void glSphere(real radius, real dFi = radian(10), real dTita = radian(10))
+		{
+//			glBegin(GL_LINES);
+//			for(real fi = 0; fi < radian(360); fi += dFi)
+//			{
+//				for(real tita = 0; tita < radian(180); tita+= dTita)
+//				{
+//					vector3 r = radius * vector3(radius * sin(tita) * sin(fi), radius * cos(tita), radius * sin(tita) * cos(fi));
+//
+//					glNormal3fv((float *)r.Normalizado());
+//					glVertex3fv((float *)r);
+//				}
+//			}
+//			glEnd();
+
+			real media_circunferencia = M_PI * 2 * radius;
+
+			glBegin(GL_TRIANGLES);
+			for(real fi = 0; fi < radian(360) - dFi; fi += dFi)
+			{
+				for(real tita = 0; tita < radian(180) - dTita; tita+= dTita)
+				{
+					real medio_disco = M_PI * 2 * radius * sin(tita);
+					vector2 texel1 = vector2(fi * radius * sin(tita) / medio_disco,   tita * radius / media_circunferencia);
+
+					medio_disco = M_PI * 2 * radius * sin(tita + dTita);
+					vector2 texel2 = vector2(fi * radius * sin(tita + dTita) / medio_disco,   (tita + dTita) * radius / media_circunferencia);
+
+					medio_disco = M_PI * 2 * radius * sin(tita);
+					vector2 texel3 = vector2((fi + dFi) * radius * sin(tita) / medio_disco,   tita * radius / media_circunferencia);
+
+					medio_disco = M_PI * 2 * radius * sin(tita + dTita);
+					vector2 texel4 = vector2( (fi + dFi) * radius * sin(tita + dTita) / medio_disco,   (tita +dTita) * radius / media_circunferencia);
+
+					vector3 vertex1 = radius * vector3(radius * sin(tita) * sin(fi), radius * cos(tita), radius * sin(tita) * cos(fi));
+					vector3 vertex2 = radius * vector3(radius * sin(tita + dTita) * sin(fi), radius * cos(tita + dTita), radius * sin(tita + dTita) * cos(fi));
+					vector3 vertex3 = radius * vector3(radius * sin(tita) * sin(fi + dFi), radius * cos(tita), radius * sin(tita) * cos(fi + dFi));
+					vector3 vertex4 = radius * vector3(radius * sin(tita + dTita) * sin(fi + dFi), radius * cos(tita + dTita), radius * sin(tita + dTita) * cos(fi + dFi));
+
+					glNormal3fv((float *)vertex1.Normalizado());
+					glTexCoord2fv((float *)texel1);
+					glVertex3fv((float *)vertex1);
+
+					glNormal3fv((float *)vertex2.Normalizado());
+					glTexCoord2fv((float *)texel2);
+					glVertex3fv((float *)vertex2);
+
+					glNormal3fv((float *)vertex3.Normalizado());
+					glTexCoord2fv((float *)texel3);
+					glVertex3fv((float *)vertex3);
+
+					glNormal3fv((float *)vertex3.Normalizado());
+					glTexCoord2fv((float *)texel3);
+					glVertex3fv((float *)vertex3);
+
+					glNormal3fv((float *)vertex2.Normalizado());
+					glTexCoord2fv((float *)texel2);
+					glVertex3fv((float *)vertex2);
+
+					glNormal3fv((float *)vertex4.Normalizado());
+					glTexCoord2fv((float *)texel4);
+					glVertex3fv((float *)vertex4);
+				}
+			}
+			glEnd();
+
+		}
+
 		void glPlane(vector posicion, vector normal, vector origen,
 						float nro_grids, float ancho) {
 //			int pos_x, pos_z;

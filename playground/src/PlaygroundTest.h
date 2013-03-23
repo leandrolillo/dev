@@ -204,7 +204,9 @@ class PlaygroundDemo : public PlaygroundRunner {
 		Logger *logger;
 
 		//Graphical stuff
-		vector posicion;
+		vector viewPosicion;
+		vector lightPosicion;
+		real rotation;
 		TextureResource *textureResource;
 		TextureResource *anotherTextureResource;
 		VertexArrayResource *vertexArrayResource;
@@ -221,7 +223,9 @@ class PlaygroundDemo : public PlaygroundRunner {
 
 			logger = Logger::getLogger("PlaygroundTest.h");
 
-			posicion = vector(0.0, -1.0f, -5.0);
+			viewPosicion = vector(0.0, 0.0f, -6.0);
+			lightPosicion = vector(0.0, 0.0f, 4.0);
+			rotation = 0;
 			textureResource = null;
 			anotherTextureResource = null;
 			vertexArrayResource = null;
@@ -260,7 +264,7 @@ class PlaygroundDemo : public PlaygroundRunner {
 
 			glLightModelfv(GL_LIGHT_MODEL_AMBIENT, (float *)vector4(0.2, 0.2, 0.2));
 
-						glClearColor(0.0, 0.5, 0.0, 0.0);
+			glClearColor(0.0, 0.5, 0.0, 0.0);
 			glShadeModel(GL_SMOOTH);
 			glEnable(GL_DEPTH_TEST);
 			glEnable(GL_CULL_FACE);
@@ -287,30 +291,55 @@ class PlaygroundDemo : public PlaygroundRunner {
 			glUseProgram(0);
 
 			glLoadIdentity();
-
-			glTranslatef(posicion.x, posicion.y, posicion.z);
+			glTranslatef(viewPosicion.x, viewPosicion.y, viewPosicion.z);
 
 			video->glAxis();
 
-			video->glDrawGeometry(geometryResource);
+			glBindTexture(GL_TEXTURE_2D, 0);
 
-			glTranslatef(2.0, 0.0, 0.0);
+			glDisable(GL_LIGHTING);
+			glColor3f(1.0, 1.0, 0.0);
+			glPushMatrix();
+			glLightfv(GL_LIGHT0, GL_POSITION, (float *)vector4(lightPosicion.x, lightPosicion.y, lightPosicion.z, 1));
+			glTranslatef(lightPosicion.x, lightPosicion.y, lightPosicion.z);
+			video->glSphere(.3);
+			glPopMatrix();
+
+			glEnable(GL_LIGHTING);
+
+			glPushMatrix();
+			glTranslatef(-3.0, 0.0, 0.0);
+			glRotatef(rotation, 0.0, 1.0, 0.0);
+			glBindTexture(GL_TEXTURE_2D, anotherTextureResource->getId());
+			video->glDrawGeometry(geometryResource);
+			glPopMatrix();
+
+			glPushMatrix();
+			glRotatef(rotation, 0.0, 1.0, 0.0);
+			video->glSphere(1.0);
+			glPopMatrix();
 
 			if(shaderProgramResource != null)
 				glUseProgram(shaderProgramResource->getId());
 
+			glPushMatrix();
+			glTranslatef(3.0, 0.0, 0.0);
+			glRotatef(rotation, 0.0, 1.0, 0.0);
 			video->glDrawVertexArray(vertexArrayResource);
+			glPopMatrix();
 
+			rotation+=0.1;
 
 			return CONTINUE;
 		}
 		virtual void mouseMove(int dx, int dy) {
-			posicion += vector(0.1f * dx, 0.1f * dy, 0);
+			viewPosicion += vector(0.1f * dx, 0.1f * dy, 0);
 		}
 		virtual void keyDown(unsigned int key) {
 			switch (key) {
+
 				case VK_SPACE:
-					posicion = vector(0.0, -1.0f, -5.0);
+					viewPosicion = vector(0.0, 0.0f, -6.0);
 					break;
 				case VK_ESCAPE:
 					this->getContainer()->stop();
