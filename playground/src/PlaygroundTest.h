@@ -204,8 +204,9 @@ class PlaygroundDemo : public PlaygroundRunner {
 		Logger *logger;
 
 		//Graphical stuff
-		vector viewPosicion;
-		vector lightPosicion;
+		vector viewPosition;
+		vector lightPosition;
+		vector *currentPosition;
 		real rotation;
 		TextureResource *textureResource;
 		TextureResource *anotherTextureResource;
@@ -223,8 +224,9 @@ class PlaygroundDemo : public PlaygroundRunner {
 
 			logger = Logger::getLogger("PlaygroundTest.h");
 
-			viewPosicion = vector(0.0, 0.0f, -6.0);
-			lightPosicion = vector(0.0, 0.0f, 4.0);
+			viewPosition = vector(0.0, 0.0f, -6.0);
+			lightPosition = vector(0.0, 0.0f, 4.0);
+			currentPosition = &viewPosition;
 			rotation = 0;
 			textureResource = null;
 			anotherTextureResource = null;
@@ -234,7 +236,7 @@ class PlaygroundDemo : public PlaygroundRunner {
 		}
 
 		virtual unsigned char getInterests() {
-			return KEY_DOWN | MOUSE_MOVE;
+			return KEY_DOWN | KEY_UP | MOUSE_MOVE;
 		}
 
 		virtual unsigned char getId() {
@@ -281,9 +283,9 @@ class PlaygroundDemo : public PlaygroundRunner {
 			glLightfv(GL_LIGHT0, GL_AMBIENT_AND_DIFFUSE, (float *)vector3(1.0, 1.0, 1.0));
 
 			glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, (float *)vector3(0.2, 0.2, 0.2));
-			glMaterialfv(GL_FRONT, GL_EMISSION, (float *)vector3(0.2, 0.7, 0.2));
+			glMaterialfv(GL_FRONT, GL_EMISSION, (float *)vector3(0.2, 0.2, 0.2));
 			glMaterialfv(GL_FRONT, GL_SPECULAR, (float *)vector3(1.0, 1.0, 1.0));
-			glMaterialf(GL_FRONT, GL_SHININESS, 1.0);
+			glMaterialf(GL_FRONT, GL_SHININESS, 3.0);
 			return true;
 		}
 
@@ -291,7 +293,7 @@ class PlaygroundDemo : public PlaygroundRunner {
 			glUseProgram(0);
 
 			glLoadIdentity();
-			glTranslatef(viewPosicion.x, viewPosicion.y, viewPosicion.z);
+			glTranslatef(viewPosition.x, viewPosition.y, viewPosition.z);
 
 			video->glAxis();
 
@@ -300,8 +302,8 @@ class PlaygroundDemo : public PlaygroundRunner {
 			glDisable(GL_LIGHTING);
 			glColor3f(1.0, 1.0, 0.0);
 			glPushMatrix();
-			glLightfv(GL_LIGHT0, GL_POSITION, (float *)vector4(lightPosicion.x, lightPosicion.y, lightPosicion.z, 1));
-			glTranslatef(lightPosicion.x, lightPosicion.y, lightPosicion.z);
+			glLightfv(GL_LIGHT0, GL_POSITION, (float *)vector4(lightPosition.x, lightPosition.y, lightPosition.z, 1));
+			glTranslatef(lightPosition.x, lightPosition.y, lightPosition.z);
 			video->glSphere(.3);
 			glPopMatrix();
 
@@ -333,13 +335,23 @@ class PlaygroundDemo : public PlaygroundRunner {
 			return CONTINUE;
 		}
 		virtual void mouseMove(int dx, int dy) {
-			viewPosicion += vector(0.1f * dx, 0.1f * dy, 0);
+			*currentPosition += vector(0.1f * dx, 0.1f * dy, 0);
+		}
+		virtual void keyUp(unsigned int key) {
+			switch (key) {
+				case VK_CONTROL:
+					currentPosition = &viewPosition;
+					break;
+			}
 		}
 		virtual void keyDown(unsigned int key) {
 			switch (key) {
-
+				case VK_CONTROL:
+					currentPosition = &lightPosition;
+					break;
 				case VK_SPACE:
-					viewPosicion = vector(0.0, 0.0f, -6.0);
+					viewPosition = vector(0.0, 0.0f, -6.0);
+					lightPosition = vector(0.0, 0.0, 4.0);
 					break;
 				case VK_ESCAPE:
 					this->getContainer()->stop();

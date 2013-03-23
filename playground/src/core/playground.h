@@ -252,6 +252,14 @@ class Playground {
 							(*currentRunnerIterator)->keyDown(key);
 		}
 
+		void keyUp(unsigned int key) {
+			for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
+								keyUpObservers.begin();
+								currentRunnerIterator != keyUpObservers.end();
+								currentRunnerIterator++)
+							(*currentRunnerIterator)->keyUp(key);
+		}
+
 		void mouseMove(int dx, int dy) {
 			for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
 								mouseMoveObservers.begin();

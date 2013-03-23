@@ -152,8 +152,12 @@ class Win32apiRunner: public PlaygroundRunner {
 							LOWORD(lParam) );
 					break;
 				case WM_KEYDOWN:
-					logger->debug("WM_KEYDOWN: %d, %b", wParam, lParam);
+					logger->debug("WM_KEYDOWN: %d, %x", wParam, lParam);
 					this->getContainer()->keyDown(wParam);
+					break;
+				case WM_KEYUP:
+					logger->debug("WM_KEYUP: %d, %x", wParam, lParam);
+					this->getContainer()->keyUp(wParam);
 					break;
 				default:
 //#ifdef DEBUG
