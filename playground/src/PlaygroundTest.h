@@ -285,7 +285,7 @@ class PlaygroundDemo : public PlaygroundRunner {
 			glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, (float *)vector3(0.2, 0.2, 0.2));
 			glMaterialfv(GL_FRONT, GL_EMISSION, (float *)vector3(0.2, 0.2, 0.2));
 			glMaterialfv(GL_FRONT, GL_SPECULAR, (float *)vector3(1.0, 1.0, 1.0));
-			glMaterialf(GL_FRONT, GL_SHININESS, 3.0);
+			glMaterialf(GL_FRONT, GL_SHININESS, 128.0);
 			return true;
 		}
 
@@ -304,19 +304,21 @@ class PlaygroundDemo : public PlaygroundRunner {
 			glPushMatrix();
 			glLightfv(GL_LIGHT0, GL_POSITION, (float *)vector4(lightPosition.x, lightPosition.y, lightPosition.z, 1));
 			glTranslatef(lightPosition.x, lightPosition.y, lightPosition.z);
-			video->glSphere(.3);
+			video->glSphere(.2);
 			glPopMatrix();
 
 			glEnable(GL_LIGHTING);
 
+			//glBindTexture(GL_TEXTURE_2D, anotherTextureResource->getId());
+
 			glPushMatrix();
-			glTranslatef(-3.0, 0.0, 0.0);
+			glTranslatef(-4.0, 0.0, 0.0);
 			glRotatef(rotation, 0.0, 1.0, 0.0);
-			glBindTexture(GL_TEXTURE_2D, anotherTextureResource->getId());
 			video->glDrawGeometry(geometryResource);
 			glPopMatrix();
 
 			glPushMatrix();
+			glTranslatef(-1.0, 0.0, 0.0);
 			glRotatef(rotation, 0.0, 1.0, 0.0);
 			video->glSphere(1.0);
 			glPopMatrix();
@@ -325,7 +327,13 @@ class PlaygroundDemo : public PlaygroundRunner {
 				glUseProgram(shaderProgramResource->getId());
 
 			glPushMatrix();
-			glTranslatef(3.0, 0.0, 0.0);
+			glTranslatef(1.0, 0.0, 0.0);
+			glRotatef(rotation, 0.0, 1.0, 0.0);
+			video->glSphere(1.0);
+			glPopMatrix();
+
+			glPushMatrix();
+			glTranslatef(4.0, 0.0, 0.0);
 			glRotatef(rotation, 0.0, 1.0, 0.0);
 			video->glDrawVertexArray(vertexArrayResource);
 			glPopMatrix();
