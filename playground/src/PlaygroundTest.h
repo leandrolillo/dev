@@ -162,6 +162,95 @@ class PlaygroundTests: public TestRunner {
 		}
 
 		void testLoadGeometry()	{
+			std::vector<vector3>vertices;
+			std::vector<vector3>normales;
+			std::vector<vector2>texels;
+
+			real dFi = radian(10);
+			real dTita = radian(10);
+			real radius = 1;
+
+			real oneOverTwoPi = 1.0f / (2.0f * M_PI);
+			real oneOverPi = 1.0f / M_PI;
+
+			for(real fi = 0; fi < radian(360) - dFi; fi += dFi)
+			{
+				for(real tita = 0; tita < radian(180) - dTita; tita+= dTita)
+				{
+					vector2 texel1 = vector2(fi * oneOverTwoPi,   tita * oneOverPi);
+					vector2 texel2 = vector2(fi * oneOverTwoPi,   (tita + dTita) * oneOverPi);
+					vector2 texel3 = vector2((fi + dFi) * oneOverTwoPi,   tita * oneOverPi);
+					vector2 texel4 = vector2((fi + dFi) * oneOverTwoPi,   (tita + dTita) * oneOverPi);
+
+					vector3 vertex1 = radius * vector3(radius * sin(tita) * sin(fi), radius * cos(tita), radius * sin(tita) * cos(fi));
+					vector3 vertex2 = radius * vector3(radius * sin(tita + dTita) * sin(fi), radius * cos(tita + dTita), radius * sin(tita + dTita) * cos(fi));
+					vector3 vertex3 = radius * vector3(radius * sin(tita) * sin(fi + dFi), radius * cos(tita), radius * sin(tita) * cos(fi + dFi));
+					vector3 vertex4 = radius * vector3(radius * sin(tita + dTita) * sin(fi + dFi), radius * cos(tita + dTita), radius * sin(tita + dTita) * cos(fi + dFi));
+
+					vertices.push_back(vertex1);
+					normales.push_back(vertex1.Normalizado());
+					texels.push_back(texel1);
+
+
+					vertices.push_back(vertex2);
+					normales.push_back(vertex2.Normalizado());
+					texels.push_back(texel2);
+
+					vertices.push_back(vertex3);
+					normales.push_back(vertex3.Normalizado());
+					texels.push_back(texel3);
+
+					vertices.push_back(vertex3);
+					normales.push_back(vertex3.Normalizado());
+					texels.push_back(texel3);
+
+
+					vertices.push_back(vertex2);
+					normales.push_back(vertex2.Normalizado());
+					texels.push_back(texel2);
+
+					vertices.push_back(vertex4);
+					normales.push_back(vertex4.Normalizado());
+					texels.push_back(texel4);
+				}
+			}
+
+			FILE *output = fopen("sphere.json", "wt");
+
+			fprintf(output, "{\n");
+			fprintf(output, "type: \"triangles\",\n");
+			fprintf(output, "vertices: [");
+			for(std::vector<vector3>::iterator iterator = vertices.begin(); iterator != vertices.end(); iterator++) {
+				if(iterator != vertices.begin())
+					fprintf(output, " ,");
+				fprintf(output, "<%f, %f, %f>", iterator->x, iterator->y, iterator->z);
+			}
+			fprintf(output, "]");
+
+			logger->debug("Wrote [%d] vertices", vertices.size());
+
+			fprintf(output, ",\nnormals: [");
+			for(std::vector<vector3>::iterator iterator = normales.begin(); iterator != normales.end(); iterator++) {
+				if(iterator != normales.begin())
+					fprintf(output, " ,");
+				fprintf(output, "<%f, %f, %f>", iterator->x, iterator->y, iterator->z);
+			}
+			fprintf(output, "]");
+
+			logger->debug("Wrote [%d] normals", normales.size());
+
+			fprintf(output, ",\ntextureCoordinates: [");
+			for(std::vector<vector2>::iterator iterator = texels.begin(); iterator != texels.end(); iterator++) {
+				if(iterator != texels.begin())
+					fprintf(output, " ,");
+				fprintf(output, "<%f, %f>", iterator->s, iterator->t);
+			}
+			fprintf(output, "]\n");
+			logger->debug("Wrote [%d] texels", texels.size());
+
+			fprintf(output, "}");
+			fclose(output);
+
 			GeometryResource *resource = (GeometryResource *)this->getContainer()->getResourceManager()->load("tests/geometry.json", "video/geometry");
 
 			assertTrue("GEOMETRY resource not loaded", resource != null);
@@ -170,6 +259,8 @@ class PlaygroundTests: public TestRunner {
 			assertEquals("Incorrect number of colors", 3, resource->getColors().size());
 			assertEquals("Incorrect number of texture coordinates", 3, resource->getTextureCoordinates().size());
 			assertEquals("Incorrect number of normals", 3, resource->getNormals().size());
+
+
 		}
 
 		void testLoadVertexBuffer()	{
@@ -213,11 +304,13 @@ class PlaygroundDemo : public PlaygroundRunner {
 		VertexArrayResource *vertexArrayResource;
 		ShaderProgramResource *shaderProgramResource;
 		GeometryResource *geometryResource;
+		VertexArrayResource *sphereArrayResource;
+		GeometryResource sphereGeometryResource;
 	public:
 		static const unsigned char ID = 101;
 
 	public:
-		PlaygroundDemo() {
+		PlaygroundDemo() : sphereGeometryResource(0) {
 			video = null;
 			wgl = null;
 			audio = null;
@@ -233,6 +326,7 @@ class PlaygroundDemo : public PlaygroundRunner {
 			vertexArrayResource = null;
 			shaderProgramResource = null;
 			geometryResource = null;
+			sphereArrayResource = null;
 		}
 
 		virtual unsigned char getInterests() {
@@ -257,6 +351,10 @@ class PlaygroundDemo : public PlaygroundRunner {
 			textureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("images/ss/MB.PNG", "video/texture");
 			anotherTextureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("images/rrs.JPeG", "video/texture");
 			geometryResource = (GeometryResource *)this->getContainer()->getResourceManager()->load("geometry/triangle.json", "video/geometry");
+			sphereArrayResource = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/sphere.json", "video/vertexArray");
+
+			//sphereGeometryResource = (GeometryResource *)this->getContainer()->getResourceManager()->load("geometry/sphere.json", "video/geometry");
+			sphereGeometryResource = buildSphereGeometry();
 
 			shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/lighting.program.json", "video/shaderProgram");
 
@@ -287,6 +385,73 @@ class PlaygroundDemo : public PlaygroundRunner {
 			glMaterialfv(GL_FRONT, GL_SPECULAR, (float *)vector3(1.0, 1.0, 1.0));
 			glMaterialf(GL_FRONT, GL_SHININESS, 128.0);
 			return true;
+		}
+
+		GeometryResource buildSphereGeometry()
+		{
+			GeometryResource resource(0);
+
+			real dFi = radian(10);
+			real dTita = radian(10);
+			real radius = 1;
+
+			real oneOverTwoPi = 1.0f / (2.0f * M_PI);
+			real oneOverPi = 1.0f / M_PI;
+
+			for(real fi = 0; fi < radian(360) - dFi; fi += dFi)
+			{
+				for(real tita = 0; tita < radian(180) - dTita; tita+= dTita)
+				{
+					vector2 texel1 = vector2(fi * oneOverTwoPi,   tita * oneOverPi);
+					vector2 texel2 = vector2(fi * oneOverTwoPi,   (tita + dTita) * oneOverPi);
+					vector2 texel3 = vector2((fi + dFi) * oneOverTwoPi,   tita * oneOverPi);
+					vector2 texel4 = vector2((fi + dFi) * oneOverTwoPi,   (tita + dTita) * oneOverPi);
+
+					vector3 vertex1 = radius * vector3(radius * sin(tita) * sin(fi), radius * cos(tita), radius * sin(tita) * cos(fi));
+					vector3 vertex2 = radius * vector3(radius * sin(tita + dTita) * sin(fi), radius * cos(tita + dTita), radius * sin(tita + dTita) * cos(fi));
+					vector3 vertex3 = radius * vector3(radius * sin(tita) * sin(fi + dFi), radius * cos(tita), radius * sin(tita) * cos(fi + dFi));
+					vector3 vertex4 = radius * vector3(radius * sin(tita + dTita) * sin(fi + dFi), radius * cos(tita + dTita), radius * sin(tita + dTita) * cos(fi + dFi));
+
+					resource.getVertices().push_back(vertex1);
+					resource.getNormals().push_back(vertex1.Normalizado());
+					resource.getTextureCoordinates().push_back(texel1);
+					resource.getIndices().push_back(resource.getIndices().size());
+					resource.getColors().push_back(vector3(1.0, 1.0, 1.0));
+
+					resource.getVertices().push_back(vertex2);
+					resource.getNormals().push_back(vertex2.Normalizado());
+					resource.getTextureCoordinates().push_back(texel2);
+					resource.getIndices().push_back(resource.getIndices().size());
+					resource.getColors().push_back(vector3(1.0, 1.0, 1.0));
+
+					resource.getVertices().push_back(vertex3);
+					resource.getNormals().push_back(vertex3.Normalizado());
+					resource.getTextureCoordinates().push_back(texel3);
+					resource.getIndices().push_back(resource.getIndices().size());
+					resource.getColors().push_back(vector3(1.0, 1.0, 1.0));
+
+					resource.getVertices().push_back(vertex3);
+					resource.getNormals().push_back(vertex3.Normalizado());
+					resource.getTextureCoordinates().push_back(texel3);
+					resource.getIndices().push_back(resource.getIndices().size());
+					resource.getColors().push_back(vector3(1.0, 1.0, 1.0));
+
+
+					resource.getVertices().push_back(vertex2);
+					resource.getNormals().push_back(vertex2.Normalizado());
+					resource.getTextureCoordinates().push_back(texel2);
+					resource.getIndices().push_back(resource.getIndices().size());
+					resource.getColors().push_back(vector3(1.0, 1.0, 1.0));
+
+					resource.getVertices().push_back(vertex4);
+					resource.getNormals().push_back(vertex4.Normalizado());
+					resource.getTextureCoordinates().push_back(texel4);
+					resource.getIndices().push_back(resource.getIndices().size());
+					resource.getColors().push_back(vector3(1.0, 1.0, 1.0));
+				}
+			}
+
+			return resource;
 		}
 
 		virtual LoopResult doLoop() {
@@ -320,7 +485,7 @@ class PlaygroundDemo : public PlaygroundRunner {
 			glPushMatrix();
 			glTranslatef(-1.0, 0.0, 0.0);
 			glRotatef(rotation, 0.0, 1.0, 0.0);
-			video->glSphere(1.0);
+			video->glDrawGeometry(&sphereGeometryResource);
 			glPopMatrix();
 
 			if(shaderProgramResource != null)
@@ -329,7 +494,7 @@ class PlaygroundDemo : public PlaygroundRunner {
 			glPushMatrix();
 			glTranslatef(1.0, 0.0, 0.0);
 			glRotatef(rotation, 0.0, 1.0, 0.0);
-			video->glSphere(1.0);
+			video->glDrawVertexArray(sphereArrayResource);
 			glPopMatrix();
 
 			glPushMatrix();

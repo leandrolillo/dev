@@ -102,7 +102,8 @@ class GeometryResourceAdapter: public ResourceAdapter {
 
 		void ensureColors(GeometryResource *resource)
 		{
-			for(unsigned int currentIndex = 0; currentIndex < (resource->getVertices().size() - resource->getColors().size()); currentIndex++)
+			unsigned int numberOfColors = (resource->getVertices().size() - resource->getColors().size());
+			for(unsigned int currentIndex = 0; currentIndex < numberOfColors; currentIndex++)
 				resource->getColors().push_back(vector3(1.0f, 1.0f, 1.0f));
 		}
 
@@ -166,6 +167,8 @@ class GeometryResourceAdapter: public ResourceAdapter {
 		{
 			char vectorBuffer[256];
 
+			sprintf(vectorBuffer, "[%d] ", array.size());
+			prefix.insert(0, vectorBuffer);
 			prefix.append(" [");
 
 			for(std::vector<vector2>::iterator current = array.begin(); current != array.end(); current++) {
@@ -182,6 +185,8 @@ class GeometryResourceAdapter: public ResourceAdapter {
 		{
 			char vectorBuffer[256];
 
+			sprintf(vectorBuffer, "[%d] ", array.size());
+			prefix.insert(0, vectorBuffer);
 			prefix.append(" [");
 
 			for(std::vector<unsigned int>::iterator current = array.begin(); current != array.end(); current++) {
@@ -198,6 +203,8 @@ class GeometryResourceAdapter: public ResourceAdapter {
 		{
 			char vectorBuffer[256];
 
+			sprintf(vectorBuffer, "[%d] ", array.size());
+			prefix.insert(0, vectorBuffer);
 			prefix.append(" [");
 
 			for(std::vector<vector3>::iterator current = array.begin(); current != array.end(); current++) {

@@ -96,7 +96,7 @@ class PerVertexGLTrianglesNormalGenerator : public NormalGenerator
 				log("divisors = ", divisor);
 
 				for(unsigned int currentNormalIndex = 0; currentNormalIndex < normals.size(); currentNormalIndex++)
-					normals[currentNormalIndex] *=  (1.0f / divisor[currentNormalIndex]);
+					normals[currentNormalIndex] =  (normals[currentNormalIndex] * (1.0f / divisor[currentNormalIndex])).Normalizado();
 
 				resource->getNormals().clear();
 				for(std::vector<unsigned int>::iterator iterator = indices.begin(); iterator != indices.end(); iterator++)

@@ -105,7 +105,6 @@ class VideoRunner: public PlaygroundRunner {
 				for(unsigned int index = 0; index < geometry->getIndices().size(); index++)
 				{
 					unsigned int currentIndex = geometry->getIndices()[index];
-					glVertex3fv((float *)geometry->getVertices()[currentIndex]);
 
 					if(currentIndex < geometry->getColors().size())
 						glColor3fv((float *)geometry->getColors()[currentIndex]);
@@ -114,8 +113,9 @@ class VideoRunner: public PlaygroundRunner {
 						glTexCoord2fv((float *)geometry->getTextureCoordinates()[currentIndex]);
 
 					if(currentIndex < geometry->getNormals().size())
-						glNormal3f(geometry->getTextureCoordinates()[currentIndex].x, geometry->getTextureCoordinates()[currentIndex].y, 0.0);
+						glNormal3fv((float *)geometry->getNormals()[currentIndex]);
 
+					glVertex3fv((float *)geometry->getVertices()[currentIndex]);
 				}
 				glEnd();
 				glDisable(GL_LIGHTING);

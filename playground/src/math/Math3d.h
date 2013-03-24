@@ -66,6 +66,12 @@
 			struct {
 				real x, y;
 			};
+			struct {
+				real s, t;
+			};
+			struct {
+				real u, v;
+			};
 			real m[2];
 		};
 
