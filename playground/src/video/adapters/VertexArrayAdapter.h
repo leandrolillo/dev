@@ -145,13 +145,13 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 					return null;
 				}
 
-				if(!addBuffer(VERTEX_LOCATION, resource, GL_ARRAY_BUFFER, geometry->getVertices()))
+				if(!addBuffer(INDEX_LOCATION, resource, GL_ELEMENT_ARRAY_BUFFER, geometry->getIndices()))
 				{
 					dispose(resource);
 					return null;
 				}
 
-				if(!addBuffer(INDEX_LOCATION, resource, GL_ELEMENT_ARRAY_BUFFER, geometry->getIndices()))
+				if(!addBuffer(VERTEX_LOCATION, resource, GL_ARRAY_BUFFER, geometry->getVertices()))
 				{
 					dispose(resource);
 					return null;

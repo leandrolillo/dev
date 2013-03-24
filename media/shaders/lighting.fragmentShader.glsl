@@ -1,27 +1,27 @@
 #version 120
 uniform sampler2D color_texture;
 
-varying vec4 diffuse, ambient, emission;
-varying vec3 normalVector, halfVector;
+varying vec3 normalVector;
 
 void main(void)
 {
-    vec3 lightDir = vec3(gl_LightSource[0].position);
- 
-    vec4 color = ambient + emission;
-    vec3 normal = normalize(normalVector);
- 
-	float NdotL = max(-dot(normal, lightDir), 0.0);
+	vec4 ambient = gl_FrontMaterial.ambient * gl_LightModel.ambient + gl_LightSource[0].ambient * gl_LightModel.ambient;
+	vec4 emission = gl_FrontMaterial.emission;
+	vec4 diffuse = gl_FrontMaterial.diffuse * gl_LightSource[0].diffuse;
+	vec4 specular = gl_FrontMaterial.specular * gl_LightSource[0].specular;
+	float shininess = gl_FrontMaterial.shininess;
 	
-	if (NdotL > 0.0) {
-        color += diffuse * NdotL;
-        vec3 halfV = normalize(halfVector);
-        float NdotHV = max(-dot(normal,halfV),0.0);
-        color += gl_FrontMaterial.specular *
-                gl_LightSource[0].specular *
-                pow(NdotHV, gl_FrontMaterial.shininess);
-    }
-	
+    vec3 lightDir = normalize(vec3(gl_LightSource[0].position));
+	vec3 halfVector = normalize(vec3(gl_LightSource[0].halfVector));
+    vec3 normal = normalVector;
+ 
+	float NdotL = max(dot(normal, lightDir), 0.0);
+	float NdotHV = max(dot(normal, halfVector),0.0);
+	vec4 color =  	ambient 
+					+ emission 
+					+ diffuse * NdotL
+					+ specular * pow(NdotHV, shininess);
+
 	gl_FragColor =  color;
-   //gl_FragColor =  texture2D(color_texture, gl_TexCoord[0].st) * gl_Color;
+    //gl_FragColor =  texture2D(color_texture, gl_TexCoord[0].st) * color;
 }

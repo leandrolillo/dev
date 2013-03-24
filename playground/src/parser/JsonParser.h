@@ -111,6 +111,28 @@ class JsonParser
 
 			return value;
 		}
+		real readDecimals()
+		{
+			real value = 0;
+			real modifier = 0.1;
+
+			String token = fileParser.takeToken();
+			char digit;
+			boolean readValue = false;
+
+			unsigned int currentPosition = 0;
+			while(currentPosition < token.length() && '0' <= (digit = token.at(currentPosition++)) && digit <= '9')
+			{
+				value = value  + (real)(digit - '0') * modifier;
+				modifier *= 0.1;
+				readValue = true;
+			}
+
+			if(!readValue)
+				throw ParsingException("Unexpected %s at (%d, %d)", fileParser.takeToken().c_str(), fileParser.getLine(), fileParser.getColumn());
+
+			return value;
+		}
 		char readSign()
 		{
 			int sign = 1;
@@ -147,10 +169,7 @@ class JsonParser
 				String token = fileParser.peekToken();
 
 				if('0' <= token.at(0) && token.at(0) <= '9')
-					decimal = readUnsignedInteger();
-
-				while(decimal >= 1.0f)
-					decimal *= 0.1;
+					decimal = readDecimals();
 			}
 
 			return mantissaSign * (integer + decimal);

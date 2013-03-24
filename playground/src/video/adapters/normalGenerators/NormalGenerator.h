@@ -62,9 +62,9 @@ class PerVertexGLTrianglesNormalGenerator : public NormalGenerator
 
 				logger->debug("Generating normals PER VERTEX / GL_TRIANGLES");
 
-				log("Vertices original = ", resource->getVertices());
-				log("Vertices compressed = ", vertices);
-				log("Indices = ", indices);
+//				log("Vertices original = ", resource->getVertices());
+//				log("Vertices compressed = ", vertices);
+//				log("Indices = ", indices);
 
 				std::vector<unsigned int> divisor;
 				for(std::vector<vector3>::iterator iterator = vertices.begin(); iterator != vertices.end(); iterator++)
@@ -79,10 +79,10 @@ class PerVertexGLTrianglesNormalGenerator : public NormalGenerator
 					vector tangente1 = vertices[indices[currentVertexIndex + 1]] - vertices[indices[currentVertexIndex]];
 					vector normal = (tangente2 ^ tangente1).Normalizado();
 
-					logger->debug("Current Triangle: [%d], tangente1 = <%.2f, %.2f, %.2f>, tangente2=<%.2f, %.2f, %.2f>, normal=<%.2f, %.2f, %.2f>", currentVertexIndex,
-							tangente1.x, tangente1.y, tangente1.z,
-							tangente2.x, tangente2.y, tangente2.z,
-							normal.x, normal.y, normal.z);
+//					logger->debug("Current Triangle: [%d], tangente1 = <%.2f, %.2f, %.2f>, tangente2=<%.2f, %.2f, %.2f>, normal=<%.2f, %.2f, %.2f>", currentVertexIndex,
+//							tangente1.x, tangente1.y, tangente1.z,
+//							tangente2.x, tangente2.y, tangente2.z,
+//							normal.x, normal.y, normal.z);
 
 					normals[indices[currentVertexIndex]] += normal;
 					divisor[indices[currentVertexIndex]]++;
@@ -92,8 +92,8 @@ class PerVertexGLTrianglesNormalGenerator : public NormalGenerator
 					divisor[indices[currentVertexIndex + 2]]++;
 				}
 
-				log("Normals = ", normals);
-				log("divisors = ", divisor);
+//				log("Normals = ", normals);
+//				log("divisors = ", divisor);
 
 				for(unsigned int currentNormalIndex = 0; currentNormalIndex < normals.size(); currentNormalIndex++)
 					normals[currentNormalIndex] =  (normals[currentNormalIndex] * (1.0f / divisor[currentNormalIndex])).Normalizado();

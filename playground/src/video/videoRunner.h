@@ -118,18 +118,17 @@ class VideoRunner: public PlaygroundRunner {
 					glVertex3fv((float *)geometry->getVertices()[currentIndex]);
 				}
 				glEnd();
-				glDisable(GL_LIGHTING);
-				glColor3f(0.0, 0.0, 0.0);
-				glBegin(GL_LINES);
-				for(unsigned int index = 0; index < geometry->getIndices().size(); index++)
-				{
-					unsigned int currentIndex = geometry->getIndices()[index];
-					glVertex3fv((float *)geometry->getVertices()[currentIndex]);
-					glVertex3fv((float *)(geometry->getVertices()[currentIndex] + geometry->getNormals()[currentIndex]));
-				}
-				glEnd();
-				glEnable(GL_LIGHTING);
-
+//				glDisable(GL_LIGHTING);
+//				glColor3f(0.0, 0.0, 0.0);
+//				glBegin(GL_LINES);
+//				for(unsigned int index = 0; index < geometry->getIndices().size(); index++)
+//				{
+//					unsigned int currentIndex = geometry->getIndices()[index];
+//					glVertex3fv((float *)geometry->getVertices()[currentIndex]);
+//					glVertex3fv((float *)(geometry->getVertices()[currentIndex] + geometry->getNormals()[currentIndex]));
+//				}
+//				glEnd();
+//				glEnable(GL_LIGHTING);
 			}
 		}
 

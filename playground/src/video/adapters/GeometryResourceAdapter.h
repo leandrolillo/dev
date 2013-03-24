@@ -62,11 +62,11 @@ class GeometryResourceAdapter: public ResourceAdapter {
 
 			postProcess(resource);
 
-			log("vertices = ", resource->getVertices());
-			log("indices = ", resource->getIndices());
-			log("colors = ", resource->getColors());
-			log("normals = ", resource->getNormals());
-			log("textureCoordinates = ", resource->getTextureCoordinates());
+			log("vertices ", resource->getVertices());
+			log("indices ", resource->getIndices());
+			log("colors ", resource->getColors());
+			log("normals ", resource->getNormals());
+			log("textureCoordinates ", resource->getTextureCoordinates());
 			logger->debug("type = [%d]", resource->getType());
 			return resource;
 		}
@@ -169,14 +169,14 @@ class GeometryResourceAdapter: public ResourceAdapter {
 
 			sprintf(vectorBuffer, "[%d] ", array.size());
 			prefix.insert(0, vectorBuffer);
-			prefix.append(" [");
-
-			for(std::vector<vector2>::iterator current = array.begin(); current != array.end(); current++) {
-				sprintf(vectorBuffer, "<%.2f, %.2f> ", (*current).x, (*current).y);
-				prefix.append(vectorBuffer);
-			}
-
-			prefix.append(" ]");
+//			prefix.append(" [");
+//
+//			for(std::vector<vector2>::iterator current = array.begin(); current != array.end(); current++) {
+//				sprintf(vectorBuffer, "<%.2f, %.2f> ", (*current).x, (*current).y);
+//				prefix.append(vectorBuffer);
+//			}
+//
+//			prefix.append(" ]");
 			logger->debug(prefix.c_str());
 
 		}
@@ -187,14 +187,14 @@ class GeometryResourceAdapter: public ResourceAdapter {
 
 			sprintf(vectorBuffer, "[%d] ", array.size());
 			prefix.insert(0, vectorBuffer);
-			prefix.append(" [");
-
-			for(std::vector<unsigned int>::iterator current = array.begin(); current != array.end(); current++) {
-				sprintf(vectorBuffer, "%d, ", *current);
-				prefix.append(vectorBuffer);
-			}
-
-			prefix.append(" ]");
+//			prefix.append(" [");
+//
+//			for(std::vector<unsigned int>::iterator current = array.begin(); current != array.end(); current++) {
+//				sprintf(vectorBuffer, "%d, ", *current);
+//				prefix.append(vectorBuffer);
+//			}
+//
+//			prefix.append(" ]");
 			logger->debug(prefix.c_str());
 
 		}
@@ -205,14 +205,14 @@ class GeometryResourceAdapter: public ResourceAdapter {
 
 			sprintf(vectorBuffer, "[%d] ", array.size());
 			prefix.insert(0, vectorBuffer);
-			prefix.append(" [");
-
-			for(std::vector<vector3>::iterator current = array.begin(); current != array.end(); current++) {
-				sprintf(vectorBuffer, "<%.2f, %.2f, %.2f> ", (*current).x, (*current).y, (*current).z);
-				prefix.append(vectorBuffer);
-			}
-
-			prefix.append(" ]");
+//			prefix.append(" [");
+//
+//			for(std::vector<vector3>::iterator current = array.begin(); current != array.end(); current++) {
+//				sprintf(vectorBuffer, "<%.2f, %.2f, %.2f> ", (*current).x, (*current).y, (*current).z);
+//				prefix.append(vectorBuffer);
+//			}
+//
+//			prefix.append(" ]");
 			logger->debug(prefix.c_str());
 
 		}
