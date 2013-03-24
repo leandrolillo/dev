@@ -214,6 +214,7 @@ class PlaygroundDemo : public PlaygroundRunner {
 		TextureResource *anotherTextureResource;
 		VertexArrayResource *vertexArrayResource;
 		ShaderProgramResource *shaderProgramResource;
+		ShaderProgramResource *anotherShaderProgramResource;
 		GeometryResource *geometryResource;
 		VertexArrayResource *sphereArrayResource;
 		GeometryResource *sphereGeometryResource;
@@ -236,6 +237,7 @@ class PlaygroundDemo : public PlaygroundRunner {
 			anotherTextureResource = null;
 			vertexArrayResource = null;
 			shaderProgramResource = null;
+			anotherShaderProgramResource = null;
 			geometryResource = null;
 			sphereArrayResource = null;
 			sphereGeometryResource = null;
@@ -261,13 +263,14 @@ class PlaygroundDemo : public PlaygroundRunner {
 				audio->playSource(backgroundSource);
 
 			textureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("images/ss/MB.PNG", "video/texture");
-			anotherTextureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("images/rrs.JPeG", "video/texture");
+			anotherTextureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("images/irs.JPG", "video/texture");
 			geometryResource = (GeometryResource *)this->getContainer()->getResourceManager()->load("geometry/triangle.json", "video/geometry");
 			sphereArrayResource = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/sphere.json", "video/vertexArray");
 
 			sphereGeometryResource = (GeometryResource *)this->getContainer()->getResourceManager()->load("geometry/sphere.json", "video/geometry");
 
 			shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/lighting.program.json", "video/shaderProgram");
+			anotherShaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/toon.program.json", "video/shaderProgram");
 
 			vertexArrayResource = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/triangle.json", "video/vertexArray");
 
@@ -284,17 +287,17 @@ class PlaygroundDemo : public PlaygroundRunner {
 			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
 
 			glEnable(GL_LIGHTING);
-			glLightModelfv(GL_LIGHT_MODEL_AMBIENT, (float *)vector4(0.2, 0.2, 0.2));
+			//glLightModelfv(GL_LIGHT_MODEL_AMBIENT, (float *)vector4(0.2, 0.2, 0.2));
 
 			glEnable(GL_LIGHT0);
-			glLightfv(GL_LIGHT0, GL_POSITION, (float *)vector4(0.0, 0.0, 0.0, 1.0));
-			glLightfv(GL_LIGHT0, GL_AMBIENT_AND_DIFFUSE, (float *)vector3(0.0, 1.0, 0.0));
-			glLightfv(GL_LIGHT0, GL_SPECULAR, (float *)vector3(0.0, 1.0, 0.0));
+			//glLightfv(GL_LIGHT0, GL_POSITION, (float *)vector4(0.0, 0.0, 0.0, 1.0));
+			glLightfv(GL_LIGHT0, GL_AMBIENT_AND_DIFFUSE, (float *)vector3(1.0, 1.0, 1.0));
+			glLightfv(GL_LIGHT0, GL_SPECULAR, (float *)vector3(0.0, 0.0, 0.0));
 
 
 			glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, (float *)vector3(1.0, 1.0, 1.0));
 			glMaterialfv(GL_FRONT, GL_EMISSION, (float *)vector3(0.0, 0.0, 0.0));
-			glMaterialfv(GL_FRONT, GL_SPECULAR, (float *)vector3(1.0, 1.0, 1.0));
+			glMaterialfv(GL_FRONT, GL_SPECULAR, (float *)vector3(0.0, 0.0, 0.0));
 			glMaterialf(GL_FRONT, GL_SHININESS, 128.0);
 			return true;
 		}
@@ -389,30 +392,46 @@ class PlaygroundDemo : public PlaygroundRunner {
 			//glBindTexture(GL_TEXTURE_2D, anotherTextureResource->getId());
 
 			glPushMatrix();
-			glTranslatef(-4.0, 0.0, 0.0);
+			glTranslatef(-1.5, 2.0, 0.0);
 			glRotatef(rotation, 0.0, 1.0, 0.0);
 			video->glDrawGeometry(geometryResource);
 			glPopMatrix();
 
 			glPushMatrix();
-			glTranslatef(-1.0, 0.0, 0.0);
+			glTranslatef(1.5, 2.0, 0.0);
 			glRotatef(rotation, 0.0, 1.0, 0.0);
 			video->glDrawGeometry(sphereGeometryResource);
 			glPopMatrix();
+
+			if(anotherShaderProgramResource != null)
+				glUseProgram(anotherShaderProgramResource->getId());
+
+			glPushMatrix();
+			glTranslatef(-1.5, 0.0, 0.0);
+			glRotatef(rotation, 0.0, 1.0, 0.0);
+			video->glDrawGeometry(geometryResource);
+			glPopMatrix();
+
+			glPushMatrix();
+			glTranslatef(1.5, 0.0, 0.0);
+			glRotatef(rotation, 0.0, 1.0, 0.0);
+			video->glDrawGeometry(sphereGeometryResource);
+			glPopMatrix();
+
 
 			if(shaderProgramResource != null)
 				glUseProgram(shaderProgramResource->getId());
 
 			glPushMatrix();
-			glTranslatef(1.0, 0.0, 0.0);
+			glTranslatef(-1.5, -2.0, 0.0);
 			glRotatef(rotation, 0.0, 1.0, 0.0);
-			video->glDrawVertexArray(sphereArrayResource);
+			video->glDrawVertexArray(vertexArrayResource);
 			glPopMatrix();
 
 			glPushMatrix();
-			glTranslatef(4.0, 0.0, 0.0);
+			glTranslatef(1.5, -2.0, 0.0);
 			glRotatef(rotation, 0.0, 1.0, 0.0);
-			video->glDrawVertexArray(vertexArrayResource);
+			video->glDrawVertexArray(sphereArrayResource);
 			glPopMatrix();
 
 			rotation+=0.1;
