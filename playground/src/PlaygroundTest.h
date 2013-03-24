@@ -382,7 +382,8 @@ class PlaygroundDemo : public PlaygroundRunner {
 			glDisable(GL_LIGHTING);
 			glColor3f(1.0, 1.0, 0.0);
 			glPushMatrix();
-			glLightfv(GL_LIGHT0, GL_POSITION, (float *)vector4(lightPosition.x, lightPosition.y, lightPosition.z, 1));
+			//light w = 1: spotlight; w = 0 directional light
+			glLightfv(GL_LIGHT0, GL_POSITION, (float *)vector4(lightPosition.x, lightPosition.y, lightPosition.z, 0));
 			glTranslatef(lightPosition.x, lightPosition.y, lightPosition.z);
 			video->glSphere(.2);
 			glPopMatrix();

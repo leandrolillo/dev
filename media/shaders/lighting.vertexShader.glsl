@@ -6,7 +6,7 @@ attribute vec2 textureCoordinate;
 attribute vec3 color;
 
 varying vec4 diffuse, ambient, emission;
-varying vec3 normalVector,halfVector;
+varying vec3 normalVector, halfVector;
 
 void main() {
 	normalVector = normalize(gl_NormalMatrix  * normal);
