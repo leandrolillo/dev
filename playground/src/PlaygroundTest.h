@@ -5,6 +5,7 @@
 #include "video/videoRunner.h"
 #include "audio/audioRunner.h"
 #include "test/TestRunner.h"
+#include "math/Math3d.h"
 #include <stdio.h>
 
 #include"math/Math3d.h"
@@ -39,8 +40,15 @@ class PlaygroundTests: public TestRunner {
 			this->addTest("testLoadVertexArray", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadVertexBuffer));
 			this->addTest("testLoadShader", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadShaders));
 			this->addTest("testLoadShaderProgram", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadShaderProgram));
+			this->addTest("testMath", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testMath));
 
 			return true;
+		}
+
+		void testMath()
+		{
+			//TODO: Test vector and matrix math operations, factories and utilities. Test functions.
+			assertFail("Implement the tests you lazy ass!");
 		}
 
 		void testInvalidResource()
@@ -328,38 +336,38 @@ class PlaygroundDemo : public PlaygroundRunner {
 					vector3 vertex4 = radius * vector3(radius * sin(tita + dTita) * sin(fi + dFi), radius * cos(tita + dTita), radius * sin(tita + dTita) * cos(fi + dFi));
 
 					resource.getVertices().push_back(vertex1);
-					resource.getNormals().push_back(vertex1.Normalizado());
+					resource.getNormals().push_back(VectorUtilities::normalizar(vertex1));
 					resource.getTextureCoordinates().push_back(texel1);
 					resource.getIndices().push_back(resource.getIndices().size());
 					resource.getColors().push_back(vector3(1.0, 1.0, 1.0));
 
 					resource.getVertices().push_back(vertex2);
-					resource.getNormals().push_back(vertex2.Normalizado());
+					resource.getNormals().push_back(VectorUtilities::normalizar(vertex2));
 					resource.getTextureCoordinates().push_back(texel2);
 					resource.getIndices().push_back(resource.getIndices().size());
 					resource.getColors().push_back(vector3(1.0, 1.0, 1.0));
 
 					resource.getVertices().push_back(vertex3);
-					resource.getNormals().push_back(vertex3.Normalizado());
+					resource.getNormals().push_back(VectorUtilities::normalizar(vertex3));
 					resource.getTextureCoordinates().push_back(texel3);
 					resource.getIndices().push_back(resource.getIndices().size());
 					resource.getColors().push_back(vector3(1.0, 1.0, 1.0));
 
 					resource.getVertices().push_back(vertex3);
-					resource.getNormals().push_back(vertex3.Normalizado());
+					resource.getNormals().push_back(VectorUtilities::normalizar(vertex3));
 					resource.getTextureCoordinates().push_back(texel3);
 					resource.getIndices().push_back(resource.getIndices().size());
 					resource.getColors().push_back(vector3(1.0, 1.0, 1.0));
 
 
 					resource.getVertices().push_back(vertex2);
-					resource.getNormals().push_back(vertex2.Normalizado());
+					resource.getNormals().push_back(VectorUtilities::normalizar(vertex2));
 					resource.getTextureCoordinates().push_back(texel2);
 					resource.getIndices().push_back(resource.getIndices().size());
 					resource.getColors().push_back(vector3(1.0, 1.0, 1.0));
 
 					resource.getVertices().push_back(vertex4);
-					resource.getNormals().push_back(vertex4.Normalizado());
+					resource.getNormals().push_back(VectorUtilities::normalizar(vertex4));
 					resource.getTextureCoordinates().push_back(texel4);
 					resource.getIndices().push_back(resource.getIndices().size());
 					resource.getColors().push_back(vector3(1.0, 1.0, 1.0));
@@ -390,7 +398,7 @@ class PlaygroundDemo : public PlaygroundRunner {
 
 			glEnable(GL_LIGHTING);
 
-			//glBindTexture(GL_TEXTURE_2D, anotherTextureResource->getId());
+			glBindTexture(GL_TEXTURE_2D, anotherTextureResource->getId());
 
 			glPushMatrix();
 			glTranslatef(-1.5, 2.0, 0.0);

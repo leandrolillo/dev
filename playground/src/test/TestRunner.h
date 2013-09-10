@@ -36,7 +36,8 @@ class TestRunner: public PlaygroundRunner {
 		virtual void after() {}
 
 		virtual void doTests() {
-			unsigned int testsInError = 0;
+			std::list<String> failedTests;
+
 			logger->info("\n\nRunning [%d] Tests...\n\n", tests.size());
 
 			for(std::map<String, void (TestRunner::*)()>::iterator iterator = tests.begin(); iterator != tests.end(); iterator++)
@@ -51,12 +52,12 @@ class TestRunner: public PlaygroundRunner {
 					logger->info("[%s] PASSED.\n", iterator->first.c_str());
 				} catch (Exception &e) {
 					logger->error("Test [%s] FAILED: %s\n", iterator->first.c_str(), e.toString().c_str());
-					testsInError++;
+					failedTests.push_back(iterator->first);
 				}
 
 			}
 
-			logger->info("\n\nTESTS: %d tests in error\n\n", testsInError);
+			logger->info("\n\nTESTS: %d tests in error%s\n\n", failedTests.size(), getFailedTestsString(failedTests).c_str());
 		}
 
 		virtual boolean afterInit()	{
@@ -108,6 +109,22 @@ class TestRunner: public PlaygroundRunner {
 
 		void assertFail(String message) {
 			throw Exception(message.c_str());
+		}
+
+	private:
+		String getFailedTestsString(std::list<String> &stringList)
+		{
+			String result(stringList.empty() ? "" :  ": ");
+
+			for(std::list<String>::iterator iterator = stringList.begin(); iterator != stringList.end(); iterator++)
+			{
+				if(iterator != stringList.begin())
+					result.append(", ");
+
+				result.append(*iterator);
+			}
+
+			return result;
 		}
 };
 

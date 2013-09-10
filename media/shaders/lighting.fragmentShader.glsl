@@ -28,6 +28,6 @@ void main(void)
 					+ diffuse 
 					+ specular ;
 
-	gl_FragColor =  color;
-    //gl_FragColor =  texture2D(color_texture, gl_TexCoord[0].st) * color;
+	//gl_FragColor =  color;
+    gl_FragColor =  texture2D(color_texture, gl_TexCoord[0].st) * color;
 }

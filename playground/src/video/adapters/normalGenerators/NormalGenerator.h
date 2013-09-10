@@ -9,6 +9,7 @@
 #define NORMALGENERATOR_H_
 
 #include"../../resources/GeometryResource.h"
+#include "math/MathUtilities.h"
 #include"log/Logger.h"
 #include <gl/gl.h>
 
@@ -77,7 +78,7 @@ class PerVertexGLTrianglesNormalGenerator : public NormalGenerator
 				{
 					vector tangente2 = vertices[indices[currentVertexIndex + 2]] - vertices[indices[currentVertexIndex]];
 					vector tangente1 = vertices[indices[currentVertexIndex + 1]] - vertices[indices[currentVertexIndex]];
-					vector normal = (tangente2 ^ tangente1).Normalizado();
+					vector normal = VectorUtilities::normalizar(tangente2 ^ tangente1);
 
 //					logger->debug("Current Triangle: [%d], tangente1 = <%.2f, %.2f, %.2f>, tangente2=<%.2f, %.2f, %.2f>, normal=<%.2f, %.2f, %.2f>", currentVertexIndex,
 //							tangente1.x, tangente1.y, tangente1.z,
@@ -96,7 +97,7 @@ class PerVertexGLTrianglesNormalGenerator : public NormalGenerator
 //				log("divisors = ", divisor);
 
 				for(unsigned int currentNormalIndex = 0; currentNormalIndex < normals.size(); currentNormalIndex++)
-					normals[currentNormalIndex] =  (normals[currentNormalIndex] * (1.0f / divisor[currentNormalIndex])).Normalizado();
+					normals[currentNormalIndex] =  VectorUtilities::normalizar(normals[currentNormalIndex] * (1.0f / divisor[currentNormalIndex]));
 
 				resource->getNormals().clear();
 				for(std::vector<unsigned int>::iterator iterator = indices.begin(); iterator != indices.end(); iterator++)

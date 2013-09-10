@@ -1,4 +1,11 @@
 TODOs:
+Math3d:
+	integrar con clases matrix_mxn, vector_n, funcion y sel
+	eliminar operador /
+	refactorizar para objetos inmutables? (o sea sí operator + pero no operator +=)?
+	mover lo más posible a superclases
+	mover métodos hacerRotación, hacerTraslación, inversa, etc. a una clase fábrica y/o utilities
+	refactorizar y unificar nomenclatura (mayúsculas, inglés o español, etc.)
 
 - classpath loader? que sea quien busca los archivos a partir de uno o varios directorios base. Capaz de leer dentro de archivos comprimidos.
 - 'theme' para los recursos: traducción de un nombre a una ruta o de una ruta a otra ruta.
@@ -17,7 +24,6 @@ shaders:
 formato simple para definición de geometría, animaciones, etc.
 Manejo de recursos (texturas, buffers y sources, geometría, etc.)
 arcball e interacción con objetos en pantalla
-integrar con clases math y refactorizar nombres y uso (para objetos readonly)
 refactorizar clases ordenando getters/setters y métodos heredados
 implementar uso excepciones manejo de errores
 *desglosar playground en librerías
@@ -26,6 +32,12 @@ multithreading
 
 physics
 
-ir pensando programas para aplicar el playground
-global defense
-ghosts and goblins
+Ir pensando programas para aplicar el playground:
+global defense - tower defense game
+ghosts and goblins action oriented game - spear & sword fighting (simple vector graphics? no textures!)
+jurassic park like game
+captain america like game
+
+valkyrie aircraft game
+cad-like physics playground in 2d where should be possible to make force diagrams 
+pompa spider and biped ai

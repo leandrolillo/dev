@@ -12,6 +12,7 @@
 
 #include "core/playground.h"
 #include "math/Math3d.h"
+#include "math/MathUtilities.h"
 
 #include "adapters/PngResourceAdapter.h"
 #include "adapters/JpegResourceAdapter.h"
@@ -152,27 +153,27 @@ class VideoRunner: public PlaygroundRunner {
 					vector3 vertex3 = radius * vector3(radius * sin(tita) * sin(fi + dFi), radius * cos(tita), radius * sin(tita) * cos(fi + dFi));
 					vector3 vertex4 = radius * vector3(radius * sin(tita + dTita) * sin(fi + dFi), radius * cos(tita + dTita), radius * sin(tita + dTita) * cos(fi + dFi));
 
-					glNormal3fv((float *)vertex1.Normalizado());
+					glNormal3fv((float *)VectorUtilities::normalizar(vertex1));
 					glTexCoord2fv((float *)texel1);
 					glVertex3fv((float *)vertex1);
 
-					glNormal3fv((float *)vertex2.Normalizado());
+					glNormal3fv((float *)VectorUtilities::normalizar(vertex2));
 					glTexCoord2fv((float *)texel2);
 					glVertex3fv((float *)vertex2);
 
-					glNormal3fv((float *)vertex3.Normalizado());
+					glNormal3fv((float *)VectorUtilities::normalizar(vertex3));
 					glTexCoord2fv((float *)texel3);
 					glVertex3fv((float *)vertex3);
 
-					glNormal3fv((float *)vertex3.Normalizado());
+					glNormal3fv((float *)VectorUtilities::normalizar(vertex3));
 					glTexCoord2fv((float *)texel3);
 					glVertex3fv((float *)vertex3);
 
-					glNormal3fv((float *)vertex2.Normalizado());
+					glNormal3fv((float *)VectorUtilities::normalizar(vertex2));
 					glTexCoord2fv((float *)texel2);
 					glVertex3fv((float *)vertex2);
 
-					glNormal3fv((float *)vertex4.Normalizado());
+					glNormal3fv((float *)VectorUtilities::normalizar(vertex4));
 					glTexCoord2fv((float *)texel4);
 					glVertex3fv((float *)vertex4);
 				}
