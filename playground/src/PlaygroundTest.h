@@ -267,8 +267,7 @@ class PlaygroundDemo : public PlaygroundRunner {
 
 			// demo stuff
 			Source *backgroundSource = audio->createSource("background.ogg");
-			if(backgroundSource != null)
-				audio->playSource(backgroundSource);
+			audio->playSource(backgroundSource);
 
 			textureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("images/ss/MB.PNG", "video/texture");
 			anotherTextureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("images/irs.JPG", "video/texture");
@@ -307,6 +306,8 @@ class PlaygroundDemo : public PlaygroundRunner {
 			glMaterialfv(GL_FRONT, GL_EMISSION, (float *)vector3(0.0, 0.0, 0.0));
 			glMaterialfv(GL_FRONT, GL_SPECULAR, (float *)vector3(0.0, 0.0, 0.0));
 			glMaterialf(GL_FRONT, GL_SHININESS, 128.0);
+
+			logger->info("Demo Initialization finished");
 			return true;
 		}
 
@@ -398,7 +399,8 @@ class PlaygroundDemo : public PlaygroundRunner {
 
 			glEnable(GL_LIGHTING);
 
-			glBindTexture(GL_TEXTURE_2D, anotherTextureResource->getId());
+			if(anotherTextureResource != null)
+				glBindTexture(GL_TEXTURE_2D, anotherTextureResource->getId());
 
 			glPushMatrix();
 			glTranslatef(-1.5, 2.0, 0.0);
@@ -478,13 +480,20 @@ class PlaygroundDemo : public PlaygroundRunner {
 
 };
 
+#define SKIP_TESTS
+
 class PlaygroundTest: public PlaygroundWin32 {
 	public:
 		void init() {
 			PlaygroundWin32::init();
 
+#ifndef SKIP_DEMO
 			this->addRunner(new PlaygroundDemo());
+#endif
+
+#ifndef SKIP_TESTS
 			this->addRunner(new PlaygroundTests());
+#endif
 		}
 };
 #endif
