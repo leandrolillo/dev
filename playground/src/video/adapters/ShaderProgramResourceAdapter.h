@@ -29,7 +29,7 @@ class ShaderProgramResourceAdapter: public ResourceAdapter {
 	private:
 		String getInfoLog(GLuint object)
 		{
-			GLint log_length;
+			GLint log_length = 0;
 			char *log;
 
 			glGetProgramiv(object, GL_INFO_LOG_LENGTH, &log_length);
@@ -106,7 +106,7 @@ class ShaderProgramResourceAdapter: public ResourceAdapter {
 			if (!operationSuccessful) {
 				logger->error("Failed to link program - [%d]: [%s]\n", operationSuccessful, getInfoLog(resource->getId()).c_str());
 				dispose(resource);
-				return 0;
+				return null;
 			}
 
 			glValidateProgram(resource->getId());
@@ -114,7 +114,7 @@ class ShaderProgramResourceAdapter: public ResourceAdapter {
 			if (!operationSuccessful) {
 				logger->error("Failed to validate program - [%d]: [%s]\n", operationSuccessful, getInfoLog(resource->getId()).c_str());
 				dispose(resource);
-				return 0;
+				return null;
 			}
 
 			logger->debug("Shader executable [%s] successfully linked and validated", fileParser.getFilename().c_str());
