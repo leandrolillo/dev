@@ -70,6 +70,10 @@ class TestRunner: public PlaygroundRunner {
 			return true;
 		}
 
+		virtual LoopResult doLoop() {
+			return FINISHED;
+		}
+
 		void assertTrue(boolean condition)
 		{
 			assertTrue("", condition);

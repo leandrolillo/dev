@@ -40,6 +40,7 @@ class PlaygroundTests: public TestRunner {
 			this->addTest("testLoadVertexArray", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadVertexBuffer));
 			this->addTest("testLoadShader", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadShaders));
 			this->addTest("testLoadShaderProgram", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadShaderProgram));
+			this->addTest("testLoadShaderProgramByVersion", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadShaderProgramByVersion));
 			this->addTest("testMath", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testMath));
 
 			return true;
@@ -203,6 +204,30 @@ class PlaygroundTests: public TestRunner {
 			assertEquals("Shader Program mimetype invalid", "video/shaderProgram", resource->getMimeType());
 		}
 
+		void testLoadShaderProgramByVersion()
+		{
+			WglRunner *wgl = (WglRunner *) this->getContainer()->getRunner(0);
+
+			ShaderProgramResource *shaderProgramResource = null;
+
+			if(wgl->getMajorVersion() >= 3) {
+				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/lighting.140.program.json", "video/shaderProgram");
+			} else {
+				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/lighting.120.program.json", "video/shaderProgram");
+			}
+			assertTrue("Shader Program resource not loaded", shaderProgramResource != null);
+			assertEquals("Shader Program mimetype invalid", "video/shaderProgram", shaderProgramResource->getMimeType());
+
+			if(wgl->getMajorVersion() >= 3) {
+				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/toon.140.program.json", "video/shaderProgram");
+			} else {
+				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/toon.120.program.json", "video/shaderProgram");
+			}
+			assertTrue("Shader Program resource not loaded", shaderProgramResource != null);
+			assertEquals("Shader Program mimetype invalid", "video/shaderProgram", shaderProgramResource->getMimeType());
+
+		}
+
 };
 
 class PlaygroundDemo : public PlaygroundRunner {
@@ -266,8 +291,8 @@ class PlaygroundDemo : public PlaygroundRunner {
 
 
 			// demo stuff
-			Source *backgroundSource = audio->createSource("background.ogg");
-			audio->playSource(backgroundSource);
+//			Source *backgroundSource = audio->createSource("background.ogg");
+//			audio->playSource(backgroundSource);
 
 			textureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("images/ss/MB.PNG", "video/texture");
 			anotherTextureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("images/irs.JPG", "video/texture");
@@ -276,9 +301,14 @@ class PlaygroundDemo : public PlaygroundRunner {
 
 			sphereGeometryResource = (GeometryResource *)this->getContainer()->getResourceManager()->load("geometry/sphere.json", "video/geometry");
 
-			shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/lighting.program.json", "video/shaderProgram");
-			anotherShaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/toon.program.json", "video/shaderProgram");
+			if(wgl->getMajorVersion() >= 3) {
+				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/lighting.140.program.json", "video/shaderProgram");
+				anotherShaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/toon.140.program.json", "video/shaderProgram");
+			} else {
+				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/lighting.120.program.json", "video/shaderProgram");
+				anotherShaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/toon.120.program.json", "video/shaderProgram");
 
+			}
 			vertexArrayResource = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/triangle.json", "video/vertexArray");
 
 			glClearColor(0.0, 0.5, 0.0, 0.0);
@@ -480,14 +510,19 @@ class PlaygroundDemo : public PlaygroundRunner {
 
 };
 
-#define SKIP_TESTS
+//#define SKIP_DEMO
+//#define SKIP_TESTS
 
-class PlaygroundTest: public PlaygroundWin32 {
+class PlaygroundTest: public PlaygroundWin32{
 	public:
 		void init() {
 			PlaygroundWin32::init();
 
-#ifndef SKIP_DEMO
+#ifdef SKIP_DEMO
+			this->getWinHandler()->setEnabled(false);
+			this->getVideoRunner()->setEnabled(false);
+			this->getAudioRunner()->setEnabled(false);
+#else
 			this->addRunner(new PlaygroundDemo());
 #endif
 

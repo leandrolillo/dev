@@ -67,7 +67,7 @@ class ShaderResourceAdapter: public ResourceAdapter {
 			int compilationSuccessfull = 0;
 			glGetShaderiv(resource->getId(), GL_COMPILE_STATUS, &compilationSuccessfull);
 			if (!compilationSuccessfull) {
-				logger->error("Failed to compile [%s]: [%s]\n", shaderType == GL_VERTEX_SHADER ? "Vertex Shader" : "Fragment Shader", getInfoLog(shaderId).c_str());
+				logger->error("Failed to compile [%s] [%s]: [%s]\n", shaderType == GL_VERTEX_SHADER ? "Vertex Shader" : "Fragment Shader", fileParser.getFilename().c_str(), getInfoLog(shaderId).c_str());
 				dispose(resource);
 				return null;
 			} else {

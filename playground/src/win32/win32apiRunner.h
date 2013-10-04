@@ -63,7 +63,11 @@ class Win32apiRunner: public PlaygroundRunner {
 							IDI_WINLOGO), LoadCursor(NULL, IDC_CROSS),
 					(HBRUSH) COLOR_BACKGROUND, null, TEXT(wndClassName),
 					LoadIcon(NULL, IDI_WINLOGO) };
-			if (!RegisterClassEx(&wndClassEx)) {
+			if(GetClassInfoExA(hInstance, TEXT(wndClassName), &wndClassEx))
+			{
+				logger->debug("Reusing windows class [%s]", wndClassName);
+
+			} else if (!RegisterClassEx(&wndClassEx)) {
 				printLastError("Could not register class");
 				return false;
 			}

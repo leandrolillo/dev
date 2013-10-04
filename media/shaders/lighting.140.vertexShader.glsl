@@ -1,12 +1,12 @@
-#version 120
+#version 140 compatibility
 
-attribute vec3 vertex;
-attribute vec3 normal;
-attribute vec2 textureCoordinate;
-attribute vec3 color;
+uniform vec3 vertex;
+uniform vec3 normal;
+uniform vec2 textureCoordinate;
+uniform vec3 color;
 
-varying vec4 diffuse, ambient, emission;
-varying vec3 normalVector, halfVector;
+//varying vec4 diffuse, ambient, emission;
+out vec3 normalVector; //, halfVector;
 
 void main() {
 	normalVector = normalize(gl_NormalMatrix  * normal);

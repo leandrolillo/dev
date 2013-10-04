@@ -116,7 +116,7 @@ class Logger {
 				char textBuffer[256];
 				strftime(textBuffer, sizeof(textBuffer), "%d/%m/%Y %H:%M:%S", getCurrentTime());
 				fprintf(fileHandler, "%s - %s - %s: ", textBuffer, type, basename.c_str());
-				printf("%s - %s: ", textBuffer, basename.c_str());
+				printf("%s - %s - %s: ", textBuffer, type, basename.c_str());
 
 				vfprintf(fileHandler, formato, *args);
 				vprintf(formato, *args);

@@ -22,6 +22,8 @@ class WglRunner: public Win32apiRunner {
 		unsigned int bitsPerPixel;
 		HGLRC hRenderingContext;
 		Logger *logger;
+		unsigned int majorVersion;
+		unsigned int minorVersion;
 
 	public:
 		WglRunner() :
@@ -169,9 +171,12 @@ class WglRunner: public Win32apiRunner {
 			glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
 			glGetIntegerv(GL_MINOR_VERSION, &minorVersion);
 
-			logger->info("OpenGL [%d.%d] initialized\nVersion: [%s]\nGLSL Version: [%s]\nGLEW Version [%s]\nVendor: [%s]\nRenderer: [%s]",
-					majorVersion,
-					minorVersion,
+			this->majorVersion = (unsigned int)majorVersion;
+			this->minorVersion = (unsigned int)minorVersion;
+
+			logger->info("OpenGL [%d].[%d] initialized\nVersion: [%s]\nGLSL Version: [%s]\nGLEW Version [%s]\nVendor: [%s]\nRenderer: [%s]",
+					this->majorVersion,
+					this->minorVersion,
 					glGetString(GL_VERSION),
 					glGetString(GL_SHADING_LANGUAGE_VERSION),
 					glewGetString(GLEW_VERSION),
@@ -187,6 +192,14 @@ class WglRunner: public Win32apiRunner {
 
 			return false;
 		}
+
+	unsigned int getMajorVersion() const {
+		return majorVersion;
+	}
+
+	unsigned int getMinorVersion() const {
+		return minorVersion;
+	}
 };
 
 #endif /* VIDEORUNNER_H_ */

@@ -1,4 +1,4 @@
-#version 120
+#version 140 compatibility
 uniform sampler2D color_texture;
 
 varying vec3 normalVector;

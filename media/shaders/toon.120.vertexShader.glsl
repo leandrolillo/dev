@@ -1,6 +1,7 @@
 //
 // toon.vert -- from lighthouse3d.com
 //
+#version 120
 
 varying vec3 normal;
 varying vec3 lightDir;

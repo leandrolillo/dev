@@ -1,4 +1,0 @@
-{
-	vertexShaders: ["shaders/toon.vert"],
-	fragmentShaders: ["shaders/toon.frag"],
-}
