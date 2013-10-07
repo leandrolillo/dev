@@ -102,9 +102,11 @@ class PlaygroundTests: public TestRunner {
 
 		void testMath()
 		{
+			//Test nul matrix instantiation
 			matriz_mxn matriz;
 			logger->debug("matriz nula: [%s]", matriz.toString().c_str());
 
+			//Test matrix assignment and element access
 			matriz = matriz_mxn::identidad(2);
 			assertEquals("Unexpected value", (double)matriz(0, 0), 1.0);
 			assertEquals("Unexpected value", (double)matriz(0, 1), 0.0);
@@ -113,6 +115,7 @@ class PlaygroundTests: public TestRunner {
 
 			logger->debug("matriz identidad 2x2:\n[%s]", matriz.toString().c_str());
 
+			//Test matrix assignment to matrix with memory allocated
 			matriz = matriz_mxn::identidad(3);
 			assertEquals("Unexpected value", (double)matriz(0, 0), 1.0);
 			assertEquals("Unexpected value", (double)matriz(0, 1), 0.0);
@@ -126,13 +129,21 @@ class PlaygroundTests: public TestRunner {
 
 			logger->debug("matriz identidad 3x3:\n[%s]", matriz.toString().c_str());
 
+			//test matrix_2x2 instantiation and element access
 			matriz_2x2 matriz2(1, 2, 3, 4);
 			assertEquals("Unexpected value", (double)matriz2(0, 0), 1.0);
 			assertEquals("Unexpected value", (double)matriz2(0, 1), 2.0);
 			assertEquals("Unexpected value", (double)matriz2(1, 0), 3.0);
 			assertEquals("Unexpected value", (double)matriz2(1, 1), 4.0);
+
+			assertEquals("Unexpected value", (double)matriz2._00 , 1.0);
+			assertEquals("Unexpected value", (double)matriz2._01, 2.0);
+			assertEquals("Unexpected value", (double)matriz2._10, 3.0);
+			assertEquals("Unexpected value", (double)matriz2._11, 4.0);
+
 			logger->debug("matriz2:\n[%s]", matriz2.toString().c_str());
 
+			//test matrix_2x2 assignment to matrix_mxn
 			matriz = matriz_2x2(1, 2, 3, 4);
 			assertEquals("Unexpected value", (double)matriz(0, 0), 1.0);
 			assertEquals("Unexpected value", (double)matriz(0, 1), 2.0);
@@ -141,6 +152,8 @@ class PlaygroundTests: public TestRunner {
 
 			logger->debug("matriz:\n[%s]", matriz.toString().c_str());
 
+			//test matrix operations
+			//multiplication by scalar
 			matriz = matriz * 2.0;
 			assertEquals("Unexpected value", (double)matriz(0, 0), 2.0);
 			assertEquals("Unexpected value", (double)matriz(0, 1), 4.0);
@@ -148,6 +161,11 @@ class PlaygroundTests: public TestRunner {
 			assertEquals("Unexpected value", (double)matriz(1, 1), 8.0);
 
 			logger->debug("matriz * 2:\n[%s]", matriz.toString().c_str());
+
+			//matrix multiplication, addition substraction, etc.
+
+
+			//test invalid matrix assignments
 		}
 
 		void testInvalidResource()

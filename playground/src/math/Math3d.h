@@ -153,12 +153,6 @@ class matriz_mxn  {
 		}
 
 		static const matriz_mxn identidad(unsigned int n);
-	protected:
-		virtual real *getElementos()
-		{
-			return new real[getNroFilas() * getNroColumnas()];
-		}
-
 };
 
 class matriz_2x2: public matriz_mxn {
@@ -229,10 +223,6 @@ class matriz_2x2: public matriz_mxn {
 //
 //		unsigned char invertir();
 //		const matriz_2x2 inversa() const;
-	protected:
-			real *getElementos() {
-				return m;
-			}
 };
 
 class matriz_3x3: public matriz_mxn {
@@ -321,10 +311,6 @@ class matriz_3x3: public matriz_mxn {
 //		const matriz_3x3 inversa(void) const;
 //
 //		void star(const vector3 &op1);
-	protected:
-			real *getElementos() {
-				return m;
-			}
 };
 
 class matriz_4x4: matriz_mxn {
@@ -388,11 +374,6 @@ class matriz_4x4: matriz_mxn {
 //
 //
 //			void invertirTransformacion(void);
-	protected:
-			real *getElementos() {
-				return m;
-			}
-
 };
 
 
