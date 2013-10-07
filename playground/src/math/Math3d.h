@@ -83,7 +83,7 @@ class matriz_mxn  {
 			throw InvalidArgumentException("Index Out of Bounds - matriz_mxn::operator()");
 		}
 
-		operator const real() const;
+//		operator const real() const;
 		const matriz_mxn &operator =(const matriz_mxn &op2) {
 			unsigned int size = op2.getNroColumnas() * op2.getNroFilas();
 
@@ -111,10 +111,62 @@ class matriz_mxn  {
 			return (*this);
 		}
 
-		const matriz_mxn operator +(const matriz_mxn &op1) const;
-		const matriz_mxn operator -(const matriz_mxn &op1) const;
-		const matriz_mxn operator *(real op1) const;
-		const matriz_mxn operator *(const matriz_mxn &op1) const;
+		const matriz_mxn operator +(const matriz_mxn &op1) const {
+			matriz_mxn respuesta(this->getNroFilas(), this->getNroColumnas());
+
+			if (this->getNroColumnas() == op1.getNroColumnas()
+					&& this->getNroFilas() == op1.getNroFilas())
+				for (unsigned short i = 0; i < this->getNroFilas(); i++)
+					for (unsigned short j = 0; j < this->getNroColumnas(); j++)
+						respuesta(i, j) = (*(matriz_mxn *) this)(i, j)
+								+ ((matriz_mxn &) op1)(i, j);
+			else
+				throw InvalidArgumentException(
+						"Las dimensiones de las matrices son erróneas - matriz_mxn::operator +");
+
+			return (respuesta);
+		}
+		const matriz_mxn operator -(const matriz_mxn &op1) const {
+			matriz_mxn respuesta(this->getNroFilas(), this->getNroColumnas());
+
+			if (this->getNroFilas() == op1.getNroFilas()
+					&& this->getNroColumnas() == op1.getNroColumnas())
+				for (unsigned short i = 0; i < this->getNroFilas(); i++)
+					for (unsigned short j = 0; j < this->getNroColumnas(); j++)
+						respuesta(i, j) = (*(matriz_mxn *) this)(i, j)
+								- ((matriz_mxn &) op1)(i, j);
+			else
+				throw InvalidArgumentException(
+						"Las dimensiones de las matrices son erróneas - matriz_mxn::operator -");
+
+			return (respuesta);
+		}
+		const matriz_mxn operator *(real op1) const {
+			matriz_mxn respuesta(this->getNroFilas(), this->getNroColumnas());
+
+			for (unsigned short i = 0; i < this->getNroFilas(); i++)
+				for (unsigned short j = 0; j < this->getNroColumnas(); j++)
+					respuesta(i, j) = (*(matriz_mxn *) this)(i, j) * op1;
+
+			return (respuesta);
+		}
+		const matriz_mxn operator *(const matriz_mxn &op1) const {
+			matriz_mxn resultado(this->getNroFilas(), op1.getNroColumnas());
+
+			if (this->getNroColumnas() == op1.getNroFilas()) {
+				for (unsigned short i = 0; i < this->getNroFilas(); i++)
+					for (unsigned short j = 0; j < op1.getNroColumnas(); j++) {
+						resultado(i, j) = 0.0f;
+						for (unsigned short k = 0; k < this->getNroColumnas(); k++)
+							resultado(i, j) += (*(matriz_mxn *) this)(i, k)
+									* ((matriz_mxn &) op1)(k, j);
+					}
+			} else
+				throw InvalidArgumentException(
+						"Las dimensiones de las matrices son erróneas - matriz_mxn::operator *");
+			return (resultado);
+
+		}
 
 //			void trasponer();
 //			const matriz_mxn traspuesta() const;
@@ -155,13 +207,19 @@ class matriz_mxn  {
 			return result;
 		}
 
-		static const matriz_mxn identidad(unsigned int n);
-	protected:
-		virtual real *getElementos()
-		{
-			return new real[getNroFilas() * getNroColumnas()];
-		}
+		static const matriz_mxn identidad(unsigned int n) {
+			matriz_mxn identity(n, n);
 
+			for (unsigned int i = 0; i < n; i++)
+				for (unsigned int j = 0; j < n; j++) {
+					if (i == j)
+						identity(i, j) = 1.0;
+					else
+						identity(i, j) = 0.0;
+				}
+
+			return identity;
+		}
 };
 
 class matriz_2x2: public matriz_mxn {
@@ -232,10 +290,6 @@ class matriz_2x2: public matriz_mxn {
 //
 //		unsigned char invertir();
 //		const matriz_2x2 inversa() const;
-	protected:
-			real *getElementos() {
-				return m;
-			}
 };
 
 class matriz_3x3: public matriz_mxn {
@@ -268,7 +322,7 @@ class matriz_3x3: public matriz_mxn {
 
 		matriz_3x3(real d00, real d01, real d02, real d10, real d11,
 				real d12, real d20, real d21, real d22) :
-				matriz_mxn(3, 3) {
+				matriz_mxn(3, 3, m) {
 			this->_00 = d00;
 			this->_01 = d01;
 			this->_02 = d02;
@@ -280,11 +334,11 @@ class matriz_3x3: public matriz_mxn {
 			this->_22 = d22;
 		}
 		matriz_3x3(const matriz_3x3 &op1) :
-				matriz_mxn(3, 3) { // Constructor de Copia
+				matriz_mxn(3, 3, m) { // Constructor de Copia
 			memcpy(this->m, op1.m, sizeof(this->m));
 		}
 		matriz_3x3(void) :
-				matriz_mxn(3, 3) { // matriz Identidad
+				matriz_mxn(3, 3, m) { // matriz Identidad
 			this->_00 = 1.0;
 			this->_01 = 0.0;
 			this->_02 = 0.0;
@@ -324,10 +378,6 @@ class matriz_3x3: public matriz_mxn {
 //		const matriz_3x3 inversa(void) const;
 //
 //		void star(const vector3 &op1);
-	protected:
-			real *getElementos() {
-				return m;
-			}
 };
 
 class matriz_4x4: matriz_mxn {
@@ -360,10 +410,41 @@ class matriz_4x4: matriz_mxn {
 	public:
 		static matriz_4x4 Identidad;
 
-		matriz_4x4(real _00, real _01, real _02, real _03, real _10, real _11, real _12, real _13, real _20, real _21,
-				real _22, real _23, real _30, real _31, real _32, real _33);
-		matriz_4x4(const matriz_4x4 &op1);
-		matriz_4x4(void);
+		matriz_4x4(real _00, real _01, real _02, real _03, real _10,
+				real _11, real _12, real _13, real _20, real _21, real _22, real _23,
+				real _30, real _31, real _32, real _33) :
+				matriz_mxn(4, 4, m) {
+
+			this->_00 = _00; this->_01 = _01; this->_02 = _02; this->_03 = _03;
+			this->_10 = _10; this->_11 = _11; this->_12 = _12; this->_13 = _13;
+			this->_20 = _20; this->_21 = _21; this->_22 = _22; this->_23 = _23;
+			this->_30 = _30; this->_31 = _31; this->_32 = _32; this->_33 = _33;
+		}
+		matriz_4x4(void) :
+				matriz_mxn(4, 4, m) {
+			this->_00 = 1.0;
+			this->_01 = 0.0;
+			this->_02 = 0.0;
+			this->_03 = 0.0;
+			this->_10 = 0.0;
+			this->_11 = 1.0;
+			this->_12 = 0.0;
+			this->_13 = 0.0;
+			this->_20 = 0.0;
+			this->_21 = 0.0;
+			this->_22 = 1.0;
+			this->_23 = 0.0;
+			this->_30 = 0.0;
+			this->_31 = 0.0;
+			this->_32 = 0.0;
+			this->_33 = 1.0;
+		}
+
+		matriz_4x4(const matriz_4x4 &op1) :
+				matriz_mxn(4, 4, m) { //Constructor de copia
+			memcpy(this->m, op1.m, sizeof(this->m));
+		}
+
 		~matriz_4x4() {}
 
 		matriz_4x4 operator=(const matriz_4x4 &op1);
@@ -391,11 +472,6 @@ class matriz_4x4: matriz_mxn {
 //
 //
 //			void invertirTransformacion(void);
-	protected:
-			real *getElementos() {
-				return m;
-			}
-
 };
 
 

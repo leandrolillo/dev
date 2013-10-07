@@ -151,6 +151,8 @@ class PlaygroundTests: public TestRunner {
 			assertEquals("Unexpected value", (double)matriz(1, 1), 8.0);
 
 			logger->debug("matriz * 2:\n[%s]", matriz.toString().c_str());
+
+			//TODO: test matrix multiplication, addition, substraction, invalid matrix multiplication, addition and substraction.
 		}
 
 		void testInvalidResource()
