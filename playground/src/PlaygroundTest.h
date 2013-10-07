@@ -43,19 +43,22 @@ public:
 		if(t < 0 || t > 1.0)
 			throw new InvalidArgumentException("t parameter must belong to [0.0, 1.0] interval");
 
-		vectorN term1 = x0 * pow(1.0 - t, 3.0);
-		logger->debug("term1 = [%s]", term1.toString().c_str());
-		vectorN term2 = x1 * (3.0 * pow(1.0 - t, 2.0) * t);
-		logger->debug("term2 = [%s]", term2.toString().c_str());
-		vectorN term3 = x2 * (3.0 * (1.0 - t) * pow(t, 2.0));
-		logger->debug("term3 = [%s]", term3.toString().c_str());
-		vectorN term4 = x3 * pow (t, 3.0);
-		logger->debug("term4 = [%s]", term4.toString().c_str());
+//		vectorN term1 = x0 * pow(1.0 - t, 3.0);
+//		logger->debug("term1 = [%s]", term1.toString().c_str());
+//		vectorN term2 = x1 * (3.0 * pow(1.0 - t, 2.0) * t);
+//		logger->debug("term2 = [%s]", term2.toString().c_str());
+//		vectorN term3 = x2 * (3.0 * (1.0 - t) * pow(t, 2.0));
+//		logger->debug("term3 = [%s]", term3.toString().c_str());
+//		vectorN term4 = x3 * pow (t, 3.0);
+//		logger->debug("term4 = [%s]", term4.toString().c_str());
+//
+//		vectorN result = term1 + term2 + term3 + term4;
+//		logger->debug("result = [%s]", result.toString().c_str());
 
-		vectorN result = term1 + term2 + term3 + term4;
-		logger->debug("result = [%s]", result.toString().c_str());
-
-		return  result;
+		return  x0 * pow(1.0 - t, 3.0) +
+				x1 * (3.0 * pow(1.0 - t, 2.0) * t) +
+				x2 * (3.0 * (1.0 - t) * pow(t, 2.0)) +
+				x3 * pow (t, 3.0);
 	}
 
 	String toString() const
@@ -512,7 +515,7 @@ class PlaygroundDemo : public PlaygroundRunner {
 
 		void drawCubicBezier(const FunctionCubicBezier &cubicBezier)
 		{
-			glBegin(GL_LINES);
+			glBegin(GL_LINE_STRIP);
 
 			real delta = 0.1;
 			for(real t = 0.0; t < 1.0; t +=delta)
@@ -627,7 +630,7 @@ class PlaygroundDemo : public PlaygroundRunner {
 
 };
 
-#define SKIP_DEMO
+//#define SKIP_DEMO
 //#define SKIP_TESTS
 
 class PlaygroundTest: public PlaygroundWin32{

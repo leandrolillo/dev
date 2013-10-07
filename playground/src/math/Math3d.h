@@ -52,6 +52,9 @@ class matriz_mxn  {
 		}
 
 		matriz_mxn(const matriz_mxn &op2) {
+			ownsBuffer = true;
+			this->elementos = null;
+			this->nroFilas = this->nroColumnas = 0;
 			*this = op2;
 		}
 
