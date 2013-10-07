@@ -26,7 +26,7 @@
 			{
 				return this->evaluate(x);
 			}
-			virtual std::string toString() const = 0;
+			virtual String toString() const = 0;
 
 			FunctionMultiplication operator *(Function &operator1);
 			FunctionDivision operator /(Function &operator1);

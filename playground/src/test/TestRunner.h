@@ -100,6 +100,12 @@ class TestRunner: public PlaygroundRunner {
 			sprintf(buffer, "%s. Expected: [%d]. Actual: [%d]", message.c_str(), expected, actual);
 			assertTrue(buffer, expected == actual);
 		}
+		void assertEquals(String message, double expected, double actual)
+		{
+			char buffer[256];
+			sprintf(buffer, "%s. Expected: [%.3f]. Actual: [%.3f]", message.c_str(), expected, actual);
+			assertTrue(buffer, expected == actual);
+		}
 
 		void assertFalse(String message, boolean condition)
 		{

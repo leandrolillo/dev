@@ -8,7 +8,61 @@
 #include "math/Math3d.h"
 #include <stdio.h>
 
-#include"math/Math3d.h"
+#include"math/functions/FunctionRealVectorial.h"
+
+
+class FunctionCubicBezier : public FunctionRealVectorial
+{
+private:
+	vectorN x0;
+	vectorN x1;
+	vectorN x2;
+	vectorN x3;
+	Logger *logger;
+
+public:
+	FunctionCubicBezier()  {
+		logger = Logger::getLogger("FunctionCubicBezier.h");
+
+	}
+
+	void setControlPoints(const vectorN &x0, const vectorN &x1, const vectorN &x2, const vectorN &x3)
+	{
+		unsigned int length = x0.getLength();
+
+		if(length <= 0 || x1.getLength() != length || x2.getLength() != length || x3.getLength() != length )
+			throw InvalidArgumentException("Control points length should match and be greater than zero");
+
+		this->x0 = x0;
+		this->x1 = x1;
+		this->x2 = x2;
+		this->x3 = x3;
+	}
+
+	vectorN evaluate(real t) const {
+		if(t < 0 || t > 1.0)
+			throw new InvalidArgumentException("t parameter must belong to [0.0, 1.0] interval");
+
+		vectorN term1 = x0 * pow(1.0 - t, 3.0);
+		logger->debug("term1 = [%s]", term1.toString().c_str());
+		vectorN term2 = x1 * (3.0 * pow(1.0 - t, 2.0) * t);
+		logger->debug("term2 = [%s]", term2.toString().c_str());
+		vectorN term3 = x2 * (3.0 * (1.0 - t) * pow(t, 2.0));
+		logger->debug("term3 = [%s]", term3.toString().c_str());
+		vectorN term4 = x3 * pow (t, 3.0);
+		logger->debug("term4 = [%s]", term4.toString().c_str());
+
+		vectorN result = term1 + term2 + term3 + term4;
+		logger->debug("result = [%s]", result.toString().c_str());
+
+		return  result;
+	}
+
+	String toString() const
+	{
+		return "Cubic Bezier";
+	}
+};
 
 class PlaygroundTests: public TestRunner {
 		Logger *logger;
@@ -40,16 +94,60 @@ class PlaygroundTests: public TestRunner {
 			this->addTest("testLoadVertexArray", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadVertexBuffer));
 			this->addTest("testLoadShader", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadShaders));
 			this->addTest("testLoadShaderProgram", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadShaderProgram));
-			this->addTest("testLoadShaderProgramByVersion", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadShaderProgramByVersion));
 			this->addTest("testMath", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testMath));
+			this->addTest("testLoadShaderProgramByVersion", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadShaderProgramByVersion));
 
 			return true;
 		}
 
 		void testMath()
 		{
-			//TODO: Test vector and matrix math operations, factories and utilities. Test functions.
-			assertFail("Implement the tests you lazy ass!");
+			matriz_mxn matriz;
+			logger->debug("matriz nula: [%s]", matriz.toString().c_str());
+
+			matriz = matriz_mxn::identidad(2);
+			assertEquals("Unexpected value", (double)matriz(0, 0), 1.0);
+			assertEquals("Unexpected value", (double)matriz(0, 1), 0.0);
+			assertEquals("Unexpected value", (double)matriz(1, 0), 0.0);
+			assertEquals("Unexpected value", (double)matriz(1, 1), 1.0);
+
+			logger->debug("matriz identidad 2x2:\n[%s]", matriz.toString().c_str());
+
+			matriz = matriz_mxn::identidad(3);
+			assertEquals("Unexpected value", (double)matriz(0, 0), 1.0);
+			assertEquals("Unexpected value", (double)matriz(0, 1), 0.0);
+			assertEquals("Unexpected value", (double)matriz(0, 2), 0.0);
+			assertEquals("Unexpected value", (double)matriz(1, 0), 0.0);
+			assertEquals("Unexpected value", (double)matriz(1, 1), 1.0);
+			assertEquals("Unexpected value", (double)matriz(1, 2), 0.0);
+			assertEquals("Unexpected value", (double)matriz(2, 0), 0.0);
+			assertEquals("Unexpected value", (double)matriz(2, 1), 0.0);
+			assertEquals("Unexpected value", (double)matriz(2, 2), 1.0);
+
+			logger->debug("matriz identidad 3x3:\n[%s]", matriz.toString().c_str());
+
+			matriz_2x2 matriz2(1, 2, 3, 4);
+			assertEquals("Unexpected value", (double)matriz2(0, 0), 1.0);
+			assertEquals("Unexpected value", (double)matriz2(0, 1), 2.0);
+			assertEquals("Unexpected value", (double)matriz2(1, 0), 3.0);
+			assertEquals("Unexpected value", (double)matriz2(1, 1), 4.0);
+			logger->debug("matriz2:\n[%s]", matriz2.toString().c_str());
+
+			matriz = matriz_2x2(1, 2, 3, 4);
+			assertEquals("Unexpected value", (double)matriz(0, 0), 1.0);
+			assertEquals("Unexpected value", (double)matriz(0, 1), 2.0);
+			assertEquals("Unexpected value", (double)matriz(1, 0), 3.0);
+			assertEquals("Unexpected value", (double)matriz(1, 1), 4.0);
+
+			logger->debug("matriz:\n[%s]", matriz.toString().c_str());
+
+			matriz = matriz * 2.0;
+			assertEquals("Unexpected value", (double)matriz(0, 0), 2.0);
+			assertEquals("Unexpected value", (double)matriz(0, 1), 4.0);
+			assertEquals("Unexpected value", (double)matriz(1, 0), 6.0);
+			assertEquals("Unexpected value", (double)matriz(1, 1), 8.0);
+
+			logger->debug("matriz * 2:\n[%s]", matriz.toString().c_str());
 		}
 
 		void testInvalidResource()
@@ -218,13 +316,13 @@ class PlaygroundTests: public TestRunner {
 			assertTrue("Shader Program resource not loaded", shaderProgramResource != null);
 			assertEquals("Shader Program mimetype invalid", "video/shaderProgram", shaderProgramResource->getMimeType());
 
-			if(wgl->getMajorVersion() >= 3) {
-				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/toon.140.program.json", "video/shaderProgram");
-			} else {
-				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/toon.120.program.json", "video/shaderProgram");
-			}
-			assertTrue("Shader Program resource not loaded", shaderProgramResource != null);
-			assertEquals("Shader Program mimetype invalid", "video/shaderProgram", shaderProgramResource->getMimeType());
+//			if(wgl->getMajorVersion() >= 3) {
+//				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/toon.140.program.json", "video/shaderProgram");
+//			} else {
+//				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/toon.120.program.json", "video/shaderProgram");
+//			}
+//			assertTrue("Shader Program resource not loaded", shaderProgramResource != null);
+//			assertEquals("Shader Program mimetype invalid", "video/shaderProgram", shaderProgramResource->getMimeType());
 
 		}
 
@@ -251,6 +349,8 @@ class PlaygroundDemo : public PlaygroundRunner {
 		GeometryResource *geometryResource;
 		VertexArrayResource *sphereArrayResource;
 		GeometryResource *sphereGeometryResource;
+
+		FunctionCubicBezier curve;
 	public:
 		static const unsigned char ID = 101;
 
@@ -310,6 +410,8 @@ class PlaygroundDemo : public PlaygroundRunner {
 
 			}
 			vertexArrayResource = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/triangle.json", "video/vertexArray");
+
+			curve.setControlPoints(vector2(0,0), vector2(0, 1), vector2(1, 1), vector2(1, 0));
 
 			glClearColor(0.0, 0.5, 0.0, 0.0);
 			glShadeModel(GL_SMOOTH);
@@ -408,6 +510,19 @@ class PlaygroundDemo : public PlaygroundRunner {
 			return resource;
 		}
 
+		void drawCubicBezier(const FunctionCubicBezier &cubicBezier)
+		{
+			glBegin(GL_LINES);
+
+			real delta = 0.1;
+			for(real t = 0.0; t < 1.0; t +=delta)
+			{
+				vectorN result = cubicBezier(t);
+				glVertex2f(result(0), result(1));
+			}
+			glEnd();
+		}
+
 		virtual LoopResult doLoop() {
 			glUseProgram(0);
 
@@ -415,6 +530,8 @@ class PlaygroundDemo : public PlaygroundRunner {
 			glTranslatef(viewPosition.x, viewPosition.y, viewPosition.z);
 
 			video->glAxis();
+
+			drawCubicBezier(curve);
 
 			glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -510,7 +627,7 @@ class PlaygroundDemo : public PlaygroundRunner {
 
 };
 
-//#define SKIP_DEMO
+#define SKIP_DEMO
 //#define SKIP_TESTS
 
 class PlaygroundTest: public PlaygroundWin32{

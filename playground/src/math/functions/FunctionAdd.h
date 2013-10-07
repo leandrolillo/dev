@@ -10,7 +10,7 @@
 			{
 			}
 		
-			virtual real Evaluar(real x) const
+			virtual real evaluate(real x) const
 			{
 				return this->op1.evaluate(x) + this->op2.evaluate(x);
 			}
