@@ -153,6 +153,7 @@ class PlaygroundTests: public TestRunner {
 			logger->debug("matriz * 2:\n[%s]", matriz.toString().c_str());
 
 			//TODO: test matrix multiplication, addition, substraction, invalid matrix multiplication, addition and substraction.
+			//TODO: test same thing with vectors and matrix * vector.
 		}
 
 		void testInvalidResource()
