@@ -78,36 +78,36 @@ class TestRunner: public PlaygroundRunner {
 		{
 			assertTrue("", condition);
 		}
-		void assertTrue(String message, boolean condition)
+		void assertTrue(const String &message, boolean condition)
 		{
 			if(!condition)
 			assertFail(message);
 		}
 
-		void assertEquals(String message, const String &expected, const String &actual)
+		void assertEquals(const String &message, const String &expected, const String &actual)
 		{
 			assertTrue(message + ". Expected: [" + expected + "]. Actual: [" + actual + "]", expected == actual);
 		}
 
-		void assertEquals(String message, void *expected, void *actual)
+		void assertEquals(const String &message, void *expected, void *actual)
 		{
 			assertTrue(message, expected == actual);
 		}
 
-		void assertEquals(String message, unsigned int expected, unsigned int actual)
+		void assertEquals(const String &message, unsigned int expected, unsigned int actual)
 		{
 			char buffer[256];
 			sprintf(buffer, "%s. Expected: [%d]. Actual: [%d]", message.c_str(), expected, actual);
 			assertTrue(buffer, expected == actual);
 		}
-		void assertEquals(String message, double expected, double actual)
+		void assertEquals(const String &message, double expected, double actual)
 		{
 			char buffer[256];
 			sprintf(buffer, "%s. Expected: [%.3f]. Actual: [%.3f]", message.c_str(), expected, actual);
 			assertTrue(buffer, expected == actual);
 		}
 
-		void assertFalse(String message, boolean condition)
+		void assertFalse(const String &message, boolean condition)
 		{
 			if(condition)
 			assertFail(message);
@@ -117,7 +117,7 @@ class TestRunner: public PlaygroundRunner {
 			assertFalse("", condition);
 		}
 
-		void assertFail(String message) {
+		void assertFail(const String &message) {
 			throw Exception(message.c_str());
 		}
 

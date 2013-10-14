@@ -156,10 +156,10 @@ class matriz_mxn  {
 			if (this->getNroColumnas() == op1.getNroFilas()) {
 				for (unsigned short i = 0; i < this->getNroFilas(); i++)
 					for (unsigned short j = 0; j < op1.getNroColumnas(); j++) {
-						resultado(i, j) = 0.0f;
+						real acumulator = 0;
 						for (unsigned short k = 0; k < this->getNroColumnas(); k++)
-							resultado(i, j) += (*(matriz_mxn *) this)(i, k)
-									* ((matriz_mxn &) op1)(k, j);
+							acumulator += this->operator ()(i, k) * op1.operator ()(k, j);
+						resultado(i, j) = acumulator;
 					}
 			} else
 				throw InvalidArgumentException(

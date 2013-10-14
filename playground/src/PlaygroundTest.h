@@ -105,29 +105,18 @@ class PlaygroundTests: public TestRunner {
 
 		void testMath()
 		{
-			matriz_mxn matriz;
-			logger->debug("matriz nula: [%s]", matriz.toString().c_str());
+			matriz_mxn matriz_mn;
+			logger->debug("matriz nula: [%s]", matriz_mn.toString().c_str());
 
-			matriz = matriz_mxn::identidad(2);
-			assertEquals("Unexpected value", (double)matriz(0, 0), 1.0);
-			assertEquals("Unexpected value", (double)matriz(0, 1), 0.0);
-			assertEquals("Unexpected value", (double)matriz(1, 0), 0.0);
-			assertEquals("Unexpected value", (double)matriz(1, 1), 1.0);
+			matriz_mn = matriz_mxn::identidad(2);
+			assertMatrixEquals("Unexpected value", matriz_mn, matriz_2x2(1, 0, 0, 1));
 
-			logger->debug("matriz identidad 2x2:\n[%s]", matriz.toString().c_str());
+			logger->debug("matriz identidad 2x2:\n[%s]", matriz_mn.toString().c_str());
 
-			matriz = matriz_mxn::identidad(3);
-			assertEquals("Unexpected value", (double)matriz(0, 0), 1.0);
-			assertEquals("Unexpected value", (double)matriz(0, 1), 0.0);
-			assertEquals("Unexpected value", (double)matriz(0, 2), 0.0);
-			assertEquals("Unexpected value", (double)matriz(1, 0), 0.0);
-			assertEquals("Unexpected value", (double)matriz(1, 1), 1.0);
-			assertEquals("Unexpected value", (double)matriz(1, 2), 0.0);
-			assertEquals("Unexpected value", (double)matriz(2, 0), 0.0);
-			assertEquals("Unexpected value", (double)matriz(2, 1), 0.0);
-			assertEquals("Unexpected value", (double)matriz(2, 2), 1.0);
+			matriz_mn = matriz_mxn::identidad(3);
+			assertMatrixEquals("Unexpected value", matriz_mn, matriz_3x3(1, 0, 0, 0, 1, 0, 0, 0, 1));
 
-			logger->debug("matriz identidad 3x3:\n[%s]", matriz.toString().c_str());
+			logger->debug("matriz identidad 3x3:\n[%s]", matriz_mn.toString().c_str());
 
 			matriz_2x2 matriz2(1, 2, 3, 4);
 			assertEquals("Unexpected value", (double)matriz2(0, 0), 1.0);
@@ -136,24 +125,63 @@ class PlaygroundTests: public TestRunner {
 			assertEquals("Unexpected value", (double)matriz2(1, 1), 4.0);
 			logger->debug("matriz2:\n[%s]", matriz2.toString().c_str());
 
-			matriz = matriz_2x2(1, 2, 3, 4);
-			assertEquals("Unexpected value", (double)matriz(0, 0), 1.0);
-			assertEquals("Unexpected value", (double)matriz(0, 1), 2.0);
-			assertEquals("Unexpected value", (double)matriz(1, 0), 3.0);
-			assertEquals("Unexpected value", (double)matriz(1, 1), 4.0);
+			matriz_mn = matriz_2x2(1, 2, 3, 4);
+			assertEquals("Unexpected value", (double)matriz_mn(0, 0), 1.0);
+			assertEquals("Unexpected value", (double)matriz_mn(0, 1), 2.0);
+			assertEquals("Unexpected value", (double)matriz_mn(1, 0), 3.0);
+			assertEquals("Unexpected value", (double)matriz_mn(1, 1), 4.0);
 
-			logger->debug("matriz:\n[%s]", matriz.toString().c_str());
+			logger->debug("matriz:\n[%s]", matriz_mn.toString().c_str());
 
-			matriz = matriz * 2.0;
-			assertEquals("Unexpected value", (double)matriz(0, 0), 2.0);
-			assertEquals("Unexpected value", (double)matriz(0, 1), 4.0);
-			assertEquals("Unexpected value", (double)matriz(1, 0), 6.0);
-			assertEquals("Unexpected value", (double)matriz(1, 1), 8.0);
+			matriz_mn = matriz_mn * 2.0;
+			assertEquals("Unexpected value", (double)matriz_mn(0, 0), 2.0);
+			assertEquals("Unexpected value", (double)matriz_mn(0, 1), 4.0);
+			assertEquals("Unexpected value", (double)matriz_mn(1, 0), 6.0);
+			assertEquals("Unexpected value", (double)matriz_mn(1, 1), 8.0);
 
-			logger->debug("matriz * 2:\n[%s]", matriz.toString().c_str());
+			logger->debug("matriz * 2:\n[%s]", matriz_mn.toString().c_str());
+
+			matriz_2x2 operator1_2x2(1, 2, 3, 4);
+			matriz_2x2 operator2_2x2(1, 2, 3, 4);
+
+			matriz_2x2 result_2x2 = operator1_2x2 * operator2_2x2;
+			logger->debug("2x2 multiplication = %s", result_2x2.toString().c_str());
+			assertMatrixEquals("Unexpected value", result_2x2, matriz_2x2(7, 10, 15, 22));
+
+			matriz_3x3 operator1_3x3(1, 2, 3, 4, 5, 6, 7, 8, 9);
+			matriz_3x3 operator2_3x3(1, 2, 3, 4, 5, 6, 7, 8, 9);
+			matriz_3x3 result_3x3 = operator1_3x3 * operator2_3x3;
+			logger->debug("3x3 multiplication = %s", result_3x3.toString().c_str());
+			assertMatrixEquals("Unexpected value", result_3x3, matriz_3x3(30, 36, 42, 66, 81, 96, 102, 126, 150));
+
+			matriz_mxn operator1_mxn(2, 3);
+			operator1_mxn(0, 0) = 1; operator1_mxn(0, 1) = 2; operator1_mxn(0, 2) = 3;
+			operator1_mxn(1, 0) = 4; operator1_mxn(1, 1) = 5; operator1_mxn(1, 2) = 6;
+
+			matriz_mxn operator2_mxn(3, 2);
+			operator2_mxn(0, 0) = 1; operator2_mxn(0, 1) = 2;
+			operator2_mxn(1, 0) = 3; operator2_mxn(1, 1) = 4;
+			operator2_mxn(2, 0) = 5; operator2_mxn(2, 1) = 6;
+
+			matriz_mxn result_mxn = operator1_mxn * operator2_mxn;
+			logger->debug("mxn multiplication = %s", result_mxn.toString().c_str());
+			assertMatrixEquals("lala", result_mxn, matriz_2x2(22, 28, 49, 64));
 
 			//TODO: test matrix multiplication, addition, substraction, invalid matrix multiplication, addition and substraction.
 			//TODO: test same thing with vectors and matrix * vector.
+		}
+
+		void assertMatrixEquals(const String &message, const matriz_mxn &expected, const matriz_mxn &actual)
+		{
+			char buffer[256];
+			sprintf(buffer, "%s. Expected dimensions: [%dx%d]. Actual: [%dx%d]", message.c_str(), expected.getNroFilas(), expected.getNroColumnas(), actual.getNroFilas(), actual.getNroColumnas());
+			assertTrue(buffer, expected.getNroFilas() == actual.getNroFilas() && expected.getNroColumnas() == expected.getNroColumnas());
+
+			for(unsigned int i = 0; i < expected.getNroFilas(); i++)
+				for(unsigned int j = 0; j < expected.getNroColumnas(); j++) {
+					sprintf(buffer, "%s. Element (%d, %d) - Expected: [%.3f]. Actual: [%.3f]", message.c_str(), i, j, expected(i, j), actual(i, j));
+					assertTrue(buffer, expected(i, j) == actual(i, j));
+				}
 		}
 
 		void testInvalidResource()
@@ -633,7 +661,7 @@ class PlaygroundDemo : public PlaygroundRunner {
 
 };
 
-//#define SKIP_DEMO
+#define SKIP_DEMO
 //#define SKIP_TESTS
 
 class PlaygroundTest: public PlaygroundWin32{
