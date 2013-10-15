@@ -9,7 +9,11 @@
 #define TESTRUNNER_H_
 
 #include "core/playground.h"
+#include "util/StringUtils.h"
 #include <list>
+
+#define defaultAssertMessage StringUtils::format("Assertion Failed in %s, at line %d. ", __FILE__, __LINE__)
+#define assertMessage(message) StringUtils::format("Assertion Failed in %s, at line %d. ", __FILE__, __LINE__).append(message)
 
 class TestRunner: public PlaygroundRunner {
 	private:

@@ -10,38 +10,35 @@
 
 #include"math/functions/FunctionRealVectorial.h"
 
+class FunctionCubicBezier: public FunctionRealVectorial {
+	private:
+		vectorN x0;
+		vectorN x1;
+		vectorN x2;
+		vectorN x3;
+		Logger *logger;
 
-class FunctionCubicBezier : public FunctionRealVectorial
-{
-private:
-	vectorN x0;
-	vectorN x1;
-	vectorN x2;
-	vectorN x3;
-	Logger *logger;
+	public:
+		FunctionCubicBezier() {
+			logger = Logger::getLogger("FunctionCubicBezier.h");
 
-public:
-	FunctionCubicBezier()  {
-		logger = Logger::getLogger("FunctionCubicBezier.h");
+		}
 
-	}
+		void setControlPoints(const vectorN &x0, const vectorN &x1, const vectorN &x2, const vectorN &x3) {
+			unsigned int length = x0.getLength();
 
-	void setControlPoints(const vectorN &x0, const vectorN &x1, const vectorN &x2, const vectorN &x3)
-	{
-		unsigned int length = x0.getLength();
+			if (length <= 0 || x1.getLength() != length || x2.getLength() != length || x3.getLength() != length)
+				throw InvalidArgumentException("Control points length should match and be greater than zero");
 
-		if(length <= 0 || x1.getLength() != length || x2.getLength() != length || x3.getLength() != length )
-			throw InvalidArgumentException("Control points length should match and be greater than zero");
+			this->x0 = x0;
+			this->x1 = x1;
+			this->x2 = x2;
+			this->x3 = x3;
+		}
 
-		this->x0 = x0;
-		this->x1 = x1;
-		this->x2 = x2;
-		this->x3 = x3;
-	}
-
-	vectorN evaluate(real t) const {
-		if(t < 0 || t > 1.0)
-			throw new InvalidArgumentException("t parameter must belong to [0.0, 1.0] interval");
+		vectorN evaluate(real t) const {
+			if (t < 0 || t > 1.0)
+				throw new InvalidArgumentException("t parameter must belong to [0.0, 1.0] interval");
 
 //		vectorN term1 = x0 * pow(1.0 - t, 3.0);
 //		logger->debug("term1 = [%s]", term1.toString().c_str());
@@ -55,17 +52,15 @@ public:
 //		vectorN result = term1 + term2 + term3 + term4;
 //		logger->debug("result = [%s]", result.toString().c_str());
 
-		return  x0 * pow(1.0 - t, 3.0) +
-				x1 * (3.0 * pow(1.0 - t, 2.0) * t) +
-				x2 * (3.0 * (1.0 - t) * pow(t, 2.0)) +
-				x3 * pow (t, 3.0);
-	}
+			return x0 * pow(1.0 - t, 3.0) + x1 * (3.0 * pow(1.0 - t, 2.0) * t) + x2 * (3.0 * (1.0 - t) * pow(t, 2.0))
+					+ x3 * pow(t, 3.0);
+		}
 
-	String toString() const
-	{
-		return "Cubic Bezier";
-	}
-};
+		String toString() const
+		{
+			return "Cubic Bezier";
+		}
+	};
 
 class PlaygroundTests: public TestRunner {
 		Logger *logger;
@@ -83,8 +78,7 @@ class PlaygroundTests: public TestRunner {
 		}
 
 		virtual boolean init() {
-			this->addTest("testLoadWav", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadWav));
-			this->addTest("testLoadOgg", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadOgg));
+			this->addTest("testLoadWav", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadWav));this->addTest("testLoadOgg", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadOgg));
 			this->addTest("testLoadBuffer", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadBuffer));
 			this->addTest("testCreateSource", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testCreateSource));
 			this->addTest("testLoadPng", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadPng));
@@ -103,252 +97,285 @@ class PlaygroundTests: public TestRunner {
 			return true;
 		}
 
-		void testMath()
-		{
-			matriz_mxn matriz_mn;
-			logger->debug("matriz nula: [%s]", matriz_mn.toString().c_str());
+			void testMath()
+			{
+				matriz_mxn matriz_mn;
+				logger->debug("matriz nula: [%s]", matriz_mn.toString().c_str());
 
-			matriz_mn = matriz_mxn::identidad(2);
-			assertMatrixEquals("Unexpected value", matriz_mn, matriz_2x2(1, 0, 0, 1));
+				matriz_mn = matriz_mxn::identidad(2);
+				assertMatrixEquals(defaultAssertMessage, matriz_mn, matriz_2x2(1, 0, 0, 1));
 
-			logger->debug("matriz identidad 2x2:\n[%s]", matriz_mn.toString().c_str());
+				logger->debug("matriz identidad 2x2:\n[%s]", matriz_mn.toString().c_str());
 
-			matriz_mn = matriz_mxn::identidad(3);
-			assertMatrixEquals("Unexpected value", matriz_mn, matriz_3x3(1, 0, 0, 0, 1, 0, 0, 0, 1));
+				matriz_mn = matriz_mxn::identidad(3);
+				assertMatrixEquals(defaultAssertMessage, matriz_mn, matriz_3x3(1, 0, 0, 0, 1, 0, 0, 0, 1));
 
-			logger->debug("matriz identidad 3x3:\n[%s]", matriz_mn.toString().c_str());
+				logger->debug("matriz identidad 3x3:\n[%s]", matriz_mn.toString().c_str());
 
-			matriz_2x2 matriz2(1, 2, 3, 4);
-			assertEquals("Unexpected value", (double)matriz2(0, 0), 1.0);
-			assertEquals("Unexpected value", (double)matriz2(0, 1), 2.0);
-			assertEquals("Unexpected value", (double)matriz2(1, 0), 3.0);
-			assertEquals("Unexpected value", (double)matriz2(1, 1), 4.0);
-			logger->debug("matriz2:\n[%s]", matriz2.toString().c_str());
+				matriz_2x2 matriz2(1, 2, 3, 4);
+				assertEquals(defaultAssertMessage, (double)matriz2(0, 0), 1.0);
+				assertEquals(defaultAssertMessage, (double)matriz2(0, 1), 2.0);
+				assertEquals(defaultAssertMessage, (double)matriz2(1, 0), 3.0);
+				assertEquals(defaultAssertMessage, (double)matriz2(1, 1), 4.0);
+				logger->debug("matriz2:\n[%s]", matriz2.toString().c_str());
 
-			matriz_mn = matriz_2x2(1, 2, 3, 4);
-			assertEquals("Unexpected value", (double)matriz_mn(0, 0), 1.0);
-			assertEquals("Unexpected value", (double)matriz_mn(0, 1), 2.0);
-			assertEquals("Unexpected value", (double)matriz_mn(1, 0), 3.0);
-			assertEquals("Unexpected value", (double)matriz_mn(1, 1), 4.0);
+				matriz_mn = matriz_2x2(1, 2, 3, 4);
+				assertEquals(defaultAssertMessage, (double)matriz_mn(0, 0), 1.0);
+				assertEquals(defaultAssertMessage, (double)matriz_mn(0, 1), 2.0);
+				assertEquals(defaultAssertMessage, (double)matriz_mn(1, 0), 3.0);
+				assertEquals(defaultAssertMessage, (double)matriz_mn(1, 1), 4.0);
 
-			logger->debug("matriz:\n[%s]", matriz_mn.toString().c_str());
+				logger->debug("matriz:\n[%s]", matriz_mn.toString().c_str());
 
-			matriz_mn = matriz_mn * 2.0;
-			assertEquals("Unexpected value", (double)matriz_mn(0, 0), 2.0);
-			assertEquals("Unexpected value", (double)matriz_mn(0, 1), 4.0);
-			assertEquals("Unexpected value", (double)matriz_mn(1, 0), 6.0);
-			assertEquals("Unexpected value", (double)matriz_mn(1, 1), 8.0);
+				matriz_mn = matriz_mn * 2.0;
+				assertEquals(defaultAssertMessage, (double)matriz_mn(0, 0), 2.0);
+				assertEquals(defaultAssertMessage, (double)matriz_mn(0, 1), 4.0);
+				assertEquals(defaultAssertMessage, (double)matriz_mn(1, 0), 6.0);
+				assertEquals(defaultAssertMessage, (double)matriz_mn(1, 1), 8.0);
 
-			logger->debug("matriz * 2:\n[%s]", matriz_mn.toString().c_str());
+				logger->debug("matriz * 2:\n[%s]", matriz_mn.toString().c_str());
 
-			matriz_2x2 operator1_2x2(1, 2, 3, 4);
-			matriz_2x2 operator2_2x2(1, 2, 3, 4);
+				matriz_2x2 operator1_2x2(1, 2, 3, 4);
+				matriz_2x2 operator2_2x2(1, 2, 3, 4);
 
-			matriz_2x2 result_2x2 = operator1_2x2 * operator2_2x2;
-			logger->debug("2x2 multiplication = %s", result_2x2.toString().c_str());
-			assertMatrixEquals("Unexpected value", result_2x2, matriz_2x2(7, 10, 15, 22));
+				matriz_2x2 result_2x2 = operator1_2x2 * operator2_2x2;
+				logger->debug("2x2 multiplication = %s", result_2x2.toString().c_str());
+				assertMatrixEquals(defaultAssertMessage, result_2x2, matriz_2x2(7, 10, 15, 22));
 
-			matriz_3x3 operator1_3x3(1, 2, 3, 4, 5, 6, 7, 8, 9);
-			matriz_3x3 operator2_3x3(1, 2, 3, 4, 5, 6, 7, 8, 9);
-			matriz_3x3 result_3x3 = operator1_3x3 * operator2_3x3;
-			logger->debug("3x3 multiplication = %s", result_3x3.toString().c_str());
-			assertMatrixEquals("Unexpected value", result_3x3, matriz_3x3(30, 36, 42, 66, 81, 96, 102, 126, 150));
+				result_2x2 = operator1_2x2 + operator2_2x2;
+				logger->debug("2x2 addition = %s", result_2x2.toString().c_str());
+				assertMatrixEquals(defaultAssertMessage, result_2x2, matriz_2x2(2, 4, 6, 8));
 
-			matriz_mxn operator1_mxn(2, 3);
-			operator1_mxn(0, 0) = 1; operator1_mxn(0, 1) = 2; operator1_mxn(0, 2) = 3;
-			operator1_mxn(1, 0) = 4; operator1_mxn(1, 1) = 5; operator1_mxn(1, 2) = 6;
+				result_2x2 = operator1_2x2 - operator2_2x2;
+				logger->debug("2x2 subtraction = %s", result_2x2.toString().c_str());
+				assertMatrixEquals(defaultAssertMessage, result_2x2, matriz_2x2(0, 0, 0, 0));
 
-			matriz_mxn operator2_mxn(3, 2);
-			operator2_mxn(0, 0) = 1; operator2_mxn(0, 1) = 2;
-			operator2_mxn(1, 0) = 3; operator2_mxn(1, 1) = 4;
-			operator2_mxn(2, 0) = 5; operator2_mxn(2, 1) = 6;
+				result_2x2 = operator1_2x2 * 3;
+				logger->debug("2x2 scalar multiplication = %s", result_2x2.toString().c_str());
+				assertMatrixEquals(defaultAssertMessage, result_2x2, matriz_2x2(3, 6, 9, 12));
 
-			matriz_mxn result_mxn = operator1_mxn * operator2_mxn;
-			logger->debug("mxn multiplication = %s", result_mxn.toString().c_str());
-			assertMatrixEquals("lala", result_mxn, matriz_2x2(22, 28, 49, 64));
 
-			//TODO: test matrix multiplication, addition, substraction, invalid matrix multiplication, addition and substraction.
-			//TODO: test same thing with vectors and matrix * vector.
-		}
+				matriz_3x3 operator1_3x3(1, 2, 3, 4, 5, 6, 7, 8, 9);
+				matriz_3x3 operator2_3x3(1, 2, 3, 4, 5, 6, 7, 8, 9);
+				matriz_3x3 result_3x3 = operator1_3x3 * operator2_3x3;
+				logger->debug("3x3 multiplication = %s", result_3x3.toString().c_str());
+				assertMatrixEquals(defaultAssertMessage, result_3x3, matriz_3x3(30, 36, 42, 66, 81, 96, 102, 126, 150));
 
-		void assertMatrixEquals(const String &message, const matriz_mxn &expected, const matriz_mxn &actual)
-		{
-			char buffer[256];
-			sprintf(buffer, "%s. Expected dimensions: [%dx%d]. Actual: [%dx%d]", message.c_str(), expected.getNroFilas(), expected.getNroColumnas(), actual.getNroFilas(), actual.getNroColumnas());
-			assertTrue(buffer, expected.getNroFilas() == actual.getNroFilas() && expected.getNroColumnas() == expected.getNroColumnas());
+				matriz_mxn operator1_mxn(2, 3);
+				operator1_mxn(0, 0) = 1; operator1_mxn(0, 1) = 2; operator1_mxn(0, 2) = 3;
+				operator1_mxn(1, 0) = 4; operator1_mxn(1, 1) = 5; operator1_mxn(1, 2) = 6;
 
-			for(unsigned int i = 0; i < expected.getNroFilas(); i++)
+				matriz_mxn operator2_mxn(3, 2);
+				operator2_mxn(0, 0) = 1; operator2_mxn(0, 1) = 2;
+				operator2_mxn(1, 0) = 3; operator2_mxn(1, 1) = 4;
+				operator2_mxn(2, 0) = 5; operator2_mxn(2, 1) = 6;
+
+				matriz_mxn result_mxn = operator1_mxn * operator2_mxn;
+				logger->debug("mxn multiplication = %s", result_mxn.toString().c_str());
+				assertMatrixEquals(StringUtils::format("%s, at line: %d", __FILE__, __LINE__), result_mxn, matriz_2x2(22, 28, 49, 64));
+
+				try {
+					result_mxn = operator1_mxn - operator2_mxn;
+					assertFail(assertMessage("Matrix dimensions don't match - exception expected"));
+				} catch (Exception &e) {
+					;
+				}
+
+				matriz_mxn expected_2x3(2, 3);
+				expected_2x3(0, 0) = 0; expected_2x3(0, 1) = 0; expected_2x3(0, 2) = 0;
+				expected_2x3(1, 0) = 0; expected_2x3(1, 1) = 0; expected_2x3(1, 2) = 0;
+
+				result_mxn = operator1_mxn - operator1_mxn;
+				logger->debug("mxn substraction = %s", result_mxn.toString().c_str());
+				assertMatrixEquals(defaultAssertMessage, result_mxn, expected_2x3);
+
+				expected_2x3(0, 0) = 2; expected_2x3(0, 1) = 4; expected_2x3(0, 2) = 6;
+				expected_2x3(1, 0) = 8; expected_2x3(1, 1) = 10; expected_2x3(1, 2) = 12;
+
+				result_mxn = operator1_mxn + operator1_mxn;
+				logger->debug("mxn addition = %s", result_mxn.toString().c_str());
+				assertMatrixEquals(defaultAssertMessage, result_mxn, expected_2x3);
+
+				//TODO: test matrix multiplication, addition, substraction, invalid matrix multiplication, addition and substraction.
+				//TODO: test same thing with vectors and matrix * vector.
+			}
+
+			void assertMatrixEquals(const String &message, const matriz_mxn &expected, const matriz_mxn &actual)
+			{
+				char buffer[256];
+				sprintf(buffer, "%s. Expected dimensions: [%dx%d]. Actual: [%dx%d]", message.c_str(), expected.getNroFilas(), expected.getNroColumnas(), actual.getNroFilas(), actual.getNroColumnas());
+				assertTrue(buffer, expected.getNroFilas() == actual.getNroFilas() && expected.getNroColumnas() == expected.getNroColumnas());
+
+				for(unsigned int i = 0; i < expected.getNroFilas(); i++)
 				for(unsigned int j = 0; j < expected.getNroColumnas(); j++) {
 					sprintf(buffer, "%s. Element (%d, %d) - Expected: [%.3f]. Actual: [%.3f]", message.c_str(), i, j, expected(i, j), actual(i, j));
 					assertTrue(buffer, expected(i, j) == actual(i, j));
 				}
-		}
+			}
 
-		void testInvalidResource()
-		{
+			void testInvalidResource()
+			{
 				Resource *resource = this->getContainer()->getResourceManager()->load("tests/fake.wav");
 				assertEquals("Null resource expected", null, resource);
 
 				resource = this->getContainer()->getResourceManager()->load("tests/fake.nomimetype");
 				assertEquals("Null resource expected", null, resource);
 
-		}
-		void testFileParser()
-		{
-			String token;
-
-			FileParser commentFileParser(this->getContainer()->getResourceManager()->normalize("tests/commentFileToParse.txt"));
-			assertEquals("Unexpected token", eof, commentFileParser.peekToken());
-			assertEquals("Unexpected token", eof, commentFileParser.takeToken());
-			commentFileParser.close();
-
-			FileParser emptyFileParser(this->getContainer()->getResourceManager()->normalize("tests/emptyFileToParse.txt"));
-			assertEquals("Unexpected token", eof, emptyFileParser.peekToken());
-			assertEquals("Unexpected token", eof, emptyFileParser.takeToken());
-			commentFileParser.close();
-
-			FileParser fileParser(this->getContainer()->getResourceManager()->normalize("tests/fileToParse.txt"));
-			assertEquals("Unexpected token", "{", fileParser.peekToken());
-			assertEquals("Unexpected token", "{", fileParser.takeToken());
-			assertEquals("Unexpected token", "\"", fileParser.takeToken());
-			assertEquals("Unexpected token", "property", fileParser.takeToken());
-			assertEquals("Unexpected token", "\"", fileParser.takeToken());
-			assertEquals("Unexpected token", ":", fileParser.takeToken());
-			assertEquals("Unexpected token", "\"", fileParser.takeToken());
-			assertEquals("Unexpected token", "value", fileParser.takeToken());
-			assertEquals("Unexpected token", "\"", fileParser.takeToken());
-			assertEquals("Unexpected token", "}", fileParser.takeToken());
-			assertEquals("Unexpected token", eof, fileParser.peekToken());
-			assertEquals("Unexpected token", eof, fileParser.takeToken());
-		}
-		void testLoadWav()
-		{
-			AudioResource *resource = (AudioResource *)this->getContainer()->getResourceManager()->load("tests/audio.wav");
-			assertTrue("WAV resource not loaded", resource != null);
-			assertTrue("WAV resource data not loaded", resource->getData() != null);
-			assertEquals("WAV mimetype invalid", "audio/wav", resource->getMimeType());
-
-		}
-		void testLoadOgg() {
-			OggResource *resource = (OggResource *)this->getContainer()->getResourceManager()->load("tests/audio.ogg");
-			assertTrue("OGG resource not loaded", resource != null);
-			assertTrue("OGG resource data not loaded", resource->getData() != null);
-			assertEquals("OGG mimetype invalid", "audio/ogg", resource->getMimeType());
-		}
-
-		void testLoadBuffer() {
-			BufferResource *resource = (BufferResource *)this->getContainer()->getResourceManager()->load("tests/audio.ogg", "audio/buffer");
-			assertTrue("BUFFER resource not loaded", resource != null);
-			assertTrue("BUFFER resource id not set correctly", resource->getId() != 0);
-			assertEquals("Buffer mimetype invalid", "audio/buffer", resource->getMimeType());
-		}
-
-		void testCreateSource()		{
-			Source *resource = (Source *)this->getContainer()->getResourceManager()->load("tests/audio.ogg", "audio/source");
-			assertTrue("Source resource not loaded", resource != null);
-			assertTrue("Source resource id not set correctly", resource->getId() != 0);
-			assertEquals("Source mimetype invalid", "audio/source", resource->getMimeType());
-
-		}
-
-		void testLoadPng() 		{
-			PngResource *resource = (PngResource *)this->getContainer()->getResourceManager()->load("tests/image.png");
-			assertTrue("PNG resource not loaded", resource != null);
-			assertTrue("PNG data not set properly", resource->getData() != null);
-			assertEquals("PNG Invalid width", 512, resource->getAncho());
-			assertEquals("PNG Invalid height", 512, resource->getAlto());
-			assertEquals("PNG mimetype invalid", "image/png", resource->getMimeType());
-		}
-
-		void testLoadJpeg()		{
-			JpegResource *resource = (JpegResource *)this->getContainer()->getResourceManager()->load("tests/image.jpg");
-
-			assertTrue("JPEG resource not loaded", resource != null);
-			assertTrue("JPEG data not set properly", resource->getData() != null);
-			assertEquals("JPEG Invalid width", 756, resource->getAncho());
-			assertEquals("JPEG Invalid height", 512, resource->getAlto());
-			assertEquals("JPEG mimetype invalid", "image/jpeg", resource->getMimeType());
-		}
-
-		void testLoadTga()		{
-			TgaResource *resource = (TgaResource *)this->getContainer()->getResourceManager()->load("tests/image.tga");
-
-			assertTrue("TGA resource not loaded", resource != null);
-			assertTrue("TGA data not set properly", resource->getData() != null);
-			assertEquals("TGA Invalid width", 400, resource->getAncho());
-			assertEquals("TGA Invalid height", 300, resource->getAlto());
-			assertEquals("TGA mimetype invalid", "image/tga", resource->getMimeType());
-		}
-
-		void testLoadTexture()		{
-			TextureResource *resource = (TextureResource *)this->getContainer()->getResourceManager()->load("tests/image.png", "video/texture");
-
-			assertTrue("TEXTURE resource not loaded", resource != null);
-			assertTrue("TEXTURE id not set properly", resource->getId() != 0);
-			assertEquals("TEXTURE mimetype invalid", "video/texture", resource->getMimeType());
-
-			resource = (TextureResource *)this->getContainer()->getResourceManager()->load("tests/image.jpg", "video/texture");
-
-			assertTrue("TEXTURE resource not loaded", resource != null);
-			assertTrue("TEXTURE id not set properly", resource->getId() != 0);
-			assertEquals("TEXTURE mimetype invalid", "video/texture", resource->getMimeType());
-
-			resource = (TextureResource *)this->getContainer()->getResourceManager()->load("tests/image.tga", "video/texture");
-
-			assertTrue("TEXTURE resource not loaded", resource != null);
-			assertTrue("TEXTURE id not set properly", resource->getId() != 0);
-			assertEquals("TEXTURE mimetype invalid", "video/texture", resource->getMimeType());
-
-
-		}
-
-		void testLoadGeometry()	{
-			GeometryResource *resource = (GeometryResource *)this->getContainer()->getResourceManager()->load("tests/geometry.json", "video/geometry");
-
-			assertTrue("GEOMETRY resource not loaded", resource != null);
-			assertEquals("GEOMETRY mimetype invalid", "video/geometry", resource->getMimeType());
-			assertEquals("Incorrect number of vertices", 10, resource->getVertices().size());
-			assertEquals("Incorrect number of colors", 3, resource->getColors().size());
-			assertEquals("Incorrect number of texture coordinates", 3, resource->getTextureCoordinates().size());
-			assertEquals("Incorrect number of normals", 3, resource->getNormals().size());
-
-
-		}
-
-		void testLoadVertexBuffer()	{
-			VertexArrayResource *resource = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("tests/geometry.json", "video/vertexArray");
-
-			assertTrue("VertexArray resource not loaded", resource != null);
-			assertEquals("VertexArray mimetype invalid", "video/vertexArray", resource->getMimeType());
-		}
-
-		void testLoadShaders()	{
-			ShaderResource *resource = (ShaderResource *)this->getContainer()->getResourceManager()->load("tests/vertexShader.glsl", "video/vertexShader");
-
-			assertTrue("Shader resource not loaded", resource != null);
-			assertEquals("Shader mimetype invalid", "video/vertexShader", resource->getMimeType());
-		}
-
-		void testLoadShaderProgram()	{
-			ShaderProgramResource *resource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("tests/shaderProgram.json", "video/shaderProgram");
-
-			assertTrue("Shader Program resource not loaded", resource != null);
-			assertEquals("Shader Program mimetype invalid", "video/shaderProgram", resource->getMimeType());
-		}
-
-		void testLoadShaderProgramByVersion()
-		{
-			WglRunner *wgl = (WglRunner *) this->getContainer()->getRunner(0);
-
-			ShaderProgramResource *shaderProgramResource = null;
-
-			if(wgl->getMajorVersion() >= 3) {
-				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/lighting.140.program.json", "video/shaderProgram");
-			} else {
-				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/lighting.120.program.json", "video/shaderProgram");
 			}
-			assertTrue("Shader Program resource not loaded", shaderProgramResource != null);
-			assertEquals("Shader Program mimetype invalid", "video/shaderProgram", shaderProgramResource->getMimeType());
+			void testFileParser()
+			{
+				String token;
+
+				FileParser commentFileParser(this->getContainer()->getResourceManager()->normalize("tests/commentFileToParse.txt"));
+				assertEquals("Unexpected token", eof, commentFileParser.peekToken());
+				assertEquals("Unexpected token", eof, commentFileParser.takeToken());
+				commentFileParser.close();
+
+				FileParser emptyFileParser(this->getContainer()->getResourceManager()->normalize("tests/emptyFileToParse.txt"));
+				assertEquals("Unexpected token", eof, emptyFileParser.peekToken());
+				assertEquals("Unexpected token", eof, emptyFileParser.takeToken());
+				commentFileParser.close();
+
+				FileParser fileParser(this->getContainer()->getResourceManager()->normalize("tests/fileToParse.txt"));
+				assertEquals("Unexpected token", "{", fileParser.peekToken());
+				assertEquals("Unexpected token", "{", fileParser.takeToken());
+				assertEquals("Unexpected token", "\"", fileParser.takeToken());
+				assertEquals("Unexpected token", "property", fileParser.takeToken());
+				assertEquals("Unexpected token", "\"", fileParser.takeToken());
+				assertEquals("Unexpected token", ":", fileParser.takeToken());
+				assertEquals("Unexpected token", "\"", fileParser.takeToken());
+				assertEquals("Unexpected token", "value", fileParser.takeToken());
+				assertEquals("Unexpected token", "\"", fileParser.takeToken());
+				assertEquals("Unexpected token", "}", fileParser.takeToken());
+				assertEquals("Unexpected token", eof, fileParser.peekToken());
+				assertEquals("Unexpected token", eof, fileParser.takeToken());
+			}
+			void testLoadWav()
+			{
+				AudioResource *resource = (AudioResource *)this->getContainer()->getResourceManager()->load("tests/audio.wav");
+				assertTrue("WAV resource not loaded", resource != null);
+				assertTrue("WAV resource data not loaded", resource->getData() != null);
+				assertEquals("WAV mimetype invalid", "audio/wav", resource->getMimeType());
+
+			}
+			void testLoadOgg() {
+				OggResource *resource = (OggResource *)this->getContainer()->getResourceManager()->load("tests/audio.ogg");
+				assertTrue("OGG resource not loaded", resource != null);
+				assertTrue("OGG resource data not loaded", resource->getData() != null);
+				assertEquals("OGG mimetype invalid", "audio/ogg", resource->getMimeType());
+			}
+
+			void testLoadBuffer() {
+				BufferResource *resource = (BufferResource *)this->getContainer()->getResourceManager()->load("tests/audio.ogg", "audio/buffer");
+				assertTrue("BUFFER resource not loaded", resource != null);
+				assertTrue("BUFFER resource id not set correctly", resource->getId() != 0);
+				assertEquals("Buffer mimetype invalid", "audio/buffer", resource->getMimeType());
+			}
+
+			void testCreateSource() {
+				Source *resource = (Source *)this->getContainer()->getResourceManager()->load("tests/audio.ogg", "audio/source");
+				assertTrue("Source resource not loaded", resource != null);
+				assertTrue("Source resource id not set correctly", resource->getId() != 0);
+				assertEquals("Source mimetype invalid", "audio/source", resource->getMimeType());
+
+			}
+
+			void testLoadPng() {
+				PngResource *resource = (PngResource *)this->getContainer()->getResourceManager()->load("tests/image.png");
+				assertTrue("PNG resource not loaded", resource != null);
+				assertTrue("PNG data not set properly", resource->getData() != null);
+				assertEquals("PNG Invalid width", 512, resource->getAncho());
+				assertEquals("PNG Invalid height", 512, resource->getAlto());
+				assertEquals("PNG mimetype invalid", "image/png", resource->getMimeType());
+			}
+
+			void testLoadJpeg() {
+				JpegResource *resource = (JpegResource *)this->getContainer()->getResourceManager()->load("tests/image.jpg");
+
+				assertTrue("JPEG resource not loaded", resource != null);
+				assertTrue("JPEG data not set properly", resource->getData() != null);
+				assertEquals("JPEG Invalid width", 756, resource->getAncho());
+				assertEquals("JPEG Invalid height", 512, resource->getAlto());
+				assertEquals("JPEG mimetype invalid", "image/jpeg", resource->getMimeType());
+			}
+
+			void testLoadTga() {
+				TgaResource *resource = (TgaResource *)this->getContainer()->getResourceManager()->load("tests/image.tga");
+
+				assertTrue("TGA resource not loaded", resource != null);
+				assertTrue("TGA data not set properly", resource->getData() != null);
+				assertEquals("TGA Invalid width", 400, resource->getAncho());
+				assertEquals("TGA Invalid height", 300, resource->getAlto());
+				assertEquals("TGA mimetype invalid", "image/tga", resource->getMimeType());
+			}
+
+			void testLoadTexture() {
+				TextureResource *resource = (TextureResource *)this->getContainer()->getResourceManager()->load("tests/image.png", "video/texture");
+
+				assertTrue("TEXTURE resource not loaded", resource != null);
+				assertTrue("TEXTURE id not set properly", resource->getId() != 0);
+				assertEquals("TEXTURE mimetype invalid", "video/texture", resource->getMimeType());
+
+				resource = (TextureResource *)this->getContainer()->getResourceManager()->load("tests/image.jpg", "video/texture");
+
+				assertTrue("TEXTURE resource not loaded", resource != null);
+				assertTrue("TEXTURE id not set properly", resource->getId() != 0);
+				assertEquals("TEXTURE mimetype invalid", "video/texture", resource->getMimeType());
+
+				resource = (TextureResource *)this->getContainer()->getResourceManager()->load("tests/image.tga", "video/texture");
+
+				assertTrue("TEXTURE resource not loaded", resource != null);
+				assertTrue("TEXTURE id not set properly", resource->getId() != 0);
+				assertEquals("TEXTURE mimetype invalid", "video/texture", resource->getMimeType());
+
+			}
+
+			void testLoadGeometry() {
+				GeometryResource *resource = (GeometryResource *)this->getContainer()->getResourceManager()->load("tests/geometry.json", "video/geometry");
+
+				assertTrue("GEOMETRY resource not loaded", resource != null);
+				assertEquals("GEOMETRY mimetype invalid", "video/geometry", resource->getMimeType());
+				assertEquals("Incorrect number of vertices", 10, resource->getVertices().size());
+				assertEquals("Incorrect number of colors", 3, resource->getColors().size());
+				assertEquals("Incorrect number of texture coordinates", 3, resource->getTextureCoordinates().size());
+				assertEquals("Incorrect number of normals", 3, resource->getNormals().size());
+
+			}
+
+			void testLoadVertexBuffer() {
+				VertexArrayResource *resource = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("tests/geometry.json", "video/vertexArray");
+
+				assertTrue("VertexArray resource not loaded", resource != null);
+				assertEquals("VertexArray mimetype invalid", "video/vertexArray", resource->getMimeType());
+			}
+
+			void testLoadShaders() {
+				ShaderResource *resource = (ShaderResource *)this->getContainer()->getResourceManager()->load("tests/vertexShader.glsl", "video/vertexShader");
+
+				assertTrue("Shader resource not loaded", resource != null);
+				assertEquals("Shader mimetype invalid", "video/vertexShader", resource->getMimeType());
+			}
+
+			void testLoadShaderProgram() {
+				ShaderProgramResource *resource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("tests/shaderProgram.json", "video/shaderProgram");
+
+				assertTrue("Shader Program resource not loaded", resource != null);
+				assertEquals("Shader Program mimetype invalid", "video/shaderProgram", resource->getMimeType());
+			}
+
+			void testLoadShaderProgramByVersion()
+			{
+				WglRunner *wgl = (WglRunner *) this->getContainer()->getRunner(0);
+
+				ShaderProgramResource *shaderProgramResource = null;
+
+				if(wgl->getMajorVersion() >= 3) {
+					shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/lighting.140.program.json", "video/shaderProgram");
+				} else {
+					shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/lighting.120.program.json", "video/shaderProgram");
+				}
+				assertTrue("Shader Program resource not loaded", shaderProgramResource != null);
+				assertEquals("Shader Program mimetype invalid", "video/shaderProgram", shaderProgramResource->getMimeType());
 
 //			if(wgl->getMajorVersion() >= 3) {
 //				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/toon.140.program.json", "video/shaderProgram");
@@ -358,11 +385,11 @@ class PlaygroundTests: public TestRunner {
 //			assertTrue("Shader Program resource not loaded", shaderProgramResource != null);
 //			assertEquals("Shader Program mimetype invalid", "video/shaderProgram", shaderProgramResource->getMimeType());
 
-		}
+			}
 
-};
+		};
 
-class PlaygroundDemo : public PlaygroundRunner {
+class PlaygroundDemo: public PlaygroundRunner {
 	private:
 		VideoRunner *video;
 		WglRunner *wgl;
@@ -421,31 +448,42 @@ class PlaygroundDemo : public PlaygroundRunner {
 		virtual boolean init() {
 			video = (VideoRunner *) this->getContainer()->getRunner(1);
 			wgl = (WglRunner *) this->getContainer()->getRunner(0);
-			audio = (AudioRunner *)this->getContainer()->getRunner(3);
-
+			audio = (AudioRunner *) this->getContainer()->getRunner(3);
 
 			// demo stuff
 //			Source *backgroundSource = audio->createSource("background.ogg");
 //			audio->playSource(backgroundSource);
 
-			textureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("images/ss/MB.PNG", "video/texture");
-			anotherTextureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("images/irs.JPG", "video/texture");
-			geometryResource = (GeometryResource *)this->getContainer()->getResourceManager()->load("geometry/triangle.json", "video/geometry");
-			sphereArrayResource = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/sphere.json", "video/vertexArray");
+			textureResource = (TextureResource *) this->getContainer()->getResourceManager()->load("images/ss/MB.PNG",
+					"video/texture");
+			anotherTextureResource = (TextureResource *) this->getContainer()->getResourceManager()->load(
+					"images/irs.JPG", "video/texture");
+			geometryResource = (GeometryResource *) this->getContainer()->getResourceManager()->load(
+					"geometry/triangle.json", "video/geometry");
+			sphereArrayResource = (VertexArrayResource *) this->getContainer()->getResourceManager()->load(
+					"geometry/sphere.json", "video/vertexArray");
 
-			sphereGeometryResource = (GeometryResource *)this->getContainer()->getResourceManager()->load("geometry/sphere.json", "video/geometry");
+			sphereGeometryResource = (GeometryResource *) this->getContainer()->getResourceManager()->load(
+					"geometry/sphere.json", "video/geometry");
 
-			if(wgl->getMajorVersion() >= 3) {
-				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/lighting.140.program.json", "video/shaderProgram");
-				anotherShaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/toon.140.program.json", "video/shaderProgram");
+			if (wgl->getMajorVersion() >= 3) {
+				shaderProgramResource = (ShaderProgramResource *) this->getContainer()->getResourceManager()->load(
+						"shaders/lighting.140.program.json", "video/shaderProgram");
+				anotherShaderProgramResource =
+						(ShaderProgramResource *) this->getContainer()->getResourceManager()->load(
+								"shaders/toon.140.program.json", "video/shaderProgram");
 			} else {
-				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/lighting.120.program.json", "video/shaderProgram");
-				anotherShaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/toon.120.program.json", "video/shaderProgram");
+				shaderProgramResource = (ShaderProgramResource *) this->getContainer()->getResourceManager()->load(
+						"shaders/lighting.120.program.json", "video/shaderProgram");
+				anotherShaderProgramResource =
+						(ShaderProgramResource *) this->getContainer()->getResourceManager()->load(
+								"shaders/toon.120.program.json", "video/shaderProgram");
 
 			}
-			vertexArrayResource = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/triangle.json", "video/vertexArray");
+			vertexArrayResource = (VertexArrayResource *) this->getContainer()->getResourceManager()->load(
+					"geometry/triangle.json", "video/vertexArray");
 
-			curve.setControlPoints(vector2(0,0), vector2(0, 1), vector2(1, 1), vector2(1, 0));
+			curve.setControlPoints(vector2(0, 0), vector2(0, 1), vector2(1, 1), vector2(1, 0));
 
 			glClearColor(0.0, 0.5, 0.0, 0.0);
 			glShadeModel(GL_SMOOTH);
@@ -464,21 +502,19 @@ class PlaygroundDemo : public PlaygroundRunner {
 
 			glEnable(GL_LIGHT0);
 			//glLightfv(GL_LIGHT0, GL_POSITION, (float *)vector4(0.0, 0.0, 0.0, 1.0));
-			glLightfv(GL_LIGHT0, GL_AMBIENT_AND_DIFFUSE, (float *)vector3(1.0, 1.0, 1.0));
-			glLightfv(GL_LIGHT0, GL_SPECULAR, (float *)vector3(0.0, 0.0, 0.0));
+			glLightfv(GL_LIGHT0, GL_AMBIENT_AND_DIFFUSE, (float *) vector3(1.0, 1.0, 1.0));
+			glLightfv(GL_LIGHT0, GL_SPECULAR, (float *) vector3(0.0, 0.0, 0.0));
 
-
-			glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, (float *)vector3(1.0, 1.0, 1.0));
-			glMaterialfv(GL_FRONT, GL_EMISSION, (float *)vector3(0.0, 0.0, 0.0));
-			glMaterialfv(GL_FRONT, GL_SPECULAR, (float *)vector3(0.0, 0.0, 0.0));
+			glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, (float *) vector3(1.0, 1.0, 1.0));
+			glMaterialfv(GL_FRONT, GL_EMISSION, (float *) vector3(0.0, 0.0, 0.0));
+			glMaterialfv(GL_FRONT, GL_SPECULAR, (float *) vector3(0.0, 0.0, 0.0));
 			glMaterialf(GL_FRONT, GL_SHININESS, 128.0);
 
 			logger->info("Demo Initialization finished");
 			return true;
 		}
 
-		GeometryResource buildSphereGeometry()
-		{
+		GeometryResource buildSphereGeometry() {
 			GeometryResource resource(0);
 
 			real dFi = radian(10);
@@ -488,19 +524,24 @@ class PlaygroundDemo : public PlaygroundRunner {
 			real oneOverTwoPi = 1.0f / (2.0f * M_PI);
 			real oneOverPi = 1.0f / M_PI;
 
-			for(real fi = 0; fi < radian(360) - dFi; fi += dFi)
-			{
-				for(real tita = 0; tita < radian(180) - dTita; tita+= dTita)
-				{
-					vector2 texel1 = vector2(fi * oneOverTwoPi,   tita * oneOverPi);
-					vector2 texel2 = vector2(fi * oneOverTwoPi,   (tita + dTita) * oneOverPi);
-					vector2 texel3 = vector2((fi + dFi) * oneOverTwoPi,   tita * oneOverPi);
-					vector2 texel4 = vector2((fi + dFi) * oneOverTwoPi,   (tita + dTita) * oneOverPi);
+			for (real fi = 0; fi < radian(360) - dFi; fi += dFi) {
+				for (real tita = 0; tita < radian(180) - dTita; tita += dTita) {
+					vector2 texel1 = vector2(fi * oneOverTwoPi, tita * oneOverPi);
+					vector2 texel2 = vector2(fi * oneOverTwoPi, (tita + dTita) * oneOverPi);
+					vector2 texel3 = vector2((fi + dFi) * oneOverTwoPi, tita * oneOverPi);
+					vector2 texel4 = vector2((fi + dFi) * oneOverTwoPi, (tita + dTita) * oneOverPi);
 
-					vector3 vertex1 = radius * vector3(radius * sin(tita) * sin(fi), radius * cos(tita), radius * sin(tita) * cos(fi));
-					vector3 vertex2 = radius * vector3(radius * sin(tita + dTita) * sin(fi), radius * cos(tita + dTita), radius * sin(tita + dTita) * cos(fi));
-					vector3 vertex3 = radius * vector3(radius * sin(tita) * sin(fi + dFi), radius * cos(tita), radius * sin(tita) * cos(fi + dFi));
-					vector3 vertex4 = radius * vector3(radius * sin(tita + dTita) * sin(fi + dFi), radius * cos(tita + dTita), radius * sin(tita + dTita) * cos(fi + dFi));
+					vector3 vertex1 = radius
+							* vector3(radius * sin(tita) * sin(fi), radius * cos(tita), radius * sin(tita) * cos(fi));
+					vector3 vertex2 = radius
+							* vector3(radius * sin(tita + dTita) * sin(fi), radius * cos(tita + dTita),
+									radius * sin(tita + dTita) * cos(fi));
+					vector3 vertex3 = radius
+							* vector3(radius * sin(tita) * sin(fi + dFi), radius * cos(tita),
+									radius * sin(tita) * cos(fi + dFi));
+					vector3 vertex4 = radius
+							* vector3(radius * sin(tita + dTita) * sin(fi + dFi), radius * cos(tita + dTita),
+									radius * sin(tita + dTita) * cos(fi + dFi));
 
 					resource.getVertices().push_back(vertex1);
 					resource.getNormals().push_back(VectorUtilities::normalizar(vertex1));
@@ -526,7 +567,6 @@ class PlaygroundDemo : public PlaygroundRunner {
 					resource.getIndices().push_back(resource.getIndices().size());
 					resource.getColors().push_back(vector3(1.0, 1.0, 1.0));
 
-
 					resource.getVertices().push_back(vertex2);
 					resource.getNormals().push_back(VectorUtilities::normalizar(vertex2));
 					resource.getTextureCoordinates().push_back(texel2);
@@ -544,13 +584,11 @@ class PlaygroundDemo : public PlaygroundRunner {
 			return resource;
 		}
 
-		void drawCubicBezier(const FunctionCubicBezier &cubicBezier)
-		{
+		void drawCubicBezier(const FunctionCubicBezier &cubicBezier) {
 			glBegin(GL_LINE_STRIP);
 
 			real delta = 0.1;
-			for(real t = 0.0; t < 1.0; t +=delta)
-			{
+			for (real t = 0.0; t < 1.0; t += delta) {
 				vectorN result = cubicBezier(t);
 				glVertex2f(result(0), result(1));
 			}
@@ -573,14 +611,14 @@ class PlaygroundDemo : public PlaygroundRunner {
 			glColor3f(1.0, 1.0, 0.0);
 			glPushMatrix();
 			//light w = 1: spotlight; w = 0 directional light
-			glLightfv(GL_LIGHT0, GL_POSITION, (float *)vector4(lightPosition.x, lightPosition.y, lightPosition.z, 0));
+			glLightfv(GL_LIGHT0, GL_POSITION, (float *) vector4(lightPosition.x, lightPosition.y, lightPosition.z, 0));
 			glTranslatef(lightPosition.x, lightPosition.y, lightPosition.z);
 			video->glSphere(.2);
 			glPopMatrix();
 
 			glEnable(GL_LIGHTING);
 
-			if(anotherTextureResource != null)
+			if (anotherTextureResource != null)
 				glBindTexture(GL_TEXTURE_2D, anotherTextureResource->getId());
 
 			glPushMatrix();
@@ -595,7 +633,7 @@ class PlaygroundDemo : public PlaygroundRunner {
 			video->glDrawGeometry(sphereGeometryResource);
 			glPopMatrix();
 
-			if(anotherShaderProgramResource != null)
+			if (anotherShaderProgramResource != null)
 				glUseProgram(anotherShaderProgramResource->getId());
 
 			glPushMatrix();
@@ -610,8 +648,7 @@ class PlaygroundDemo : public PlaygroundRunner {
 			video->glDrawGeometry(sphereGeometryResource);
 			glPopMatrix();
 
-
-			if(shaderProgramResource != null)
+			if (shaderProgramResource != null)
 				glUseProgram(shaderProgramResource->getId());
 
 			glPushMatrix();
@@ -626,7 +663,7 @@ class PlaygroundDemo : public PlaygroundRunner {
 			video->glDrawVertexArray(sphereArrayResource);
 			glPopMatrix();
 
-			rotation+=0.1;
+			rotation += 0.1;
 
 			return CONTINUE;
 		}
@@ -655,7 +692,7 @@ class PlaygroundDemo : public PlaygroundRunner {
 				case 'f':
 				case 'F':
 					this->wgl->setFullscreen(!this->wgl->getFullscreen());
-				break;
+					break;
 			}
 		}
 
@@ -664,7 +701,7 @@ class PlaygroundDemo : public PlaygroundRunner {
 #define SKIP_DEMO
 //#define SKIP_TESTS
 
-class PlaygroundTest: public PlaygroundWin32{
+class PlaygroundTest: public PlaygroundWin32 {
 	public:
 		void init() {
 			PlaygroundWin32::init();
