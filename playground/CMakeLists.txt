@@ -1,6 +1,8 @@
 cmake_minimum_required (VERSION 2.6)
 project (playground)
 
+file(MAKE_DIRECTORY target)
+
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/target/lib)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/target/lib)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/target)
@@ -11,6 +13,7 @@ add_subdirectory(src/javaLike)
 add_subdirectory(src/log)
 add_subdirectory(src/math)
 add_subdirectory(src/resources)
+add_subdirectory(src/windowing)
 
 add_executable(playground src/Main.cpp)
 
@@ -23,4 +26,4 @@ message(STATUS "OpenGL:" ${OPENGL_INCLUDE_DIR} " " ${OPENGL_LIBRARIES})
 message(STATUS "")
 
 include_directories(${SDL2_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR})
-target_link_libraries(playground core math ${SDL2_LIBRARY} ${OPENGL_LIBRARIES})
+target_link_libraries(playground core windowing math ${SDL2_LIBRARY} ${OPENGL_LIBRARIES})

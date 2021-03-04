@@ -35,7 +35,8 @@ enum Interests {
 	KEY_UP = 8,
 	MOUSE_MOVE = 16,
 	MOUSE_BUTTON_DOWN = 32,
-	MOUSE_BUTTON_UP = 64
+	MOUSE_BUTTON_UP = 64,
+	MOUSE_WHEEL = 128
 };
 
 class Playground;
@@ -80,18 +81,24 @@ public:
 	}
 
 	virtual void resize(unsigned int height, unsigned width) {
-
 	}
 
 	virtual void keyDown(unsigned int key) {
-
 	}
-	virtual void keyUp(unsigned int key) {
 
+	virtual void keyUp(unsigned int key) {
 	}
 
 	virtual void mouseMove(int dx, int dy) {
+	}
 
+	virtual void mouseButtonDown(unsigned char button) {
+	}
+
+	virtual void mouseButtonUp(unsigned char button) {
+	}
+
+	virtual void mouseWheel(int wheel) {
 	}
 
 	unsigned char getEnabled() const {
@@ -117,12 +124,15 @@ private:
 	std::vector<PlaygroundRunner *> mouseMoveObservers;
 	std::vector<PlaygroundRunner *> mouseButtonDownObservers;
 	std::vector<PlaygroundRunner *> mouseButtonUpObservers;
+	std::vector<PlaygroundRunner *> mouseWheelObservers;
 
 public:
 	Playground() {
 		logger = Logger::getLogger("core/Playground.h");
 		status = CREATED;
 		resourceManager = null;
+
+		logger->debug("Creating resource manager\n");
 		resourceManager = this->getResourceManager();
 	}
 
@@ -147,6 +157,8 @@ public:
 	}
 
 	void addRunner(PlaygroundRunner *runner) {
+		logger->debug("Adding runner with id [%d]", runner->getId());
+
 		for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
 				runners.begin(); currentRunnerIterator != runners.end();
 				currentRunnerIterator++) {
@@ -168,6 +180,8 @@ public:
 	}
 
 	virtual boolean initRunners() {
+		logger->debug("initializing runners...");
+
 		for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
 				runners.begin(); currentRunnerIterator != runners.end();
 				currentRunnerIterator++) {
@@ -192,7 +206,9 @@ public:
 			if (interests & MOUSE_BUTTON_UP)
 				this->mouseButtonUpObservers.push_back(*currentRunnerIterator);
 			if (interests & MOUSE_BUTTON_DOWN)
-				this->moveObservers.push_back(*currentRunnerIterator);
+				this->mouseButtonDownObservers.push_back(*currentRunnerIterator);
+			if (interests & MOUSE_WHEEL)
+				this->mouseWheelObservers.push_back(*currentRunnerIterator);
 		}
 
 		for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
@@ -210,6 +226,7 @@ public:
 
 	virtual void run() {
 		if (status == CREATED) {
+			logger->debug("Initializing playground");
 			init();
 			status = INITIALIZED;
 		}
@@ -241,12 +258,16 @@ public:
 
 	virtual void loop() {
 		try {
-			for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
-					runners.begin(); currentRunnerIterator != runners.end();
-					currentRunnerIterator++)
-				if ((*currentRunnerIterator)->getEnabled())
+			logger->verbose("Calling enabled runners beforeLoop");
+			for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator = runners.begin();
+					currentRunnerIterator != runners.end();
+					currentRunnerIterator++) {
+				if ((*currentRunnerIterator)->getEnabled()) {
 					(*currentRunnerIterator)->beforeLoop();
+				}
+			}
 
+			logger->verbose("Calling enabled runners doLoop");
 			unsigned int activeRunners = 0;
 			for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
 					runners.begin(); currentRunnerIterator != runners.end();
@@ -269,6 +290,7 @@ public:
 				}
 			}
 
+			logger->verbose("Calling enabled runners afterLoop");
 			for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
 					runners.begin(); currentRunnerIterator != runners.end();
 					currentRunnerIterator++)
@@ -277,7 +299,7 @@ public:
 
 			if (activeRunners == 0) {
 				this->status = STOPPED;
-				logger->debug("There're no runners active");
+				logger->info("There're no more runners active... stopping");
 			}
 
 		} catch (Exception &exception) {
@@ -316,6 +338,30 @@ public:
 				currentRunnerIterator != mouseMoveObservers.end();
 				currentRunnerIterator++)
 			(*currentRunnerIterator)->mouseMove(dx, dy);
+	}
+
+	void mouseButtonDown(unsigned char button) {
+		for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
+				mouseButtonDownObservers.begin();
+				currentRunnerIterator != mouseButtonDownObservers.end();
+				currentRunnerIterator++)
+			(*currentRunnerIterator)->mouseButtonDown(button);
+	}
+
+	void mouseButtonUp(unsigned char button) {
+			for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
+					mouseButtonUpObservers.begin();
+					currentRunnerIterator != mouseButtonUpObservers.end();
+					currentRunnerIterator++)
+				(*currentRunnerIterator)->mouseButtonUp(button);
+	}
+
+	void mouseWheel(int wheel) {
+				for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
+						mouseWheelObservers.begin();
+						currentRunnerIterator != mouseWheelObservers.end();
+						currentRunnerIterator++)
+					(*currentRunnerIterator)->mouseWheel(wheel);
 	}
 
 	virtual ~Playground() {

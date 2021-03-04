@@ -17,6 +17,11 @@
 #include <string.h>
 #include <errno.h>
 
+#define _USE_PRINTF_
+#define DEBUG
+//#define VERBOSE
+
+
 class Logger {
 	private:
 		String basename;
@@ -38,7 +43,7 @@ class Logger {
 			if (fileHandler == null) {
 				printf("File handler is NULL\n");
 				FILE *existingFile;
-				if ((existingFile = fopen(getFileName(), "rt")) != null) {
+				if (existingFile = fopen(getFileName(), "rt")) {
 					struct stat fileStats;
 					fclose(existingFile);
 
@@ -80,7 +85,7 @@ class Logger {
 							}
 						} else {
 							printf("Appending to existing log file\n");
-							if ((fileHandler = fopen(getFileName(), "at")) == null) {
+							if (!(fileHandler = fopen(getFileName(), "at"))) {
 								printf("Error opening logger file [%s]\n", getFileName());
 								perror(getFileName());
 								fileHandler = null;
@@ -89,7 +94,7 @@ class Logger {
 					}
 				} else {
 					printf("Appending to existing log file\n");
-					if ((fileHandler = fopen(getFileName(), "wt")) == null) {
+					if (!(fileHandler = fopen(getFileName(), "wt"))) {
 						printf("Error opening logger file [%s]\n", getFileName());
 						perror(getFileName());
 						fileHandler = null;
@@ -102,6 +107,8 @@ class Logger {
 		void flush() {
 			FILE *fileHandler = getFileHandler();
 
+			printf("Flushing log file handler");
+
 			fflush(fileHandler);
 		}
 
@@ -113,23 +120,29 @@ class Logger {
 
 		void printMessage(const char *type, const char * formato, va_list *args) {
 			FILE *fileHandler = getFileHandler();
+
 			if(fileHandler != null) {
 				char textBuffer[256];
 				strftime(textBuffer, sizeof(textBuffer), "%d/%m/%Y %H:%M:%S", getCurrentTime());
+
 				fprintf(fileHandler, "%s - %s - %s: ", textBuffer, type, basename.c_str());
 				printf("%s - %s - %s: ", textBuffer, type, basename.c_str());
 
-				vfprintf(fileHandler, formato, *args);
 				vprintf(formato, *args);
+				vfprintf(fileHandler, formato, *args);
 
 				fprintf(fileHandler, "\n");
 				printf("\n");
 			}
 		}
 		void setBasename(const String &basename)
-			{
-				this->basename = basename;
-			}
+		{
+			this->basename = basename;
+		}
+
+		const String &getBasename() {
+			return this->basename;
+		}
 
 	public:
 		void info(const char *formato, ...)
@@ -174,10 +187,29 @@ class Logger {
 			va_end(args);
 			this->flush();
 		}
+
+		void verbose(const char *formato, ...)
+		{
+#if defined(DEBUG) && defined(VERBOSE)
+			va_list args;
+			va_start(args, formato);
+			printMessage("VERBOSE ", formato, &args);
+			va_end(args);
+			this->flush();
+#endif
+		}
 	public:
 		static std::vector<Logger *>loggers;
 		static Logger *getLogger(String basename)
 		{
+			for(std::vector<Logger *>::iterator currentLoggerIterator = Logger::loggers.begin();
+					currentLoggerIterator != Logger::loggers.end();
+				currentLoggerIterator++) {
+				if((*currentLoggerIterator)->getBasename() == basename) {
+					return *currentLoggerIterator;
+				}
+			}
+
 			getFileHandler();
 
 			Logger *logger = new Logger();
