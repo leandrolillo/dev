@@ -106,9 +106,6 @@ class Logger {
 
 		void flush() {
 			FILE *fileHandler = getFileHandler();
-
-			printf("Flushing log file handler");
-
 			fflush(fileHandler);
 		}
 

@@ -4,7 +4,6 @@ target_include_directories(windowing INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
 
 find_package(SDL2 REQUIRED)
-
 include_directories(${SDL2_INCLUDE_DIR})
 
 # library link dependencies

@@ -7,9 +7,9 @@
 
 #ifndef GEOMETRYRESOURCEADAPTER_H_
 #define GEOMETRYRESOURCEADAPTER_H_
-#include "resources/ResourceAdapter.h"
-#include "../resources/GeometryResource.h"
-#include "parser/JsonParser.h"
+#include "../resources/ResourceAdapter.h"
+#include "../video/resources/GeometryResource.h"
+#include "../parser/JsonParser.h"
 #include "normalGenerators/NormalGenerator.h"
 #include <OpenGL/gl.h>
 #include <OpenGL/glext.h>
@@ -33,7 +33,7 @@ class GeometryResourceAdapter: public ResourceAdapter {
 
 			String token;
 			parser->readStartObject();
-			while((token = parser->readToken()) != END_OBJECT && token != EOF)
+			while((token = parser->readToken()) != END_OBJECT && token != eof)
 			{
 				if(token == "vertices") {
 					parser->readValueSeparator();

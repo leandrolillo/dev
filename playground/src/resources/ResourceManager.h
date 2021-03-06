@@ -26,6 +26,10 @@ class ResourceManager {
 			this->rootFolder = rootFolder;
 		}
 
+		const String &getRootFolder() {
+			return rootFolder;
+		}
+
 		void addAdapter(ResourceAdapter *adapter)
 		{
 			std::vector<String> mimeTypes = adapter->getSupportedMimeTypes();
@@ -62,6 +66,8 @@ class ResourceManager {
 
 		Resource *load(String fileName, const String &mimeType)
 		{
+			logger->debug("Loading '%s' resource '%s'", mimeType.c_str(), fileName.c_str());
+
 			try {
 				FileParser fileParser = FileParser(normalize(fileName));
 				return load(fileParser, mimeType);
@@ -73,6 +79,8 @@ class ResourceManager {
 
 		Resource *load(FileParser &fileParser, const String &mimeType)
 		{
+			logger->debug("Loading '%s' resource '%s'", mimeType.c_str(), fileParser.getFilename().c_str());
+
 				Resource *cached = resourceCache[getCacheKey(fileParser.getFilename(), mimeType)];
 				try {
 					if(cached == null) {

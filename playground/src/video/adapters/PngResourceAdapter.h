@@ -10,7 +10,8 @@
 
 #include <png.h>
 #include <stdio.h>
-#include "resources/ResourceAdapter.h"
+#include "../resources/ResourceAdapter.h"
+#include "../video/resources/ImageResource.h"
 
 class PngResourceAdapter: public ResourceAdapter {
 	private:
@@ -26,8 +27,9 @@ class PngResourceAdapter: public ResourceAdapter {
 			return supportedMimeTypes;
 		}
 		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
+			logger->debug("Loading %s file %s", mimeType.c_str(), fileParser.getFilename().c_str());
 			unsigned char *pBitmap;
-			unsigned long width, height;
+			unsigned int width, height;
 			int  bit_depth;
 
 			png_structp png_ptr;
@@ -63,7 +65,7 @@ class PngResourceAdapter: public ResourceAdapter {
 			png_set_sig_bytes(png_ptr, 8);  /* we already read the 8 signature bytes */
 
 			png_read_info(png_ptr, info_ptr);  /* read all PNG info up to image data */
-			png_get_IHDR(&png_ptr, &info_ptr, &width, &height, &bit_depth, &color_type,
+			png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type,
 					(int *)null, (int *)null, (int *)null);
 
 			logger->debug( "Png properties :\n	Width [%d]\n	Height [%d]\n	Bpp [%d]\n", width, height, bit_depth);

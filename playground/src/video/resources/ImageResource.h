@@ -8,7 +8,7 @@
 #ifndef IMAGERESOURCE_H_
 #define IMAGERESOURCE_H_
 
-#include"resources/Resource.h"
+#include "../resources/Resource.h"
 class ImageResource : public Resource
 {
 	private:

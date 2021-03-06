@@ -7,10 +7,9 @@
 
 #ifndef SHADERRESOURCEADAPTER_H_
 #define SHADERRESOURCEADAPTER_H_
-#include "resources/ResourceAdapter.h"
+#include "../../resources/ResourceAdapter.h"
 #include "../resources/ShaderResource.h"
 #include <OpenGL/gl.h>
-#include <gl/glew.h>
 
 class ShaderResourceAdapter: public ResourceAdapter {
 	private:

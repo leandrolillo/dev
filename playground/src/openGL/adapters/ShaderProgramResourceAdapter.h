@@ -16,9 +16,9 @@
  *      Author: Lean
  */
 
-#include "../resources/ResourceAdapter.h"
+#include "../../resources/ResourceAdapter.h"
 #include "../resources/ShaderProgramResource.h"
-#include "parser/JsonParser.h"
+#include "../../parser/JsonParser.h"
 #include "VideoAdapter.h"
 #include <OpenGL/gl.h>
 
@@ -62,7 +62,7 @@ class ShaderProgramResourceAdapter: public ResourceAdapter {
 
 			String token;
 			parser->readStartObject();
-			while((token = parser->readToken()) != END_OBJECT && token != EOF)
+			while((token = parser->readToken()) != END_OBJECT && token != eof)
 			{
 				if(token == "vertexShaders") {
 					parser->readValueSeparator();

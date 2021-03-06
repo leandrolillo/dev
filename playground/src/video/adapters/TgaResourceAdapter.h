@@ -9,7 +9,9 @@
 #define TGARESOURCEADAPTER_H_
 
 #include <stdio.h>
-#include "resources/ResourceAdapter.h"
+#include "../resources/ResourceAdapter.h"
+#include "../video/resources/ImageResource.h"
+
 
 class TgaResourceAdapter: public ResourceAdapter {
 	private:

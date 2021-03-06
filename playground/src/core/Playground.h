@@ -114,6 +114,7 @@ class Playground {
 private:
 	Logger *logger;
 	ResourceManager *resourceManager;
+	String resourcesRootFolder;
 	std::vector<PlaygroundRunner *> runners;
 	std::map<unsigned char, PlaygroundRunner *> runners_by_id;
 	PlaygroundStatus status;
@@ -130,15 +131,23 @@ public:
 	Playground() {
 		logger = Logger::getLogger("core/Playground.h");
 		status = CREATED;
+		resourcesRootFolder = "Lean/dev/media/";
 		resourceManager = null;
+		//resourceManager = this->getResourceManager();
+	}
 
-		logger->debug("Creating resource manager\n");
-		resourceManager = this->getResourceManager();
+	Playground(const String &rootFolder) {
+		logger = Logger::getLogger("core/Playground.h");
+		status = CREATED;
+		resourcesRootFolder = rootFolder;
+		resourceManager = null;
 	}
 
 	virtual ResourceManager *getResourceManager() {
-		if (resourceManager == null)
-			resourceManager = new ResourceManager("/Lean/dev/media/");
+		if (resourceManager == null) {
+			logger->debug("Creating resource manager");
+			resourceManager = new ResourceManager(this->resourcesRootFolder);
+		}
 
 		return resourceManager;
 
@@ -159,8 +168,11 @@ public:
 	void addRunner(PlaygroundRunner *runner) {
 		logger->debug("Adding runner with id [%d]", runner->getId());
 
-		for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
-				runners.begin(); currentRunnerIterator != runners.end();
+		/**
+		 * Check for duplicates
+		 */
+		for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator = runners.begin();
+				currentRunnerIterator != runners.end();
 				currentRunnerIterator++) {
 			if ((*currentRunnerIterator)->getId() == runner->getId()) {
 				logger->error("Runner with id [%d] already added - skipping",
@@ -169,8 +181,16 @@ public:
 			}
 		}
 
+		/**
+		 * Insert ordered by id
+		 */
+		std::vector<PlaygroundRunner *>::iterator currentRunnerIterator = runners.begin();
+		while(currentRunnerIterator != runners.end() && (*currentRunnerIterator)->getId() < runner->getId()) {
+			currentRunnerIterator++;
+		}
+
 		runner->setContainer(this);
-		runners.push_back(runner);
+		runners.insert(currentRunnerIterator, runner);
 		runners_by_id[runner->getId()] = runner;
 	}
 
@@ -180,14 +200,15 @@ public:
 	}
 
 	virtual boolean initRunners() {
-		logger->debug("initializing runners...");
+		logger->debug("initializing runners:");
 
 		for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
 				runners.begin(); currentRunnerIterator != runners.end();
 				currentRunnerIterator++) {
+			logger->debug("Initializing runner [%d]", (*currentRunnerIterator)->getId());
+
 			if (!(*currentRunnerIterator)->init()) {
-				logger->error("Failed to initialize runner [%d]",
-						(*currentRunnerIterator)->getId());
+				logger->error("Failed to initialize runner [%d]", (*currentRunnerIterator)->getId());
 				return false;
 			}
 

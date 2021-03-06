@@ -14,13 +14,12 @@
 #include <string>
 #include<stdio.h>
 
-#ifndef EOF
-	#define EOF '\0'
-#endif
+#define eof std::to_string(EOF)
+#define eol "\n"
 
-#ifndef EOL
-	#define EOL '\n'
-#endif
+#define char_eof (char)EOF
+#define char_eol '\n'
+
 
 class FileParser {
 	private:
@@ -43,7 +42,7 @@ class FileParser {
 
 		boolean isInSet(char character, const char *set) {
 			const char *currentTokenSeparator = set;
-			while(*currentTokenSeparator != EOF) {
+			while(*currentTokenSeparator != char_eof) {
 				if(*currentTokenSeparator == character)
 					return true;
 
@@ -65,7 +64,7 @@ class FileParser {
 
 		void takeUntilEOL() {
 			char caracter;
-			while((caracter = takeByte()) != EOL && caracter != EOF);
+			while((caracter = takeByte()) != char_eol && caracter != char_eof);
 		}
 
 		void takeBlanks() {
@@ -183,10 +182,10 @@ class FileParser {
 		int takeByte()
 		{
 			int byte = fgetc(getStream());
-			if((char)byte == EOL) {
+			if((char)byte == char_eol) {
 				line++;
 				column = 0;
-			} else if((char) byte != '\r' && (char)byte != EOF && (char) byte != EOF) {
+			} else if((char) byte != '\r' && (char)byte != char_eof && (char) byte != char_eof) {
 				column++;
 			}
 
@@ -204,9 +203,9 @@ class FileParser {
 		{
 			String line;
 			char caracter[2];
-			caracter[1] = EOF;
+			caracter[1] = char_eof;
 
-			while((caracter[0] = takeByte()) != EOL && caracter[0] != EOF)
+			while((caracter[0] = takeByte()) != char_eol && caracter[0] != char_eof)
 				line.append(caracter);
 
 			return line;
@@ -232,9 +231,9 @@ class FileParser {
 				token++;
 				longitud++;
 			}
-			if(longitud == 0) *(token+1) = EOF;
+			if(longitud == 0) *(token+1) = char_eof;
 			else {
-				*token = EOF;
+				*token = char_eof;
 				fseek(getStream(), -1, SEEK_CUR);
 			}
 			return(tokenBuffer);

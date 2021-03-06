@@ -8,7 +8,7 @@
 #ifndef VERTEXBUFFERRESOURCE_H_
 #define VERTEXBUFFERRESOURCE_H_
 
-#include "resources/Resource.h"
+#include "../resources/Resource.h"
 #include "TextureResource.h"
 #include <OpenGL/gl.h>
 

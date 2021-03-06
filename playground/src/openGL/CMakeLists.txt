@@ -6,4 +6,4 @@ find_package(OpenGL REQUIRED)
 include_directories(${OPENGL_INCLUDE_DIR})
 
 # library link dependencies
-target_link_libraries(openGL INTERFACE core windowing ${OPENGL_LIBRARIES})
+target_link_libraries(openGL INTERFACE core windowing video ${OPENGL_LIBRARIES})

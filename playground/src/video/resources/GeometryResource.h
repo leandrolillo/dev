@@ -8,7 +8,7 @@
 #ifndef GEOMETRYRESOURCE_H_
 #define GEOMETRYRESOURCE_H_
 
-#include "resources/Resource.h"
+#include "../resources/Resource.h"
 #include "../../math/Math3d.h"
 #include <vector>
 

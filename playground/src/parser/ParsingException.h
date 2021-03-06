@@ -8,7 +8,7 @@
 #ifndef PARSINGEXCEPTION_H_
 #define PARSINGEXCEPTION_H_
 
-#include "exceptions/Exception.h"
+#include "../exceptions/Exception.h"
 
 	class ParsingException : public Exception
 	{

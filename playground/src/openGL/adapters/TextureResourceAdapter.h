@@ -8,9 +8,9 @@
 #ifndef TEXTURERESOURCEADAPTER_H_
 #define TEXTURERESOURCEADAPTER_H_
 
-#include "resources/ResourceAdapter.h"
-#include "../resources/ImageResource.h"
-#include "../resources/TextureResource.h"
+#include "../resources/ResourceAdapter.h"
+#include "../video/resources/ImageResource.h"
+#include "../openGL/resources/TextureResource.h"
 #include <OpenGL/gl.h>
 
 class TextureResourceAdapter: public ResourceAdapter {
