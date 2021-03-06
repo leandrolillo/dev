@@ -1,11 +1,7 @@
 #include <iostream>
 #include <stdio.h>
 
-#ifdef _WIN32
-	#include "windowing/win32apiRunner.h"
-#else
-	#include "windowing/SDLRunner.h"
-#endif
+#include "openGL/OpenGLRunner.h"
 
 class PhysicsPlayground: public Playground {
 private:
@@ -13,11 +9,7 @@ private:
 protected:
 	PlaygroundRunner *getWindowRunner() {
 		if (windowsRunner == null) {
-			#ifdef _WIN32
-			windowsRunner = new WglRunner();
-			#else
-			windowsRunner = new SDLRunner();
-			#endif
+			windowsRunner = new OpenGLRunner();
 		}
 		return windowsRunner;
 	}

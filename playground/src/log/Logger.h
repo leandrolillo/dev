@@ -41,13 +41,15 @@ class Logger {
 			static FILE *fileHandler;
 
 			if (fileHandler == null) {
+#ifdef DEBUG
 				printf("File handler is NULL\n");
+#endif
 				FILE *existingFile;
 				if (existingFile = fopen(getFileName(), "rt")) {
 					struct stat fileStats;
 					fclose(existingFile);
 
-					printf("Log file already exists\n");
+					printf("Log file already exists, checking if new version is required...\n");
 
 					if (!stat(getFileName(), &fileStats)) {
 						struct tm *dateTime = localtime(&fileStats.st_ctime);
@@ -58,8 +60,6 @@ class Logger {
 						int fileDay = dateTime->tm_yday;
 
 						dateTime = getCurrentTime();
-
-						printf("Log file stats fetched\n");
 
 						if (fileYear != dateTime->tm_year || fileDay != dateTime->tm_yday) {
 							printf("Log file was NOT created today\n");

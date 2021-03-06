@@ -75,9 +75,7 @@ class ResourceManager {
 		{
 				Resource *cached = resourceCache[getCacheKey(fileParser.getFilename(), mimeType)];
 				try {
-
-					if(cached == null)
-					{
+					if(cached == null) {
 						Resource *response = null;
 
 						if(adapters[mimeType] != null) {
@@ -89,8 +87,9 @@ class ResourceManager {
 									response->setMimeType(mimeType);
 									resourceCache[getCacheKey(fileParser.getFilename(), mimeType)] = response;
 								}
-						} else
+						} else {
 							logger->error("No adapter found for mimetype [%s] - file not loaded [%s]", mimeType.c_str(), fileParser.getFilename().c_str());
+						}
 
 						return response;
 					} else

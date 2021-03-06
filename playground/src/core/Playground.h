@@ -299,7 +299,7 @@ public:
 
 			if (activeRunners == 0) {
 				this->status = STOPPED;
-				logger->info("There're no more runners active... stopping");
+				logger->debug("There're no more runners active... stopping");
 			}
 
 		} catch (Exception &exception) {

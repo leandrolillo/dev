@@ -18,7 +18,7 @@
 
 #include "win32apiRunner.h"
 
-class WglRunner: public Win32apiRunner {
+class OpenGLRunner: public Win32apiRunner {
 	protected:
 		HDC hDeviceContext;
 		unsigned int bitsPerPixel;
@@ -28,7 +28,7 @@ class WglRunner: public Win32apiRunner {
 		unsigned int minorVersion;
 
 	public:
-		WglRunner() :
+		OpenGLRunner() :
 				Win32apiRunner() {
 			hDeviceContext = null;
 			bitsPerPixel = 16;
@@ -37,7 +37,7 @@ class WglRunner: public Win32apiRunner {
 			logger = Logger::getLogger("win32/wglRunner.h");
 		}
 
-		virtual ~WglRunner() {
+		virtual ~OpenGLRunner() {
 			wglMakeCurrent(null, null);
 
 			logger->debug("Rendering context deselected");

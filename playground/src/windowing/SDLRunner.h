@@ -22,20 +22,16 @@ class SDLRunner: public PlaygroundRunner {
 	public:
 		static const unsigned char ID = 0;
 
-	private:
+	protected:
 		SDL_Window *window;
 		boolean fullScreen;
 		Logger *logger;
 
 	public:
 		SDLRunner() {
-			printf("SDL Runner constructor\n");
 			fullScreen = false;
 			logger = Logger::getLogger("SDLRunner.h");
-			printf("retrieved logger for sdlrunner\n");
 			window = null;
-
-
 		}
 
 		virtual unsigned char getId() {
@@ -86,6 +82,14 @@ class SDLRunner: public PlaygroundRunner {
 
 		virtual int processEvent(SDL_Event *event) {
 		    switch (event->type) {
+		    case SDL_WINDOWEVENT:
+		    	switch(event->window.event) {
+		    		case SDL_WINDOWEVENT_RESIZED:
+		    			logger->debug("WINDOW RESIZED");
+		    			this->getContainer()->resize(event->window.data1, event->window.data2);
+		    		return 0;
+		    	}
+		    	break;
 		        case SDL_KEYDOWN:
 		            //SDL_Log("SDL_KEYDOWN %d", event->key.keysym.sym);
 		            logger->debug("KEYDOWN: %d", event->key.keysym.sym);
@@ -163,9 +167,11 @@ class SDLRunner: public PlaygroundRunner {
 
 		boolean setFullscreen(boolean fullScreen) {
 			if (fullScreen) {
+				SDL_SetWindowFullscreen(this->window, SDL_WINDOW_FULLSCREEN);
 				// do fullscreen stuff
 				this->fullScreen = true;
 			} else {
+				SDL_SetWindowFullscreen(this->window, !SDL_WINDOW_FULLSCREEN);
 				// do fullscreen stuff
 				this->fullScreen = false;
 			}

@@ -13,17 +13,12 @@ add_subdirectory(src/javaLike)
 add_subdirectory(src/log)
 add_subdirectory(src/math)
 add_subdirectory(src/resources)
+add_subdirectory(src/video)
 add_subdirectory(src/windowing)
+add_subdirectory(src/openGL)
 
 add_executable(playground src/Main.cpp)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
-find_package(SDL2 REQUIRED)
-find_package(OpenGL REQUIRED)
 
-message(STATUS "")
-message(STATUS "OpenGL:" ${OPENGL_INCLUDE_DIR} " " ${OPENGL_LIBRARIES})
-message(STATUS "")
-
-include_directories(${SDL2_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR})
-target_link_libraries(playground core windowing math ${SDL2_LIBRARY} ${OPENGL_LIBRARIES})
+target_link_libraries(playground core windowing math openGL)
