@@ -14,10 +14,10 @@
 #include <string>
 #include<stdio.h>
 
-#define eof std::to_string(EOF)
+#define eof std::to_string('\0')
 #define eol "\n"
 
-#define char_eof (char)EOF
+#define char_eof '\0'
 #define char_eol '\n'
 
 
@@ -41,10 +41,12 @@ class FileParser {
 
 
 		boolean isInSet(char character, const char *set) {
+
 			const char *currentTokenSeparator = set;
-			while(*currentTokenSeparator != char_eof) {
-				if(*currentTokenSeparator == character)
+			while(*currentTokenSeparator != '\0' && *currentTokenSeparator != char_eof) {
+				if(*currentTokenSeparator == character){
 					return true;
+				}
 
 				currentTokenSeparator++;
 			}
@@ -227,6 +229,7 @@ class FileParser {
 			unsigned short longitud = 0;
 
 			takeBlanksAndComments();
+
 			while(!isTokenSeparator(*token = takeByte())) {
 				token++;
 				longitud++;
@@ -236,6 +239,7 @@ class FileParser {
 				*token = char_eof;
 				fseek(getStream(), -1, SEEK_CUR);
 			}
+
 			return(tokenBuffer);
 		}
 
@@ -261,7 +265,7 @@ class FileParser {
 
 		void setDefaultSpecialCharacters()
 		{
-			tokenSeparator = "	# ()[]{},.:;<>+-*/^�=|&!�?\n\r\"\'\\�";
+			tokenSeparator = "	# ()[]{},.:;<>+-*/^®=|&!ø?\n\r\"\'\\";
 			blanks = " \n\r\t";
 			commentChar = '#';
 		}

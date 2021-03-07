@@ -31,6 +31,8 @@ class GeometryResourceAdapter: public ResourceAdapter {
 		}
 
 		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
+			logger->debug("Loading [%s] [%s] [%c] [%u]", mimeType.c_str(), fileParser.getFilename().c_str(), char_eof, (unsigned char)-1);
+
 			JsonParser *parser = new JsonParser(fileParser);
 
 			GeometryResource *resource = new GeometryResource(0);
