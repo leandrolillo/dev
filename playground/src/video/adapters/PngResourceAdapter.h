@@ -23,11 +23,15 @@ class PngResourceAdapter: public ResourceAdapter {
 
 			logger = Logger::getLogger("video/PngResourceAdapter.h");
 		}
+		String toString() {
+			return "PngResourceAdapter";
+		}
 		virtual const std::vector<String> getSupportedMimeTypes() {
 			return supportedMimeTypes;
 		}
 		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
-			logger->debug("Loading %s file %s", mimeType.c_str(), fileParser.getFilename().c_str());
+			logger->debug("Loading png resource");
+
 			unsigned char *pBitmap;
 			unsigned int width, height;
 			int  bit_depth;
@@ -38,7 +42,10 @@ class PngResourceAdapter: public ResourceAdapter {
 
 			unsigned char sig[8];
 
+			logger->debug("before fileparser read");
 			fileParser.read(sig, 1, 8);
+
+			logger->debug("before png_check_sig");
 			if (!png_check_sig(sig, 8)) {
 				logger->error( "Not a valid png file");
 				return(null);   /* bad signature */

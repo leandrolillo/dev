@@ -20,14 +20,19 @@ class ResourceManager {
 		String rootFolder;
 
 		public:
-		ResourceManager(const String rootFolder)
+		ResourceManager(const String &rootFolder)
 		{
 			logger = Logger::getLogger("resources/ResourceManager.h");
+
 			this->rootFolder = rootFolder;
+			if(this->rootFolder.substr(this->rootFolder.length() - 1, 1) != "/") {
+				this->rootFolder.append("/");
+			}
+
 		}
 
 		const String &getRootFolder() {
-			return rootFolder;
+			return this->rootFolder;
 		}
 
 		void addAdapter(ResourceAdapter *adapter)
@@ -66,8 +71,6 @@ class ResourceManager {
 
 		Resource *load(String fileName, const String &mimeType)
 		{
-			logger->debug("Loading '%s' resource '%s'", mimeType.c_str(), fileName.c_str());
-
 			try {
 				FileParser fileParser = FileParser(normalize(fileName));
 				return load(fileParser, mimeType);
@@ -79,34 +82,36 @@ class ResourceManager {
 
 		Resource *load(FileParser &fileParser, const String &mimeType)
 		{
-			logger->debug("Loading '%s' resource '%s'", mimeType.c_str(), fileParser.getFilename().c_str());
+			Resource *cached = resourceCache[getCacheKey(fileParser.getFilename(), mimeType)];
+			try {
+				if(cached == null) {
+					logger->debug("Resource was not cached previously");
+					Resource *response = null;
 
-				Resource *cached = resourceCache[getCacheKey(fileParser.getFilename(), mimeType)];
-				try {
-					if(cached == null) {
-						Resource *response = null;
+					if(adapters[mimeType] != null) {
+						logger->debug("Loading [%s] [%s] with adapter [%s]", mimeType.c_str(), fileParser.getFilename().c_str(), adapters[mimeType]->toString().c_str());
 
-						if(adapters[mimeType] != null) {
-							logger->debug("Loading [%s] [%s]", mimeType.c_str(), fileParser.getFilename().c_str());
+							response = adapters[mimeType]->load(fileParser, mimeType);
+							if(response != null) {
+								response->setFileName(fileParser.getFilename());
+								response->setMimeType(mimeType);
+								resourceCache[getCacheKey(fileParser.getFilename(), mimeType)] = response;
+								//logger->debug("Loaded [%s]", response->toString().c_str());
+							} else {
+								//logger->warn("Could not load [%s] [%s] with adapter [%s]", mimeType.c_str(), fileParser.getFilename().c_str(), adapters[mimeType]->toString().c_str());
+							}
+					} else {
+						logger->error("No adapter found for mimetype [%s] - file not loaded [%s]", mimeType.c_str(), fileParser.getFilename().c_str());
+					}
 
-								response = adapters[mimeType]->load(fileParser, mimeType);
-								if(response != null) {
-									response->setFileName(fileParser.getFilename());
-									response->setMimeType(mimeType);
-									resourceCache[getCacheKey(fileParser.getFilename(), mimeType)] = response;
-								}
-						} else {
-							logger->error("No adapter found for mimetype [%s] - file not loaded [%s]", mimeType.c_str(), fileParser.getFilename().c_str());
-						}
+					return response;
+				} else
+					logger->debug("Getting [%s] [%s] from cache", mimeType.c_str(), fileParser.getFilename().c_str());
+			} catch (Exception &e) {
+				logger->error("Error loading resource [%s] [%s]: [%s]", mimeType.c_str(), fileParser.getFilename().c_str(), e.getMessage().c_str());
+			}
 
-						return response;
-					} else
-						logger->debug("Getting [%s] [%s] from cache", mimeType.c_str(), fileParser.getFilename().c_str());
-				} catch (Exception &e) {
-					logger->error("Error loading resource [%s] [%s]: [%s]", mimeType.c_str(), fileParser.getFilename().c_str(), e.getMessage().c_str());
-				}
-
-				return cached;
+			return cached;
 		}
 		void dispose(Resource *resource)
 		{
@@ -143,12 +148,13 @@ class ResourceManager {
 			adapters.clear();
 			resourceAdaptersSet.clear();
 		}
-		const String normalize(const String &fileName) const
+		const String &normalize(const String &fileName) const
 		{
-			if(fileName.substr(0, 1) == "/")
+			if(fileName.substr(0, 1) == "/") {
 				return fileName;
+			}
 
-			return rootFolder + fileName;
+			return this->rootFolder + fileName;
 		}
 
 	private:
@@ -158,7 +164,7 @@ class ResourceManager {
 			return normalize(filename) + "|" + mimeType;
 		}
 
-		String guessMimeType(const String &fileName)
+		const String &guessMimeType(const String &fileName)
 		{
 			int position = fileName.find_last_of(".");
 			if(position > 0) {

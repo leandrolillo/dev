@@ -25,6 +25,10 @@ class JpegResourceAdapter: public ResourceAdapter {
 
 			logger = Logger::getLogger("video/JpegResourceAdapter.h");
 		}
+		const String &toString() const {
+			return "JpegResourceAdapter";
+		}
+
 		virtual const std::vector<String> getSupportedMimeTypes() {
 			return supportedMimeTypes;
 		}

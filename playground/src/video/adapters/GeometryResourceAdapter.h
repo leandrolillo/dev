@@ -23,9 +23,13 @@ class GeometryResourceAdapter: public ResourceAdapter {
 			supportedMimeTypes.push_back("video/geometry");
 			logger = Logger::getLogger("video/GeometryResourceAdapter.h");
 		}
+		const String &toString() const {
+			return "GeometryResourceAdapter";
+		}
 		virtual const std::vector<String> getSupportedMimeTypes() {
 			return supportedMimeTypes;
 		}
+
 		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
 			JsonParser *parser = new JsonParser(fileParser);
 

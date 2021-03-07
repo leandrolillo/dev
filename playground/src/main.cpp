@@ -100,7 +100,7 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 //			Source *backgroundSource = audio->createSource("background.ogg");
 //			audio->playSource(backgroundSource);
 
-			textureResource = (TextureResource *)resourceManager->load("images/ss/MB.PNG", "video/texture");
+			textureResource = (TextureResource *)resourceManager->load("images/TEXTURA.PNG", "video/texture");
 			logger->debug("textureResource: %d", textureResource);
 
 			anotherTextureResource = (TextureResource *)resourceManager->load("images/irs.JPG", "video/texture");

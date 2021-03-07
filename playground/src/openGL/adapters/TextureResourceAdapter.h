@@ -22,10 +22,17 @@ class TextureResourceAdapter: public ResourceAdapter {
 			supportedMimeTypes.push_back("video/texture");
 			logger = Logger::getLogger("video/TextureResourceAdapter.h");
 		}
+
+		String toString() {
+			return "TextureResourceAdapter";
+		}
+
 		virtual const std::vector<String> getSupportedMimeTypes() {
 			return supportedMimeTypes;
 		}
 		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
+			logger->debug("Loading texture resource");
+
 			ImageResource *imageResource = (ImageResource *)this->getResourceManager()->load(fileParser);
 			TextureResource *resource = null;
 

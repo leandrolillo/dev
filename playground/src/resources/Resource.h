@@ -9,6 +9,7 @@
 #define RESOURCE_H_
 
 #include "../javaLike/JavaLike.h"
+#include <string>
 
 class Resource {
 	private:
@@ -49,6 +50,11 @@ class Resource {
 		{
 			this->fileName = fileName;
 		}
+
+		virtual const String &toString() const {
+			return "Resource(id:" + std::to_string(this->getId()) + ") [" + this->getMimeType() + "] [" + this->fileName + "]";
+		}
+
 	};
 
 #endif /* RESOURCE_H_ */

@@ -148,7 +148,7 @@ class FileParser {
 			}
 		}
 
-		const String& getFilename() const
+		const String & getFilename() const
 		{
 			return filename;
 		}

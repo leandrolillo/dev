@@ -125,8 +125,19 @@ class Logger {
 				fprintf(fileHandler, "%s - %s - %s: ", textBuffer, type, basename.c_str());
 				printf("%s - %s - %s: ", textBuffer, type, basename.c_str());
 
-				vprintf(formato, *args);
-				vfprintf(fileHandler, formato, *args);
+				/**
+				 * This approach was causing null pointer exceptions because args can only be iterated once
+				 * 				//vprintf(formato, *args);
+				 * 				//vfprintf(fileHandler, formato, *args);
+				 */
+
+				char *tempBuffer = null; //TODO: review if it is better to use a fixed buffer and truncate logs length
+				if(vasprintf(&tempBuffer, formato, *args)) {
+					printf(tempBuffer);
+					fprintf(fileHandler, tempBuffer);
+					free(tempBuffer);
+				}
+
 
 				fprintf(fileHandler, "\n");
 				printf("\n");
