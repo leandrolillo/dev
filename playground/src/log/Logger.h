@@ -148,10 +148,6 @@ class Logger {
 			this->basename = basename;
 		}
 
-		const String &getBasename() {
-			return this->basename;
-		}
-
 	public:
 		void info(const char *formato, ...)
 		{
@@ -206,6 +202,11 @@ class Logger {
 			this->flush();
 #endif
 		}
+
+		const String &getBasename() const {
+			return this->basename;
+		}
+
 	public:
 		static std::vector<Logger *>loggers;
 		static Logger *getLogger(String basename)

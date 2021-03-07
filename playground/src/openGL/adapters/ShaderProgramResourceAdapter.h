@@ -46,6 +46,10 @@ class ShaderProgramResourceAdapter: public ResourceAdapter {
 			supportedMimeTypes.push_back("video/shaderProgram");
 			logger = Logger::getLogger("video/ShaderProgramResourceAdapter.h");
 		}
+		String toString() const {
+			return logger->getBasename();
+		}
+
 		virtual const std::vector<String> getSupportedMimeTypes() {
 			return supportedMimeTypes;
 		}

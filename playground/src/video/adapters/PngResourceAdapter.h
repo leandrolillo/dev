@@ -20,17 +20,17 @@ class PngResourceAdapter: public ResourceAdapter {
 		public:
 		PngResourceAdapter() {
 			supportedMimeTypes.push_back("image/png");
-
 			logger = Logger::getLogger("video/PngResourceAdapter.h");
 		}
-		String toString() {
-			return "PngResourceAdapter";
+		String toString() const {
+			return logger->getBasename();
 		}
+
 		virtual const std::vector<String> getSupportedMimeTypes() {
 			return supportedMimeTypes;
 		}
 		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
-			logger->debug("Loading png resource");
+			logger->debug("Loading [%s]resource [%s]", mimeType.c_str(), fileParser.getFilename().c_str());
 
 			unsigned char *pBitmap;
 			unsigned int width, height;
@@ -41,11 +41,8 @@ class PngResourceAdapter: public ResourceAdapter {
 			int channels, color_type;
 
 			unsigned char sig[8];
-
-			logger->debug("before fileparser read");
 			fileParser.read(sig, 1, 8);
 
-			logger->debug("before png_check_sig");
 			if (!png_check_sig(sig, 8)) {
 				logger->error( "Not a valid png file");
 				return(null);   /* bad signature */
@@ -75,7 +72,7 @@ class PngResourceAdapter: public ResourceAdapter {
 			png_get_IHDR(png_ptr, info_ptr, &width, &height, &bit_depth, &color_type,
 					(int *)null, (int *)null, (int *)null);
 
-			logger->debug( "Png properties :\n	Width [%d]\n	Height [%d]\n	Bpp [%d]\n", width, height, bit_depth);
+			logger->verbose("Png properties :\n	Width [%d]\n	Height [%d]\n	Bpp [%d]\n", width, height, bit_depth);
 
 			//double  gamma;
 			png_uint_32  i, image_rowbytes;

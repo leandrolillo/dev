@@ -23,8 +23,8 @@ class TextureResourceAdapter: public ResourceAdapter {
 			logger = Logger::getLogger("video/TextureResourceAdapter.h");
 		}
 
-		String toString() {
-			return "TextureResourceAdapter";
+		String toString() const {
+			return logger->getBasename();
 		}
 
 		virtual const std::vector<String> getSupportedMimeTypes() {

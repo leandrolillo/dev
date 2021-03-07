@@ -23,8 +23,8 @@ class GeometryResourceAdapter: public ResourceAdapter {
 			supportedMimeTypes.push_back("video/geometry");
 			logger = Logger::getLogger("video/GeometryResourceAdapter.h");
 		}
-		const String &toString() const {
-			return "GeometryResourceAdapter";
+		String toString() const {
+			return logger->getBasename();
 		}
 		virtual const std::vector<String> getSupportedMimeTypes() {
 			return supportedMimeTypes;

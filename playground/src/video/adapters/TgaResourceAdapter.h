@@ -28,8 +28,8 @@ class TgaResourceAdapter: public ResourceAdapter {
 
 			logger = Logger::getLogger("video/TgaResourceAdapter.h");
 		}
-		const String &toString() const {
-			return "TgaResourceAdapter";
+		String toString() const {
+			return logger->getBasename();
 		}
 		virtual const std::vector<String> getSupportedMimeTypes() {
 			return supportedMimeTypes;

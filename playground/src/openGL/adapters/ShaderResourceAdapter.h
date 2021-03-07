@@ -35,6 +35,10 @@ class ShaderResourceAdapter: public ResourceAdapter {
 			supportedMimeTypes.push_back("video/fragmentShader");
 			logger = Logger::getLogger("video/ShaderResourceAdapter.h");
 		}
+		String toString() const {
+			return logger->getBasename();
+		}
+
 		virtual const std::vector<String> getSupportedMimeTypes() {
 			return supportedMimeTypes;
 		}

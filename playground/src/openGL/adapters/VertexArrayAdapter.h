@@ -117,6 +117,10 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 			supportedMimeTypes.push_back("video/vertexArray");
 			logger = Logger::getLogger("video/VertexArrayResourceAdapter.h");
 		}
+		String toString() const {
+			return logger->getBasename();
+		}
+
 		virtual const std::vector<String> getSupportedMimeTypes() {
 			return supportedMimeTypes;
 		}
