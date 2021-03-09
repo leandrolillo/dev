@@ -45,7 +45,7 @@ class Logger {
 				printf("File handler is NULL\n");
 #endif
 				FILE *existingFile;
-				if (existingFile = fopen(getFileName(), "rt")) {
+				if ((existingFile = fopen(getFileName(), "rt"))) {
 					struct stat fileStats;
 					fclose(existingFile);
 
@@ -133,8 +133,8 @@ class Logger {
 
 				char *tempBuffer = null; //TODO: review if it is better to use a fixed buffer and truncate logs length
 				if(vasprintf(&tempBuffer, formato, *args)) {
-					printf(tempBuffer);
-					fprintf(fileHandler, tempBuffer);
+					printf("%s", tempBuffer);
+					fprintf(fileHandler, "%s", tempBuffer);
 					free(tempBuffer);
 				}
 

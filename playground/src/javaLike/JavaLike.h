@@ -9,10 +9,12 @@
 #define JAVA_LIKE
 
 #include<string>
+#include<stdbool.h>
 #define String std::string
-#define boolean unsigned char
-#define false 0
-#define true !false
+
+typedef bool boolean;
+
+#define HAVE_BOOLEAN
 
 #define null 0
 

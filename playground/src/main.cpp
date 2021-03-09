@@ -3,6 +3,9 @@
 
 #include "openGL/OpenGLRunner.h"
 
+#define GL_SILENCE_DEPRECATION
+
+
 class PhysicsPlayground: public Playground {
 private:
 	PlaygroundRunner *windowsRunner;
@@ -78,8 +81,6 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 		}
 
 		virtual boolean init() {
-			logger->debug("Initializing Playground demo runner");
-
 			//TODO: Review why can´t use public static IDs properties from each class
 			openGl = (OpenGLRunner *) this->getContainer()->getRunner(1);
 			//audio = (AudioRunner *)this->getContainer()->getRunner(3);
@@ -89,26 +90,18 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 				return false;
 			}
 
-			logger->debug("Using openGl: %d", openGl);
-
-
 			ResourceManager *resourceManager = this->getContainer()->getResourceManager();
-			logger->debug("Using container: %d", this->getContainer());
-			logger->debug("Using resourceManager: %d -> %s", resourceManager, resourceManager->getRootFolder().c_str());
 
 			// demo stuff
 //			Source *backgroundSource = audio->createSource("background.ogg");
 //			audio->playSource(backgroundSource);
 
 			textureResource = (TextureResource *)resourceManager->load("images/TEXTURA.PNG", "video/texture");
-			logger->debug("textureResource: %d", textureResource);
-
 			anotherTextureResource = (TextureResource *)resourceManager->load("images/irs.JPG", "video/texture");
 			geometryResource = (GeometryResource *)resourceManager->load("geometry/triangle.json", "video/geometry");
 			sphereArrayResource = (VertexArrayResource *)resourceManager->load("geometry/sphere.json", "video/vertexArray");
 			sphereGeometryResource = (GeometryResource *)resourceManager->load("geometry/sphere.json", "video/geometry");
 
-			logger->debug("Done loading resources 1");
 			if(openGl->getMajorVersion() >= 3) {
 				shaderProgramResource = (ShaderProgramResource *)resourceManager->load("shaders/lighting.140.program.json", "video/shaderProgram");
 				anotherShaderProgramResource = (ShaderProgramResource *)resourceManager->load("shaders/toon.140.program.json", "video/shaderProgram");
@@ -118,8 +111,6 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 
 			}
 			vertexArrayResource = (VertexArrayResource *)resourceManager->load("geometry/triangle.json", "video/vertexArray");
-
-			logger->debug("Done loading resources 2");
 
 			glClearColor(0.0, 0.5, 0.0, 0.0);
 			glShadeModel(GL_SMOOTH);
@@ -147,7 +138,6 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 			glMaterialfv(GL_FRONT, GL_SPECULAR, (float *)vector3(0.0, 0.0, 0.0));
 			glMaterialf(GL_FRONT, GL_SHININESS, 128.0);
 
-			logger->info("Demo Initialization finished");
 			return true;
 		}
 
@@ -219,59 +209,59 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 		}
 
 		virtual LoopResult doLoop() {
-			glUseProgram(0);
-
-			glLoadIdentity();
-			glTranslatef(viewPosition.x, viewPosition.y, viewPosition.z);
-
-			openGl->glAxis();
-
-			glBindTexture(GL_TEXTURE_2D, 0);
-
-			glDisable(GL_LIGHTING);
-			glColor3f(1.0, 1.0, 0.0);
-			glPushMatrix();
-			//light w = 1: spotlight; w = 0 directional light
-			glLightfv(GL_LIGHT0, GL_POSITION, (float *)vector4(lightPosition.x, lightPosition.y, lightPosition.z, 0));
-			glTranslatef(lightPosition.x, lightPosition.y, lightPosition.z);
-			openGl->glSphere(.2);
-			glPopMatrix();
-
-			glEnable(GL_LIGHTING);
-
-			if(anotherTextureResource != null)
-				glBindTexture(GL_TEXTURE_2D, anotherTextureResource->getId());
-
-			glPushMatrix();
-			glTranslatef(-1.5, 2.0, 0.0);
-			glRotatef(rotation, 0.0, 1.0, 0.0);
-			openGl->glDrawGeometry(geometryResource);
-			glPopMatrix();
-
-			glPushMatrix();
-			glTranslatef(1.5, 2.0, 0.0);
-			glRotatef(rotation, 0.0, 1.0, 0.0);
-			openGl->glDrawGeometry(sphereGeometryResource);
-			glPopMatrix();
-
-			if(anotherShaderProgramResource != null)
-				glUseProgram(anotherShaderProgramResource->getId());
-
-			glPushMatrix();
-			glTranslatef(-1.5, 0.0, 0.0);
-			glRotatef(rotation, 0.0, 1.0, 0.0);
-			openGl->glDrawGeometry(geometryResource);
-			glPopMatrix();
-
-			glPushMatrix();
-			glTranslatef(1.5, 0.0, 0.0);
-			glRotatef(rotation, 0.0, 1.0, 0.0);
-			openGl->glDrawGeometry(sphereGeometryResource);
-			glPopMatrix();
-
-
-			if(shaderProgramResource != null)
-				glUseProgram(shaderProgramResource->getId());
+//			glUseProgram(0);
+//
+//			glLoadIdentity();
+//			glTranslatef(viewPosition.x, viewPosition.y, viewPosition.z);
+//
+//			openGl->glAxis();
+//
+//			glBindTexture(GL_TEXTURE_2D, 0);
+//
+//			glDisable(GL_LIGHTING);
+//			glColor3f(1.0, 1.0, 0.0);
+//			glPushMatrix();
+//			//light w = 1: spotlight; w = 0 directional light
+//			glLightfv(GL_LIGHT0, GL_POSITION, (float *)vector4(lightPosition.x, lightPosition.y, lightPosition.z, 0));
+//			glTranslatef(lightPosition.x, lightPosition.y, lightPosition.z);
+//			openGl->glSphere(.2);
+//			glPopMatrix();
+//
+//			glEnable(GL_LIGHTING);
+//
+//			if(anotherTextureResource != null)
+//				glBindTexture(GL_TEXTURE_2D, anotherTextureResource->getId());
+//
+//			glPushMatrix();
+//			glTranslatef(-1.5, 2.0, 0.0);
+//			glRotatef(rotation, 0.0, 1.0, 0.0);
+//			openGl->glDrawGeometry(geometryResource);
+//			glPopMatrix();
+//
+//			glPushMatrix();
+//			glTranslatef(1.5, 2.0, 0.0);
+//			glRotatef(rotation, 0.0, 1.0, 0.0);
+//			openGl->glDrawGeometry(sphereGeometryResource);
+//			glPopMatrix();
+//
+//			//if(anotherShaderProgramResource != null)
+//				//glUseProgram(anotherShaderProgramResource->getId());
+//
+//			glPushMatrix();
+//			glTranslatef(-1.5, 0.0, 0.0);
+//			glRotatef(rotation, 0.0, 1.0, 0.0);
+//			openGl->glDrawGeometry(geometryResource);
+//			glPopMatrix();
+//
+//			glPushMatrix();
+//			glTranslatef(1.5, 0.0, 0.0);
+//			glRotatef(rotation, 0.0, 1.0, 0.0);
+//			openGl->glDrawGeometry(sphereGeometryResource);
+//			glPopMatrix();
+//
+//
+//			if(shaderProgramResource != null)
+//				glUseProgram(shaderProgramResource->getId());
 
 			glPushMatrix();
 			glTranslatef(-1.5, -2.0, 0.0);

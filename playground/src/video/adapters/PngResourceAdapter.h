@@ -30,8 +30,6 @@ class PngResourceAdapter: public ResourceAdapter {
 			return supportedMimeTypes;
 		}
 		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
-			logger->debug("Loading [%s]resource [%s]", mimeType.c_str(), fileParser.getFilename().c_str());
-
 			unsigned char *pBitmap;
 			unsigned int width, height;
 			int  bit_depth;
@@ -160,7 +158,6 @@ class PngResourceAdapter: public ResourceAdapter {
 		virtual void dispose(Resource *resource) {
 			if(resource->getMimeType() == "image/png") {
 			ImageResource *pngResource = (ImageResource *)resource;
-			logger->debug("Disposing of png");
 
 			if(pngResource->getData() != null)
 				delete (unsigned char *)pngResource->getData();

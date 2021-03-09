@@ -130,61 +130,61 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 			if(geometry != null) {
 				VertexArrayResource *resource = null;
 
-//				logger->debug("Loaded geometry: [%d] vertices, [%d] normals, [%d] texture coordinates", geometry->getVertices().size(), geometry->getNormals().size(), geometry->getTextureCoordinates().size());
-//
-//				glGetError();
-//
-//				//Create vertex Array
-//				unsigned int vertexArray;
-//				glGenVertexArrays(1, &vertexArray);
-//				resource = new VertexArrayResource(vertexArray);
-//				resource->setPrimitiveType(geometry->getType());
-//				TextureResource *texture = (TextureResource *)this->getResourceManager()->load(geometry->getTextureFile(), "video/texture");
-//				if(texture != null)
-//					resource->setTexture(texture);
-//
-//				glBindVertexArray(resource->getId());
-//
-//				GLenum glError = glGetError();
-//				if(glError != GL_NO_ERROR) {
-//					logger->error("Error creating vertex array [%s]: 0x[%x]", fileParser.getFilename().c_str(), glError);
-//					dispose(resource);
-//					return null;
-//				}
-//
-//				if(!addBuffer(INDEX_LOCATION, resource, GL_ELEMENT_ARRAY_BUFFER, geometry->getIndices()))
-//				{
-//					dispose(resource);
-//					return null;
-//				}
-//
-//				if(!addBuffer(VERTEX_LOCATION, resource, GL_ARRAY_BUFFER, geometry->getVertices()))
-//				{
-//					dispose(resource);
-//					return null;
-//				}
-//
-//				if(!addBuffer(NORMAL_LOCATION, resource, GL_ARRAY_BUFFER, geometry->getNormals()))
-//				{
-//					dispose(resource);
-//					return null;
-//				}
-//
-//				if(!addBuffer(TEXTURE_COORDINATES_LOCATION, resource, GL_ARRAY_BUFFER, geometry->getTextureCoordinates()))
-//				{
-//					dispose(resource);
-//					return null;
-//				}
-//
-//				if(!addBuffer(COLOR_LOCATION, resource, GL_ARRAY_BUFFER, geometry->getColors()))
-//				{
-//					dispose(resource);
-//					return null;
-//				}
-//
-//				// remove objects from context.
-//				glBindBuffer(GL_ARRAY_BUFFER, 0);
-//				glBindVertexArray(0);
+				logger->debug("Loaded geometry: [%d] vertices, [%d] normals, [%d] texture coordinates", geometry->getVertices().size(), geometry->getNormals().size(), geometry->getTextureCoordinates().size());
+
+				glGetError();
+
+				//Create vertex Array
+				unsigned int vertexArray;
+				glGenVertexArraysAPPLE(1, &vertexArray);
+				resource = new VertexArrayResource(vertexArray);
+				resource->setPrimitiveType(geometry->getType());
+				TextureResource *texture = (TextureResource *)this->getResourceManager()->load(geometry->getTextureFile(), "video/texture");
+				if(texture != null)
+					resource->setTexture(texture);
+
+				glBindVertexArrayAPPLE(resource->getId());
+
+				GLenum glError = glGetError();
+				if(glError != GL_NO_ERROR) {
+					logger->error("Error creating vertex array [%s]: 0x[%x]", fileParser.getFilename().c_str(), glError);
+					dispose(resource);
+					return null;
+				}
+
+				if(!addBuffer(INDEX_LOCATION, resource, GL_ELEMENT_ARRAY_BUFFER, geometry->getIndices()))
+				{
+					dispose(resource);
+					return null;
+				}
+
+				if(!addBuffer(VERTEX_LOCATION, resource, GL_ARRAY_BUFFER, geometry->getVertices()))
+				{
+					dispose(resource);
+					return null;
+				}
+
+				if(!addBuffer(NORMAL_LOCATION, resource, GL_ARRAY_BUFFER, geometry->getNormals()))
+				{
+					dispose(resource);
+					return null;
+				}
+
+				if(!addBuffer(TEXTURE_COORDINATES_LOCATION, resource, GL_ARRAY_BUFFER, geometry->getTextureCoordinates()))
+				{
+					dispose(resource);
+					return null;
+				}
+
+				if(!addBuffer(COLOR_LOCATION, resource, GL_ARRAY_BUFFER, geometry->getColors()))
+				{
+					dispose(resource);
+					return null;
+				}
+
+				// remove objects from context.
+				glBindBuffer(GL_ARRAY_BUFFER, 0);
+				glBindVertexArrayAPPLE(0);
 
 				return resource;
 			}

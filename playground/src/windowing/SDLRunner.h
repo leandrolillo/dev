@@ -85,39 +85,39 @@ class SDLRunner: public PlaygroundRunner {
 		    case SDL_WINDOWEVENT:
 		    	switch(event->window.event) {
 		    		case SDL_WINDOWEVENT_RESIZED:
-		    			logger->debug("WINDOW RESIZED");
+		    			logger->verbose("WINDOW RESIZED");
 		    			this->getContainer()->resize(event->window.data1, event->window.data2);
 		    		return 0;
 		    	}
 		    	break;
 		        case SDL_KEYDOWN:
 		            //SDL_Log("SDL_KEYDOWN %d", event->key.keysym.sym);
-		            logger->debug("KEYDOWN: %d", event->key.keysym.sym);
+		            logger->verbose("KEYDOWN: %d", event->key.keysym.sym);
 		            this->getContainer()->keyDown(event->key.keysym.sym);
 		            return 0;
 		        case SDL_KEYUP:
 		            //SDL_Log("SDL_KEYUP %d", event->key.keysym.sym);
-		        	logger->debug("KEYUP: %d", event->key.keysym.sym);
+		        	logger->verbose("KEYUP: %d", event->key.keysym.sym);
 		        	this->getContainer()->keyUp(event->key.keysym.sym);
 		            return 0;
 		        case SDL_MOUSEMOTION:
 		            //SDL_Log("SDL_MOUSEMOTION (%d,%d) delta=(%d,%d)", event->motion.x, event->motion.y, event->motion.xrel, event->motion.yrel);
 		            this->getContainer()->mouseMove(event->motion.xrel, event->motion.yrel);
-		            logger->debug("MOUSEMOVE: (%d, %d)", event->motion.xrel, event->motion.yrel);
+		            logger->verbose("MOUSEMOVE: (%d, %d)", event->motion.xrel, event->motion.yrel);
 		            return 0;
 		        case SDL_MOUSEBUTTONDOWN:
 		            //SDL_Log("SDL_MOUSEBUTTONDOWN %d", event->button.button);
-		            logger->debug("MOUSEBUTTONDOWN: %d", event->button.button);
+		            logger->verbose("MOUSEBUTTONDOWN: %d", event->button.button);
 		        	this->getContainer()->mouseButtonDown(event->button.button);
 		            return 0;
 		        case SDL_MOUSEBUTTONUP:
 		            //SDL_Log("SDL_MOUSEBUTTONUP %d", event->button.button);
-		        	logger->debug("MOUSEBUTTONUP: %d", event->button.button);
+		        	logger->verbose("MOUSEBUTTONUP: %d", event->button.button);
 		        	this->getContainer()->mouseButtonUp(event->button.button);
 		            return 0;
 		        case SDL_MOUSEWHEEL:
 		            //SDL_Log("SDL_MOUSEWHEEL %d %d", event->wheel.direction, event->wheel.y);
-		        	logger->debug("MOUSEWHEEL: %d", event->wheel.y);
+		        	logger->verbose("MOUSEWHEEL: %d", event->wheel.y);
 		        	this->getContainer()->mouseWheel(event->wheel.y);
 		            return 0;
 		    }
@@ -168,11 +168,9 @@ class SDLRunner: public PlaygroundRunner {
 		boolean setFullscreen(boolean fullScreen) {
 			if (fullScreen) {
 				SDL_SetWindowFullscreen(this->window, SDL_WINDOW_FULLSCREEN);
-				// do fullscreen stuff
 				this->fullScreen = true;
 			} else {
 				SDL_SetWindowFullscreen(this->window, !SDL_WINDOW_FULLSCREEN);
-				// do fullscreen stuff
 				this->fullScreen = false;
 			}
 

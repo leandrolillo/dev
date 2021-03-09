@@ -11,7 +11,7 @@
 #include <OpenGL/OpenGL.h>
 #include <OpenGL/gl.h>
 
-#include "../core/playground.h"
+#include "../core/Playground.h"
 
 #include "../video/adapters/PngResourceAdapter.h"
 #include "../video/adapters/JpegResourceAdapter.h"
@@ -31,6 +31,13 @@
 #define TEXTURE_COORDINATE_LOCATION 3
 #define COLOR_LOCATION 4
 
+#ifndef GL_MAJOR_VERSION
+#define GL_MAJOR_VERSION 0x821B
+#endif
+
+#ifndef GL_MINOR_VERSION
+#define GL_MINOR_VERSION 0x821C
+#endif
 
 class OpenGLRunner: public SDLRunner {
 	private:
@@ -58,7 +65,7 @@ class OpenGLRunner: public SDLRunner {
 			SDLRunner::init();
 
 			this->getContainer()->getResourceManager()->addAdapter(new PngResourceAdapter());
-//			this->getContainer()->getResourceManager()->addAdapter(new JpegResourceAdapter());
+			//this->getContainer()->getResourceManager()->addAdapter(new JpegResourceAdapter());
 			this->getContainer()->getResourceManager()->addAdapter(new TgaResourceAdapter());
 			this->getContainer()->getResourceManager()->addAdapter(new TextureResourceAdapter());
 			this->getContainer()->getResourceManager()->addAdapter(new GeometryResourceAdapter());
@@ -77,10 +84,10 @@ class OpenGLRunner: public SDLRunner {
 			int majorVersion;
 			int minorVersion;
 
-//			glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
-//			glGetIntegerv(GL_MINOR_VERSION, &minorVersion);
-//			this->majorVersion = (unsigned int)majorVersion;
-//			this->minorVersion = (unsigned int)minorVersion;
+			glGetIntegerv(GL_MAJOR_VERSION, &majorVersion);
+			glGetIntegerv(GL_MINOR_VERSION, &minorVersion);
+			this->majorVersion = (unsigned int)majorVersion;
+			this->minorVersion = (unsigned int)minorVersion;
 
 			logger->info("OpenGL [%d].[%d] initialized\nVersion: [%s]\nGLSL Version: [%s]\nGLEW Version [%s]\nVendor: [%s]\nRenderer: [%s]",
 					this->majorVersion,
@@ -97,7 +104,7 @@ class OpenGLRunner: public SDLRunner {
 		}
 		virtual void beforeLoop() {
 			SDLRunner::beforeLoop();
-			glClearColor( rand() % 255 / 255.0f, rand() % 255 / 255.0f, rand() % 255 / 255.0f, 1.0f );
+			//glClearColor( rand() % 255 / 255.0f, rand() % 255 / 255.0f, rand() % 255 / 255.0f, 1.0f );
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			glLoadIdentity();
 		}
