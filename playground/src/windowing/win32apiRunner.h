@@ -30,7 +30,7 @@ class Win32apiRunner: public PlaygroundRunner {
 		const char *wndClassName;
 		HINSTANCE hInstance;
 		unsigned int mouse_x;
-		unsigned int mouse_y;boolean fullScreen;
+		unsigned int mouse_y;bool fullScreen;
 		Logger *logger;
 
 	public:
@@ -51,11 +51,11 @@ class Win32apiRunner: public PlaygroundRunner {
 			return Win32apiRunner::ID;
 		}
 
-		boolean getFullscreen() {
+		bool getFullscreen() {
 			return this->fullScreen;
 		}
 
-		virtual boolean init() {
+		virtual bool init() {
 
 			// Window class for our main window
 			WNDCLASSEX wndClassEx = { sizeof(WNDCLASSEX), CS_DBLCLKS | CS_OWNDC
@@ -90,7 +90,7 @@ class Win32apiRunner: public PlaygroundRunner {
 			return true;
 		}
 
-		virtual boolean afterInit() {
+		virtual bool afterInit() {
 			RECT rect;
 			GetWindowRect(hWnd, &rect);
 
@@ -197,11 +197,11 @@ class Win32apiRunner: public PlaygroundRunner {
 			return hWnd;
 		}
 
-		boolean setIcon(HICON Icono) {
+		bool setIcon(HICON Icono) {
 			return (SetClassLong(this->getWnd(), GCL_HICON, (LONG) Icono) == 0 ?
 					false : true);
 		}
-		boolean setMenu(HMENU Menu) {
+		bool setMenu(HMENU Menu) {
 			if (GetMenu(this->getWnd()) == NULL) {
 				RECT WndRect;
 				GetClientRect(this->getWnd(), &WndRect);
@@ -217,12 +217,12 @@ class Win32apiRunner: public PlaygroundRunner {
 
 			return (::SetMenu(this->getWnd(), Menu));
 		}
-		boolean setCursor(HCURSOR Cursor) {
+		bool setCursor(HCURSOR Cursor) {
 			return (::SetClassLong(this->getWnd(), GCL_HCURSOR,
 					(long) Cursor) == null ? false : true);
 		}
 
-		boolean resizeWindow(unsigned int height, unsigned int width) {
+		bool resizeWindow(unsigned int height, unsigned int width) {
 			DWORD dwExStyle;
 			DWORD dwStyle;
 
@@ -249,7 +249,7 @@ class Win32apiRunner: public PlaygroundRunner {
 			return (true);
 		}
 
-		boolean move(unsigned short x, unsigned short y) {
+		bool move(unsigned short x, unsigned short y) {
 			if (!this->fullScreen) {
 				RECT WndRect;
 				GetWindowRect(this->getWnd(), &WndRect);
@@ -260,7 +260,7 @@ class Win32apiRunner: public PlaygroundRunner {
 			return (true);
 		}
 
-		boolean setFullscreen(boolean fullScreen) {
+		bool setFullscreen(bool fullScreen) {
 			if (fullScreen) {
 				SetWindowLong(this->getWnd(), GWL_STYLE, (long) WS_POPUP);
 				SetWindowLong(this->getWnd(), GWL_EXSTYLE,
@@ -288,7 +288,7 @@ class Win32apiRunner: public PlaygroundRunner {
 
 			return (true);
 		}
-		void show(boolean show)
+		void show(bool show)
 		{
 			ShowWindow(this->getWnd(), show ? SW_SHOW : SW_HIDE);
 		}

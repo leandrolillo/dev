@@ -61,11 +61,11 @@ class OpenGLRunner: public SDLRunner {
 			return ID;
 		}
 
-		virtual boolean init() {
+		virtual bool init() {
 			SDLRunner::init();
 
 			this->getContainer()->getResourceManager()->addAdapter(new PngResourceAdapter());
-			//this->getContainer()->getResourceManager()->addAdapter(new JpegResourceAdapter());
+			this->getContainer()->getResourceManager()->addAdapter(new JpegResourceAdapter());
 			this->getContainer()->getResourceManager()->addAdapter(new TgaResourceAdapter());
 			this->getContainer()->getResourceManager()->addAdapter(new TextureResourceAdapter());
 			this->getContainer()->getResourceManager()->addAdapter(new GeometryResourceAdapter());

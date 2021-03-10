@@ -24,7 +24,7 @@ class SDLRunner: public PlaygroundRunner {
 
 	protected:
 		SDL_Window *window;
-		boolean fullScreen;
+		bool fullScreen;
 		Logger *logger;
 
 	public:
@@ -38,11 +38,11 @@ class SDLRunner: public PlaygroundRunner {
 			return SDLRunner::ID;
 		}
 
-		boolean getFullscreen() {
+		bool getFullscreen() {
 			return this->fullScreen;
 		}
 
-		virtual boolean init() {
+		virtual bool init() {
 			if (SDL_Init(SDL_INIT_VIDEO) != 0){
 					logger->error("SDL_Init Error: %s", SDL_GetError());
 			        return false;
@@ -63,7 +63,7 @@ class SDLRunner: public PlaygroundRunner {
 			return true;
 		}
 
-		virtual boolean afterInit() {
+		virtual bool afterInit() {
 			return true;
 		}
 
@@ -132,11 +132,11 @@ class SDLRunner: public PlaygroundRunner {
 			logger->debug("SDL shutdown");
 		}
 
-//		boolean setIcon(HICON Icono) {
+//		bool setIcon(HICON Icono) {
 //			return (SetClassLong(this->getWnd(), GCL_HICON, (LONG) Icono) == 0 ?
 //					false : true);
 //		}
-//		boolean setMenu(HMENU Menu) {
+//		bool setMenu(HMENU Menu) {
 //			if (GetMenu(this->getWnd()) == NULL) {
 //				RECT WndRect;
 //				GetClientRect(this->getWnd(), &WndRect);
@@ -152,20 +152,20 @@ class SDLRunner: public PlaygroundRunner {
 //
 //			return (::SetMenu(this->getWnd(), Menu));
 //		}
-//		boolean setCursor(HCURSOR Cursor) {
+//		bool setCursor(HCURSOR Cursor) {
 //			return (::SetClassLong(this->getWnd(), GCL_HCURSOR,
 //					(long) Cursor) == null ? false : true);
 //		}
 
-		boolean resizeWindow(unsigned int height, unsigned int width) {
+		bool resizeWindow(unsigned int height, unsigned int width) {
 			return true;
 		}
 
-		boolean move(unsigned short x, unsigned short y) {
+		bool move(unsigned short x, unsigned short y) {
 			return true;
 		}
 
-		boolean setFullscreen(boolean fullScreen) {
+		bool setFullscreen(bool fullScreen) {
 			if (fullScreen) {
 				SDL_SetWindowFullscreen(this->window, SDL_WINDOW_FULLSCREEN);
 				this->fullScreen = true;
@@ -176,7 +176,7 @@ class SDLRunner: public PlaygroundRunner {
 
 			return this->fullScreen;
 		}
-		void show(boolean show)
+		void show(bool show)
 		{
 		}
 

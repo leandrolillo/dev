@@ -60,7 +60,7 @@ class TestRunner: public PlaygroundRunner {
 			logger->info("\n\nTESTS: %d tests in error%s\n\n", failedTests.size(), getFailedTestsString(failedTests).c_str());
 		}
 
-		virtual boolean afterInit()	{
+		virtual bool afterInit()	{
 			before();
 			//tests
 			doTests();
@@ -74,11 +74,11 @@ class TestRunner: public PlaygroundRunner {
 			return FINISHED;
 		}
 
-		void assertTrue(boolean condition)
+		void assertTrue(bool condition)
 		{
 			assertTrue("", condition);
 		}
-		void assertTrue(String message, boolean condition)
+		void assertTrue(String message, bool condition)
 		{
 			if(!condition)
 			assertFail(message);
@@ -101,12 +101,12 @@ class TestRunner: public PlaygroundRunner {
 			assertTrue(buffer, expected == actual);
 		}
 
-		void assertFalse(String message, boolean condition)
+		void assertFalse(String message, bool condition)
 		{
 			if(condition)
 			assertFail(message);
 		}
-		void assertFalse(boolean condition)
+		void assertFalse(bool condition)
 		{
 			assertFalse("", condition);
 		}

@@ -3,9 +3,6 @@
 
 #include "openGL/OpenGLRunner.h"
 
-#define GL_SILENCE_DEPRECATION
-
-
 class PhysicsPlayground: public Playground {
 private:
 	PlaygroundRunner *windowsRunner;
@@ -80,7 +77,7 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 			return PlaygroundDemoRunner::ID;
 		}
 
-		virtual boolean init() {
+		virtual bool init() {
 			//TODO: Review why can´t use public static IDs properties from each class
 			openGl = (OpenGLRunner *) this->getContainer()->getRunner(1);
 			//audio = (AudioRunner *)this->getContainer()->getRunner(3);
@@ -101,16 +98,16 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 			geometryResource = (GeometryResource *)resourceManager->load("geometry/triangle.json", "video/geometry");
 			sphereArrayResource = (VertexArrayResource *)resourceManager->load("geometry/sphere.json", "video/vertexArray");
 			sphereGeometryResource = (GeometryResource *)resourceManager->load("geometry/sphere.json", "video/geometry");
-
-			if(openGl->getMajorVersion() >= 3) {
-				shaderProgramResource = (ShaderProgramResource *)resourceManager->load("shaders/lighting.140.program.json", "video/shaderProgram");
-				anotherShaderProgramResource = (ShaderProgramResource *)resourceManager->load("shaders/toon.140.program.json", "video/shaderProgram");
-			} else {
-				shaderProgramResource = (ShaderProgramResource *)resourceManager->load("shaders/lighting.120.program.json", "video/shaderProgram");
-				anotherShaderProgramResource = (ShaderProgramResource *)resourceManager->load("shaders/toon.120.program.json", "video/shaderProgram");
-
-			}
 			vertexArrayResource = (VertexArrayResource *)resourceManager->load("geometry/triangle.json", "video/vertexArray");
+
+//			if(openGl->getMajorVersion() >= 3) {
+//				shaderProgramResource = (ShaderProgramResource *)resourceManager->load("shaders/lighting.140.program.json", "video/shaderProgram");
+//				anotherShaderProgramResource = (ShaderProgramResource *)resourceManager->load("shaders/toon.140.program.json", "video/shaderProgram");
+//			} else {
+//				shaderProgramResource = (ShaderProgramResource *)resourceManager->load("shaders/lighting.120.program.json", "video/shaderProgram");
+//				anotherShaderProgramResource = (ShaderProgramResource *)resourceManager->load("shaders/toon.120.program.json", "video/shaderProgram");
+//
+//			}
 
 			glClearColor(0.0, 0.5, 0.0, 0.0);
 			glShadeModel(GL_SMOOTH);

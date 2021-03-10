@@ -72,8 +72,14 @@ class ResourceManager {
 		Resource *load(const String &fileName, const String &mimeType)
 		{
 			try {
-				FileParser fileParser = FileParser(normalize(fileName));
-				return load(fileParser, mimeType);
+				String normalizedFileName = normalize(fileName);
+
+				if(!normalizedFileName.empty()) {
+					FileParser fileParser = FileParser(normalizedFileName);
+					return load(fileParser, mimeType);
+				}
+
+				return null;
 			} catch (Exception &e) {
 				logger->error("Error loading resource [%s] [%s]: [%s]", mimeType.c_str(), fileName.c_str(), e.getMessage().c_str());
 			}
@@ -151,11 +157,17 @@ class ResourceManager {
 		}
 		String normalize(const String &fileName) const
 		{
-			if(fileName.substr(0, 1) == "/") {
-				return fileName;
+			String normalized = "";
+
+			if(!fileName.empty()) {
+				if(fileName.substr(0, 1) == "/") {
+					normalized = fileName;
+				} else {
+					normalized = this->rootFolder + fileName;
+				}
 			}
 
-			return this->rootFolder + fileName;
+			return normalized;
 		}
 
 	private:
@@ -172,23 +184,23 @@ class ResourceManager {
 				String extension = fileName.substr(position + 1, fileName.length() - position - 1);
 				std::transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
 				if(extension == "ogg") {
-					logger->debug("guessMimeType: mime type for [%s] is [%s]", fileName.c_str(), "audio/ogg");
+					logger->verbose("guessMimeType: mime type for [%s] is [%s]", fileName.c_str(), "audio/ogg");
 					return "audio/ogg";
 				}
 				else if (extension == "wav") {
-					logger->debug("guessMimeType: mime type for [%s] is [%s]", fileName.c_str(), "audio/wav");
+					logger->verbose("guessMimeType: mime type for [%s] is [%s]", fileName.c_str(), "audio/wav");
 					return "audio/wav";
 				}
 				else if (extension == "jpeg" || extension == "jpg") {
-					logger->debug("guessMimeType: mime type for [%s] is [%s]", fileName.c_str(), "image/jpeg");
+					logger->verbose("guessMimeType: mime type for [%s] is [%s]", fileName.c_str(), "image/jpeg");
 					return "image/jpeg";
 				}
 				else if (extension == "png") {
-					logger->debug("guessMimeType: mime type for [%s] is [%s]", fileName.c_str(), "image/png");
+					logger->verbose("guessMimeType: mime type for [%s] is [%s]", fileName.c_str(), "image/png");
 					return "image/png";
 				}
 				else if (extension == "tga") {
-					logger->debug("guessMimeType: mime type for [%s] is [%s]", fileName.c_str(), "image/tga");
+					logger->verbose("guessMimeType: mime type for [%s] is [%s]", fileName.c_str(), "image/tga");
 					return "image/tga";
 				}
 			}

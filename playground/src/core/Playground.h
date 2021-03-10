@@ -44,17 +44,17 @@ class Playground;
 class PlaygroundRunner {
 private:
 	Playground *container;
-	boolean enabled;
+	bool enabled;
 
 public:
 	PlaygroundRunner() {
 		container = null;
 		enabled = true;
 	}
-	virtual boolean init() {
+	virtual bool init() {
 		return true;
 	}
-	virtual boolean afterInit() {
+	virtual bool afterInit() {
 		return true;
 	}
 	virtual void beforeLoop() {
@@ -199,7 +199,7 @@ public:
 		logger->debug("framework initialized");
 	}
 
-	virtual boolean initRunners() {
+	virtual bool initRunners() {
 		logger->debug("initializing runners:");
 
 		for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =

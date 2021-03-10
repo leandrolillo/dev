@@ -31,8 +31,6 @@ class TextureResourceAdapter: public ResourceAdapter {
 			return supportedMimeTypes;
 		}
 		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
-			logger->debug("Loading texture resource");
-
 			ImageResource *imageResource = (ImageResource *)this->getResourceManager()->load(fileParser);
 			TextureResource *resource = null;
 

@@ -8,19 +8,10 @@
 
 #ifndef JPEGRESOURCEADAPTER_H_
 #define JPEGRESOURCEADAPTER_H_
-
- #ifndef FALSE            /* in case these macros already exist */
- #define FALSE   0        /* values of boolean */
- #endif
- #ifndef TRUE
- #define TRUE    1
- #endif
-
 #include <stdio.h>
 #include "../../resources/ResourceAdapter.h"
 
-//#include <jpeglib.h>
-#include <SDL_image.h>
+#include <jpeglib.h>
 
 class JpegResourceAdapter: public ResourceAdapter {
 	private:
@@ -41,27 +32,6 @@ class JpegResourceAdapter: public ResourceAdapter {
 			return supportedMimeTypes;
 		}
 		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
-			ImageResource *resource = new ImageResource(0, mimeType);
-
-#ifndef JPEGLIB_H
-			// load sample.jpg into image
-			SDL_RWops *rwop = SDL_RWFromFP(fileParser.getStream(), SDL_FALSE);
-			SDL_Surface *image=IMG_LoadJPG_RW(rwop);
-
-			if(!image) {
-			    logger->error("Could not load [%s] [%s]: ", mimeType.c_str(), fileParser.getFilename().c_str(), IMG_GetError());
-			    // handle error
-			}
-
-			resource->setAlto(image->h);
-			resource->setAncho(image->w);
-			resource->setBpp(image->format->BitsPerPixel);
-
-			unsigned int size = resource->getAncho() * resource->getAlto() * resource->getBpp();
-			resource->setData(new char [size]);
-
-			memcpy(resource->getData(), image->pixels, size);
-#else
 			struct jpeg_decompress_struct cinfo;
 			struct jpeg_error_mgr jerr;
 
@@ -73,6 +43,12 @@ class JpegResourceAdapter: public ResourceAdapter {
 			int row_stride = cinfo.output_width * cinfo.output_components;
 			  /* Make a one-row-high sample array that will go away when done with image */
 			JSAMPARRAY buffer = (*cinfo.mem->alloc_sarray)((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
+
+			ImageResource *resource = new ImageResource(0, mimeType);
+			resource->setAlto(cinfo.output_height);
+			resource->setAncho(cinfo.output_width);
+			resource->setBpp(cinfo.output_components);
+			resource->setData(new char [resource->getAncho() * resource->getAlto() * resource->getBpp()]);
 
 			while (cinfo.output_scanline < cinfo.output_height) {
 				/* jpeg_read_scanlines expects an array of pointers to scanlines.
@@ -87,72 +63,12 @@ class JpegResourceAdapter: public ResourceAdapter {
 			//TODO: Translate cinfo into a resource
 
 			jpeg_finish_decompress(&cinfo);
+
 			jpeg_destroy_decompress(&cinfo);
-#endif
 
 			return(resource);
-
-//			IJLERR jerr;
-//			JPEG_CORE_PROPERTIES jcprops;
-//
-//			if((jerr = ijlInit(&jcprops)) != IJL_OK) {
-//				logger->error("Error al intentar inicializar las estructuras de ijl: [%s]", ijlErrorStr(jerr));
-//				return(null);
-//			}
-//
-//			jcprops.JPGFile = fileParser.getFilename().c_str();
-//			if((jerr = ijlRead(&jcprops, IJL_JFILE_READPARAMS)) != IJL_OK) {
-//				logger->error("Error al intentar leer el archivo [%s]: [%s]", fileParser.getFilename().c_str(), ijlErrorStr(jerr));
-//				ijlFree(&jcprops);
-//				return(null);
-//			};
-//
-//			jcprops.JPGSizeBytes =  (jcprops.JPGWidth * 24 + 7) / 8 * jcprops.JPGHeight;
-//			logger->debug("Archivo [%s]:\n	Dimensiones: [%d]x[%d]\n	Tama�o: [%d]\n", fileParser.getFilename().c_str(), jcprops.JPGWidth, jcprops.JPGHeight, jcprops.JPGSizeBytes);
-//
-//			JpegResource *resource = new JpegResource(0);
-//
-//			unsigned char *pBitmap;
-//			if((pBitmap = new unsigned char[jcprops.JPGSizeBytes]) == null) {
-//				logger->error("Error al intentar reservar [%d] bytes", jcprops.JPGSizeBytes);
-//				ijlFree(&jcprops);
-//				return(null);
-//			}
-//
-//			resource->setData(pBitmap);
-//
-//			resource->setAncho(jcprops.DIBWidth = jcprops.JPGWidth);
-//			resource->setAlto(jcprops.JPGHeight); //Implies a bottom-up DIB.
-//			resource->setBpp(24);
-//			jcprops.DIBHeight = -jcprops.JPGHeight;
-//			jcprops.DIBColor = IJL_BGR;
-//			jcprops.DIBPadBytes = IJL_DIB_PAD_BYTES(jcprops.JPGWidth, 3);
-//			jcprops.DIBBytes = pBitmap;
-//			jcprops.jquality = 90;
-//
-//			switch(jcprops.JPGChannels) {
-//				case 1:
-//					jcprops.JPGColor = IJL_G;
-//				break;
-//				case 3:
-//					jcprops.JPGColor = IJL_YCBCR;
-//				break;
-//				default:
-//					jcprops.DIBColor = (IJL_COLOR)IJL_OTHER;
-//					jcprops.JPGColor = (IJL_COLOR)IJL_OTHER;
-//				break;
-//			}
-//
-//			if((jerr = ijlRead(&jcprops, IJL_JFILE_READWHOLEIMAGE)) != IJL_OK) {
-//				logger->error("Error al intentar decodificar la imagen: [%d]\n", ijlErrorStr(jerr));
-//				ijlFree(&jcprops);
-//				return(null);
-//			}
-//
-//
-//			ijlFree(&jcprops);
-
 		}
+
 		virtual void dispose(Resource *resource) {
 			ImageResource *jpegResource = (ImageResource *)resource;
 

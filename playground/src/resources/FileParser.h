@@ -40,7 +40,7 @@ class FileParser {
 		fpos_t position;
 
 
-		boolean isInSet(char character, const char *set) {
+		bool isInSet(char character, const char *set) {
 
 			const char *currentTokenSeparator = set;
 			while(*currentTokenSeparator != '\0' && *currentTokenSeparator != char_eof) {
@@ -54,12 +54,12 @@ class FileParser {
 			return false;
 		}
 
-		boolean isTokenSeparator(char character)
+		bool isTokenSeparator(char character)
 		{
 			return isInSet(character, tokenSeparator);
 		}
 
-		boolean isBlank(char character)
+		bool isBlank(char character)
 		{
 			return isInSet(character, blanks);
 		}
@@ -144,7 +144,7 @@ class FileParser {
 		void close()
 		{
 			if(fileStream != null) {
-				logger->debug("Closing file [%s]", filename.c_str());
+				logger->verbose("Closing file [%s]", filename.c_str());
 				fclose(fileStream);
 				fileStream = null;
 			}
@@ -167,7 +167,7 @@ class FileParser {
 
 				}
 
-				logger->debug("File opened for reading binary [%s]", filename.c_str());
+				logger->verbose("File opened for reading binary [%s]", filename.c_str());
 			}
 			return fileStream;
 		}

@@ -100,7 +100,7 @@ class JsonParser
 
 			String token = fileParser.takeToken();
 			char digit;
-			boolean readValue = false;
+			bool readValue = false;
 
 			unsigned int currentPosition = 0;
 			while(currentPosition < token.length() && '0' <= (digit = token.at(currentPosition++)) && digit <= '9')
@@ -121,7 +121,7 @@ class JsonParser
 
 			String token = fileParser.takeToken();
 			char digit;
-			boolean readValue = false;
+			bool readValue = false;
 
 			unsigned int currentPosition = 0;
 			while(currentPosition < token.length() && '0' <= (digit = token.at(currentPosition++)) && digit <= '9')

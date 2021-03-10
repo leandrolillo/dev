@@ -30,7 +30,7 @@ class PlaygroundTestsRunner: public TestRunner {
 			return PlaygroundTests::ID;
 		}
 
-		virtual boolean init() {
+		virtual bool init() {
 			this->addTest("testLoadWav", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadWav));
 			this->addTest("testLoadOgg", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadOgg));
 			this->addTest("testLoadBuffer", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadBuffer));

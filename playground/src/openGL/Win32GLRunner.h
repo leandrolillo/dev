@@ -68,7 +68,7 @@ class OpenGLRunner: public Win32apiRunner {
 
 			return Win32apiRunner::WndProc(hwnd, messageCode, wParam, lParam);
 		}
-		virtual boolean createGlContext()
+		virtual bool createGlContext()
 		{
 			if (!(this->hDeviceContext = GetDC(this->getWnd()))) {
 				printLastError("Could not retrieve device context");
@@ -187,7 +187,7 @@ class OpenGLRunner: public Win32apiRunner {
 
 			return true;
 		}
-		virtual boolean init() {
+		virtual bool init() {
 			if (Win32apiRunner::init()) {
 				return createGlContext();
 			}

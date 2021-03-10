@@ -38,7 +38,7 @@ class NormalGenerator
 		for(std::vector<vector3>::iterator source = unCompressed.begin(); source != unCompressed.end(); source ++)
 				{
 					unsigned int index = 0;
-					boolean preExisting = false;
+					bool preExisting = false;
 					for(std::vector<vector3>::iterator destination = compressed.begin(); destination != compressed.end(); destination++)
 					{
 						if(*source == *destination) {

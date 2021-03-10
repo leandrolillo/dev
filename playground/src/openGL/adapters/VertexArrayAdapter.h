@@ -19,7 +19,7 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 		std::vector<String> supportedMimeTypes;
 		Logger *logger;
 	private:
-		boolean addBuffer(ShaderAttributeLocation attributeLocation, VertexArrayResource *resource, GLenum bufferDestination, const std::vector<vector2> &data)
+		bool addBuffer(ShaderAttributeLocation attributeLocation, VertexArrayResource *resource, GLenum bufferDestination, const std::vector<vector2> &data)
 		{
 			if(data.size() > 0) {
 				logger->debug("Creating [%d] floats buffer", data.size());
@@ -51,7 +51,7 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 
 			return true;
 		}
-		boolean addBuffer(ShaderAttributeLocation attributeLocation, VertexArrayResource *resource, GLenum bufferDestination, const std::vector<vector3> &data)
+		bool addBuffer(ShaderAttributeLocation attributeLocation, VertexArrayResource *resource, GLenum bufferDestination, const std::vector<vector3> &data)
 		{
 				logger->debug("Creating [%d] floats buffer", data.size());
 
@@ -81,7 +81,7 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 
 				return true;
 		}
-		boolean addBuffer(ShaderAttributeLocation attributeLocation, VertexArrayResource *resource, GLenum bufferDestination, const std::vector<unsigned int> &data)
+		bool addBuffer(ShaderAttributeLocation attributeLocation, VertexArrayResource *resource, GLenum bufferDestination, const std::vector<unsigned int> &data)
 		{
 				logger->debug("Creating [%d] floats buffer", data.size());
 
@@ -130,20 +130,22 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 			if(geometry != null) {
 				VertexArrayResource *resource = null;
 
-				logger->debug("Loaded geometry: [%d] vertices, [%d] normals, [%d] texture coordinates", geometry->getVertices().size(), geometry->getNormals().size(), geometry->getTextureCoordinates().size());
-
 				glGetError();
 
 				//Create vertex Array
 				unsigned int vertexArray;
 				glGenVertexArraysAPPLE(1, &vertexArray);
+				logger->debug("glGenVertexArraysAPPLE %d", vertexArray);
+
 				resource = new VertexArrayResource(vertexArray);
 				resource->setPrimitiveType(geometry->getType());
+
 				TextureResource *texture = (TextureResource *)this->getResourceManager()->load(geometry->getTextureFile(), "video/texture");
 				if(texture != null)
 					resource->setTexture(texture);
 
 				glBindVertexArrayAPPLE(resource->getId());
+				logger->debug("glGenVertexArraysAPPLE %d", vertexArray);
 
 				GLenum glError = glGetError();
 				if(glError != GL_NO_ERROR) {

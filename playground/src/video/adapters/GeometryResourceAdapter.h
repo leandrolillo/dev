@@ -31,10 +31,7 @@ class GeometryResourceAdapter: public ResourceAdapter {
 		}
 
 		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
-			logger->debug("Loading [%s] [%s] [%c] [%u]", mimeType.c_str(), fileParser.getFilename().c_str(), char_eof, (unsigned char)-1);
-
 			JsonParser *parser = new JsonParser(fileParser);
-
 			GeometryResource *resource = new GeometryResource(0);
 
 			String token;
@@ -129,7 +126,7 @@ class GeometryResourceAdapter: public ResourceAdapter {
 				for(std::vector<vector3>::iterator source = vertices.begin(); source != vertices.end(); source ++)
 				{
 					unsigned int index = 0;
-					boolean preExisting = false;
+					bool preExisting = false;
 					for(std::vector<vector3>::iterator destination = resource->getVertices().begin(); destination != resource->getVertices().end(); destination++)
 					{
 						if(*source == *destination) {
@@ -183,7 +180,7 @@ class GeometryResourceAdapter: public ResourceAdapter {
 //			}
 //
 //			prefix.append(" ]");
-			logger->debug(prefix.c_str());
+			logger->verbose(prefix.c_str());
 
 		}
 
@@ -201,7 +198,7 @@ class GeometryResourceAdapter: public ResourceAdapter {
 //			}
 //
 //			prefix.append(" ]");
-			logger->debug(prefix.c_str());
+			logger->verbose(prefix.c_str());
 
 		}
 
@@ -219,7 +216,7 @@ class GeometryResourceAdapter: public ResourceAdapter {
 //			}
 //
 //			prefix.append(" ]");
-			logger->debug(prefix.c_str());
+			logger->verbose(prefix.c_str());
 
 		}
 };
