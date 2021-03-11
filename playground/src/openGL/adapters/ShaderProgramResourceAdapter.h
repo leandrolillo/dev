@@ -20,12 +20,16 @@
 #include "../resources/ShaderProgramResource.h"
 #include "../../parser/JsonParser.h"
 #include "VideoAdapter.h"
-#include <OpenGL/gl.h>
+#include <OpenGL/gl3.h>
+#include <map>
+#include <string>
 
 class ShaderProgramResourceAdapter: public ResourceAdapter {
 	private:
 		std::vector<String> supportedMimeTypes;
 		Logger *logger;
+		std::map<std::string, std::string> shadersMimeTypes;
+
 	private:
 		String getInfoLog(GLuint object)
 		{
@@ -45,6 +49,11 @@ class ShaderProgramResourceAdapter: public ResourceAdapter {
 		ShaderProgramResourceAdapter() {
 			supportedMimeTypes.push_back("video/shaderProgram");
 			logger = Logger::getLogger("video/ShaderProgramResourceAdapter.h");
+
+			shadersMimeTypes["vertexShaders"] = "video/vertexShader";
+			shadersMimeTypes["fragmentShaders"] = "video/fragmentShader";
+			shadersMimeTypes["geometryShaders"] = "video/geometryShader";
+			shadersMimeTypes["tesellationShaders"] = "video/tesellationShader";
 		}
 		String toString() const {
 			return logger->getBasename();
@@ -53,6 +62,8 @@ class ShaderProgramResourceAdapter: public ResourceAdapter {
 		virtual const std::vector<String> getSupportedMimeTypes() {
 			return supportedMimeTypes;
 		}
+
+
 		#define BUFFER_SIZE 256
 		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
 			GLenum glError = glGetError();
@@ -68,29 +79,19 @@ class ShaderProgramResourceAdapter: public ResourceAdapter {
 			parser->readStartObject();
 			while((token = parser->readToken()) != END_OBJECT && token != eof)
 			{
-				if(token == "vertexShaders") {
+				if(token == "vertexShaders" || token == "fragmentShaders" || token == "geometryShaders" || token == "tesellationShaders") {
 					parser->readValueSeparator();
 					std::vector<String> vertexShadersFiles = parser->readStringArray();
 
 					for(std::vector<String>::iterator stringIterator = vertexShadersFiles.begin(); stringIterator != vertexShadersFiles.end(); stringIterator++) {
-						ShaderResource *shader = (ShaderResource *)getResourceManager()->load(*stringIterator, "video/vertexShader");
+						ShaderResource *shader = (ShaderResource *)getResourceManager()->load(*stringIterator, shadersMimeTypes[token]);
 						if(shader != null)
 							resource->getShaders().push_back(shader);
 						else
 							logger->error("Could not load shader [%s]", (*stringIterator).c_str());
 					}
-
-				} else if (token == "fragmentShaders") {
-					parser->readValueSeparator();
-					std::vector<String> vertexShadersFiles = parser->readStringArray();
-
-					for(std::vector<String>::iterator stringIterator = vertexShadersFiles.begin(); stringIterator != vertexShadersFiles.end(); stringIterator++) {
-						ShaderResource *shader = (ShaderResource *)getResourceManager()->load(*stringIterator, "video/fragmentShader");
-						if(shader != null)
-							resource->getShaders().push_back(shader);
-						else
-							logger->error("Could not load shader [%s]", (*stringIterator).c_str());
-					}
+				} else {
+					logger->warn("Unexpected token: %s", token.c_str());
 				}
 			}
 
@@ -113,19 +114,23 @@ class ShaderProgramResourceAdapter: public ResourceAdapter {
 				return null;
 			}
 
-			glValidateProgram(resource->getId());
-			glGetProgramiv(resource->getId(), GL_VALIDATE_STATUS, &operationSuccessful);
-			if (!operationSuccessful) {
-				logger->error("Failed to validate program - [%d]: [%s]\n", operationSuccessful, getInfoLog(resource->getId()).c_str());
-				dispose(resource);
-				return null;
+			Resource *vertexArray = this->getResourceManager()->load("geometry/core/triangle.json", "video/vertexArray");
+			if(vertexArray) {
+				glBindVertexArray(vertexArray->getId());
+				glValidateProgram(resource->getId());
+				glBindVertexArray(0);
+				glGetProgramiv(resource->getId(), GL_VALIDATE_STATUS, &operationSuccessful);
+				if (!operationSuccessful) {
+					logger->error("Failed to validate program - [%d]: [%s]\n", operationSuccessful, getInfoLog(resource->getId()).c_str());
+					dispose(resource);
+					return null;
+				}
 			}
 
 			logger->debug("Shader executable [%s] successfully linked and validated", fileParser.getFilename().c_str());
 
 			for(std::vector<ShaderResource *>::iterator shaderIterator = resource->getShaders().begin(); shaderIterator != resource->getShaders().end(); shaderIterator++)
 				glDetachShader(resource->getId(), (*shaderIterator)->getId());
-
 
 			glError = glGetError();
 			if(glError != GL_NO_ERROR) {

@@ -31,8 +31,6 @@ class JsonParser
 	public:
 		JsonParser(FileParser &parser) : fileParser(parser)
 		{
-			this->fileParser = fileParser;
-
 			logger = Logger::getLogger("parser/JsonParser.h");
 		}
 

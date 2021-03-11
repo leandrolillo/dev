@@ -16,7 +16,7 @@
 #include "../core/Playground.h"
 
 
-int eventFilter(void *context, SDL_Event *event);
+int playgroundEventFilter(void *context, SDL_Event *event);
 
 class SDLRunner: public PlaygroundRunner {
 	public:
@@ -56,7 +56,7 @@ class SDLRunner: public PlaygroundRunner {
 
 			logger->debug("SDL Window created");
 
-			SDL_AddEventWatch(eventFilter, this);
+			SDL_AddEventWatch(playgroundEventFilter, this);
 
 			logger->debug("SDL event watch registered");
 
@@ -184,7 +184,7 @@ class SDLRunner: public PlaygroundRunner {
 
 };
 
-int eventFilter(void *context, SDL_Event *event) {
+int playgroundEventFilter(void *context, SDL_Event *event) {
 	SDLRunner *runner = (SDLRunner *) context;
 		return runner->processEvent(event);
 }

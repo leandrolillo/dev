@@ -72,7 +72,6 @@ class JpegResourceAdapter: public ResourceAdapter {
 		virtual void dispose(Resource *resource) {
 			ImageResource *jpegResource = (ImageResource *)resource;
 
-			logger->debug("Disposing of jpeg");
 			if(jpegResource->getData() != null)
 				delete (unsigned char *)jpegResource->getData();
 		}

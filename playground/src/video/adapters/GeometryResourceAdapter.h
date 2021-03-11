@@ -11,7 +11,7 @@
 #include "../video/resources/GeometryResource.h"
 #include "../parser/JsonParser.h"
 #include "normalGenerators/NormalGenerator.h"
-#include <OpenGL/gl.h>
+#include <OpenGL/gl3.h>
 #include <OpenGL/glext.h>
 
 class GeometryResourceAdapter: public ResourceAdapter {
@@ -50,7 +50,6 @@ class GeometryResourceAdapter: public ResourceAdapter {
 				} else if (token == "texture") {
 					parser->readValueSeparator();
 					String textureFile = parser->readString();
-					logger->debug("texture [%s]", textureFile.c_str());
 					resource->setTextureFile(textureFile);
 				} else if (token == "colors") {
 					parser->readValueSeparator();
@@ -70,7 +69,7 @@ class GeometryResourceAdapter: public ResourceAdapter {
 			log("colors ", resource->getColors());
 			log("normals ", resource->getNormals());
 			log("textureCoordinates ", resource->getTextureCoordinates());
-			logger->debug("type = [%d]", resource->getType());
+			logger->verbose("type = [%d]", resource->getType());
 			return resource;
 		}
 		virtual void dispose(Resource *resource) {
@@ -160,9 +159,9 @@ class GeometryResourceAdapter: public ResourceAdapter {
 				return GL_TRIANGLE_FAN;
 			else if(typeString == "quads")
 				return GL_QUADS;
-			else if(typeString == "quadStrip")
-				return GL_QUAD_STRIP;
-			else return GL_POLYGON;
+//			else if(typeString == "quadStrip")
+//				return GL_QUAD_STRIP;
+			else return GL_TRIANGLE_FAN;
 		}
 
 
@@ -170,7 +169,7 @@ class GeometryResourceAdapter: public ResourceAdapter {
 		{
 			char vectorBuffer[256];
 
-			sprintf(vectorBuffer, "[%d] ", array.size());
+			sprintf(vectorBuffer, "[%lu] ", array.size());
 			prefix.insert(0, vectorBuffer);
 //			prefix.append(" [");
 //
@@ -180,7 +179,7 @@ class GeometryResourceAdapter: public ResourceAdapter {
 //			}
 //
 //			prefix.append(" ]");
-			logger->verbose(prefix.c_str());
+			logger->debug(prefix.c_str());
 
 		}
 
@@ -188,17 +187,17 @@ class GeometryResourceAdapter: public ResourceAdapter {
 		{
 			char vectorBuffer[256];
 
-			sprintf(vectorBuffer, "[%d] ", array.size());
+			sprintf(vectorBuffer, "[%lu] ", array.size());
 			prefix.insert(0, vectorBuffer);
 //			prefix.append(" [");
 //
 //			for(std::vector<unsigned int>::iterator current = array.begin(); current != array.end(); current++) {
-//				sprintf(vectorBuffer, "%d, ", *current);
+//				sprintf(vectorBuffer, "%lu, ", *current);
 //				prefix.append(vectorBuffer);
 //			}
 //
 //			prefix.append(" ]");
-			logger->verbose(prefix.c_str());
+			logger->debug(prefix.c_str());
 
 		}
 
@@ -206,7 +205,7 @@ class GeometryResourceAdapter: public ResourceAdapter {
 		{
 			char vectorBuffer[256];
 
-			sprintf(vectorBuffer, "[%d] ", array.size());
+			sprintf(vectorBuffer, "[%lu] ", array.size());
 			prefix.insert(0, vectorBuffer);
 //			prefix.append(" [");
 //
@@ -216,7 +215,7 @@ class GeometryResourceAdapter: public ResourceAdapter {
 //			}
 //
 //			prefix.append(" ]");
-			logger->verbose(prefix.c_str());
+			logger->debug(prefix.c_str());
 
 		}
 };

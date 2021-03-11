@@ -11,7 +11,7 @@
 #include "../resources/VertexArrayResource.h"
 #include "VideoAdapter.h"
 
-#include <OpenGl/gl.h>
+#include <OpenGl/gl3.h>
 #include <OpenGl/glext.h>
 
 class VertexArrayResourceAdapter: public ResourceAdapter {
@@ -22,7 +22,7 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 		bool addBuffer(ShaderAttributeLocation attributeLocation, VertexArrayResource *resource, GLenum bufferDestination, const std::vector<vector2> &data)
 		{
 			if(data.size() > 0) {
-				logger->debug("Creating [%d] floats buffer", data.size());
+				logger->verbose("Creating [%d] floats buffer", data.size());
 
 				// create vertex buffer
 				unsigned int buffer;
@@ -53,7 +53,7 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 		}
 		bool addBuffer(ShaderAttributeLocation attributeLocation, VertexArrayResource *resource, GLenum bufferDestination, const std::vector<vector3> &data)
 		{
-				logger->debug("Creating [%d] floats buffer", data.size());
+				logger->verbose("Creating [%d] floats buffer", data.size());
 
 				// create vertex buffer
 				unsigned int buffer;
@@ -83,7 +83,7 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 		}
 		bool addBuffer(ShaderAttributeLocation attributeLocation, VertexArrayResource *resource, GLenum bufferDestination, const std::vector<unsigned int> &data)
 		{
-				logger->debug("Creating [%d] floats buffer", data.size());
+				logger->verbose("Creating [%d] floats buffer", data.size());
 
 				// create vertex buffer
 				unsigned int buffer;
@@ -134,18 +134,17 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 
 				//Create vertex Array
 				unsigned int vertexArray;
-				glGenVertexArraysAPPLE(1, &vertexArray);
-				logger->debug("glGenVertexArraysAPPLE %d", vertexArray);
+				glGenVertexArrays(1, &vertexArray);
 
 				resource = new VertexArrayResource(vertexArray);
 				resource->setPrimitiveType(geometry->getType());
 
 				TextureResource *texture = (TextureResource *)this->getResourceManager()->load(geometry->getTextureFile(), "video/texture");
-				if(texture != null)
+				if(texture != null) {
 					resource->setTexture(texture);
+				}
 
-				glBindVertexArrayAPPLE(resource->getId());
-				logger->debug("glGenVertexArraysAPPLE %d", vertexArray);
+				glBindVertexArray(resource->getId());
 
 				GLenum glError = glGetError();
 				if(glError != GL_NO_ERROR) {
@@ -186,7 +185,7 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 
 				// remove objects from context.
 				glBindBuffer(GL_ARRAY_BUFFER, 0);
-				glBindVertexArrayAPPLE(0);
+				glBindVertexArray(0);
 
 				return resource;
 			}
@@ -196,22 +195,22 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 			VertexArrayResource *vertexArrayResource = (VertexArrayResource *)resource;
 
 			if(vertexArrayResource->getId() != 0) {
-//				glBindVertexArray(vertexArrayResource->getId());
-//
-//				for(std::map<unsigned int, VertexAttribPointer>::iterator currentBuffer = vertexArrayResource->getAttributes().begin(); currentBuffer != vertexArrayResource->getAttributes().end(); currentBuffer++)
-//				{
-//					glDisableVertexAttribArray(currentBuffer->first);
-//					unsigned int buffer = currentBuffer->second.getBuffer();
-//					glDeleteBuffers(1, &buffer);
-//				}
-//
-//				vertexArrayResource->clearVertexAttribPointers();
-//
-//				unsigned int vertexArray = vertexArrayResource->getId();
-//				glDeleteVertexArrays(1, &vertexArray);
-//
-//				glBindVertexArray(0);
-//				vertexArrayResource->setId(0);
+				glBindVertexArray(vertexArrayResource->getId());
+
+				for(std::map<unsigned int, VertexAttribPointer>::iterator currentBuffer = vertexArrayResource->getAttributes().begin(); currentBuffer != vertexArrayResource->getAttributes().end(); currentBuffer++)
+				{
+					glDisableVertexAttribArray(currentBuffer->first);
+					unsigned int buffer = currentBuffer->second.getBuffer();
+					glDeleteBuffers(1, &buffer);
+				}
+
+				vertexArrayResource->clearVertexAttribPointers();
+
+				unsigned int vertexArray = vertexArrayResource->getId();
+				glDeleteVertexArrays(1, &vertexArray);
+
+				glBindVertexArray(0);
+				vertexArrayResource->setId(0);
 			}
 		}
 };

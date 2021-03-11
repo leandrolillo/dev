@@ -688,6 +688,15 @@ void matriz_2x2::operator *=(const real &op1) {
 		return(*this);
 	}
 
+	const matriz_4x4 matriz_4x4::matrizTraslacion(const vector3 &desplazamiento) {
+		return matriz_4x4(
+		1.0f, 0.0f, 0.0f, desplazamiento.x,
+		0.0f, 1.0f, 0.0f, desplazamiento.y,
+		0.0f, 0.0f, 1.0f, desplazamiento.z,
+		0.0f, 0.0f, 0.0f, 1.0f);
+	}
+
+
 	const matriz_4x4 matriz_4x4::operator*(const matriz_4x4 &op2) const {
 		return(matriz_4x4(	(this->_00 * op2._00) + (this->_01 * op2._10) + (this->_02 * op2._20) + (this->_03 * op2._30),
 					(this->_00 * op2._01) + (this->_01 * op2._11) + (this->_02 * op2._21) + (this->_03 * op2._31),

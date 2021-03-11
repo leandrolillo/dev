@@ -11,7 +11,7 @@
 #include "../resources/ResourceAdapter.h"
 #include "../video/resources/ImageResource.h"
 #include "../openGL/resources/TextureResource.h"
-#include <OpenGL/gl.h>
+#include <OpenGL/gl3.h>
 
 class TextureResourceAdapter: public ResourceAdapter {
 	private:
@@ -41,9 +41,9 @@ class TextureResourceAdapter: public ResourceAdapter {
 				resource = new TextureResource(textureHandler);
 				glBindTexture(GL_TEXTURE_2D, textureHandler);
 				if(imageResource->getBpp() == 32)
-					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageResource->getAncho(), imageResource->getAlto(), 0, GL_BGRA_EXT, GL_UNSIGNED_BYTE, imageResource->getData());
+					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, imageResource->getAncho(), imageResource->getAlto(), 0, GL_BGRA, GL_UNSIGNED_BYTE, imageResource->getData());
 				else
-					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imageResource->getAncho(), imageResource->getAlto(), 0, GL_BGR_EXT, GL_UNSIGNED_BYTE, imageResource->getData());
+					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imageResource->getAncho(), imageResource->getAlto(), 0, GL_BGR, GL_UNSIGNED_BYTE, imageResource->getData());
 
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

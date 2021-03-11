@@ -161,9 +161,9 @@ class matriz_3x3: public BaseMatrix {
 
 		real &operator()(unsigned int fila, unsigned int columna) {
 			if (fila > 2 || columna > 2)
-				throw InvalidArgumentException("Index Out of Bounds - matriz_2x2::operator(i, j)");
+				throw InvalidArgumentException("Index Out of Bounds - matriz_3x3::operator(i, j)");
 
-			return m[fila * 2 + columna];
+			return m[fila * 3 + columna];
 		}
 		matriz_3x3(real d00, real d01, real d02, real d10, real d11, real d12, real d20, real d21, real d22);
 		matriz_3x3(const matriz_3x3 &op1);
@@ -235,10 +235,10 @@ class matriz_4x4: BaseMatrix {
 		static matriz_4x4 Identidad;
 
 		real &operator()(unsigned int fila, unsigned int columna) {
-			if (fila > 1 || columna > 1)
-				throw InvalidArgumentException("Index Out of Bounds - matriz_2x2::operator(i, j)");
+			if (fila > 3 || columna > 3)
+				throw InvalidArgumentException("Index Out of Bounds - matriz_4x4::operator(i, j)");
 
-			return m[fila * 2 + columna];
+			return m[fila * 4 + columna];
 		}
 		matriz_4x4(real _00, real _01, real _02, real _03, real _10, real _11, real _12, real _13, real _20, real _21,
 				real _22, real _23, real _30, real _31, real _32, real _33);

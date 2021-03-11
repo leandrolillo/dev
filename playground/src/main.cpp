@@ -1,6 +1,7 @@
 #include <iostream>
 #include <stdio.h>
 
+#define GL_SILENCE_DEPRECATION
 #include "openGL/OpenGLRunner.h"
 
 class PhysicsPlayground: public Playground {
@@ -45,6 +46,8 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 		GeometryResource *geometryResource;
 		VertexArrayResource *sphereArrayResource;
 		GeometryResource *sphereGeometryResource;
+
+		GLuint VBO;
 	public:
 		static const unsigned char ID = 101;
 
@@ -55,8 +58,8 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 
 			logger = Logger::getLogger("Main.cpp");
 
-			viewPosition = vector(0.0, 0.0f, -6.0);
-			lightPosition = vector(0.0, 0.0f, 4.0);
+			viewPosition = vector(0.0f, 0.0f, -6.0f);
+			lightPosition = vector(0.0f, 0.0f, 4.0f);
 			currentPosition = &viewPosition;
 			rotation = 0;
 			textureResource = null;
@@ -67,6 +70,8 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 			geometryResource = null;
 			sphereArrayResource = null;
 			sphereGeometryResource = null;
+
+			VBO = null;
 		}
 
 		virtual unsigned char getInterests() {
@@ -93,12 +98,14 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 //			Source *backgroundSource = audio->createSource("background.ogg");
 //			audio->playSource(backgroundSource);
 
-			textureResource = (TextureResource *)resourceManager->load("images/TEXTURA.PNG", "video/texture");
-			anotherTextureResource = (TextureResource *)resourceManager->load("images/irs.JPG", "video/texture");
-			geometryResource = (GeometryResource *)resourceManager->load("geometry/triangle.json", "video/geometry");
+			//textureResource = (TextureResource *)resourceManager->load("images/TEXTURA.PNG", "video/texture");
+			//anotherTextureResource = (TextureResource *)resourceManager->load("images/irs.JPG", "video/texture");
+			//geometryResource = (GeometryResource *)resourceManager->load("geometry/triangle.json", "video/geometry");
 			sphereArrayResource = (VertexArrayResource *)resourceManager->load("geometry/sphere.json", "video/vertexArray");
-			sphereGeometryResource = (GeometryResource *)resourceManager->load("geometry/sphere.json", "video/geometry");
+			//sphereGeometryResource = (GeometryResource *)resourceManager->load("geometry/sphere.json", "video/geometry");
 			vertexArrayResource = (VertexArrayResource *)resourceManager->load("geometry/triangle.json", "video/vertexArray");
+
+			shaderProgramResource = (ShaderProgramResource *)resourceManager->load("shaders/simple.program.json", "video/shaderProgram");
 
 //			if(openGl->getMajorVersion() >= 3) {
 //				shaderProgramResource = (ShaderProgramResource *)resourceManager->load("shaders/lighting.140.program.json", "video/shaderProgram");
@@ -106,34 +113,47 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 //			} else {
 //				shaderProgramResource = (ShaderProgramResource *)resourceManager->load("shaders/lighting.120.program.json", "video/shaderProgram");
 //				anotherShaderProgramResource = (ShaderProgramResource *)resourceManager->load("shaders/toon.120.program.json", "video/shaderProgram");
-//
 //			}
 
-			glClearColor(0.0, 0.5, 0.0, 0.0);
-			glShadeModel(GL_SMOOTH);
-			glEnable(GL_DEPTH_TEST);
-			glEnable(GL_CULL_FACE);
-			glCullFace(GL_BACK);
+//			glClearColor(0.0, 0.5, 0.0, 0.0);
+//			glShadeModel(GL_SMOOTH);
+//			glEnable(GL_DEPTH_TEST);
+//			glEnable(GL_CULL_FACE);
+//			glCullFace(GL_BACK);
+//
+////			glEnable(GL_BLEND);
+////			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+//
+//			glEnable(GL_TEXTURE_2D);
+//			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+//
+//			glEnable(GL_LIGHTING);
+//			//glLightModelfv(GL_LIGHT_MODEL_AMBIENT, (float *)vector4(0.2, 0.2, 0.2));
+//
+//			glEnable(GL_LIGHT0);
+//			//glLightfv(GL_LIGHT0, GL_POSITION, (float *)vector4(0.0, 0.0, 0.0, 1.0));
+//			glLightfv(GL_LIGHT0, GL_AMBIENT_AND_DIFFUSE, (float *)vector3(1.0, 1.0, 1.0));
+//			glLightfv(GL_LIGHT0, GL_SPECULAR, (float *)vector3(0.0, 0.0, 0.0));
+//
+//
+//			glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, (float *)vector3(1.0, 1.0, 1.0));
+//			glMaterialfv(GL_FRONT, GL_EMISSION, (float *)vector3(0.0, 0.0, 0.0));
+//			glMaterialfv(GL_FRONT, GL_SPECULAR, (float *)vector3(0.0, 0.0, 0.0));
+//			glMaterialf(GL_FRONT, GL_SHININESS, 128.0);
 
-//			glEnable(GL_BLEND);
-//			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-
-			glEnable(GL_TEXTURE_2D);
-			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-
-			glEnable(GL_LIGHTING);
-			//glLightModelfv(GL_LIGHT_MODEL_AMBIENT, (float *)vector4(0.2, 0.2, 0.2));
-
-			glEnable(GL_LIGHT0);
-			//glLightfv(GL_LIGHT0, GL_POSITION, (float *)vector4(0.0, 0.0, 0.0, 1.0));
-			glLightfv(GL_LIGHT0, GL_AMBIENT_AND_DIFFUSE, (float *)vector3(1.0, 1.0, 1.0));
-			glLightfv(GL_LIGHT0, GL_SPECULAR, (float *)vector3(0.0, 0.0, 0.0));
+			glUseProgram(null);
 
 
-			glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, (float *)vector3(1.0, 1.0, 1.0));
-			glMaterialfv(GL_FRONT, GL_EMISSION, (float *)vector3(0.0, 0.0, 0.0));
-			glMaterialfv(GL_FRONT, GL_SPECULAR, (float *)vector3(0.0, 0.0, 0.0));
-			glMaterialf(GL_FRONT, GL_SHININESS, 128.0);
+			vector vertices[3];
+			vertices[0] = vector(-1.0f, -1.0f, 0.0f);
+			vertices[1] = vector(1.0f, -1.0f, 0.0f);
+			vertices[2] = vector(0.0f, 1.0f, 0.0f);
+
+
+			glGenBuffers(1, &VBO);
+			glBindBuffer(GL_ARRAY_BUFFER, VBO);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+			glBindBuffer(GL_ARRAY_BUFFER, null);
 
 			return true;
 		}
@@ -207,14 +227,16 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 
 		virtual LoopResult doLoop() {
 //			glUseProgram(0);
-//
+
 //			glLoadIdentity();
 //			glTranslatef(viewPosition.x, viewPosition.y, viewPosition.z);
-//
-//			openGl->glAxis();
-//
-//			glBindTexture(GL_TEXTURE_2D, 0);
-//
+//			//logger->debug("Position: <%f, %f, %f>", viewPosition.x, viewPosition.y, viewPosition.z);
+
+			//openGl->useProgramResource(null);
+			openGl->glAxis();
+
+			glBindTexture(GL_TEXTURE_2D, 0);
+
 //			glDisable(GL_LIGHTING);
 //			glColor3f(1.0, 1.0, 0.0);
 //			glPushMatrix();
@@ -223,11 +245,10 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 //			glTranslatef(lightPosition.x, lightPosition.y, lightPosition.z);
 //			openGl->glSphere(.2);
 //			glPopMatrix();
-//
+
 //			glEnable(GL_LIGHTING);
-//
-//			if(anotherTextureResource != null)
-//				glBindTexture(GL_TEXTURE_2D, anotherTextureResource->getId());
+			if(anotherTextureResource != null)
+				glBindTexture(GL_TEXTURE_2D, anotherTextureResource->getId());
 //
 //			glPushMatrix();
 //			glTranslatef(-1.5, 2.0, 0.0);
@@ -240,39 +261,50 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 //			glRotatef(rotation, 0.0, 1.0, 0.0);
 //			openGl->glDrawGeometry(sphereGeometryResource);
 //			glPopMatrix();
-//
-//			//if(anotherShaderProgramResource != null)
-//				//glUseProgram(anotherShaderProgramResource->getId());
-//
+
+			//if(anotherShaderProgramResource != null)
+				//glUseProgram(anotherShaderProgramResource->getId());
+
 //			glPushMatrix();
 //			glTranslatef(-1.5, 0.0, 0.0);
 //			glRotatef(rotation, 0.0, 1.0, 0.0);
 //			openGl->glDrawGeometry(geometryResource);
 //			glPopMatrix();
-//
+
 //			glPushMatrix();
 //			glTranslatef(1.5, 0.0, 0.0);
 //			glRotatef(rotation, 0.0, 1.0, 0.0);
 //			openGl->glDrawGeometry(sphereGeometryResource);
 //			glPopMatrix();
-//
-//
-//			if(shaderProgramResource != null)
-//				glUseProgram(shaderProgramResource->getId());
 
-			glPushMatrix();
-			glTranslatef(-1.5, -2.0, 0.0);
-			glRotatef(rotation, 0.0, 1.0, 0.0);
-			openGl->glDrawVertexArray(vertexArrayResource);
-			glPopMatrix();
 
-			glPushMatrix();
-			glTranslatef(1.5, -2.0, 0.0);
-			glRotatef(rotation, 0.0, 1.0, 0.0);
-			openGl->glDrawVertexArray(sphereArrayResource);
-			glPopMatrix();
+			if(shaderProgramResource) {
+				openGl->useProgramResource(shaderProgramResource);
+
+				glUniformMatrix4fv(glGetUniformLocation(shaderProgramResource->getId(), "pvm"),
+			                     1, GL_FALSE, (real *)(openGl->getProjectionMatrix() * matriz_4x4::matrizTraslacion(viewPosition)));
+			}
+
+//			glPushMatrix();
+//			glTranslatef(-1.5, -2.0, 0.0);
+//			glRotatef(rotation, 0.0, 1.0, 0.0);
+			openGl->drawVertexArray(vertexArrayResource);
+//			glPopMatrix();
+
+//			glPushMatrix();
+//			glTranslatef(1.5, -2.0, 0.0);
+//			glRotatef(rotation, 0.0, 1.0, 0.0);
+			openGl->drawVertexArray(sphereArrayResource);
+//			glPopMatrix();
 
 			rotation+=0.1;
+
+			glEnableVertexAttribArray(0);
+			glBindBuffer(GL_ARRAY_BUFFER, VBO);
+			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+			glDrawArrays(GL_POINTS, 0, 1);
+			glDisableVertexAttribArray(0);
+
 
 			return CONTINUE;
 		}
@@ -325,8 +357,8 @@ class PlaygroundTest: public Playground {
 
 int main(int, char**){
 	PlaygroundTest playground("/Users/leandro/huevadas/projects/dev/media");
-    //PhysicsPlayground playground;
     playground.run();
     
     return 0;
 }
+

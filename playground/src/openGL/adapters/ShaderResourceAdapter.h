@@ -9,7 +9,7 @@
 #define SHADERRESOURCEADAPTER_H_
 #include "../../resources/ResourceAdapter.h"
 #include "../resources/ShaderResource.h"
-#include <OpenGL/gl.h>
+#include <OpenGL/gl3.h>
 
 class ShaderResourceAdapter: public ResourceAdapter {
 	private:
@@ -56,8 +56,6 @@ class ShaderResourceAdapter: public ResourceAdapter {
 			}
 			shaderCode[fileParser.size()] = '\0';
 
-			logger->debug("Shader code: \n%s", shaderCode);
-
 			unsigned int shaderType = (mimeType == "video/vertexShader" ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER);
 
 			unsigned int shaderId = glCreateShader(shaderType);
@@ -71,6 +69,7 @@ class ShaderResourceAdapter: public ResourceAdapter {
 			glGetShaderiv(resource->getId(), GL_COMPILE_STATUS, &compilationSuccessfull);
 			if (!compilationSuccessfull) {
 				logger->error("Failed to compile [%s] [%s]: [%s]\n", shaderType == GL_VERTEX_SHADER ? "Vertex Shader" : "Fragment Shader", fileParser.getFilename().c_str(), getInfoLog(shaderId).c_str());
+				logger->debug("Shader code: \n%s", shaderCode);
 				dispose(resource);
 				return null;
 			} else {

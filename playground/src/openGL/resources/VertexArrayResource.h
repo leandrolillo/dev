@@ -10,7 +10,7 @@
 
 #include "../resources/Resource.h"
 #include "TextureResource.h"
-#include <OpenGL/gl.h>
+#include <OpenGL/gl3.h>
 
 class VertexAttribPointer {
 	public:
@@ -48,6 +48,10 @@ class VertexAttribPointer {
 
 		void setStart(unsigned int start) {
 			this->start = start;
+		}
+
+		String toString() const {
+			return "[buffer: " + std::to_string(this->buffer) + " start: " + std::to_string(this->start) + " count: " + std::to_string(this->count);
 		}
 
 	private:
@@ -105,6 +109,16 @@ class VertexArrayResource : public Resource
 
 		void setPrimitiveType(unsigned int primitiveType) {
 			this->primitiveType = primitiveType;
+		}
+
+		String toString() const {
+			String result = Resource::toString();
+
+//			for(auto attribute : this->attributes) {
+//				result += "location = " + std::to_string(attribute.first) + ": " + attribute.second.toString().c_str() + "\n";
+//			}
+
+			return result;
 		}
 };
 
