@@ -63,7 +63,7 @@ class VertexAttribPointer {
 class VertexArrayResource : public Resource
 {
 	private:
-		std::map<unsigned int, VertexAttribPointer> attributes;
+		std::map<unsigned int, VertexAttribPointer *> attributes;
 		TextureResource *texture;
 		unsigned int primitiveType;
 	public:
@@ -73,20 +73,29 @@ class VertexArrayResource : public Resource
 			primitiveType = GL_TRIANGLES;
 		}
 
+		~VertexArrayResource()
+		{
+			for(auto attribute : this->attributes) {
+				if(attribute.second != null) {
+					delete attribute.second;
+				}
+			}
+		}
+
 		/**
 		 * stores vertex buffer in the next free vertexAttribPointer, and returns the pointer.
 		 */
 		void addAttribute(unsigned int location, unsigned int vertexBuffer, unsigned int start, unsigned int count)
 		{
-			attributes[location] = VertexAttribPointer(vertexBuffer, start, count);
+			attributes[location] = new VertexAttribPointer(vertexBuffer, start, count);
 		}
 
 
-		VertexAttribPointer &getAttribute(unsigned int location) {
+		VertexAttribPointer *getAttribute(unsigned int location) {
 			return attributes[location];
 		}
 
-		std::map<unsigned int, VertexAttribPointer> &getAttributes() {
+		std::map<unsigned int, VertexAttribPointer *> &getAttributes() {
 			return attributes;
 		}
 

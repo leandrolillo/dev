@@ -3,7 +3,7 @@
 
 //  / / - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 // | |  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// | |									Atributos de Clase p�blicos
+// | |									Atributos de Clase publicos
 // | | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 //  \ \  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -635,96 +635,95 @@ void matriz_2x2::operator *=(const real &op1) {
 // | |									Funciones de la Clase MATRIZ_4x4
 // | | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 //  \ \  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	matriz_4x4::matriz_4x4(	real _00, real _01, real _02, real _03,
-				  real _10, real _11, real _12, real _13,
-				  real _20, real _21, real _22, real _23,
-				  real _30, real _31, real _32, real _33) : BaseMatrix(4, 4) {
-
-		this->_00 = _00; this->_01 = _01; this->_02 = _02; this->_03 = _03;
-		this->_10 = _10; this->_11 = _11; this->_12 = _12; this->_13 = _13;
-		this->_20 = _20; this->_21 = _21; this->_22 = _22; this->_23 = _23;
-		this->_30 = _30; this->_31 = _31; this->_32 = _32; this->_33 = _33;
-	}
-	matriz_4x4::matriz_4x4(void) : BaseMatrix(4, 4) {
-		this->_00 = 1.0; this->_01 = 0.0; this->_02 = 0.0; this->_03 = 0.0;
-		this->_10 = 0.0; this->_11 = 1.0; this->_12 = 0.0; this->_13 = 0.0;
-		this->_20 = 0.0; this->_21 = 0.0; this->_22 = 1.0; this->_23 = 0.0;
-		this->_30 = 0.0; this->_31 = 0.0; this->_32 = 0.0; this->_33 = 1.0;
-	}
-
-//	matriz_4x4::matriz_4x4(real x, real y, real z) { // Rotacion Angulos (radianes) de Euler
-//		this->HacerRotacion(x, y, z);
-//					                     this->_03 = 0;
-//					                     this->_13 = 0;
-//					                     this->_23 = 0;
-//		this->_30 = 0; this->_31 = 0; this->_32 = 0; this->_33 = 1;
-//	}
-//
-//	matriz_4x4::matriz_4x4(const vector3 &op2) { //Rotaci�n en angulos (op2.x, op2.y, op2.z) (radianes) de Euler.
-//		this->HacerRotacion(op2.x, op2.y, op2.z);
-//					                     this->_03 = 0;
-//					                     this->_13 = 0;
-//					                     this->_23 = 0;
-//		this->_30 = 0; this->_31 = 0; this->_32 = 0; this->_33 = 1;
-//	}
-//
-//	matriz_4x4::matriz_4x4(const matriz_3x3 &orientacion, const vector3 &posicion) { //Construye una transformaci�n en sistema de coordenadas �mano izquierda? mediante la matriz de 3x3 de orientacion  y el vector3 de posicion.
-//		this->_00 = orientacion._00; this->_01 = orientacion._01; this->_02 = orientacion._02; this->_03 = posicion.x;
-//		this->_10 = orientacion._10; this->_11 = orientacion._11; this->_12 = orientacion._12; this->_13 = posicion.y;
-//		this->_20 = orientacion._20; this->_21 = orientacion._21; this->_22 = orientacion._22; this->_23 = posicion.z;
-//		this->_30 = 0.0f; this->_31 = 0.0f; this->_32 = 0.0f; this->_33 = 1.0f;
-//		//*this = orientacion;
-//		//this->HacerTraslacion(posicion.x, posicion.y, posicion.z);
-//		//this->_30 = 0;            this->_31 = 0;           this->_32 = 0;              this->_33 = 1.0;
-//	}
-
-	matriz_4x4::matriz_4x4(const matriz_4x4 &op1) : BaseMatrix(4, 4) { //Constructor de copia
-		memcpy(this->m, op1.m, sizeof(this->m));
-	}
-
-	matriz_4x4 matriz_4x4::operator=(const matriz_4x4 &op1) {
-		memcpy(this->m, op1.m, sizeof(this->m));
-
-		return(*this);
-	}
-
 	const matriz_4x4 matriz_4x4::matrizTraslacion(const vector3 &desplazamiento) {
+		return matriz_4x4::matrizTraslacion(desplazamiento.x, desplazamiento.y, desplazamiento.z);
+	}
+	const matriz_4x4 matriz_4x4::matrizTraslacion(real x, real y, real z) {
+		return matriz_4x4(	1.0f, 0.0f, 0.0f, x,
+							0.0f, 1.0f, 0.0f, y,
+							0.0f, 0.0f, 1.0f, z,
+							0.0f, 0.0f, 0.0f, 1.0f);
+	}
+
+	const matriz_4x4 matriz_4x4::matrizRotacion(real x, real y, real z) {
+		real cx = (real)cos(x), sx = (real)sin(x);
+		real cy = (real)cos(y), sy = (real)sin(y);
+		real cz = (real)cos(z), sz = (real)sin(z);
+
 		return matriz_4x4(
-		1.0f, 0.0f, 0.0f, desplazamiento.x,
-		0.0f, 1.0f, 0.0f, desplazamiento.y,
-		0.0f, 0.0f, 1.0f, desplazamiento.z,
-		0.0f, 0.0f, 0.0f, 1.0f);
+			cy * cz, 	sx * sy * cz - cx * sz, 	cx * sy * cz + sx * sz, 	0.0f,
+			cy * sz, 	sx * sy * sz + cx * cz, 	cx * sy * sz - sx * cz, 	0.0f,
+			-sy, 		sx * cy, 					cx * cy, 					0.0f,
+			0.0f, 		0.0f, 						0.0f, 						1.0f);
+
+	}
+	const matriz_4x4 matriz_4x4::matrizRotacion(const vector3 &angulos) {
+		return matrizRotacion(angulos.x, angulos.y, angulos.z);
+	}
+
+	const matriz_4x4 matriz_4x4::matrizRotacion(real angulo, const vector3 &eje) {
+		return matrizRotacion(angulo, eje.x, eje.y, eje.z);
+	}
+	const matriz_4x4 matriz_4x4::matrizRotacion(real angulo, real x, real y, real z) {
+		real c, s, umc, nxny1cos, nxnz1cos, nynz1cos;
+		c = (real)cos(angulo);
+		s = (real)sin(angulo);
+		umc = (real)(1.0 - c); // umc = Uno Menos Coseno
+
+		nxny1cos = x * y * umc;
+		nxnz1cos = x * z * umc;
+		nynz1cos = y * z * umc;
+
+		return matriz_4x4(
+			x * x * umc + c, 	nxny1cos - s * z, 	nxnz1cos + s * y,	0.0f,
+			nxny1cos + s * z, 	y * y * umc + c, 	nynz1cos - s * x,	0.0f,
+			nxnz1cos - s * y, 	nynz1cos + s * x, 	z * z * umc + c,	0.0f,
+			0.0f,				0.0f, 				0.0f,				1.0f);
+
+	}
+	const matriz_4x4 matriz_4x4::matrizRotacion(const matriz_3x3 &orientacion) {
+		return matriz_4x4(	orientacion._00, 	orientacion._01, 	orientacion._02, 	0.0f,
+							orientacion._10, 	orientacion._11, 	orientacion._12, 	0.0f,
+							orientacion._20, 	orientacion._21, 	orientacion._22, 	0.0f,
+							0.0f, 				0.0f, 				0.0f, 				1.0f);
+	}
+	const matriz_4x4 matriz_4x4::matrizRotacion(const cuaternion &rotacion) {
+		real y2 = rotacion.y * rotacion.y;
+		real x2 = rotacion.x * rotacion.x;
+		real z2 = rotacion.z * rotacion.z;
+		real xy = rotacion.x * rotacion.y;
+		real xz = rotacion.x * rotacion.z;
+		real wx = rotacion.x * rotacion.w;
+		real yz = rotacion.y * rotacion.z;
+		real wy = rotacion.y * rotacion.w;
+		real wz = rotacion.w * rotacion.z;
+
+		return(matriz_4x4(
+				1.0f - 2.0f * (y2 + z2),	2.0f * (xy - wz),			2.0f * (xz + wy),		 	0.0f,
+				2.0f * (xy + wz),			1.0f - 2.0f * (x2 + z2),	2.0f * (yz - wx),			0.0f,
+				2.0f * (xz - wy),			2.0f * (yz +  wx),          1.0f - 2.0f * (x2 + y2),	0.0f,
+				0.0f,				      	0.0f,				    	0.0f,			         	1.0f));
+	}
+
+	const matriz_4x4 matriz_4x4::matrizZoom(real x, real y, real z) {
+		return matriz_4x4(	x,		0.0f, 	0.0f, 	0.0f,
+							0.0f, 	y, 		0.0f, 	0.0f,
+							0.0f, 	0.0f, 	z, 		0.0f,
+							0.0f, 	0.0f, 	0.0f, 	1.0f);
+	}
+
+	const matriz_4x4 matriz_4x4::matrizZoom(const vector3 &zoom) {
+		return matrizZoom(zoom.x, zoom.y, zoom.z);
+	}
+
+	const matriz_4x4 matriz_4x4::matrizBase(const matriz_3x3 &orientacion, const vector3 &posicion) {
+		return matriz_4x4(	orientacion._00, 	orientacion._01, 	orientacion._02, 	posicion.x,
+							orientacion._10, 	orientacion._11, 	orientacion._12, 	posicion.y,
+							orientacion._20, 	orientacion._21, 	orientacion._22, 	posicion.z,
+							0.0f, 				0.0f, 				0.0f, 				1.0f);
 	}
 
 
-	const matriz_4x4 matriz_4x4::operator*(const matriz_4x4 &op2) const {
-		return(matriz_4x4(	(this->_00 * op2._00) + (this->_01 * op2._10) + (this->_02 * op2._20) + (this->_03 * op2._30),
-					(this->_00 * op2._01) + (this->_01 * op2._11) + (this->_02 * op2._21) + (this->_03 * op2._31),
-					(this->_00 * op2._02) + (this->_01 * op2._12) + (this->_02 * op2._22) + (this->_03 * op2._32),
-					(this->_00 * op2._03) + (this->_01 * op2._13) + (this->_02 * op2._23) + (this->_03 * op2._33),
-
-					(this->_10 * op2._00) + (this->_11 * op2._10) + (this->_12 * op2._20) + (this->_13 * op2._30),
-					(this->_10 * op2._01) + (this->_11 * op2._11) + (this->_12 * op2._21) + (this->_13 * op2._31),
-					(this->_10 * op2._02) + (this->_11 * op2._12) + (this->_12 * op2._22) + (this->_13 * op2._32),
-					(this->_10 * op2._03) + (this->_11 * op2._13) + (this->_12 * op2._23) + (this->_13 * op2._33),
-
-					(this->_20 * op2._00) + (this->_21 * op2._10) + (this->_22 * op2._20) + (this->_23 * op2._30),
-					(this->_20 * op2._01) + (this->_21 * op2._11) + (this->_22 * op2._21) + (this->_23 * op2._31),
-					(this->_20 * op2._02) + (this->_21 * op2._12) + (this->_22 * op2._22) + (this->_23 * op2._32),
-					(this->_20 * op2._03) + (this->_21 * op2._13) + (this->_22 * op2._23) + (this->_23 * op2._33),
-
-					(this->_30 * op2._00) + (this->_31 * op2._10) + (this->_32 * op2._20) + (this->_33 * op2._30),
-					(this->_30 * op2._01) + (this->_31 * op2._11) + (this->_32 * op2._21) + (this->_33 * op2._31),
-					(this->_30 * op2._02) + (this->_31 * op2._12) + (this->_32 * op2._22) + (this->_33 * op2._32),
-					(this->_30 * op2._03) + (this->_31 * op2._13) + (this->_32 * op2._23) + (this->_33 * op2._33)));
-	}
-
-	const matriz_4x4 matriz_4x4::operator *(real op2) const {
-		return(matriz_4x4(	_00 * op2, _01 * op2, _02 * op2, _03 * op2,
-					_10 * op2, _11 * op2, _12 * op2, _13 * op2,
-					_20 * op2, _21 * op2, _22 * op2, _23 * op2,
-					_30 * op2, _31 * op2, _32 * op2, _33 * op2));
-	}
 
 	const vector3 matriz_4x4::operator*(const vector3 &op1) const {
 		return(vector3(_00 * op1.x + _01 * op1.y + _02 * op1.z + _03,
@@ -734,53 +733,6 @@ void matriz_2x2::operator *=(const real &op1) {
 	}
 	
 
-	const matriz_4x4 matriz_4x4::operator +(const matriz_4x4 &op2) const {
-		return(matriz_4x4(	_00 + op2._00, _01 + op2._01, _02 + op2._02, _03 + op2._03,
-							_10 + op2._10,  _11 + op2._11,   _12 + op2._12,   _13 + op2._13,
-							_20 + op2._20, _21 + op2._21, _22 + op2._22, _23 + op2._23,
-							_30 + op2._30, _31 + op2._31, _32 + op2._32, _33 + op2._33));
-	}
-
-	const matriz_4x4 matriz_4x4::operator -(const matriz_4x4 &op2) const {
-		return(matriz_4x4(	_00 - op2._00, _01 - op2._01, _02 - op2._02, _03 - op2._03,
-					_10 - op2._10, _11 - op2._11, _12 - op2._12, _13 - op2._13,
-					_20 - op2._20, _21 - op2._21, _22 - op2._22, _23 - op2._23,
-					_30 - op2._30, _31 - op2._31, _32 - op2._32, _33 - op2._33));
-	}
-
-	void matriz_4x4::operator*=(const matriz_4x4 &op2) {
-		*this = *this * op2;
-	}
-
-	void matriz_4x4::operator *=(real op2) {
-		*this = *this * op2;
-	}
-
-	void matriz_4x4::operator +=(const matriz_4x4 &op2) {
-		*this =  *this + op2;
-	}
-
-	void matriz_4x4::operator -=(const matriz_4x4 &op2) {
-		*this = *this - op2;
-	}
-
-	matriz_4x4 matriz_4x4::operator =(const matriz_3x3 &op2) {
-		this->_00 = op2._00;  this->_01 = op2._01; this->_02 = op2._02;
-		this->_10 = op2._10;   this->_11 = op2._11;   this->_12 = op2._12;
-		this->_20 = op2._20;  this->_21 = op2._21; this->_22 = op2._22;
-
-		return(*this);
-	}
-
-	matriz_4x4::operator real *() const {
-		return((real *)m);
-	}
-
-	matriz_4x4::operator matriz_3x3 ()  const {	//Funciona solamente si dejo un constructor matriz_3x3(matriz_4x4 op1) en la clase matriz_3x3
-		return(matriz_3x3(	_00, _01, _02,  
-							_10, _11, _12, 
-							_20, _21, _22));
-	}
 //	void matriz_4x4::Trasponer(void) { //Transpone la matriz
 //		matriz_4x4 tmp = *this;
 //
@@ -789,12 +741,6 @@ void matriz_2x2::operator *=(const real &op1) {
 //		this->_20 = tmp._02;	this->_21 = tmp._12;						this->_23 = tmp._32;
 //		this->_30 = tmp._03;	this->_31 = tmp._13;	this->_32 = tmp._23;
 //
-//	}
-//	const matriz_4x4 matriz_4x4::Traspuesta(void) const { //Devuelve una matriz que es la transpuesta de aquella sobre la cual se aplic� la operaci�n
-//		return(matriz_4x4( this->_00, this->_10,	this->_20,	this->_30,
-//							this->_01, this->_11, this->_21,	this->_31,
-//							this->_02,	this->_12, this->_22, this->_32,
-//							this->_03, this->_13,	this->_23, this->_33));
 //	}
 //
 //	void matriz_4x4::InvertirTransformacion(void) { //Invierte la matriz asumiendo que esta es actualmente una transformaci�n v�lida
@@ -819,96 +765,14 @@ void matriz_2x2::operator *=(const real &op1) {
 //		return(true);
 //	}
 //
-//	void matriz_4x4::CargarIdentidad(void) { // Iguala la matriz a la identidad en R4
-//		this->_00 = 1.0; this->_01 = 0.0; this->_02 = 0.0; this->_03 = 0.0;
-//		this->_10 = 0.0; this->_11 = 1.0; this->_12 = 0.0; this->_13 = 0.0;
-//		this->_20 = 0.0; this->_21 = 0.0; this->_22 = 1.0; this->_23 = 0.0;
-//		this->_30 = 0.0; this->_31 = 0.0; this->_32 = 0.0; this->_33 = 1.0;
-//	}
-//
-//	const matriz_4x4 matriz_4x4::HacerTraslacion(const vector3 &desplazamiento) { // Iguala la matriz a una traslaci�n de desplazamiento.x, desplazamiento.y y desplazamiento.z
-//		this->_03 = desplazamiento.x;
-//		this->_13  = desplazamiento.y;
-//		this->_23 = desplazamiento.z;
-//
-//		return(*this);
-//	}
-//
-//	const matriz_4x4 matriz_4x4::HacerTraslacion(real x, real y, real z) { // Iguala la matriz a una traslaci�n de x, y y z
-//		_03 = x;
-//		_13 = y;
-//		_23 = z;
-//
-//		return(*this);
-//	}
-//
-//	const matriz_4x4 matriz_4x4::HacerRotacion(real x, real y, real z) { // Iguala la matriz a una rotaci�n de angulos (radianes) de euler
-//		real cx = (real)cos(x), sx = (real)sin(x);
-//		real cy = (real)cos(y), sy = (real)sin(y);
-//		real cz = (real)cos(z), sz = (real)sin(z);
-//
-//		this->_00 = (cy * cz);	this->_01 = (sx * sy * cz - cx * sz); 	this->_02 = (cx * sy * cz + sx * sz);
-//		this->_10 = (cy * sz); 	this->_11 = (sx * sy * sz + cx * cz); 	this->_12 = (cx * sy * sz - sx * cz);
-//		this->_20 = -sy;  	this->_21 = (sx * cy); 			this->_22 = (cx * cy);
-//
-//		return(*this);
-//	}
-//
-//	const matriz_4x4 matriz_4x4::HacerRotacion(real angulo, real x, real y, real z) {// Rotaci�n en angulo (radian) - eje (x, y, z) (debe estar normalizado)
-//		real c, s, umc, nxny1cos, nxnz1cos, nynz1cos;
-//		c = (real)cos(angulo);
-//		s = (real)sin(angulo);
-//		umc = (real)(1.0 - c); // umc = Uno Menos Coseno
-//
-//		nxny1cos = x * y * umc;
-//		nxnz1cos = x * z * umc;
-//		nynz1cos = y * z * umc;
-//
-//		this->_00 = (x * x * umc + c);	this->_01 = nxny1cos - s * z;	this->_02 = nxnz1cos + s * y;
-//		this->_10 = nxny1cos + s * z;	this->_11 = (y * y * umc) + c;  this->_12 = nynz1cos - s * x;
-//		this->_20 = nxnz1cos - s * y;	this->_21 = nynz1cos + s * x;       this->_22 = z * z * umc + c;
-//
-//		return(*this);
-//	}
-//
-//	const matriz_4x4 matriz_4x4::HacerRotacion(real angulo, const vector3 &eje) {	// Rotaci�n en �ngulo (radianes) - Eje (debe estar normalizado
-//		return(this->HacerRotacion(angulo, eje.x, eje.y, eje.z));
-//	}
-//	const matriz_4x4 matriz_4x4::HacerRotacion(const vector3 &angulos) { // Rotaci�n en �ngulos (radianes) de Euler
-//		return(this->HacerRotacion(angulos.x, angulos.y, angulos.z));
-//	}
-//	const matriz_4x4 matriz_4x4::HacerRotacion(const matriz_3x3 &orientacion) { //Iguala la parte de la orientacion de la transformaci�n a la orientaci�n dada en forma de matriz de 3x3
-//		this->_00 = orientacion._00;	this->_01 = orientacion._01; 	this->_02 = orientacion._02;
-//		this->_10 = orientacion._10; 	this->_11 = orientacion._11; 	this->_12 = orientacion._12;
-//		this->_20 = orientacion._20;  this->_21 = orientacion._21;this->_22 = orientacion._22;
-//
-//		return(*this);
-//	}
-//
-//	const matriz_4x4 matriz_4x4::HacerZoom(real x, real y, real z) { //Construye una matriz de Escala
-//		this->_00 = x;
-//		this->_11 = y;
-//		this->_22 = z;
-//		this->_33 = 1.0;
-//
-//		return(*this);
-//	}
-//
-//	const matriz_4x4 matriz_4x4::HacerZoom(const vector3 &zoom) { // Construye una matriz de escala
-//		this->_00 = zoom.x;
-//		this->_11 = zoom.y;
-//		this->_22 = zoom.z;
-//		this->_33 = 1.0;
-//
-//		return(*this);
-//	}
+
 
 //  / / - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 // | |  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // | |									Funciones de la Clase CUATERNION											     
 // | | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 //  \ \  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	cuaternion::cuaternion(real new_w, real new_x, real new_y, real new_z) {
+	cuaternion::cuaternion(real new_x, real new_y, real new_z, real new_w) {
 		this->w = new_w;
 		this->x = new_x;
 		this->y = new_y;
@@ -1343,10 +1207,10 @@ const matriz_mxn matriz_mxn::identidad(unsigned int n)
 	return identity;
 }
 
-matriz_mxn::operator const real () const
-{
-	if(this->getNroColumnas() == 1 && this->getNroFilas() == 1)
-		return BaseMatrix::operator()(1, 1);
-	else
-		throw InvalidArgumentException("Invalid Cast - matriz_mxn::operator(real)(...)");
-}
+//matriz_mxn::operator const real () const
+//{
+//	if(this->getNroColumnas() == 1 && this->getNroFilas() == 1)
+//		return BaseMatrix::operator()(1, 1);
+//	else
+//		throw InvalidArgumentException("Invalid Cast - matriz_mxn::operator(real)(...)");
+//}

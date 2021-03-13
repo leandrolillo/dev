@@ -153,11 +153,11 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 					return null;
 				}
 
-				if(!addBuffer(INDEX_LOCATION, resource, GL_ELEMENT_ARRAY_BUFFER, geometry->getIndices()))
+				/*if(!addBuffer(INDEX_LOCATION, resource, GL_ELEMENT_ARRAY_BUFFER, geometry->getIndices()))
 				{
 					dispose(resource);
 					return null;
-				}
+				}*/
 
 				if(!addBuffer(VERTEX_LOCATION, resource, GL_ARRAY_BUFFER, geometry->getVertices()))
 				{
@@ -165,7 +165,7 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 					return null;
 				}
 
-				if(!addBuffer(NORMAL_LOCATION, resource, GL_ARRAY_BUFFER, geometry->getNormals()))
+				/*if(!addBuffer(NORMAL_LOCATION, resource, GL_ARRAY_BUFFER, geometry->getNormals()))
 				{
 					dispose(resource);
 					return null;
@@ -181,7 +181,7 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 				{
 					dispose(resource);
 					return null;
-				}
+				}*/
 
 				// remove objects from context.
 				glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -197,10 +197,10 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 			if(vertexArrayResource->getId() != 0) {
 				glBindVertexArray(vertexArrayResource->getId());
 
-				for(std::map<unsigned int, VertexAttribPointer>::iterator currentBuffer = vertexArrayResource->getAttributes().begin(); currentBuffer != vertexArrayResource->getAttributes().end(); currentBuffer++)
+				for(std::map<unsigned int, VertexAttribPointer *>::iterator currentBuffer = vertexArrayResource->getAttributes().begin(); currentBuffer != vertexArrayResource->getAttributes().end(); currentBuffer++)
 				{
 					glDisableVertexAttribArray(currentBuffer->first);
-					unsigned int buffer = currentBuffer->second.getBuffer();
+					unsigned int buffer = currentBuffer->second->getBuffer();
 					glDeleteBuffers(1, &buffer);
 				}
 

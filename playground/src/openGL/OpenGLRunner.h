@@ -216,6 +216,8 @@ class OpenGLRunner: public SDLRunner {
 		void drawVertexArray(VertexArrayResource *vertexArrayResource)
 		{
 			if(vertexArrayResource != null) {
+				glEnableVertexAttribArray(0);
+
 				if(vertexArrayResource->getTexture() != null) {
 					glBindTexture(GL_TEXTURE_2D, vertexArrayResource->getTexture()->getId());
 					logGlError("Error binding texture: [0x%x]");
@@ -224,11 +226,16 @@ class OpenGLRunner: public SDLRunner {
 				glBindVertexArray(vertexArrayResource->getId());
 				logGlError("Error binding vertex array: [0x%x]");
 
-				glDrawElements(vertexArrayResource->getPrimitiveType(), vertexArrayResource->getAttribute(INDEX_LOCATION).getCount(), GL_UNSIGNED_INT, (GLvoid *)0);
-				logGlError("Error drawing elements: [0x%x]");
+				VertexAttribPointer *indices = vertexArrayResource->getAttribute(INDEX_LOCATION);
+				if(indices != null) {
+					glDrawElements(vertexArrayResource->getPrimitiveType(), indices->getCount(), GL_UNSIGNED_INT, (GLvoid *)0);
+					logGlError("Error drawing elements: [0x%x]");
+				} else {
+					glDrawArrays(vertexArrayResource->getPrimitiveType(), 0, vertexArrayResource->getAttribute(VERTEX_LOCATION)->getCount());
+					logGlError("Error drawing arrays: [0x%x]");
+				}
 
-				glDrawArrays(vertexArrayResource->getPrimitiveType(), 0, vertexArrayResource->getAttribute(INDEX_LOCATION).getCount());
-				logGlError("Error drawing arrays: [0x%x]");
+				glDisableVertexAttribArray(0);
 			}
 		}
 

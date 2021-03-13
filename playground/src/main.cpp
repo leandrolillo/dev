@@ -281,8 +281,19 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 			if(shaderProgramResource) {
 				openGl->useProgramResource(shaderProgramResource);
 
+				matriz_4x4 p = openGl->getProjectionMatrix();
+				matriz_4x4 v = matriz_4x4::matrizTraslacion(viewPosition);
+				matriz_4x4 m = matriz_4x4::Identidad;
+				matriz_4x4 pvm =  p * v * m;
+
+				printf("p:\n %s\n", p.toString().c_str());
+				printf("v:\n %s\n", v.toString().c_str());
+				printf("m:\n %s\n", m.toString().c_str());
+				printf("pvm:\n%s\n", pvm.toString().c_str());
+				printf("-----------\n");
+
 				glUniformMatrix4fv(glGetUniformLocation(shaderProgramResource->getId(), "pvm"),
-			                     1, GL_FALSE, (real *)(openGl->getProjectionMatrix() * matriz_4x4::matrizTraslacion(viewPosition)));
+			                     1, GL_FALSE, (real *)pvm);
 			}
 
 //			glPushMatrix();

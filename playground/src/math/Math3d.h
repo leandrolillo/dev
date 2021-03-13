@@ -12,6 +12,8 @@ class vector3;
 class vector2;
 
 typedef matriz_4x4 matriz;
+typedef matriz_4x4 matrix;
+typedef matriz_4x4 matrix_4x4;
 typedef vector3 vector;
 typedef vector2 texel;
 typedef cuaternion vector4;
@@ -34,39 +36,43 @@ class BaseMatrix {
 		}
 		virtual real &operator()(unsigned int fila, unsigned int columna) = 0;
 
-		const real &operator()(unsigned int fila, unsigned int columna) const {
-			return this->operator ()(fila, columna);
-		}
+		virtual real operator()(unsigned int fila, unsigned int columna) const = 0;
+
 		virtual String toString() const {
-			char temp[500];
 			std::string result;
 
-			for(unsigned int currentRow = 1; currentRow <= this->getNroFilas(); currentRow++) {
-				if(currentRow == 1)
-				result += "/";
-				else if(currentRow == this->getNroFilas())
-				result += "\\";
-				else
-				result += "|";
+			char temp[500];
 
-				for(unsigned int currentColumn = 1; currentColumn <= this->getNroColumnas(); currentColumn++) {
-					sprintf(temp, "%.3e", this->operator()(currentRow, currentColumn));
-					result += temp;
 
-					if(currentColumn != this->getNroColumnas())
-					result += " ";
+			for(unsigned int currentRow = 0; currentRow < this->getNroFilas(); currentRow++) {
+				if(currentRow == 0) {
+					result += "/";
+				} else if(currentRow == this->getNroFilas() - 1) {
+					result += "\\";
+				} else {
+					result += "|";
 				}
 
-				result += " ";
+				for(unsigned int currentColumn = 0; currentColumn < this->getNroColumnas(); currentColumn++) {
+					sprintf(temp, "%.3e", this->operator()(currentRow, currentColumn));
+					//sprintf(temp, "%u %u", currentRow, currentColumn);
+					result += temp;
 
-				if(currentRow == 1)
-				sprintf(temp, "\\");
-				else if(currentRow == this->getNroColumnas())
-				sprintf(temp, "/	");
-				else
-				sprintf(temp, "|");
+					if(currentColumn != this->getNroColumnas() - 1) {
+						result += "	";
+					}
+				}
 
-				result += temp;
+				//result += " ";
+
+				if(currentRow == 0) {
+					result += "\\";
+				} else if(currentRow == this->getNroColumnas() - 1) {
+					result += "/	";
+				} else {
+					result += "|";
+				}
+
 				result += "\n";
 			}
 
@@ -101,6 +107,13 @@ class matriz_2x2: public BaseMatrix {
 		matriz_2x2(const matriz_2x2 &op1);
 
 		real &operator()(unsigned int fila, unsigned int columna) {
+			if (fila > 1 || columna > 1)
+				throw InvalidArgumentException("Index Out of Bounds - matriz_2x2::operator(i, j)");
+
+			return m[fila * 2 + columna];
+		}
+
+		real operator()(unsigned int fila, unsigned int columna) const {
 			if (fila > 1 || columna > 1)
 				throw InvalidArgumentException("Index Out of Bounds - matriz_2x2::operator(i, j)");
 
@@ -165,6 +178,13 @@ class matriz_3x3: public BaseMatrix {
 
 			return m[fila * 3 + columna];
 		}
+
+		real operator()(unsigned int fila, unsigned int columna) const {
+					if (fila > 2 || columna > 2)
+						throw InvalidArgumentException("Index Out of Bounds - matriz_3x3::operator(i, j)");
+
+					return m[fila * 3 + columna];
+				}
 		matriz_3x3(real d00, real d01, real d02, real d10, real d11, real d12, real d20, real d21, real d22);
 		matriz_3x3(const matriz_3x3 &op1);
 		matriz_3x3(void);
@@ -204,16 +224,16 @@ class matriz_3x3: public BaseMatrix {
 		real &operator()(int fila, int columna);
 };
 
-class matriz_4x4: BaseMatrix {
+class matriz_4x4: public BaseMatrix {
 		friend class matriz_3x3;
 	private:
 		union {
 				real m[16];
 				struct {
-						real _00, _10, _20, _30;
-						real _01, _11, _21, _31;
-						real _02, _12, _22, _32;
-						real _03, _13, _23, _33;
+						real _00, _01, _02, _03;
+						real _10, _11, _12, _13;
+						real _20, _21, _22, _23;
+						real _30, _31, _32, _33;
 				};
 		};
 	public:
@@ -231,43 +251,130 @@ class matriz_4x4: BaseMatrix {
 		static const matriz_4x4 matrizZoom(real x, real y, real z);
 		static const matriz_4x4 matrizZoom(const vector3 &zoom);
 
+		static const matriz_4x4 matrizBase(const matriz_3x3 &orientacion, const vector3 &posicion);
+
 	public:
 		static matriz_4x4 Identidad;
 
+		matriz_4x4(void) : BaseMatrix(4, 4) {
+			this->_00 = 1.0; this->_01 = 0.0; this->_02 = 0.0; this->_03 = 0.0;
+			this->_10 = 0.0; this->_11 = 1.0; this->_12 = 0.0; this->_13 = 0.0;
+			this->_20 = 0.0; this->_21 = 0.0; this->_22 = 1.0; this->_23 = 0.0;
+			this->_30 = 0.0; this->_31 = 0.0; this->_32 = 0.0; this->_33 = 1.0;
+		}
+
+		matriz_4x4(	real _00, real _01, real _02, real _03,
+					real _10, real _11, real _12, real _13, real _20, real _21,
+					real _22, real _23, real _30, real _31, real _32, real _33) : BaseMatrix(4, 4) {
+			this->_00 = _00; this->_01 = _01; this->_02 = _02; this->_03 = _03;
+			this->_10 = _10; this->_11 = _11; this->_12 = _12; this->_13 = _13;
+			this->_20 = _20; this->_21 = _21; this->_22 = _22; this->_23 = _23;
+			this->_30 = _30; this->_31 = _31; this->_32 = _32; this->_33 = _33;
+		}
+
+		matriz_4x4(const matriz_4x4 &op1) : BaseMatrix(4, 4) { //Constructor de copia
+			memcpy(this->m, op1.m, sizeof(this->m));
+		}
+
 		real &operator()(unsigned int fila, unsigned int columna) {
+			if (fila > 3 || columna > 3)
+				throw InvalidArgumentException("Index Out of Bounds - matriz_4x4::operator(i, j)");
+			return m[fila * 4 + columna];
+		}
+		real operator()(unsigned int fila, unsigned int columna) const {
 			if (fila > 3 || columna > 3)
 				throw InvalidArgumentException("Index Out of Bounds - matriz_4x4::operator(i, j)");
 
 			return m[fila * 4 + columna];
 		}
-		matriz_4x4(real _00, real _01, real _02, real _03, real _10, real _11, real _12, real _13, real _20, real _21,
-				real _22, real _23, real _30, real _31, real _32, real _33);
 
-		matriz_4x4(const matriz_4x4 &op1);
-		matriz_4x4(void);
-		matriz_4x4(real x, real y, real z);
-		matriz_4x4(const vector3 &op2);
-		matriz_4x4(real angulo, real x, real y, real z);
-		matriz_4x4(real angulo, const vector3 &eje);
-		matriz_4x4(const matriz_3x3 &orientacion, const vector3 &posicion);
 
-		matriz_4x4 operator=(const matriz_4x4 &op1);
-		const matriz_4x4 operator*(const matriz_4x4 &op2) const;
-		const matriz_4x4 operator *(real op2) const;
+		matriz_4x4 operator=(const matriz_4x4 &op1) {
+			memcpy(this->m, op1.m, sizeof(this->m));
+
+			return(*this);
+		}
+
+		const matriz_4x4 operator*(const matriz_4x4 &op2) const const {
+			return(matriz_4x4(	(this->_00 * op2._00) + (this->_01 * op2._10) + (this->_02 * op2._20) + (this->_03 * op2._30),
+						(this->_00 * op2._01) + (this->_01 * op2._11) + (this->_02 * op2._21) + (this->_03 * op2._31),
+						(this->_00 * op2._02) + (this->_01 * op2._12) + (this->_02 * op2._22) + (this->_03 * op2._32),
+						(this->_00 * op2._03) + (this->_01 * op2._13) + (this->_02 * op2._23) + (this->_03 * op2._33),
+
+						(this->_10 * op2._00) + (this->_11 * op2._10) + (this->_12 * op2._20) + (this->_13 * op2._30),
+						(this->_10 * op2._01) + (this->_11 * op2._11) + (this->_12 * op2._21) + (this->_13 * op2._31),
+						(this->_10 * op2._02) + (this->_11 * op2._12) + (this->_12 * op2._22) + (this->_13 * op2._32),
+						(this->_10 * op2._03) + (this->_11 * op2._13) + (this->_12 * op2._23) + (this->_13 * op2._33),
+
+						(this->_20 * op2._00) + (this->_21 * op2._10) + (this->_22 * op2._20) + (this->_23 * op2._30),
+						(this->_20 * op2._01) + (this->_21 * op2._11) + (this->_22 * op2._21) + (this->_23 * op2._31),
+						(this->_20 * op2._02) + (this->_21 * op2._12) + (this->_22 * op2._22) + (this->_23 * op2._32),
+						(this->_20 * op2._03) + (this->_21 * op2._13) + (this->_22 * op2._23) + (this->_23 * op2._33),
+
+						(this->_30 * op2._00) + (this->_31 * op2._10) + (this->_32 * op2._20) + (this->_33 * op2._30),
+						(this->_30 * op2._01) + (this->_31 * op2._11) + (this->_32 * op2._21) + (this->_33 * op2._31),
+						(this->_30 * op2._02) + (this->_31 * op2._12) + (this->_32 * op2._22) + (this->_33 * op2._32),
+						(this->_30 * op2._03) + (this->_31 * op2._13) + (this->_32 * op2._23) + (this->_33 * op2._33)));
+		}
+
+		const matriz_4x4 operator *(real op2) const {
+			return(matriz_4x4(	_00 * op2, _01 * op2, _02 * op2, _03 * op2,
+						_10 * op2, _11 * op2, _12 * op2, _13 * op2,
+						_20 * op2, _21 * op2, _22 * op2, _23 * op2,
+						_30 * op2, _31 * op2, _32 * op2, _33 * op2));
+		}
+
 		const vector3 operator*(const vector3 &op1) const;
-		const matriz_4x4 operator +(const matriz_4x4 &op2) const;
-		const matriz_4x4 operator -(const matriz_4x4 &op2) const;
-		void operator*=(const matriz_4x4 &op2);
-		void operator *=(real op2);
-		void operator +=(const matriz_4x4 &op2);
-		void operator -=(const matriz_4x4 &op2);
-		matriz_4x4 operator =(const matriz_3x3 &op2);
 
-		operator real *() const;
-		operator matriz_3x3() const;
+		const matriz_4x4 operator +(const matriz_4x4 &op2) const {
+			return(matriz_4x4(	_00 + op2._00, _01 + op2._01, _02 + op2._02, _03 + op2._03,
+								_10 + op2._10,  _11 + op2._11,   _12 + op2._12,   _13 + op2._13,
+								_20 + op2._20, _21 + op2._21, _22 + op2._22, _23 + op2._23,
+								_30 + op2._30, _31 + op2._31, _32 + op2._32, _33 + op2._33));
+		}
+		const matriz_4x4 operator -(const matriz_4x4 &op2) const {
+			return(matriz_4x4(	_00 - op2._00, _01 - op2._01, _02 - op2._02, _03 - op2._03,
+						_10 - op2._10, _11 - op2._11, _12 - op2._12, _13 - op2._13,
+						_20 - op2._20, _21 - op2._21, _22 - op2._22, _23 - op2._23,
+						_30 - op2._30, _31 - op2._31, _32 - op2._32, _33 - op2._33));
+		}
+		void operator*=(const matriz_4x4 &op2) {
+			*this = *this * op2;
+		}
+		void operator *=(real op2) {
+			*this = *this * op2;
+		}
+		void operator +=(const matriz_4x4 &op2) {
+			*this =  *this + op2;
+		}
+		void operator -=(const matriz_4x4 &op2) {
+			*this = *this - op2;
+		}
+		matriz_4x4 operator =(const matriz_3x3 &op2) {
+			this->_00 = op2._00;  this->_01 = op2._01; this->_02 = op2._02;
+			this->_10 = op2._10;   this->_11 = op2._11;   this->_12 = op2._12;
+			this->_20 = op2._20;  this->_21 = op2._21; this->_22 = op2._22;
+
+			return(*this);
+		}
+
+		operator real *() const {
+			return((real *)m);
+		}
+
+		operator matriz_3x3() const {	//Funciona solamente si dejo un constructor matriz_3x3(matriz_4x4 op1) en la clase matriz_3x3
+			return(matriz_3x3(	_00, _01, _02,
+								_10, _11, _12,
+								_20, _21, _22));
+		}
 
 //			void trasponer(void);
-//			const matriz_4x4 traspuesta(void) const;
+			const matriz_4x4 traspuesta(void) const {
+				return(matriz_4x4( 	this->_00, this->_10,	this->_20,	this->_30,
+									this->_01, this->_11, this->_21,	this->_31,
+									this->_02,	this->_12, this->_22, this->_32,
+									this->_03, this->_13,	this->_23, this->_33));
+			}
 //
 //			unsigned char esSingular(void);
 //			const real determinante(void);
@@ -283,10 +390,20 @@ class matriz_mxn: public BaseMatrix {
 		real *elementos;
 
 	public:
+
+		// TODO: Warning: this matrix was initially implemented with indexes 1..height instead of 0..height-1
 		real &operator()(unsigned int fila, unsigned int columna) {
-			if (0 < fila && fila <= this->getNroFilas())
-				if (0 < columna && columna <= this->getNroColumnas())
-					return this->elementos[(fila - 1) * this->getNroColumnas() + (columna - 1)];
+			if (0 <= fila && fila < this->getNroFilas())
+				if (0 <= columna && columna < this->getNroColumnas())
+					return this->elementos[fila * this->getNroColumnas() + columna];
+
+			throw InvalidArgumentException("Index Out of Bounds - matriz_mxn::operator()");
+		}
+
+		real operator()(unsigned int fila, unsigned int columna) const {
+			if (0 <= fila && fila < this->getNroFilas())
+				if (0 <= columna && columna < this->getNroColumnas())
+					return this->elementos[fila * this->getNroColumnas() + columna];
 
 			throw InvalidArgumentException("Index Out of Bounds - matriz_mxn::operator()");
 		}
@@ -296,7 +413,7 @@ class matriz_mxn: public BaseMatrix {
 		matriz_mxn(const matriz_mxn &op2);//Constructor de copia (se necesitan cuando se maneja memoria din�micamente reservada)
 		virtual ~matriz_mxn();
 
-		operator const real() const;
+		//operator const real() const;
 		const matriz_mxn &operator =(const matriz_mxn &op1);
 		const matriz_mxn operator +(const matriz_mxn &op1) const;
 		const matriz_mxn operator -(const matriz_mxn &op1) const;
