@@ -62,8 +62,6 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 
 			logger = Logger::getLogger("Main.cpp");
 
-			viewPosition = vector(0.0f, 0.0f, -16.0f);
-			lightPosition = vector(0.0f, 0.0f, 4.0f);
 			currentPosition = &viewPosition;
 			rotation = 0;
 			pngTexture = null;
@@ -85,6 +83,12 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 		virtual unsigned char getId() {
 			return PlaygroundDemoRunner::ID;
 		}
+
+		void reset() {
+			viewPosition = vector(0.0, 0.0f, -6.0);
+			lightPosition = vector(0.0, 0.0, 0.0);
+		}
+
 
 		virtual bool init() {
 			//TODO: Review why can´t use public static IDs properties from each class
@@ -162,6 +166,7 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 //			glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 //			glBindBuffer(GL_ARRAY_BUFFER, null);
 
+			reset();
 			return true;
 		}
 
@@ -299,16 +304,16 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 				openGl->useProgramResource(simpleShaderProgram);
 
 				matriz_4x4 projection = openGl->getProjectionMatrix();
-				matriz_4x4 view = matriz_4x4::Identidad;
-				matriz_4x4 model = matriz_4x4::matrizBase(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), viewPosition);
+				matriz_4x4 view = matriz_4x4::matrizTraslacion(viewPosition); //matriz_4x4::matrizTraslacion(viewPosition);
+				matriz_4x4 model = matriz_4x4::matrizRotacion(0.0f, radian(rotation), 0.0f);
 				matriz_4x4 normalMatrix = model;
 				matriz_4x4 pvm =  projection * view * model;
 
-//				printf("p:\n %s\n", p.toString().c_str());
-//				printf("v:\n %s\n", v.toString().c_str());
-//				printf("m:\n %s\n", m.toString().c_str());
-//				printf("pvm:\n%s\n", pvm.toString().c_str());
-//				printf("-----------\n");
+				printf("p:\n %s\n", projection.toString().c_str());
+				printf("v:\n %s\n", view.toString().c_str());
+				printf("m:\n %s\n", model.toString().c_str());
+				printf("pvm:\n%s\n", pvm.toString().c_str());
+				printf("-----------\n");
 
 //				printf("%s\r", viewPosition.toString().c_str());
 
@@ -316,11 +321,11 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 				glProgramUniform1i(simpleShaderProgram->getId(), glGetUniformLocation(simpleShaderProgram->getId(), "textureUnit"), 0);
 				logGlError("error setting textureUnit: %s");
 
-				glProgramUniformMatrix4fv(simpleShaderProgram->getId(), glGetUniformLocation(simpleShaderProgram->getId(), "pvm"), 1, GL_FALSE, (real *)pvm);
+				glProgramUniformMatrix4fv(simpleShaderProgram->getId(), glGetUniformLocation(simpleShaderProgram->getId(), "pvm"), 1, GL_TRUE, (real *)pvm);
 				//glUniformMatrix4fv(glGetUniformLocation(simpleShaderProgram->getId(), "pvm"), 1, GL_FALSE, (real *)pvm);
 				logGlError("error setting pvm: %s");
 
-				glUniformMatrix4fv(glGetUniformLocation(simpleShaderProgram->getId(), "normalMatrix"), 1, GL_FALSE, (real *)pvm);
+				glUniformMatrix4fv(glGetUniformLocation(simpleShaderProgram->getId(), "normalMatrix"), 1, GL_TRUE, (real *)pvm);
 				logGlError("error setting normalMatrix: %s");
 			}
 
@@ -371,8 +376,7 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 					currentPosition = &lightPosition;
 					break;
 				case SDLK_SPACE:
-					viewPosition = vector(0.0, 0.0f, -6.0);
-					lightPosition = vector(0.0, 0.0, 4.0);
+					reset();
 					break;
 				case SDLK_ESCAPE:
 					this->getContainer()->stop();

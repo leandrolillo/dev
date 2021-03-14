@@ -125,7 +125,7 @@ class OpenGLRunner: public SDLRunner {
 
 		void resize(unsigned int height, unsigned int width) {
 			glViewport(0, 0, (GLsizei) width, (GLsizei) height);
-			glPerspective(60.0, (GLfloat) width / (GLfloat) height, 1.0, 200.0);
+			glPerspective(45.0, (GLfloat) width / (GLfloat) height, 0.1, 100.0);
 		}
 
 		void glPerspective(double fovy, double aspect, double zNear, double zFar)
@@ -139,10 +139,10 @@ class OpenGLRunner: public SDLRunner {
 			double top = fH;
 
 			// from glFrustrum manpage
-			projection(0, 0) = 2.0 * zNear / (right - left); 	projection(0, 1) = 0.0; 							projection(0, 2) = (right + left) / (right - left); 	projection(0, 2) = 0.0;
-			projection(1, 0) = 0.0; 							projection(1, 1) = 2.0 * zNear / (top - bottom); 	projection(1, 2) = (top + bottom) / (top - bottom); 	projection(1, 2) = 0.0;
-			projection(2, 0) = 0.0; 							projection(2, 1) = 0.0; 							projection(2, 2) = - (zFar + zNear) / (zFar - zNear); 	projection(2, 2) = - (2.0 * zFar * zNear) / (zFar - zNear);
-			projection(3, 0) = 0.0; 							projection(3, 1) = 0.0; 							projection(3, 2) = -1.0; 								projection(3, 2) = 0.0;
+			projection(0, 0) = 2.0 * zNear / (right - left); 	projection(0, 1) = 0.0; 							projection(0, 2) = (right + left) / (right - left); 								projection(0, 3) = 0.0;
+			projection(1, 0) = 0.0; 							projection(1, 1) = 2.0 * zNear / (top - bottom); 	projection(1, 2) = (top + bottom) / (top - bottom); 	projection(1, 3) = 0.0;
+			projection(2, 0) = 0.0; 							projection(2, 1) = 0.0; 							projection(2, 2) = - (zFar + zNear) / (zFar - zNear); 	projection(2, 3) = - (2.0 * zFar * zNear) / (zFar - zNear);
+			projection(3, 0) = 0.0; 							projection(3, 1) = 0.0; 							projection(3, 2) = -1.0; 								projection(3, 3) = 0.0;
 		}
 
 		const matriz_4x4 &getProjectionMatrix() const {

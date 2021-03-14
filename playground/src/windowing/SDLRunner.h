@@ -64,6 +64,12 @@ class SDLRunner: public PlaygroundRunner {
 		}
 
 		virtual bool afterInit() {
+			int height = 0;
+			int width = 0;
+			SDL_GetWindowSize(window, &width, &height);
+
+			this->getContainer()->resize(height, width);
+
 			return true;
 		}
 
