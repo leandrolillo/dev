@@ -38,14 +38,18 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 		vector lightPosition;
 		vector *currentPosition;
 		real rotation;
-		TextureResource *textureResource;
-		TextureResource *anotherTextureResource;
-		VertexArrayResource *vertexArrayResource;
-		ShaderProgramResource *shaderProgramResource;
+
+		TextureResource *pngTexture;
+		TextureResource *jpgTexture;
+
+		VertexArrayResource *triangleVertexArray;
+		VertexArrayResource *sphereVertexArray;
+
+		GeometryResource *sphereGeometry;
+		GeometryResource *triangleGeometry;
+
+		ShaderProgramResource *simpleShaderProgram;
 		ShaderProgramResource *anotherShaderProgramResource;
-		GeometryResource *geometryResource;
-		VertexArrayResource *sphereArrayResource;
-		GeometryResource *sphereGeometryResource;
 
 		GLuint VBO;
 	public:
@@ -58,24 +62,24 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 
 			logger = Logger::getLogger("Main.cpp");
 
-			viewPosition = vector(0.0f, 0.0f, -6.0f);
+			viewPosition = vector(0.0f, 0.0f, -16.0f);
 			lightPosition = vector(0.0f, 0.0f, 4.0f);
 			currentPosition = &viewPosition;
 			rotation = 0;
-			textureResource = null;
-			anotherTextureResource = null;
-			vertexArrayResource = null;
-			shaderProgramResource = null;
+			pngTexture = null;
+			jpgTexture = null;
+			triangleVertexArray = null;
+			simpleShaderProgram = null;
 			anotherShaderProgramResource = null;
-			geometryResource = null;
-			sphereArrayResource = null;
-			sphereGeometryResource = null;
+			triangleGeometry = null;
+			sphereVertexArray = null;
+			sphereGeometry = null;
 
 			VBO = null;
 		}
 
 		virtual unsigned char getInterests() {
-			return KEY_DOWN | KEY_UP | MOUSE_MOVE;
+			return KEY_DOWN | KEY_UP | MOUSE_MOVE | MOUSE_WHEEL;
 		}
 
 		virtual unsigned char getId() {
@@ -98,14 +102,16 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 //			Source *backgroundSource = audio->createSource("background.ogg");
 //			audio->playSource(backgroundSource);
 
-			//textureResource = (TextureResource *)resourceManager->load("images/TEXTURA.PNG", "video/texture");
-			//anotherTextureResource = (TextureResource *)resourceManager->load("images/irs.JPG", "video/texture");
-			//geometryResource = (GeometryResource *)resourceManager->load("geometry/triangle.json", "video/geometry");
-			sphereArrayResource = (VertexArrayResource *)resourceManager->load("geometry/sphere.json", "video/vertexArray");
-			//sphereGeometryResource = (GeometryResource *)resourceManager->load("geometry/sphere.json", "video/geometry");
-			vertexArrayResource = (VertexArrayResource *)resourceManager->load("geometry/triangle.json", "video/vertexArray");
+			pngTexture = (TextureResource *)resourceManager->load("images/TEXTURA.PNG", "video/texture");
+			jpgTexture = (TextureResource *)resourceManager->load("images/irs.JPG", "video/texture");
 
-			shaderProgramResource = (ShaderProgramResource *)resourceManager->load("shaders/simple.program.json", "video/shaderProgram");
+			//geometryResource = (GeometryResource *)resourceManager->load("geometry/triangle.json", "video/geometry");
+			//sphereGeometryResource = (GeometryResource *)resourceManager->load("geometry/sphere.json", "video/geometry");
+
+			//sphereVertexArray = (VertexArrayResource *)resourceManager->load("geometry/sphere.json", "video/vertexArray");
+			triangleVertexArray = (VertexArrayResource *)resourceManager->load("geometry/triangle.json", "video/vertexArray");
+
+			simpleShaderProgram = (ShaderProgramResource *)resourceManager->load("shaders/simple.program.json", "video/shaderProgram");
 
 //			if(openGl->getMajorVersion() >= 3) {
 //				shaderProgramResource = (ShaderProgramResource *)resourceManager->load("shaders/lighting.140.program.json", "video/shaderProgram");
@@ -115,11 +121,12 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 //				anotherShaderProgramResource = (ShaderProgramResource *)resourceManager->load("shaders/toon.120.program.json", "video/shaderProgram");
 //			}
 
-//			glClearColor(0.0, 0.5, 0.0, 0.0);
+			glClearColor(0.0, 0.5, 0.0, 0.0);
 //			glShadeModel(GL_SMOOTH);
-//			glEnable(GL_DEPTH_TEST);
+			glEnable(GL_DEPTH_TEST);
 //			glEnable(GL_CULL_FACE);
 //			glCullFace(GL_BACK);
+
 //
 ////			glEnable(GL_BLEND);
 ////			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -144,16 +151,16 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 			glUseProgram(null);
 
 
-			vector vertices[3];
-			vertices[0] = vector(-1.0f, -1.0f, 0.0f);
-			vertices[1] = vector(1.0f, -1.0f, 0.0f);
-			vertices[2] = vector(0.0f, 1.0f, 0.0f);
-
-
-			glGenBuffers(1, &VBO);
-			glBindBuffer(GL_ARRAY_BUFFER, VBO);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-			glBindBuffer(GL_ARRAY_BUFFER, null);
+//			vector vertices[3];
+//			vertices[0] = vector(-1.0f, -1.0f, 0.0f);
+//			vertices[1] = vector(1.0f, -1.0f, 0.0f);
+//			vertices[2] = vector(0.0f, 1.0f, 0.0f);
+//
+//
+//			glGenBuffers(1, &VBO);
+//			glBindBuffer(GL_ARRAY_BUFFER, VBO);
+//			glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+//			glBindBuffer(GL_ARRAY_BUFFER, null);
 
 			return true;
 		}
@@ -247,8 +254,8 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 //			glPopMatrix();
 
 //			glEnable(GL_LIGHTING);
-			if(anotherTextureResource != null)
-				glBindTexture(GL_TEXTURE_2D, anotherTextureResource->getId());
+			if(jpgTexture != null)
+				glBindTexture(GL_TEXTURE_2D, jpgTexture->getId());
 //
 //			glPushMatrix();
 //			glTranslatef(-1.5, 2.0, 0.0);
@@ -278,49 +285,57 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 //			glPopMatrix();
 
 
-			if(shaderProgramResource) {
-				openGl->useProgramResource(shaderProgramResource);
+			if(simpleShaderProgram) {
+				openGl->useProgramResource(simpleShaderProgram);
 
 				matriz_4x4 p = openGl->getProjectionMatrix();
-				matriz_4x4 v = matriz_4x4::matrizTraslacion(viewPosition);
-				matriz_4x4 m = matriz_4x4::Identidad;
+				matriz_4x4 v = matriz_4x4::Identidad;
+				matriz_4x4 m = matriz_4x4::matrizTraslacion(viewPosition) * matriz_4x4::matrizRotacion(0.0f, radian(rotation), 0.0f);
 				matriz_4x4 pvm =  p * v * m;
 
-				printf("p:\n %s\n", p.toString().c_str());
-				printf("v:\n %s\n", v.toString().c_str());
-				printf("m:\n %s\n", m.toString().c_str());
-				printf("pvm:\n%s\n", pvm.toString().c_str());
-				printf("-----------\n");
+//				printf("p:\n %s\n", p.toString().c_str());
+//				printf("v:\n %s\n", v.toString().c_str());
+//				printf("m:\n %s\n", m.toString().c_str());
+//				printf("pvm:\n%s\n", pvm.toString().c_str());
+//				printf("-----------\n");
 
-				glUniformMatrix4fv(glGetUniformLocation(shaderProgramResource->getId(), "pvm"),
+//				printf("%s\r", viewPosition.toString().c_str());
+
+				glUniformMatrix4fv(glGetUniformLocation(simpleShaderProgram->getId(), "pvm"),
 			                     1, GL_FALSE, (real *)pvm);
 			}
 
 //			glPushMatrix();
 //			glTranslatef(-1.5, -2.0, 0.0);
 //			glRotatef(rotation, 0.0, 1.0, 0.0);
-			openGl->drawVertexArray(vertexArrayResource);
+			openGl->drawVertexArray(triangleVertexArray);
 //			glPopMatrix();
 
 //			glPushMatrix();
 //			glTranslatef(1.5, -2.0, 0.0);
 //			glRotatef(rotation, 0.0, 1.0, 0.0);
-			openGl->drawVertexArray(sphereArrayResource);
+			openGl->drawVertexArray(sphereVertexArray);
 //			glPopMatrix();
 
-			rotation+=0.1;
+			rotation+=1;
 
-			glEnableVertexAttribArray(0);
-			glBindBuffer(GL_ARRAY_BUFFER, VBO);
-			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-			glDrawArrays(GL_POINTS, 0, 1);
-			glDisableVertexAttribArray(0);
+			//glEnableVertexAttribArray(0);
+//			glBindBuffer(GL_ARRAY_BUFFER, VBO);
+//			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+//			glDrawArrays(GL_POINTS, 0, 1);
+//			glDisableVertexAttribArray(0);
 
 
 			return CONTINUE;
 		}
+		void mouseWheel(int wheel) {
+			*currentPosition += vector(0.0f, 0.0f, wheel);
+			logger->debug("%s", (*currentPosition).toString().c_str());
+		}
+
 		virtual void mouseMove(int dx, int dy) {
 			*currentPosition += vector(0.1f * dx, 0.1f * dy, 0);
+			logger->debug("%s", (*currentPosition).toString().c_str());
 		}
 		virtual void keyUp(unsigned int key) {
 			switch (key) {

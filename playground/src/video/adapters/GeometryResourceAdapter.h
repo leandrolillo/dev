@@ -34,6 +34,10 @@ class GeometryResourceAdapter: public ResourceAdapter {
 			JsonParser *parser = new JsonParser(fileParser);
 			GeometryResource *resource = new GeometryResource(0);
 
+			bool generateNormals = false;
+			bool generateIndexes = false;
+
+
 			String token;
 			parser->readStartObject();
 			while((token = parser->readToken()) != END_OBJECT && token != eof)
@@ -58,11 +62,31 @@ class GeometryResourceAdapter: public ResourceAdapter {
 					parser->readValueSeparator();
 					String typeString = parser->readString();
 					resource->setType(valueOf(typeString));
-				} else
-					logger->warn("Unexpected token: [%s]", token.c_str());
+				} else if (token == "indices") {
+					parser->readValueSeparator();
+					resource->setIndices(parser->readUnsignedIntegerArray());
+				} else if (token == "generateNormals") {
+					parser->readValueSeparator();
+					generateNormals = parser->readBoolean();
+				} else if (token == "generateIndexes") {
+					parser->readValueSeparator();
+					generateIndexes = parser->readBoolean();
+				}else {
+					logger->error("Unexpected token: [%s] at (%d, %d)", token.c_str(), parser->getLine(), parser->getColumn());
+				}
+
+				if(parser->peekToken() == ",") {
+					parser->readToken();
+				}
 			}
 
-			postProcess(resource);
+			if(generateNormals && resource->getNormals().size() == 0) {
+				ensureNormals(resource);
+			}
+
+			if(generateIndexes && resource->getIndices().size() == 0){
+				buildIndicesArray(resource);
+			}
 
 			log("vertices ", resource->getVertices());
 			log("indices ", resource->getIndices());
@@ -90,7 +114,6 @@ class GeometryResourceAdapter: public ResourceAdapter {
 				if(generator != null)
 					generator->generateNormals(resource);
 			}
-
 		}
 
 		void buildIndicesArray(GeometryResource *resource)
@@ -98,8 +121,9 @@ class GeometryResourceAdapter: public ResourceAdapter {
 			//create one to one index array.
 			unsigned int currentIndex = 0;
 
-			for(std::vector<vector3>::iterator source = resource->getVertices().begin(); source != resource->getVertices().end(); source ++)
+			for(std::vector<vector3>::iterator source = resource->getVertices().begin(); source != resource->getVertices().end(); source ++) {
 				resource->getIndices().push_back(currentIndex++);
+			}
 		}
 
 		void ensureColors(GeometryResource *resource)
@@ -109,15 +133,6 @@ class GeometryResourceAdapter: public ResourceAdapter {
 				resource->getColors().push_back(vector3(1.0f, 1.0f, 1.0f));
 		}
 
-		//TODO: maybe this should go to resource manager framework
-		void postProcess(GeometryResource *resource)
-		{
-			if(resource != null) {
-				ensureNormals(resource);
-				ensureColors(resource);
-				buildIndicesArray(resource);
-			}
-		}
 
 		void buildVerticesArray(GeometryResource *resource, std::vector<vector3> &vertices)
 		{

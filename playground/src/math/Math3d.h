@@ -295,7 +295,7 @@ class matriz_4x4: public BaseMatrix {
 			return(*this);
 		}
 
-		const matriz_4x4 operator*(const matriz_4x4 &op2) const const {
+		const matriz_4x4 operator*(const matriz_4x4 &op2) const {
 			return(matriz_4x4(	(this->_00 * op2._00) + (this->_01 * op2._10) + (this->_02 * op2._20) + (this->_03 * op2._30),
 						(this->_00 * op2._01) + (this->_01 * op2._11) + (this->_02 * op2._21) + (this->_03 * op2._31),
 						(this->_00 * op2._02) + (this->_01 * op2._12) + (this->_02 * op2._22) + (this->_03 * op2._32),
@@ -477,6 +477,14 @@ class vector2 {
 
 		operator real *() const;
 
+		String toString() const {
+					char temp[256];
+
+					sprintf(temp, "<%.3e, %.3e>", this->x, this->y);
+
+					return String(temp);
+				}
+
 	private:
 		const real productoEscalar(const vector2 &op1) const {
 			return(this->x * op1.x + this->y * op1.y);
@@ -529,6 +537,14 @@ class vector3 {
 //		const vector3 normalizado(void) const;
 //
 //		const matriz_3x3 star() const;
+
+		String toString() const {
+			char temp[256];
+
+			sprintf(temp, "<%.3e, %.3e, %.3e>", this->x, this->y, this->z);
+
+			return String(temp);
+		}
 	private:
 		const real productoEscalar(const vector3 &op2) const {
 			return((this->x * op2.x) + (this->y * op2.y) + (this->z * op2.z));
@@ -565,6 +581,14 @@ class cuaternion {
 		operator real *() const;
 
 		const real modulo() const;
+
+		String toString() const {
+			char temp[256];
+
+			sprintf(temp, "<%.3e, %.3e, %.3e, %.3e>", this->x, this->y, this->z, this->w);
+
+			return String(temp);
+		}
 //
 //			void conjugar(void);
 //			const cuaternion conjugado(void) const;

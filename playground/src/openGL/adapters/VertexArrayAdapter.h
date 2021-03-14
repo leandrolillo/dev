@@ -153,35 +153,35 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 					return null;
 				}
 
-				/*if(!addBuffer(INDEX_LOCATION, resource, GL_ELEMENT_ARRAY_BUFFER, geometry->getIndices()))
-				{
-					dispose(resource);
-					return null;
-				}*/
-
-				if(!addBuffer(VERTEX_LOCATION, resource, GL_ARRAY_BUFFER, geometry->getVertices()))
+				if(geometry->getIndices().size() != 0 && !addBuffer(INDEX_LOCATION, resource, GL_ELEMENT_ARRAY_BUFFER, geometry->getIndices()))
 				{
 					dispose(resource);
 					return null;
 				}
 
-				/*if(!addBuffer(NORMAL_LOCATION, resource, GL_ARRAY_BUFFER, geometry->getNormals()))
+				if(geometry->getVertices().size() != 0 && !addBuffer(VERTEX_LOCATION, resource, GL_ARRAY_BUFFER, geometry->getVertices()))
 				{
 					dispose(resource);
 					return null;
 				}
 
-				if(!addBuffer(TEXTURE_COORDINATES_LOCATION, resource, GL_ARRAY_BUFFER, geometry->getTextureCoordinates()))
+				if(geometry->getNormals().size() != 0 && !addBuffer(NORMAL_LOCATION, resource, GL_ARRAY_BUFFER, geometry->getNormals()))
 				{
 					dispose(resource);
 					return null;
 				}
 
-				if(!addBuffer(COLOR_LOCATION, resource, GL_ARRAY_BUFFER, geometry->getColors()))
+				if(geometry->getTextureCoordinates().size() != 0 && !addBuffer(TEXTURE_COORDINATES_LOCATION, resource, GL_ARRAY_BUFFER, geometry->getTextureCoordinates()))
 				{
 					dispose(resource);
 					return null;
-				}*/
+				}
+
+				if(geometry->getColors().size() != 0 && !addBuffer(COLOR_LOCATION, resource, GL_ARRAY_BUFFER, geometry->getColors()))
+				{
+					dispose(resource);
+					return null;
+				}
 
 				// remove objects from context.
 				glBindBuffer(GL_ARRAY_BUFFER, 0);

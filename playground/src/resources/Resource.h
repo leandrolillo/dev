@@ -23,6 +23,9 @@ class Resource {
 			setId(id);
 			setMimeType(mimeType);
 		}
+		virtual ~Resource() {
+		}
+
 		unsigned long getId() const {
 			return id;
 		}

@@ -1,10 +1,12 @@
 #this is a comment.
 {
 	texture: "images/TEXTURA.PNG",
-	vertices: [<-1.0f, -1.0f, -1.0f>,
-        <0.0f,  1.0f, -1.0f>, 
-        <1.0f, -1.0f, -1.0f>],
-#	colors: [<.25, 0.25, 0.25>, <0.25, 0.25, 0.25>, <0.25, 0.25, 0.25>],
-	textureCoordinates: [<0, 0>, <0.5, 1>, <1, 0>]
-	type: "triangles"
+	vertices: [<-1.0f, -1.0f, 0.0f>,
+        <0.0f,  1.0f, 0.0f>, 
+        <1.0f, -1.0f, 0.0f>],
+	colors: [<.25, 0.25, 0.25>, <0.25, 0.25, 0.25>, <0.25, 0.25, 0.25>],
+	textureCoordinates: [<0, 0>, <0.5, 1>, <1, 0>],
+	type: "triangles",
+	generateNormals: true,
+	generateIndexes: false
 }

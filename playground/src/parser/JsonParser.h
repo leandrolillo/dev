@@ -92,6 +92,19 @@ class JsonParser
 			return value;
 		}
 
+		bool readBoolean()
+		{
+			String token = readToken();
+
+			if(token == "true") {
+				return true;
+			} else if (token == "false") {
+				return false;
+			}
+
+			throw ParsingException("Expected [true|false], got [%s] at (%d, %d)", token.c_str(), fileParser.getLine(), fileParser.getColumn());
+		}
+
 		unsigned int readUnsignedInteger()
 		{
 			unsigned int value = 0;
@@ -233,6 +246,50 @@ class JsonParser
 			return vector2(x, y);
 		}
 
+		std::vector<int> readIntegerArray()
+		{
+			std::vector<int>array;
+
+			readStartArray();
+			String token;
+
+			while((token = fileParser.peekToken()) != END_ARRAY && token != eof) {
+				int value = readInteger();
+				array.push_back(value);
+
+				if((token = fileParser.peekToken()) == ",")
+					fileParser.takeToken();
+
+					//throw ParsingException("Unexpected %s at (%d, %d)", token.c_str(), fileParser.getLine(), fileParser.getColumn());
+			}
+
+			readEndArray();
+
+			return array;
+		}
+
+		std::vector<unsigned int> readUnsignedIntegerArray()
+				{
+					std::vector<unsigned int>array;
+
+					readStartArray();
+					String token;
+
+					while((token = fileParser.peekToken()) != END_ARRAY && token != eof) {
+						unsigned int value = readUnsignedInteger();
+						array.push_back(value);
+
+						if((token = fileParser.peekToken()) == ",")
+							fileParser.takeToken();
+
+							//throw ParsingException("Unexpected %s at (%d, %d)", token.c_str(), fileParser.getLine(), fileParser.getColumn());
+					}
+
+					readEndArray();
+
+					return array;
+				}
+
 		std::vector<vector2> readVector2Array()
 		{
 			std::vector<vector2>array;
@@ -296,6 +353,17 @@ class JsonParser
 
 			return array;
 		}
+
+		unsigned int getColumn() const
+		{
+			return fileParser.getColumn();
+		}
+
+		unsigned int getLine() const
+		{
+			return fileParser.getLine();
+		}
+
 
 };
 

@@ -10,8 +10,8 @@
 
 	#include<math.h>
 	#include<float.h>
+	#include<string>
 
-	#include "../javaLike/JavaLike.h"
 	#include "../exceptions/InvalidArgumentException.h"
 	#include "../exceptions/InvalidStateException.h"
 	#include "../exceptions/InvalidOperationException.h"
@@ -26,16 +26,23 @@
 
 	#ifndef _MAX_MINS_
 		#define _MAX_MINS_
-		#define REAL_MAX FLT_MAX	//M�ximo valor positivo
-		#define REAL_MIN FLT_MIN	// M�nimo valor POSITIVO
+		#define REAL_MAX FLT_MAX	//Maximo valor positivo
+		#define REAL_MIN FLT_MIN	// Minimo valor POSITIVO
 	#endif
 
 	#ifndef radian
-		#define radian(angulo) (angulo * M_PI  / 180.0f)
-		#define grado(angulo) (angulo * 180.0f / M_PI)
+		#define radian(angulo) (angulo * M_PI  / 180.0f) //TODO: precalculate pi/180 or move to constant
+		#define grado(angulo) (angulo * 180.0f / M_PI) //TODO: precalculate 180/pi or move to constant
 	#endif
 
 	#define THRESHOLD 0.00000000000000000000000009
 	#define equalsZero(r) (-(real)THRESHOLD <= r && r <= (real)THRESHOLD)
 
+	#ifndef String
+		#define String std::string
+	#endif
+
+	#ifndef null
+		#define null 0
+	#endif
 #endif /* MATHCONSTANTS_H_ */

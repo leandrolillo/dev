@@ -12,6 +12,16 @@
 #include "TextureResource.h"
 #include <OpenGL/gl3.h>
 
+enum ShaderAttributeLocation
+{
+	VERTEX_LOCATION = 0,
+	INDEX_LOCATION,
+	NORMAL_LOCATION,
+	TEXTURE_COORDINATES_LOCATION,
+	COLOR_LOCATION
+};
+
+
 class VertexAttribPointer {
 	public:
 		VertexAttribPointer(unsigned int buffer, unsigned int start, unsigned int count)
@@ -76,9 +86,7 @@ class VertexArrayResource : public Resource
 		~VertexArrayResource()
 		{
 			for(auto attribute : this->attributes) {
-				if(attribute.second != null) {
 					delete attribute.second;
-				}
 			}
 		}
 
