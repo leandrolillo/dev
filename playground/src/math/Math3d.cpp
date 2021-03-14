@@ -351,6 +351,18 @@ void matriz_2x2::operator *=(const real &op1) {
 		this->_20 = 0.0; this->_21 = 0.0; this->_22 = 1.0;
 	}
 
+	const matriz_3x3 matriz_3x3::matrizRotacion(real x, real y, real z) {
+		real cx = (real)cos(x), sx = (real)sin(x);
+		real cy = (real)cos(y), sy = (real)sin(y);
+		real cz = (real)cos(z), sz = (real)sin(z);
+
+		return matriz_3x3(
+			cy * cz, 	sx * sy * cz - cx * sz, 	cx * sy * cz + sx * sz,
+			cy * sz, 	sx * sy * sz + cx * cz, 	cx * sy * sz - sx * cz,
+			-sy, 		sx * cy, 					cx * cy);
+	}
+
+
 //	matriz_3x3::matriz_3x3(real x, real y, real z) { //Rotaci�n de Angulos de Euler
 //		this->HacerRotacion(x, y, z);
 //	}

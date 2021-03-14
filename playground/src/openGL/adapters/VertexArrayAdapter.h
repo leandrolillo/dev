@@ -22,7 +22,8 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 		bool addBuffer(ShaderAttributeLocation attributeLocation, VertexArrayResource *resource, GLenum bufferDestination, const std::vector<vector2> &data)
 		{
 			if(data.size() > 0) {
-				logger->verbose("Creating [%d] floats buffer", data.size());
+				logger->debug("Creating [%d] vector2 buffer for attribute [%d]", data.size(), attributeLocation);
+
 
 				// create vertex buffer
 				unsigned int buffer;
@@ -40,6 +41,7 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 					resource->addAttribute(attributeLocation, buffer, 0, data.size());
 					glVertexAttribPointer((GLuint)attributeLocation, 2, GL_FLOAT, GL_FALSE, 0, 0);
 					glEnableVertexAttribArray(attributeLocation);
+					logger->debug("Enabled attribute [%d]", attributeLocation);
 				}
 
 				glError = glGetError();
@@ -51,9 +53,10 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 
 			return true;
 		}
+
 		bool addBuffer(ShaderAttributeLocation attributeLocation, VertexArrayResource *resource, GLenum bufferDestination, const std::vector<vector3> &data)
 		{
-				logger->verbose("Creating [%d] floats buffer", data.size());
+				logger->debug("Creating [%d] vector3 buffer for attribute [%d]", data.size(), attributeLocation);
 
 				// create vertex buffer
 				unsigned int buffer;
@@ -71,6 +74,7 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 					resource->addAttribute(attributeLocation, buffer, 0, data.size());
 					glVertexAttribPointer((GLuint)attributeLocation, 3, GL_FLOAT, GL_FALSE, 0, 0);
 					glEnableVertexAttribArray(attributeLocation);
+					logger->debug("Enabled attribute [%d]", attributeLocation);
 				}
 
 				glError = glGetError();
@@ -83,7 +87,8 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 		}
 		bool addBuffer(ShaderAttributeLocation attributeLocation, VertexArrayResource *resource, GLenum bufferDestination, const std::vector<unsigned int> &data)
 		{
-				logger->verbose("Creating [%d] floats buffer", data.size());
+				logger->debug("Creating [%d] unsigned int buffer for attribute [%d]", data.size(), attributeLocation);
+
 
 				// create vertex buffer
 				unsigned int buffer;
@@ -101,6 +106,7 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 					resource->addAttribute(attributeLocation, buffer, 0, data.size());
 					glVertexAttribPointer((GLuint)attributeLocation, 1, GL_UNSIGNED_INT, GL_FALSE, 0, 0);
 					glEnableVertexAttribArray(attributeLocation);
+					logger->debug("Enabled attribute [%d]", attributeLocation);
 				}
 
 				glError = glGetError();

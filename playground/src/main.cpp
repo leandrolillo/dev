@@ -232,6 +232,14 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 			return resource;
 		}
 
+		void logGlError(char *format) {
+			GLenum glError;
+			while((glError = glGetError()) != GL_NO_ERROR)
+			{
+				logger->error(format, glError);
+			}
+		}
+
 		virtual LoopResult doLoop() {
 //			glUseProgram(0);
 
@@ -254,8 +262,10 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 //			glPopMatrix();
 
 //			glEnable(GL_LIGHTING);
-			if(jpgTexture != null)
+			if(jpgTexture != null) {
+				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, jpgTexture->getId());
+			}
 //
 //			glPushMatrix();
 //			glTranslatef(-1.5, 2.0, 0.0);
@@ -288,10 +298,11 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 			if(simpleShaderProgram) {
 				openGl->useProgramResource(simpleShaderProgram);
 
-				matriz_4x4 p = openGl->getProjectionMatrix();
-				matriz_4x4 v = matriz_4x4::Identidad;
-				matriz_4x4 m = matriz_4x4::matrizTraslacion(viewPosition) * matriz_4x4::matrizRotacion(0.0f, radian(rotation), 0.0f);
-				matriz_4x4 pvm =  p * v * m;
+				matriz_4x4 projection = openGl->getProjectionMatrix();
+				matriz_4x4 view = matriz_4x4::Identidad;
+				matriz_4x4 model = matriz_4x4::matrizBase(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), viewPosition);
+				matriz_4x4 normalMatrix = model;
+				matriz_4x4 pvm =  projection * view * model;
 
 //				printf("p:\n %s\n", p.toString().c_str());
 //				printf("v:\n %s\n", v.toString().c_str());
@@ -301,8 +312,16 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 
 //				printf("%s\r", viewPosition.toString().c_str());
 
-				glUniformMatrix4fv(glGetUniformLocation(simpleShaderProgram->getId(), "pvm"),
-			                     1, GL_FALSE, (real *)pvm);
+
+				glProgramUniform1i(simpleShaderProgram->getId(), glGetUniformLocation(simpleShaderProgram->getId(), "textureUnit"), 0);
+				logGlError("error setting textureUnit: %s");
+
+				glProgramUniformMatrix4fv(simpleShaderProgram->getId(), glGetUniformLocation(simpleShaderProgram->getId(), "pvm"), 1, GL_FALSE, (real *)pvm);
+				//glUniformMatrix4fv(glGetUniformLocation(simpleShaderProgram->getId(), "pvm"), 1, GL_FALSE, (real *)pvm);
+				logGlError("error setting pvm: %s");
+
+				glUniformMatrix4fv(glGetUniformLocation(simpleShaderProgram->getId(), "normalMatrix"), 1, GL_FALSE, (real *)pvm);
+				logGlError("error setting normalMatrix: %s");
 			}
 
 //			glPushMatrix();
