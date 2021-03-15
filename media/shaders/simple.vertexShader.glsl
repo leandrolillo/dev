@@ -1,20 +1,30 @@
 #version 330
 
-uniform mat4 pvm;
-uniform mat4 normalMatrix;
+struct Matrices {
+	mat4 model;
+	mat4 pvm;
+	mat3 normal;
+};
+uniform Matrices matrices;
 
-in vec3 vertex;
+in vec3 position;
 in vec3 normal;
 in vec2 textureCoordinate;
 in vec3 color;
 
-out vec4 normal_output;
-out vec3 color_output;
-out vec2 textureCoordinate_output;
+out VertexData {
+	vec3 normal;
+	vec3 color;
+	vec2 textureCoordinate;
+	vec4 worldPosition;
+} outputData;
+
 void main()
 {
-    gl_Position = pvm * vec4(vertex, 1.0f) ;
-    textureCoordinate_output =  textureCoordinate; //vec4(textureCoordinate, 1.0, 1.0);
-    normal_output = normalize(normalMatrix  * vec4(normal, 0.0f));
-    color_output = color;
+    gl_Position = matrices.pvm * vec4(position, 1.0f);
+    outputData.worldPosition = matrices.model * vec4(position, 1.0f);
+
+    outputData.textureCoordinate =  textureCoordinate; //vec4(textureCoordinate, 1.0, 1.0);
+    outputData.normal = normalize(matrices.normal * normal);
+    outputData.color = color;
 }

@@ -49,9 +49,8 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 		GeometryResource *triangleGeometry;
 
 		ShaderProgramResource *simpleShaderProgram;
-		ShaderProgramResource *anotherShaderProgramResource;
+		ShaderProgramResource *toonShaderProgram;
 
-		GLuint VBO;
 	public:
 		static const unsigned char ID = 101;
 
@@ -68,12 +67,10 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 			jpgTexture = null;
 			triangleVertexArray = null;
 			simpleShaderProgram = null;
-			anotherShaderProgramResource = null;
+			toonShaderProgram = null;
 			triangleGeometry = null;
 			sphereVertexArray = null;
 			sphereGeometry = null;
-
-			VBO = null;
 		}
 
 		virtual unsigned char getInterests() {
@@ -112,24 +109,26 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 			//geometryResource = (GeometryResource *)resourceManager->load("geometry/triangle.json", "video/geometry");
 			//sphereGeometryResource = (GeometryResource *)resourceManager->load("geometry/sphere.json", "video/geometry");
 
-			//sphereVertexArray = (VertexArrayResource *)resourceManager->load("geometry/sphere.json", "video/vertexArray");
+			sphereVertexArray = (VertexArrayResource *)resourceManager->load("geometry/sphere.json", "video/vertexArray");
 			triangleVertexArray = (VertexArrayResource *)resourceManager->load("geometry/triangle.json", "video/vertexArray");
 
 			simpleShaderProgram = (ShaderProgramResource *)resourceManager->load("shaders/simple.program.json", "video/shaderProgram");
 
-//			if(openGl->getMajorVersion() >= 3) {
-//				shaderProgramResource = (ShaderProgramResource *)resourceManager->load("shaders/lighting.140.program.json", "video/shaderProgram");
-//				anotherShaderProgramResource = (ShaderProgramResource *)resourceManager->load("shaders/toon.140.program.json", "video/shaderProgram");
-//			} else {
-//				shaderProgramResource = (ShaderProgramResource *)resourceManager->load("shaders/lighting.120.program.json", "video/shaderProgram");
-//				anotherShaderProgramResource = (ShaderProgramResource *)resourceManager->load("shaders/toon.120.program.json", "video/shaderProgram");
-//			}
+			if(openGl->getMajorVersion() >= 3) {
+				//shaderProgramResource = (ShaderProgramResource *)resourceManager->load("shaders/lighting.140.program.json", "video/shaderProgram");
+				toonShaderProgram = (ShaderProgramResource *)resourceManager->load("shaders/toon.140.program.json", "video/shaderProgram");
+			} else {
+				//shaderProgramResource = (ShaderProgramResource *)resourceManager->load("shaders/lighting.120.program.json", "video/shaderProgram");
+				toonShaderProgram = (ShaderProgramResource *)resourceManager->load("shaders/toon.120.program.json", "video/shaderProgram");
+			}
 
 			glClearColor(0.0, 0.5, 0.0, 0.0);
-//			glShadeModel(GL_SMOOTH);
 			glEnable(GL_DEPTH_TEST);
 //			glEnable(GL_CULL_FACE);
 //			glCullFace(GL_BACK);
+
+//			glShadeModel(GL_SMOOTH);
+
 
 //
 ////			glEnable(GL_BLEND);
@@ -153,18 +152,6 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 //			glMaterialf(GL_FRONT, GL_SHININESS, 128.0);
 
 			glUseProgram(null);
-
-
-//			vector vertices[3];
-//			vertices[0] = vector(-1.0f, -1.0f, 0.0f);
-//			vertices[1] = vector(1.0f, -1.0f, 0.0f);
-//			vertices[2] = vector(0.0f, 1.0f, 0.0f);
-//
-//
-//			glGenBuffers(1, &VBO);
-//			glBindBuffer(GL_ARRAY_BUFFER, VBO);
-//			glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-//			glBindBuffer(GL_ARRAY_BUFFER, null);
 
 			reset();
 			return true;
@@ -246,16 +233,9 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 		}
 
 		virtual LoopResult doLoop() {
-//			glUseProgram(0);
-
-//			glLoadIdentity();
-//			glTranslatef(viewPosition.x, viewPosition.y, viewPosition.z);
-//			//logger->debug("Position: <%f, %f, %f>", viewPosition.x, viewPosition.y, viewPosition.z);
-
-			//openGl->useProgramResource(null);
 			openGl->glAxis();
 
-			glBindTexture(GL_TEXTURE_2D, 0);
+			//glBindTexture(GL_TEXTURE_2D, 0);
 
 //			glDisable(GL_LIGHTING);
 //			glColor3f(1.0, 1.0, 0.0);
@@ -267,6 +247,7 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 //			glPopMatrix();
 
 //			glEnable(GL_LIGHTING);
+
 			if(jpgTexture != null) {
 				glActiveTexture(GL_TEXTURE0);
 				glBindTexture(GL_TEXTURE_2D, jpgTexture->getId());
@@ -284,82 +265,59 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 //			openGl->glDrawGeometry(sphereGeometryResource);
 //			glPopMatrix();
 
-			//if(anotherShaderProgramResource != null)
-				//glUseProgram(anotherShaderProgramResource->getId());
+			if(toonShaderProgram != null) {
+				openGl->useProgramResource(toonShaderProgram);
+			}
 
-//			glPushMatrix();
-//			glTranslatef(-1.5, 0.0, 0.0);
-//			glRotatef(rotation, 0.0, 1.0, 0.0);
-//			openGl->glDrawGeometry(geometryResource);
-//			glPopMatrix();
+			openGl->setViewMatrix(matriz_4x4::matrizTraslacion(viewPosition));
+			openGl->setModelMatrix(matriz_4x4::matrizBase(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), vector3(2.0, 1.0, 0.0)));
+			openGl->sendMatrices();
 
-//			glPushMatrix();
-//			glTranslatef(1.5, 0.0, 0.0);
-//			glRotatef(rotation, 0.0, 1.0, 0.0);
-//			openGl->glDrawGeometry(sphereGeometryResource);
-//			glPopMatrix();
+			openGl->sendUnsignedInt("textureUnit", 0);
+			openGl->drawVertexArray(triangleVertexArray);
 
+
+			openGl->setModelMatrix(matriz_4x4::matrizBase(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), vector3(-2.0, 1.0, 0.0)));
+			openGl->sendMatrices();
+			openGl->drawVertexArray(sphereVertexArray);
 
 			if(simpleShaderProgram) {
 				openGl->useProgramResource(simpleShaderProgram);
-
-				matriz_4x4 projection = openGl->getProjectionMatrix();
-				matriz_4x4 view = matriz_4x4::matrizTraslacion(viewPosition); //matriz_4x4::matrizTraslacion(viewPosition);
-				matriz_4x4 model = matriz_4x4::matrizRotacion(0.0f, radian(rotation), 0.0f);
-				matriz_4x4 normalMatrix = model;
-				matriz_4x4 pvm =  projection * view * model;
-
-				printf("p:\n %s\n", projection.toString().c_str());
-				printf("v:\n %s\n", view.toString().c_str());
-				printf("m:\n %s\n", model.toString().c_str());
-				printf("pvm:\n%s\n", pvm.toString().c_str());
-				printf("-----------\n");
-
-//				printf("%s\r", viewPosition.toString().c_str());
-
-
-				glProgramUniform1i(simpleShaderProgram->getId(), glGetUniformLocation(simpleShaderProgram->getId(), "textureUnit"), 0);
-				logGlError("error setting textureUnit: %s");
-
-				glProgramUniformMatrix4fv(simpleShaderProgram->getId(), glGetUniformLocation(simpleShaderProgram->getId(), "pvm"), 1, GL_TRUE, (real *)pvm);
-				//glUniformMatrix4fv(glGetUniformLocation(simpleShaderProgram->getId(), "pvm"), 1, GL_FALSE, (real *)pvm);
-				logGlError("error setting pvm: %s");
-
-				glUniformMatrix4fv(glGetUniformLocation(simpleShaderProgram->getId(), "normalMatrix"), 1, GL_TRUE, (real *)pvm);
-				logGlError("error setting normalMatrix: %s");
 			}
 
-//			glPushMatrix();
-//			glTranslatef(-1.5, -2.0, 0.0);
-//			glRotatef(rotation, 0.0, 1.0, 0.0);
-			openGl->drawVertexArray(triangleVertexArray);
-//			glPopMatrix();
+			openGl->setMaterial(vector(1.0f, 0.5f, 0.31f), vector(1.0f, 0.5f, 0.31f), vector(0.5f, 0.5f, 0.5f), 32.0f);
+			openGl->setLight(lightPosition, vector(0.2f, 0.2f, 0.2f), vector(0.5f, 0.5f, 0.5f), vector(1.0f, 1.0f, 1.0f));
 
-//			glPushMatrix();
-//			glTranslatef(1.5, -2.0, 0.0);
-//			glRotatef(rotation, 0.0, 1.0, 0.0);
+			openGl->setModelMatrix(matriz_4x4::matrizBase(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), vector3(2.0, -1.0, 0.0)));
+			openGl->sendMatrices();
+			openGl->sendUnsignedInt("textureUnit", 0);
+			openGl->drawVertexArray(triangleVertexArray);
+
+
+			openGl->setModelMatrix(matriz_4x4::matrizBase(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), vector3(-2.0, -1.0, 0.0)));
+			openGl->sendMatrices();
 			openGl->drawVertexArray(sphereVertexArray);
-//			glPopMatrix();
+
+			//				printf("p:\n %s\n", projection.toString().c_str());
+			//				printf("v:\n %s\n", view.toString().c_str());
+			//				printf("m:\n %s\n", model.toString().c_str());
+			//				printf("pvm:\n%s\n", pvm.toString().c_str());
+			//				printf("-----------\n");
+			//				printf("%s\r", viewPosition.toString().c_str());
+
 
 			rotation+=1;
-
-			//glEnableVertexAttribArray(0);
-//			glBindBuffer(GL_ARRAY_BUFFER, VBO);
-//			glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
-//			glDrawArrays(GL_POINTS, 0, 1);
-//			glDisableVertexAttribArray(0);
-
 
 			return CONTINUE;
 		}
 		void mouseWheel(int wheel) {
 			*currentPosition += vector(0.0f, 0.0f, wheel);
-			logger->debug("%s", (*currentPosition).toString().c_str());
+			logger->verbose("%s", (*currentPosition).toString().c_str());
 		}
 
 		virtual void mouseMove(int dx, int dy) {
 			*currentPosition += vector(0.1f * dx, 0.1f * dy, 0);
-			logger->debug("%s", (*currentPosition).toString().c_str());
+			logger->verbose("%s", (*currentPosition).toString().c_str());
 		}
 		virtual void keyUp(unsigned int key) {
 			switch (key) {

@@ -209,6 +209,37 @@ class matriz_3x3: public BaseMatrix {
 		operator real *() const;
 		operator matriz_4x4() const;
 
+		const matriz_3x3 traspuesta(void) const {
+			return(matriz_3x3( 	this->_00, this->_10,	this->_20,
+								this->_01, this->_11, this->_21,
+								this->_02,	this->_12, this->_22));
+		}
+
+
+		const real determinante(void) const { //Calcula el determinante de la matriz.
+			return(	  this->_00 * this->_11 * this->_22 +
+						this->_02 * this->_10 * this->_21 +
+						this->_01 * this->_12 * this->_20 -
+						this->_02 * this->_11 * this->_20 -
+						this->_12 * this->_21 * this->_00 -
+						this->_01 * this->_10 * this->_22);
+		}
+
+		const matriz_3x3 inversa(void) const {
+			real det = this->determinante();
+			if(det == 0.0f) {
+				throw InvalidArgumentException("Could not calculate inverse of singular matrix (det=0). This is the matrix equivalent of a division by zero");
+			} else {
+				det = 1.0f / det;
+
+				return matriz_3x3(
+					(this->_11 * this->_22 - this->_12 * this->_21) * det, (-this->_01 * this->_22 + this->_02 * this->_21) * det , (this->_01 * this->_12 - this->_11 * this->_02) * det,
+					(-this->_10 * this->_22 + this->_12 * this->_20) * det, (this->_00 * this->_22 - this->_02 * this->_20) * det, (-this->_00 * this->_12 + this->_02 * this->_10) * det,
+					(this->_10 * this->_21 - this->_20 * this->_11) * det,  (-this->_00 * this->_21 + this->_01 * this->_20) * det, (this->_00 * this->_11 - this->_10 * this->_01) * det
+				 );
+			 }
+		}
+
 //		void transponer(void);
 //		const matriz_3x3 transpuesta(void) const;
 //
@@ -369,12 +400,12 @@ class matriz_4x4: public BaseMatrix {
 		}
 
 //			void trasponer(void);
-			const matriz_4x4 traspuesta(void) const {
-				return(matriz_4x4( 	this->_00, this->_10,	this->_20,	this->_30,
-									this->_01, this->_11, this->_21,	this->_31,
-									this->_02,	this->_12, this->_22, this->_32,
-									this->_03, this->_13,	this->_23, this->_33));
-			}
+		const matriz_4x4 traspuesta(void) const {
+			return(matriz_4x4( 	this->_00, this->_10,	this->_20,	this->_30,
+								this->_01, this->_11, this->_21,	this->_31,
+								this->_02,	this->_12, this->_22, this->_32,
+								this->_03, this->_13,	this->_23, this->_33));
+		}
 //
 //			unsigned char esSingular(void);
 //			const real determinante(void);

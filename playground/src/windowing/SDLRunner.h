@@ -91,7 +91,8 @@ class SDLRunner: public PlaygroundRunner {
 		    case SDL_WINDOWEVENT:
 		    	switch(event->window.event) {
 		    		case SDL_WINDOWEVENT_RESIZED:
-		    			logger->verbose("WINDOW RESIZED");
+		    		case SDL_WINDOWEVENT_SIZE_CHANGED:
+		    			logger->debug("WINDOW RESIZED to [%d, %d]", event->window.data1, event->window.data2);
 		    			this->getContainer()->resize(event->window.data1, event->window.data2);
 		    		return 0;
 		    	}
@@ -173,10 +174,10 @@ class SDLRunner: public PlaygroundRunner {
 
 		bool setFullscreen(bool fullScreen) {
 			if (fullScreen) {
-				SDL_SetWindowFullscreen(this->window, SDL_WINDOW_FULLSCREEN);
+				SDL_SetWindowFullscreen(this->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
 				this->fullScreen = true;
 			} else {
-				SDL_SetWindowFullscreen(this->window, !SDL_WINDOW_FULLSCREEN);
+				SDL_SetWindowFullscreen(this->window, 0);
 				this->fullScreen = false;
 			}
 

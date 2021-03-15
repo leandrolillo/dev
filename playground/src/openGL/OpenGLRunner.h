@@ -51,7 +51,10 @@ class OpenGLRunner: public SDLRunner {
 		unsigned int majorVersion;
 		unsigned int minorVersion;
 
-		matriz_4x4 projection;
+		ShaderProgramResource *currentShaderProgram;
+
+		matriz_4x4 projection, viewMatrix, projectionViewMatrix, modelMatrix;
+		matriz_3x3 normalMatrix;
 	public:
 		static const unsigned char ID = 1;
 	public:
@@ -60,8 +63,7 @@ class OpenGLRunner: public SDLRunner {
 			glcontext = null;
 			majorVersion = 0;
 			minorVersion = 0;
-
-			projection = matriz_4x4::Identidad;
+			currentShaderProgram = null;
 		}
 
 		virtual unsigned char getId() {
@@ -125,6 +127,7 @@ class OpenGLRunner: public SDLRunner {
 
 		void resize(unsigned int height, unsigned int width) {
 			glViewport(0, 0, (GLsizei) width, (GLsizei) height);
+			//logger->debug("glViewPort(0, 0, %d, %d", width, height);
 			glPerspective(45.0, (GLfloat) width / (GLfloat) height, 0.1, 100.0);
 		}
 
@@ -149,6 +152,15 @@ class OpenGLRunner: public SDLRunner {
 			return this->projection;
 		}
 
+		void setViewMatrix(const matriz_4x4 &viewMatrix) {
+			this->viewMatrix = viewMatrix;
+			this->projectionViewMatrix = this->projection * this->viewMatrix;
+		}
+
+		void setModelMatrix(const matriz_4x4 &modelMatrix) {
+			this->modelMatrix = modelMatrix;
+			this->normalMatrix = ((matriz_3x3)modelMatrix).inversa().traspuesta();
+		}
 
 		unsigned int getMajorVersion() const {
 			return majorVersion;
@@ -161,14 +173,9 @@ class OpenGLRunner: public SDLRunner {
 		void useProgramResource(ShaderProgramResource *program) {
 
 			if(program != null) {
-				//logger->debug("Using program [%s]", program->toString().c_str());
-				GLint currentProgramId;
-				glGetIntegerv(GL_CURRENT_PROGRAM,&currentProgramId);
-
-				//logger->debug("Current program is [%d], new program is [%d]", currentProgramId, program->getId());
-
-				if(currentProgramId != program->getId()) {
+				if(currentShaderProgram == null || currentShaderProgram->getId() != program->getId()) {
 					glUseProgram(program->getId());
+					currentShaderProgram = program;
 
 					int maxLength = 0;
 					int numberOfParams = 0;
@@ -207,44 +214,161 @@ class OpenGLRunner: public SDLRunner {
 			} else {
 				logger->debug("Using program 0");
 				glUseProgram(0);
+				currentShaderProgram = null;
 			}
+		}
+
+		bool sendUnsignedInt(const char *name, unsigned int value) const {
+			if(currentShaderProgram != null) {
+				String errorMessage;
+				glProgramUniform1i(currentShaderProgram->getId(), glGetUniformLocation(currentShaderProgram->getId(), name), value);
+				if(!(errorMessage = getGlError()).empty()) {
+					logger->error("Error sending unsigned int %s: %s", name, errorMessage.c_str());
+					return false;
+				}
+			}
+			return true;
+		}
+
+		bool sendMatrix(const char *name, const matriz_4x4 &value) const {
+			if(currentShaderProgram != null) {
+				String errorMessage;
+				glUniformMatrix4fv(glGetUniformLocation(currentShaderProgram->getId(), name), 1, GL_TRUE, (real *)value);
+				if(!(errorMessage = getGlError()).empty()) {
+					logger->error("Error sending matrix %s: %s", name, errorMessage.c_str());
+					return false;
+				}
+			}
+			return true;
+		}
+
+		bool sendMatrix(const char *name, const matriz_3x3 &value) const {
+			if(currentShaderProgram != null) {
+				String errorMessage;
+				glUniformMatrix3fv(glGetUniformLocation(currentShaderProgram->getId(), name), 1, GL_TRUE, (real *)value);
+				if(!(errorMessage = getGlError()).empty()) {
+					logger->error("Error sending matrix %s: %s", name, errorMessage.c_str());
+					return false;
+				}
+			}
+			return true;
+		}
+
+		bool sendVector(const char *name, const vector &value) const {
+			if(currentShaderProgram != null) {
+				String errorMessage;
+				glUniform3fv(glGetUniformLocation(currentShaderProgram->getId(), name), 1, (real *)value);
+				if(!(errorMessage = getGlError()).empty()) {
+					logger->error("Error sending vector %s: %s", name, errorMessage.c_str());
+					return false;
+				}
+			}
+			return true;
+		}
+
+		bool sendReal(const char *name, const real &value) const {
+			if(currentShaderProgram != null) {
+				String errorMessage;
+				glUniform1fv(glGetUniformLocation(currentShaderProgram->getId(), name), 1, &value);
+				if(!(errorMessage = getGlError()).empty()) {
+					logger->error("Error sending real %s: %s", name, errorMessage.c_str());
+					return false;
+				}
+			}
+			return true;
+		}
+
+		bool sendMatrices() const {
+			return sendMatrix("matrices.model", this->modelMatrix) &&
+					sendMatrix("matrices.pvm", this->projection * this->viewMatrix * this->modelMatrix) &&
+					sendMatrix("matrices.normal", this->normalMatrix);
+		}
+
+
+		bool setMaterial(vector ambient, vector diffuse, vector specular, real shininess) const {
+			return sendVector("material.ambient", ambient) &&
+					sendVector("material.diffuse", diffuse) &&
+					sendVector("material.specular", specular) &&
+					sendReal("material.shininess", shininess);
+		}
+
+		bool setLight(vector position, vector ambient, vector diffuse, vector specular) const {
+			return sendVector("light.ambient", ambient) &&
+								sendVector("light.diffuse", diffuse) &&
+								sendVector("light.specular", specular) &&
+								sendVector("light.position", position);
 		}
 
 		/**
 		 * Expects [number of index] elements in every vertex array attribute. E.g. You can't have three vertices, six indices and six texture coordinates. See http://www.opengl.org/wiki/Vertex_Buffer_Object#Vertex_Stream
 		 */
-		void drawVertexArray(VertexArrayResource *vertexArrayResource)
+		void drawVertexArray(VertexArrayResource *vertexArrayResource) const
 		{
+			String errorMessage;
+
 			if(vertexArrayResource != null) {
 				glEnableVertexAttribArray(0);
 
 				if(vertexArrayResource->getTexture() != null) {
 					glBindTexture(GL_TEXTURE_2D, vertexArrayResource->getTexture()->getId());
-					logGlError("Error binding texture: [0x%x]");
+					if(!(errorMessage = getGlError()).empty()) {
+						logger->error("Error binding texture: %s", errorMessage.c_str());
+					}
 				}
 
 				glBindVertexArray(vertexArrayResource->getId());
-				logGlError("Error binding vertex array: [0x%x]");
+				if(!(errorMessage = getGlError()).empty()) {
+					logger->error("Error binding vertex array: %s", errorMessage.c_str());
+				}
 
 				VertexAttribPointer *indices = vertexArrayResource->getAttribute(INDEX_LOCATION);
 				if(indices != null) {
 					glDrawElements(vertexArrayResource->getPrimitiveType(), indices->getCount(), GL_UNSIGNED_INT, (GLvoid *)0);
-					logGlError("Error drawing elements: [0x%x]");
+					if(!(errorMessage = getGlError()).empty()) {
+						logger->error("Error drawing elements: %s", errorMessage.c_str());
+					}
 				} else {
 					glDrawArrays(vertexArrayResource->getPrimitiveType(), 0, vertexArrayResource->getAttribute(VERTEX_LOCATION)->getCount());
-					logGlError("Error drawing arrays: [0x%x]");
+					if(!(errorMessage = getGlError()).empty()) {
+						logger->error("Error drawing arrays: %s", errorMessage.c_str());
+					}
 				}
 
 				glDisableVertexAttribArray(0);
 			}
 		}
 
-		void logGlError(char *format) {
+		String getGlError() const {
+			String errorMessage;
+
 			GLenum glError;
 			while((glError = glGetError()) != GL_NO_ERROR)
 			{
-				logger->error(format, glError);
+				if(errorMessage.size() != 0) {
+					errorMessage += ", ";
+				}
+				if(glError == GL_INVALID_ENUM) {
+					errorMessage += "GL_INVALID_ENUM";
+				} else if(glError == GL_INVALID_VALUE) {
+					errorMessage += "GL_INVALID_VALUE";
+				} else if(glError == GL_INVALID_OPERATION) {
+					errorMessage += "GL_INVALID_OPERATION";
+				} else if(glError == 0x0503) {
+					errorMessage += "GL_STACK_OVERFLOW";
+				} else if(glError == 0x0504) {
+					errorMessage += "GL_STACK_UNDERFLOW";
+				} else if(glError == GL_OUT_OF_MEMORY) {
+					errorMessage += "GL_OUT_OF_MEMORY";
+				} else if(glError == GL_INVALID_FRAMEBUFFER_OPERATION) {
+					errorMessage += "GL_INVALID_FRAMEBUFFER_OPERATION";
+				} else if(glError == 0x8031) {
+					errorMessage += "GL_TABLE_TOO_LARGE";
+				} else {
+					errorMessage += std::to_string(glError);
+				}
 			}
+
+			return errorMessage;
 		}
 
 		//TODO: Review if required to migrate this method to VBOs
