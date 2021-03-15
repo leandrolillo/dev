@@ -2,6 +2,13 @@
 
 uniform sampler2D textureUnit;
 
+struct Matrices {
+	mat4 model;
+	mat4 pvm;
+	mat3 normal;
+};
+uniform Matrices matrices;
+
 struct Material {
     vec3 ambient;
     vec3 diffuse;
@@ -44,7 +51,7 @@ void main()
 
 	// specular
 	vec3 viewDir = normalize(viewPosition - vec3(inputData.worldPosition));
-	vec3 reflectDir = reflect(-lightDir, norm);
+	vec3 reflectDir = reflect(lightDir, norm);
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
 	vec3 specular = spec * light.specular * material.specular;
 

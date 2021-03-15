@@ -53,6 +53,8 @@ class OpenGLRunner: public SDLRunner {
 
 		ShaderProgramResource *currentShaderProgram;
 
+		VertexArrayResource *sphere;
+
 		matriz_4x4 projection, viewMatrix, projectionViewMatrix, modelMatrix;
 		matriz_3x3 normalMatrix;
 	public:
@@ -64,6 +66,8 @@ class OpenGLRunner: public SDLRunner {
 			majorVersion = 0;
 			minorVersion = 0;
 			currentShaderProgram = null;
+
+			sphere = null;
 		}
 
 		virtual unsigned char getId() {
@@ -106,6 +110,8 @@ class OpenGLRunner: public SDLRunner {
 					"0",//glewGetString(GLEW_VERSION),
 					glGetString(GL_VENDOR),
 					glGetString(GL_RENDERER));
+
+			sphere = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/core/sphere.json", "video/vertexArray");
 
 			return true;
 		}
@@ -171,12 +177,12 @@ class OpenGLRunner: public SDLRunner {
 		}
 
 		void useProgramResource(ShaderProgramResource *program) {
-
 			if(program != null) {
 				if(currentShaderProgram == null || currentShaderProgram->getId() != program->getId()) {
 					glUseProgram(program->getId());
 					currentShaderProgram = program;
 
+#ifdef VERBOSE
 					int maxLength = 0;
 					int numberOfParams = 0;
 					glGetProgramiv(program->getId(), GL_ACTIVE_ATTRIBUTES, &numberOfParams);
@@ -209,7 +215,7 @@ class OpenGLRunner: public SDLRunner {
 						logger->debug("		Uniform: [%s] of type [%d] and size [%d]", nameBuffer, type, size);
 					}
 					delete [] nameBuffer;
-
+#endif
 				}
 			} else {
 				logger->debug("Using program 0");
@@ -406,53 +412,11 @@ class OpenGLRunner: public SDLRunner {
 //			}
 		}
 
-		void glSphere(real radius, real dFi = radian(10), real dTita = radian(10))
+		void glSphere(real radius)
 		{
-//			real oneOverTwoPi = 1.0f / (2.0f * M_PI);
-//			real oneOverPi = 1.0f / M_PI;
-//
-//			glBegin(GL_TRIANGLES);
-//			for(real fi = 0; fi < radian(360) - dFi; fi += dFi)
-//			{
-//				for(real tita = 0; tita < radian(180) - dTita; tita+= dTita)
-//				{
-//					vector2 texel1 = vector2(fi * oneOverTwoPi,   tita * oneOverPi);
-//					vector2 texel2 = vector2(fi * oneOverTwoPi,   (tita + dTita) * oneOverPi);
-//					vector2 texel3 = vector2((fi + dFi) * oneOverTwoPi,   tita * oneOverPi);
-//					vector2 texel4 = vector2((fi + dFi) * oneOverTwoPi,   (tita + dTita) * oneOverPi);
-//
-//					vector3 vertex1 = radius * vector3(radius * sin(tita) * sin(fi), radius * cos(tita), radius * sin(tita) * cos(fi));
-//					vector3 vertex2 = radius * vector3(radius * sin(tita + dTita) * sin(fi), radius * cos(tita + dTita), radius * sin(tita + dTita) * cos(fi));
-//					vector3 vertex3 = radius * vector3(radius * sin(tita) * sin(fi + dFi), radius * cos(tita), radius * sin(tita) * cos(fi + dFi));
-//					vector3 vertex4 = radius * vector3(radius * sin(tita + dTita) * sin(fi + dFi), radius * cos(tita + dTita), radius * sin(tita + dTita) * cos(fi + dFi));
-//
-//					glNormal3fv((float *)VectorUtilities::normalizar(vertex1));
-//					glTexCoord2fv((float *)texel1);
-//					glVertex3fv((float *)vertex1);
-//
-//					glNormal3fv((float *)VectorUtilities::normalizar(vertex2));
-//					glTexCoord2fv((float *)texel2);
-//					glVertex3fv((float *)vertex2);
-//
-//					glNormal3fv((float *)VectorUtilities::normalizar(vertex3));
-//					glTexCoord2fv((float *)texel3);
-//					glVertex3fv((float *)vertex3);
-//
-//					glNormal3fv((float *)VectorUtilities::normalizar(vertex3));
-//					glTexCoord2fv((float *)texel3);
-//					glVertex3fv((float *)vertex3);
-//
-//					glNormal3fv((float *)VectorUtilities::normalizar(vertex2));
-//					glTexCoord2fv((float *)texel2);
-//					glVertex3fv((float *)vertex2);
-//
-//					glNormal3fv((float *)VectorUtilities::normalizar(vertex4));
-//					glTexCoord2fv((float *)texel4);
-//					glVertex3fv((float *)vertex4);
-//				}
-//			}
-//			glEnd();
-
+			sendMatrix("matrices.model", this->modelMatrix * matriz_4x4::matrizZoom(radius, radius, radius));
+			drawVertexArray(sphere);
+			sendMatrix("matrices.model", this->modelMatrix);
 		}
 
 		void glPlane(vector posicion, vector normal, vector origen,

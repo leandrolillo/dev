@@ -113,43 +113,13 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 			triangleVertexArray = (VertexArrayResource *)resourceManager->load("geometry/triangle.json", "video/vertexArray");
 
 			simpleShaderProgram = (ShaderProgramResource *)resourceManager->load("shaders/simple.program.json", "video/shaderProgram");
+			toonShaderProgram = (ShaderProgramResource *)resourceManager->load("shaders/toon.330.program.json", "video/shaderProgram");
 
-			if(openGl->getMajorVersion() >= 3) {
-				//shaderProgramResource = (ShaderProgramResource *)resourceManager->load("shaders/lighting.140.program.json", "video/shaderProgram");
-				toonShaderProgram = (ShaderProgramResource *)resourceManager->load("shaders/toon.140.program.json", "video/shaderProgram");
-			} else {
-				//shaderProgramResource = (ShaderProgramResource *)resourceManager->load("shaders/lighting.120.program.json", "video/shaderProgram");
-				toonShaderProgram = (ShaderProgramResource *)resourceManager->load("shaders/toon.120.program.json", "video/shaderProgram");
-			}
 
 			glClearColor(0.0, 0.5, 0.0, 0.0);
 			glEnable(GL_DEPTH_TEST);
 //			glEnable(GL_CULL_FACE);
 //			glCullFace(GL_BACK);
-
-//			glShadeModel(GL_SMOOTH);
-
-
-//
-////			glEnable(GL_BLEND);
-////			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-//
-//			glEnable(GL_TEXTURE_2D);
-//			glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-//
-//			glEnable(GL_LIGHTING);
-//			//glLightModelfv(GL_LIGHT_MODEL_AMBIENT, (float *)vector4(0.2, 0.2, 0.2));
-//
-//			glEnable(GL_LIGHT0);
-//			//glLightfv(GL_LIGHT0, GL_POSITION, (float *)vector4(0.0, 0.0, 0.0, 1.0));
-//			glLightfv(GL_LIGHT0, GL_AMBIENT_AND_DIFFUSE, (float *)vector3(1.0, 1.0, 1.0));
-//			glLightfv(GL_LIGHT0, GL_SPECULAR, (float *)vector3(0.0, 0.0, 0.0));
-//
-//
-//			glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, (float *)vector3(1.0, 1.0, 1.0));
-//			glMaterialfv(GL_FRONT, GL_EMISSION, (float *)vector3(0.0, 0.0, 0.0));
-//			glMaterialfv(GL_FRONT, GL_SPECULAR, (float *)vector3(0.0, 0.0, 0.0));
-//			glMaterialf(GL_FRONT, GL_SHININESS, 128.0);
 
 			glUseProgram(null);
 
@@ -265,11 +235,17 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 //			openGl->glDrawGeometry(sphereGeometryResource);
 //			glPopMatrix();
 
+
 			if(toonShaderProgram != null) {
 				openGl->useProgramResource(toonShaderProgram);
 			}
 
+			openGl->setMaterial(vector(1.0f, 0.5f, 0.31f), vector(1.0f, 0.5f, 0.31f), vector(0.5f, 0.5f, 0.5f), 32.0f);
+			openGl->setLight(lightPosition, vector(0.2f, 0.2f, 0.2f), vector(0.5f, 0.5f, 0.5f), vector(1.0f, 1.0f, 1.0f));
+			openGl->sendVector("viewPosition", viewPosition);
+
 			openGl->setViewMatrix(matriz_4x4::matrizTraslacion(viewPosition));
+
 			openGl->setModelMatrix(matriz_4x4::matrizBase(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), vector3(2.0, 1.0, 0.0)));
 			openGl->sendMatrices();
 
@@ -287,6 +263,12 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 
 			openGl->setMaterial(vector(1.0f, 0.5f, 0.31f), vector(1.0f, 0.5f, 0.31f), vector(0.5f, 0.5f, 0.5f), 32.0f);
 			openGl->setLight(lightPosition, vector(0.2f, 0.2f, 0.2f), vector(0.5f, 0.5f, 0.5f), vector(1.0f, 1.0f, 1.0f));
+			openGl->sendVector("viewPosition", viewPosition);
+
+			openGl->setModelMatrix(matriz_4x4::matrizTraslacion(lightPosition));
+			openGl->sendMatrices();
+			openGl->glSphere(0.1f);
+
 
 			openGl->setModelMatrix(matriz_4x4::matrizBase(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), vector3(2.0, -1.0, 0.0)));
 			openGl->sendMatrices();
