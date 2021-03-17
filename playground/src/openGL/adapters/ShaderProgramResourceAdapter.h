@@ -144,11 +144,11 @@ class ShaderProgramResourceAdapter: public ResourceAdapter {
 			}
 
 			glUseProgram(resource->getId());
-			logger->debug("vertex attrib location = [%d]", glGetAttribLocation(resource->getId(), "vertex"));
-			logger->debug("index location = [%d]", glGetAttribLocation(resource->getId(), "index"));
-			logger->debug("normal attrib location = [%d]", glGetAttribLocation(resource->getId(), "normal"));
-			logger->debug("textureCoordinate attrib location = [%d]", glGetAttribLocation(resource->getId(), "textureCoordinate"));
-			logger->debug("color attrib location = [%d]", glGetAttribLocation(resource->getId(), "color"));
+			logger->verbose("vertex attrib location = [%d]", glGetAttribLocation(resource->getId(), "vertex"));
+			logger->verbose("index location = [%d]", glGetAttribLocation(resource->getId(), "index"));
+			logger->verbose("normal attrib location = [%d]", glGetAttribLocation(resource->getId(), "normal"));
+			logger->verbose("textureCoordinate attrib location = [%d]", glGetAttribLocation(resource->getId(), "textureCoordinate"));
+			logger->verbose("color attrib location = [%d]", glGetAttribLocation(resource->getId(), "color"));
 
 			return resource;
 		}

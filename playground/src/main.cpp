@@ -3,6 +3,7 @@
 
 #define GL_SILENCE_DEPRECATION
 #include <OpenGLRunner.h>
+#include <AudioRunner.h>
 
 class PhysicsPlayground: public Playground {
 private:
@@ -29,7 +30,7 @@ public:
 class PlaygroundDemoRunner : public PlaygroundRunner {
 	private:
 		OpenGLRunner *openGl;
-		//AudioRunner *audio;
+		AudioRunner *audio;
 
 		Logger *logger;
 
@@ -38,6 +39,9 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 		vector lightPosition;
 		vector *currentPosition;
 		real rotation;
+
+		Source *lightSource;
+
 
 		TextureResource *pngTexture;
 		TextureResource *jpgTexture;
@@ -49,14 +53,13 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 		GeometryResource *triangleGeometry;
 
 		ShaderProgramResource *toonShaderProgram;
-
 	public:
 		static const unsigned char ID = 101;
 
 	public:
 		PlaygroundDemoRunner() /*: sphereGeometryResource(0) */{
 			openGl = null;
-			//audio = null;
+			audio = null;
 
 			logger = Logger::getLogger("Main.cpp");
 
@@ -69,6 +72,8 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 			triangleGeometry = null;
 			sphereVertexArray = null;
 			sphereGeometry = null;
+
+			lightSource = null;
 		}
 
 		virtual unsigned char getInterests() {
@@ -88,7 +93,7 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 		virtual bool init() {
 			//TODO: Review why can´t use public static IDs properties from each class
 			openGl = (OpenGLRunner *) this->getContainer()->getRunner(1);
-			//audio = (AudioRunner *)this->getContainer()->getRunner(3);
+			audio = (AudioRunner *)this->getContainer()->getRunner(3);
 
 			if(!openGl) {
 				logger->error("Could not find openGl runner");
@@ -98,8 +103,9 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 			ResourceManager *resourceManager = this->getContainer()->getResourceManager();
 
 			// demo stuff
-//			Source *backgroundSource = audio->createSource("background.ogg");
-//			audio->playSource(backgroundSource);
+			lightSource = audio->createSource("voltage.wav");
+			audio->playSource(lightSource);
+
 
 			pngTexture = (TextureResource *)resourceManager->load("images/TEXTURA.PNG", "video/texture");
 			jpgTexture = (TextureResource *)resourceManager->load("images/irs.JPG", "video/texture");
@@ -176,6 +182,10 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 			openGl->setModelMatrix(matriz_4x4::matrizTraslacion(lightPosition));
 			openGl->sendMatrices();
 			openGl->glSphere(0.1f);
+
+			lightSource->setPosition(lightPosition);
+			audio->updateSource(lightSource);
+			audio->updateListener(viewPosition);
 
 
 
@@ -277,6 +287,7 @@ class PlaygroundTest: public Playground {
 			Playground::init();
 			this->addRunner(new PlaygroundDemoRunner());
 			this->addRunner(new OpenGLRunner());
+			this->addRunner(new AudioRunner());
 
 		}
 };

@@ -186,7 +186,7 @@ public:
 	 * Return the folder part of a path to a file.
 	 */
 	String getFileDirectoryName(const String &filePath) {
-		unsigned int location = filePath.find_last_of('/');
+		unsigned long location = filePath.find_last_of('/');
 		return (location == std::string::npos ? "" : filePath.substr(0, location + 1));
 
 	}

@@ -8,23 +8,9 @@
 #ifndef NORMALGENERATOR_H_
 #define NORMALGENERATOR_H_
 
-#include"../../resources/GeometryResource.h"
-#include "../../math/MathUtilities.h"
-#include"../../log/Logger.h"
-
-/**
- * Stolen constants from gl.h to avoid including it. TODO: Review if we need to replace this by own enum.
- */
-#define POINTS                         0x0000
-#define LINES                          0x0001
-#define LINE_LOOP                      0x0002
-#define LINE_STRIP                     0x0003
-#define TRIANGLES                      0x0004
-#define TRIANGLE_STRIP                 0x0005
-#define TRIANGLE_FAN                   0x0006
-#define QUADS                          0x0007
-#define QUAD_STRIP                     0x0008
-#define POLYGON                        0x0009
+#include<resources/GeometryResource.h>
+#include <MathUtilities.h>
+#include <Logger.h>
 
 
 class NormalGenerator

@@ -10,7 +10,7 @@
 #include <InvalidArgumentException.h>
 #include <ResourceAdapter.h>
 #include <resources/GeometryResource.h>
-#include "../parser/JsonParser.h"
+#include <JsonParser.h>
 #include "normalGenerators/NormalGenerator.h"
 #include <OpenGL/gl3.h>
 #include <OpenGL/glext.h>

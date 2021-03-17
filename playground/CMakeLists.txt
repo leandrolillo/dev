@@ -18,10 +18,11 @@ add_subdirectory(src/video)
 add_subdirectory(src/windowing)
 add_subdirectory(src/openGL)
 add_subdirectory(src/parser)
+add_subdirectory(src/audio)
 add_subdirectory(src/test)
 
 add_executable(playground src/Main.cpp)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
 
-target_link_libraries(playground core windowing math openGL)
+target_link_libraries(playground core windowing math openGL audio)

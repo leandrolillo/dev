@@ -136,9 +136,24 @@ class FileParser {
 			this->close();
 		}
 
+		/**
+		 * returns the number of elements (of size_t) actually read. If that number < count then there was an error reading or reached eof.
+		 */
 		size_t read(void* data, size_t size, size_t count)
 		{
 			return fread(data, size, count, getStream());
+		}
+
+		bool skip(size_t size, size_t count) {
+
+			if(fseek(getStream(), size * count, SEEK_CUR) != 0) {
+				if(feof(getStream()))
+					fseek(getStream(), 0, SEEK_END);
+
+				return false;
+			}
+
+			return true;
 		}
 
 		void close()
