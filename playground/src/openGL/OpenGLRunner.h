@@ -55,7 +55,10 @@ class OpenGLRunner: public SDLRunner {
 
 		ShaderProgramResource *currentShaderProgram;
 
+		ShaderProgramResource *defaultShaderProgram;
+
 		VertexArrayResource *sphere;
+		VertexArrayResource *axis;
 
 		matriz_4x4 projection, viewMatrix, projectionViewMatrix, modelMatrix;
 		matriz_3x3 normalMatrix;
@@ -68,8 +71,10 @@ class OpenGLRunner: public SDLRunner {
 			majorVersion = 0;
 			minorVersion = 0;
 			currentShaderProgram = null;
+			defaultShaderProgram = null;
 
 			sphere = null;
+			axis = null;
 		}
 
 		virtual unsigned char getId() {
@@ -113,7 +118,11 @@ class OpenGLRunner: public SDLRunner {
 					glGetString(GL_VENDOR),
 					glGetString(GL_RENDERER));
 
-			sphere = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/core/sphere.json", "video/vertexArray");
+			sphere = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("core/sphere.json", "video/vertexArray");
+			axis = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("core/axis.json", "video/vertexArray");
+			defaultShaderProgram = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("core/simple.program.json", "video/shaderProgram");
+
+			this->useProgramResource(defaultShaderProgram);
 
 			return true;
 		}
@@ -176,6 +185,10 @@ class OpenGLRunner: public SDLRunner {
 
 		unsigned int getMinorVersion() const {
 			return minorVersion;
+		}
+
+		ShaderProgramResource *getDefaultShaderProgram() const {
+			return this->defaultShaderProgram;
 		}
 
 		void useProgramResource(ShaderProgramResource *program) {

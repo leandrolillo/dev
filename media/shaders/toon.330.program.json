@@ -1,4 +1,4 @@
 {
-	vertexShaders: ["shaders/toon.330.vertexShader.glsl"],
-	fragmentShaders: ["shaders/toon.330.fragmentShader.glsl"],
+	vertexShaders: ["toon.330.vertexShader.glsl"],
+	fragmentShaders: ["toon.330.fragmentShader.glsl"],
 }

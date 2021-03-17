@@ -84,7 +84,11 @@ class ShaderProgramResourceAdapter: public ResourceAdapter {
 					std::vector<String> vertexShadersFiles = parser->readStringArray();
 
 					for(std::vector<String>::iterator stringIterator = vertexShadersFiles.begin(); stringIterator != vertexShadersFiles.end(); stringIterator++) {
-						ShaderResource *shader = (ShaderResource *)getResourceManager()->load(*stringIterator, shadersMimeTypes[token]);
+						String filename = getResourceManager()->addPaths(
+								getResourceManager()->getFileDirectoryName(fileParser.getFilename()),
+								*stringIterator);
+
+						ShaderResource *shader = (ShaderResource *)getResourceManager()->load(filename, shadersMimeTypes[token]);
 						if(shader != null)
 							resource->getShaders().push_back(shader);
 						else

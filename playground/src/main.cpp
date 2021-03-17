@@ -112,7 +112,7 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 			sphereVertexArray = (VertexArrayResource *)resourceManager->load("geometry/sphere.json", "video/vertexArray");
 			triangleVertexArray = (VertexArrayResource *)resourceManager->load("geometry/triangle.json", "video/vertexArray");
 
-			simpleShaderProgram = (ShaderProgramResource *)resourceManager->load("shaders/simple.program.json", "video/shaderProgram");
+//			simpleShaderProgram = (ShaderProgramResource *)resourceManager->load("shaders/simple.program.json", "video/shaderProgram");
 			toonShaderProgram = (ShaderProgramResource *)resourceManager->load("shaders/toon.330.program.json", "video/shaderProgram");
 
 
@@ -260,9 +260,7 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 			openGl->sendMatrices();
 			openGl->drawVertexArray(sphereVertexArray);
 
-			if(simpleShaderProgram) {
-				openGl->useProgramResource(simpleShaderProgram);
-			}
+			openGl->useProgramResource(openGl->getDefaultShaderProgram());
 
 			openGl->setMaterial(material);
 			openGl->setLight(light);
@@ -348,7 +346,7 @@ class PlaygroundTest: public Playground {
 };
 
 int main(int, char**){
-	PlaygroundTest playground("/Users/leandro/huevadas/projects/dev/media");
+	PlaygroundTest playground("/Users/leandro/huevadas/projects/dev/media/");
     playground.run();
     
     return 0;
