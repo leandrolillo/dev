@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 #define GL_SILENCE_DEPRECATION
-#include "openGL/OpenGLRunner.h"
+#include <OpenGLRunner.h>
 
 class PhysicsPlayground: public Playground {
 private:
@@ -240,8 +240,11 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 				openGl->useProgramResource(toonShaderProgram);
 			}
 
-			openGl->setMaterial(vector(1.0f, 0.5f, 0.31f), vector(1.0f, 0.5f, 0.31f), vector(0.5f, 0.5f, 0.5f), 32.0f);
-			openGl->setLight(lightPosition, vector(0.2f, 0.2f, 0.2f), vector(0.5f, 0.5f, 0.5f), vector(1.0f, 1.0f, 1.0f));
+			MaterialResource material(vector(1.0f, 0.5f, 0.31f), vector(1.0f, 0.5f, 0.31f), vector(0.5f, 0.5f, 0.5f), 32.0f);
+			LightResource light(lightPosition, vector(0.2f, 0.2f, 0.2f), vector(0.5f, 0.5f, 0.5f), vector(1.0f, 1.0f, 1.0f), 1.0f);
+
+			openGl->setMaterial(material);
+			openGl->setLight(light);
 			openGl->sendVector("viewPosition", viewPosition);
 
 			openGl->setViewMatrix(matriz_4x4::matrizTraslacion(viewPosition));
@@ -261,8 +264,8 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 				openGl->useProgramResource(simpleShaderProgram);
 			}
 
-			openGl->setMaterial(vector(1.0f, 0.5f, 0.31f), vector(1.0f, 0.5f, 0.31f), vector(0.5f, 0.5f, 0.5f), 32.0f);
-			openGl->setLight(lightPosition, vector(0.2f, 0.2f, 0.2f), vector(0.5f, 0.5f, 0.5f), vector(1.0f, 1.0f, 1.0f));
+			openGl->setMaterial(material);
+			openGl->setLight(light);
 			openGl->sendVector("viewPosition", viewPosition);
 
 			openGl->setModelMatrix(matriz_4x4::matrizTraslacion(lightPosition));

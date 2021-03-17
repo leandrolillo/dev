@@ -12,20 +12,22 @@
 #include <OpenGL/gl3.h>
 #include <OpenGL/glext.h>
 
-#include "../core/Playground.h"
+#include <Playground.h>
 
-#include "../video/adapters/PngResourceAdapter.h"
-#include "../video/adapters/JpegResourceAdapter.h"
-#include "../video/adapters/TgaResourceAdapter.h"
-#include "resources/ShaderProgramResource.h"
-#include "adapters/TextureResourceAdapter.h"
-#include "adapters/GeometryResourceAdapter.h"
-#include "adapters/VertexArrayAdapter.h"
-#include "adapters/ShaderResourceAdapter.h"
-#include "adapters/ShaderProgramResourceAdapter.h"
-#include "../windowing/SDLRunner.h"
+#include <adapters/PngResourceAdapter.h>
+#include <adapters/JpegResourceAdapter.h>
+#include <adapters/TgaResourceAdapter.h>
+#include <adapters/TextureResourceAdapter.h>
+#include <adapters/GeometryResourceAdapter.h>
+#include <adapters/VertexArrayAdapter.h>
+#include <adapters/ShaderResourceAdapter.h>
+#include <adapters/ShaderProgramResourceAdapter.h>
+#include <resources/ShaderProgramResource.h>
+#include <resources/LightResource.h>
 
-#include "../math/Math3d.h"
+#include <SDLRunner.h>
+
+#include <Math3d.h>
 
 #define axis_length 1.0f
 
@@ -291,18 +293,18 @@ class OpenGLRunner: public SDLRunner {
 		}
 
 
-		bool setMaterial(vector ambient, vector diffuse, vector specular, real shininess) const {
-			return sendVector("material.ambient", ambient) &&
-					sendVector("material.diffuse", diffuse) &&
-					sendVector("material.specular", specular) &&
-					sendReal("material.shininess", shininess);
+		bool setMaterial(const MaterialResource &material) const {
+			return sendVector("material.ambient", material.getAmbient()) &&
+					sendVector("material.diffuse", material.getDiffuse()) &&
+					sendVector("material.specular", material.getSpecular()) &&
+					sendReal("material.shininess", material.getShininess());
 		}
 
-		bool setLight(vector position, vector ambient, vector diffuse, vector specular) const {
-			return sendVector("light.ambient", ambient) &&
-								sendVector("light.diffuse", diffuse) &&
-								sendVector("light.specular", specular) &&
-								sendVector("light.position", position);
+		bool setLight(const LightResource &light) const {
+			return sendVector("light.ambient", light.getAmbient() * light.getShininess()) &&
+								sendVector("light.diffuse", light.getDiffuse() * light.getShininess()) &&
+								sendVector("light.specular", light.getSpecular() * light.getShininess()) &&
+								sendVector("light.position", light.getPosition());
 		}
 
 		/**
