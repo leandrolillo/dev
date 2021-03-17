@@ -17,6 +17,7 @@ add_subdirectory(src/resources)
 add_subdirectory(src/video)
 add_subdirectory(src/windowing)
 add_subdirectory(src/openGL)
+add_subdirectory(src/parser)
 add_subdirectory(src/test)
 
 add_executable(playground src/Main.cpp)

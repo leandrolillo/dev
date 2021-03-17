@@ -7,4 +7,4 @@ target_link_libraries(openGL INTERFACE ${OPENGL_LIBRARIES})
 target_include_directories(openGL INTERFACE ${OPENGL_INCLUDE_DIR})
 
 # library link dependencies
-target_link_libraries(openGL INTERFACE core windowing video math)
+target_link_libraries(openGL INTERFACE core parser windowing video math)

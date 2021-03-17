@@ -20,7 +20,7 @@ private:
 	std::vector<vector2> textureCoordinates;
 	std::vector<vector3> colors;
 	String textureFile;
-	unsigned int type;
+	String type;
 public:
 	GeometryResource(unsigned int id) :
 			Resource(id, "video/geometry") {
@@ -76,11 +76,11 @@ public:
 		this->indices = indexes;
 	}
 
-	unsigned int getType() const {
+	const String &getType() const {
 		return type;
 	}
 
-	void setType(unsigned int type) {
+	void setType(String type) {
 		this->type = type;
 	}
 };

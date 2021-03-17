@@ -118,7 +118,7 @@ class ShaderProgramResourceAdapter: public ResourceAdapter {
 				return null;
 			}
 
-			Resource *vertexArray = this->getResourceManager()->load("geometry/core/triangle.json", "video/vertexArray");
+			Resource *vertexArray = this->getResourceManager()->load("geometry/core/sphere.json", "video/vertexArray");
 			if(vertexArray) {
 				glBindVertexArray(vertexArray->getId());
 				glValidateProgram(resource->getId());

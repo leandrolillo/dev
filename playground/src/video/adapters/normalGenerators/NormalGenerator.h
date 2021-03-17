@@ -156,10 +156,9 @@ class PerVertexGLTrianglesNormalGenerator : public NormalGenerator
 class NormalGeneratorFactory
 {
 	public:
-		static NormalGenerator *getGenerator(unsigned int primitiveType)
+		static NormalGenerator *getGenerator(String primitiveType)
 		{
-			switch(primitiveType) {
-				case TRIANGLES:
+			if(primitiveType == "triangles") {
 					static PerVertexGLTrianglesNormalGenerator _perVertexGLTrianglesNormalGeneratorInstance;
 					return &_perVertexGLTrianglesNormalGeneratorInstance;
 			}

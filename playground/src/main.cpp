@@ -48,7 +48,6 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 		GeometryResource *sphereGeometry;
 		GeometryResource *triangleGeometry;
 
-		ShaderProgramResource *simpleShaderProgram;
 		ShaderProgramResource *toonShaderProgram;
 
 	public:
@@ -66,7 +65,6 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 			pngTexture = null;
 			jpgTexture = null;
 			triangleVertexArray = null;
-			simpleShaderProgram = null;
 			toonShaderProgram = null;
 			triangleGeometry = null;
 			sphereVertexArray = null;
@@ -112,7 +110,6 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 			sphereVertexArray = (VertexArrayResource *)resourceManager->load("geometry/sphere.json", "video/vertexArray");
 			triangleVertexArray = (VertexArrayResource *)resourceManager->load("geometry/triangle.json", "video/vertexArray");
 
-//			simpleShaderProgram = (ShaderProgramResource *)resourceManager->load("shaders/simple.program.json", "video/shaderProgram");
 			toonShaderProgram = (ShaderProgramResource *)resourceManager->load("shaders/toon.330.program.json", "video/shaderProgram");
 
 
@@ -127,73 +124,6 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 			return true;
 		}
 
-		GeometryResource buildSphereGeometry()
-		{
-			GeometryResource resource(0);
-
-			real dFi = radian(10);
-			real dTita = radian(10);
-			real radius = 1;
-
-			real oneOverTwoPi = 1.0f / (2.0f * M_PI);
-			real oneOverPi = 1.0f / M_PI;
-
-			for(real fi = 0; fi < radian(360) - dFi; fi += dFi)
-			{
-				for(real tita = 0; tita < radian(180) - dTita; tita+= dTita)
-				{
-					vector2 texel1 = vector2(fi * oneOverTwoPi,   tita * oneOverPi);
-					vector2 texel2 = vector2(fi * oneOverTwoPi,   (tita + dTita) * oneOverPi);
-					vector2 texel3 = vector2((fi + dFi) * oneOverTwoPi,   tita * oneOverPi);
-					vector2 texel4 = vector2((fi + dFi) * oneOverTwoPi,   (tita + dTita) * oneOverPi);
-
-					vector3 vertex1 = radius * vector3(radius * sin(tita) * sin(fi), radius * cos(tita), radius * sin(tita) * cos(fi));
-					vector3 vertex2 = radius * vector3(radius * sin(tita + dTita) * sin(fi), radius * cos(tita + dTita), radius * sin(tita + dTita) * cos(fi));
-					vector3 vertex3 = radius * vector3(radius * sin(tita) * sin(fi + dFi), radius * cos(tita), radius * sin(tita) * cos(fi + dFi));
-					vector3 vertex4 = radius * vector3(radius * sin(tita + dTita) * sin(fi + dFi), radius * cos(tita + dTita), radius * sin(tita + dTita) * cos(fi + dFi));
-
-					resource.getVertices().push_back(vertex1);
-					resource.getNormals().push_back(VectorUtilities::normalizar(vertex1));
-					resource.getTextureCoordinates().push_back(texel1);
-					resource.getIndices().push_back(resource.getIndices().size());
-					resource.getColors().push_back(vector3(1.0, 1.0, 1.0));
-
-					resource.getVertices().push_back(vertex2);
-					resource.getNormals().push_back(VectorUtilities::normalizar(vertex2));
-					resource.getTextureCoordinates().push_back(texel2);
-					resource.getIndices().push_back(resource.getIndices().size());
-					resource.getColors().push_back(vector3(1.0, 1.0, 1.0));
-
-					resource.getVertices().push_back(vertex3);
-					resource.getNormals().push_back(VectorUtilities::normalizar(vertex3));
-					resource.getTextureCoordinates().push_back(texel3);
-					resource.getIndices().push_back(resource.getIndices().size());
-					resource.getColors().push_back(vector3(1.0, 1.0, 1.0));
-
-					resource.getVertices().push_back(vertex3);
-					resource.getNormals().push_back(VectorUtilities::normalizar(vertex3));
-					resource.getTextureCoordinates().push_back(texel3);
-					resource.getIndices().push_back(resource.getIndices().size());
-					resource.getColors().push_back(vector3(1.0, 1.0, 1.0));
-
-
-					resource.getVertices().push_back(vertex2);
-					resource.getNormals().push_back(VectorUtilities::normalizar(vertex2));
-					resource.getTextureCoordinates().push_back(texel2);
-					resource.getIndices().push_back(resource.getIndices().size());
-					resource.getColors().push_back(vector3(1.0, 1.0, 1.0));
-
-					resource.getVertices().push_back(vertex4);
-					resource.getNormals().push_back(VectorUtilities::normalizar(vertex4));
-					resource.getTextureCoordinates().push_back(texel4);
-					resource.getIndices().push_back(resource.getIndices().size());
-					resource.getColors().push_back(vector3(1.0, 1.0, 1.0));
-				}
-			}
-
-			return resource;
-		}
-
 		void logGlError(char *format) {
 			GLenum glError;
 			while((glError = glGetError()) != GL_NO_ERROR)
@@ -203,8 +133,6 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 		}
 
 		virtual LoopResult doLoop() {
-			openGl->glAxis();
-
 			//glBindTexture(GL_TEXTURE_2D, 0);
 
 //			glDisable(GL_LIGHTING);
@@ -240,6 +168,17 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 				openGl->useProgramResource(toonShaderProgram);
 			}
 
+
+			openGl->setModelMatrix(matriz_4x4::Identidad);
+			openGl->sendMatrices();
+			openGl->glAxis();
+
+			openGl->setModelMatrix(matriz_4x4::matrizTraslacion(lightPosition));
+			openGl->sendMatrices();
+			openGl->glSphere(0.1f);
+
+
+
 			MaterialResource material(vector(1.0f, 0.5f, 0.31f), vector(1.0f, 0.5f, 0.31f), vector(0.5f, 0.5f, 0.5f), 32.0f);
 			LightResource light(lightPosition, vector(0.2f, 0.2f, 0.2f), vector(0.5f, 0.5f, 0.5f), vector(1.0f, 1.0f, 1.0f), 1.0f);
 
@@ -266,9 +205,6 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 			openGl->setLight(light);
 			openGl->sendVector("viewPosition", viewPosition);
 
-			openGl->setModelMatrix(matriz_4x4::matrizTraslacion(lightPosition));
-			openGl->sendMatrices();
-			openGl->glSphere(0.1f);
 
 
 			openGl->setModelMatrix(matriz_4x4::matrizBase(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), vector3(2.0, -1.0, 0.0)));
@@ -344,6 +280,73 @@ class PlaygroundTest: public Playground {
 
 		}
 };
+
+GeometryResource buildSphereGeometry()
+{
+	GeometryResource resource(0);
+
+	real dFi = radian(10);
+	real dTita = radian(10);
+	real radius = 1;
+
+	real oneOverTwoPi = 1.0f / (2.0f * M_PI);
+	real oneOverPi = 1.0f / M_PI;
+
+	for(real fi = 0; fi < radian(360) - dFi; fi += dFi)
+	{
+		for(real tita = 0; tita < radian(180) - dTita; tita+= dTita)
+		{
+			vector2 texel1 = vector2(fi * oneOverTwoPi,   tita * oneOverPi);
+			vector2 texel2 = vector2(fi * oneOverTwoPi,   (tita + dTita) * oneOverPi);
+			vector2 texel3 = vector2((fi + dFi) * oneOverTwoPi,   tita * oneOverPi);
+			vector2 texel4 = vector2((fi + dFi) * oneOverTwoPi,   (tita + dTita) * oneOverPi);
+
+			vector3 vertex1 = radius * vector3(radius * sin(tita) * sin(fi), radius * cos(tita), radius * sin(tita) * cos(fi));
+			vector3 vertex2 = radius * vector3(radius * sin(tita + dTita) * sin(fi), radius * cos(tita + dTita), radius * sin(tita + dTita) * cos(fi));
+			vector3 vertex3 = radius * vector3(radius * sin(tita) * sin(fi + dFi), radius * cos(tita), radius * sin(tita) * cos(fi + dFi));
+			vector3 vertex4 = radius * vector3(radius * sin(tita + dTita) * sin(fi + dFi), radius * cos(tita + dTita), radius * sin(tita + dTita) * cos(fi + dFi));
+
+			resource.getVertices().push_back(vertex1);
+			resource.getNormals().push_back(VectorUtilities::normalizar(vertex1));
+			resource.getTextureCoordinates().push_back(texel1);
+			resource.getIndices().push_back(resource.getIndices().size());
+			resource.getColors().push_back(vector3(1.0, 1.0, 1.0));
+
+			resource.getVertices().push_back(vertex2);
+			resource.getNormals().push_back(VectorUtilities::normalizar(vertex2));
+			resource.getTextureCoordinates().push_back(texel2);
+			resource.getIndices().push_back(resource.getIndices().size());
+			resource.getColors().push_back(vector3(1.0, 1.0, 1.0));
+
+			resource.getVertices().push_back(vertex3);
+			resource.getNormals().push_back(VectorUtilities::normalizar(vertex3));
+			resource.getTextureCoordinates().push_back(texel3);
+			resource.getIndices().push_back(resource.getIndices().size());
+			resource.getColors().push_back(vector3(1.0, 1.0, 1.0));
+
+			resource.getVertices().push_back(vertex3);
+			resource.getNormals().push_back(VectorUtilities::normalizar(vertex3));
+			resource.getTextureCoordinates().push_back(texel3);
+			resource.getIndices().push_back(resource.getIndices().size());
+			resource.getColors().push_back(vector3(1.0, 1.0, 1.0));
+
+
+			resource.getVertices().push_back(vertex2);
+			resource.getNormals().push_back(VectorUtilities::normalizar(vertex2));
+			resource.getTextureCoordinates().push_back(texel2);
+			resource.getIndices().push_back(resource.getIndices().size());
+			resource.getColors().push_back(vector3(1.0, 1.0, 1.0));
+
+			resource.getVertices().push_back(vertex4);
+			resource.getNormals().push_back(VectorUtilities::normalizar(vertex4));
+			resource.getTextureCoordinates().push_back(texel4);
+			resource.getIndices().push_back(resource.getIndices().size());
+			resource.getColors().push_back(vector3(1.0, 1.0, 1.0));
+		}
+	}
+
+	return resource;
+}
 
 int main(int, char**){
 	PlaygroundTest playground("/Users/leandro/huevadas/projects/dev/media/");

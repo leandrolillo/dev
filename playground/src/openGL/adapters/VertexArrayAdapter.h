@@ -22,7 +22,7 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 		bool addBuffer(ShaderAttributeLocation attributeLocation, VertexArrayResource *resource, GLenum bufferDestination, const std::vector<vector2> &data)
 		{
 			if(data.size() > 0) {
-				logger->debug("Creating [%d] vector2 buffer for attribute [%d]", data.size(), attributeLocation);
+				logger->verbose("Creating [%d] vector2 buffer for attribute [%d]", data.size(), attributeLocation);
 
 
 				// create vertex buffer
@@ -41,7 +41,7 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 					resource->addAttribute(attributeLocation, buffer, 0, data.size());
 					glVertexAttribPointer((GLuint)attributeLocation, 2, GL_FLOAT, GL_FALSE, 0, 0);
 					glEnableVertexAttribArray(attributeLocation);
-					logger->debug("Enabled attribute [%d]", attributeLocation);
+					logger->verbose("Enabled attribute [%d]", attributeLocation);
 				}
 
 				glError = glGetError();
@@ -56,7 +56,7 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 
 		bool addBuffer(ShaderAttributeLocation attributeLocation, VertexArrayResource *resource, GLenum bufferDestination, const std::vector<vector3> &data)
 		{
-				logger->debug("Creating [%d] vector3 buffer for attribute [%d]", data.size(), attributeLocation);
+				logger->verbose("Creating [%d] vector3 buffer for attribute [%d]", data.size(), attributeLocation);
 
 				// create vertex buffer
 				unsigned int buffer;
@@ -74,7 +74,7 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 					resource->addAttribute(attributeLocation, buffer, 0, data.size());
 					glVertexAttribPointer((GLuint)attributeLocation, 3, GL_FLOAT, GL_FALSE, 0, 0);
 					glEnableVertexAttribArray(attributeLocation);
-					logger->debug("Enabled attribute [%d]", attributeLocation);
+					logger->verbose("Enabled attribute [%d]", attributeLocation);
 				}
 
 				glError = glGetError();
@@ -87,7 +87,7 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 		}
 		bool addBuffer(ShaderAttributeLocation attributeLocation, VertexArrayResource *resource, GLenum bufferDestination, const std::vector<unsigned int> &data)
 		{
-				logger->debug("Creating [%d] unsigned int buffer for attribute [%d]", data.size(), attributeLocation);
+				logger->verbose("Creating [%d] unsigned int buffer for attribute [%d]", data.size(), attributeLocation);
 
 
 				// create vertex buffer
@@ -106,7 +106,7 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 					resource->addAttribute(attributeLocation, buffer, 0, data.size());
 					glVertexAttribPointer((GLuint)attributeLocation, 1, GL_UNSIGNED_INT, GL_FALSE, 0, 0);
 					glEnableVertexAttribArray(attributeLocation);
-					logger->debug("Enabled attribute [%d]", attributeLocation);
+					logger->verbose("Enabled attribute [%d]", attributeLocation);
 				}
 
 				glError = glGetError();
@@ -130,6 +130,31 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 		virtual const std::vector<String> getSupportedMimeTypes() {
 			return supportedMimeTypes;
 		}
+
+		GLenum asGlPrimitiveType(const String &typeString) {
+			if(typeString == "points")
+				return GL_POINTS;
+			else if(typeString == "points")
+				return GL_LINES;
+			else if(typeString == "lineLoop")
+				return GL_LINE_LOOP;
+			else if(typeString == "lineStrip")
+				return GL_LINE_STRIP;
+			else if(typeString == "lines")
+				return GL_LINES;
+			else if(typeString == "triangles")
+				return GL_TRIANGLES;
+			else if(typeString == "triangleStrip")
+				return GL_TRIANGLE_STRIP;
+			else if(typeString == "triangleFan")
+				return GL_TRIANGLE_FAN;
+			else if(typeString == "quads")
+				return GL_QUADS;
+			else if(typeString == "triangleFan")
+				return GL_TRIANGLE_FAN;
+			else
+				throw InvalidArgumentException("Invalid primitive type: [%s]", typeString.c_str());
+		}
 		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
 			GeometryResource *geometry = (GeometryResource *) this->getResourceManager()->load(fileParser, "video/geometry");
 
@@ -143,11 +168,13 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 				glGenVertexArrays(1, &vertexArray);
 
 				resource = new VertexArrayResource(vertexArray);
-				resource->setPrimitiveType(geometry->getType());
+				resource->setPrimitiveType(asGlPrimitiveType(geometry->getType()));
 
-				TextureResource *texture = (TextureResource *)this->getResourceManager()->load(geometry->getTextureFile(), "video/texture");
-				if(texture != null) {
-					resource->setTexture(texture);
+				if(!geometry->getTextureFile().empty()) {
+					TextureResource *texture = (TextureResource *)this->getResourceManager()->load(geometry->getTextureFile(), "video/texture");
+					if(texture != null) {
+						resource->setTexture(texture);
+					}
 				}
 
 				glBindVertexArray(resource->getId());

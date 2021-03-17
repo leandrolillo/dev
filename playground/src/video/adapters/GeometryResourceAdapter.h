@@ -7,8 +7,9 @@
 
 #ifndef GEOMETRYRESOURCEADAPTER_H_
 #define GEOMETRYRESOURCEADAPTER_H_
-#include "../resources/ResourceAdapter.h"
-#include "../video/resources/GeometryResource.h"
+#include <InvalidArgumentException.h>
+#include <ResourceAdapter.h>
+#include <resources/GeometryResource.h>
 #include "../parser/JsonParser.h"
 #include "normalGenerators/NormalGenerator.h"
 #include <OpenGL/gl3.h>
@@ -61,7 +62,7 @@ class GeometryResourceAdapter: public ResourceAdapter {
 				} else if (token == "type") {
 					parser->readValueSeparator();
 					String typeString = parser->readString();
-					resource->setType(valueOf(typeString));
+					resource->setType(typeString);
 				} else if (token == "indices") {
 					parser->readValueSeparator();
 					resource->setIndices(parser->readUnsignedIntegerArray());
@@ -88,12 +89,19 @@ class GeometryResourceAdapter: public ResourceAdapter {
 				buildIndicesArray(resource);
 			}
 
+			logger->debug("Primitive %s: [%d] vertices, [%d] indices, [%d] colors, [%d] normals, [%d] textureCoordinates",
+					resource->getType().c_str(),
+					resource->getVertices().size(),
+					resource->getIndices().size(),
+					resource->getColors().size(),
+					resource->getNormals().size(),
+					resource->getTextureCoordinates().size());
+
 			log("vertices ", resource->getVertices());
 			log("indices ", resource->getIndices());
 			log("colors ", resource->getColors());
 			log("normals ", resource->getNormals());
 			log("textureCoordinates ", resource->getTextureCoordinates());
-			logger->verbose("type = [%d]", resource->getType());
 			return resource;
 		}
 		virtual void dispose(Resource *resource) {
@@ -157,28 +165,6 @@ class GeometryResourceAdapter: public ResourceAdapter {
 				}
 			}
 		}
-		unsigned int valueOf(const String &typeString) {
-			if(typeString == "points")
-				return GL_POINTS;
-			else if(typeString == "points")
-				return GL_LINES;
-			else if(typeString == "lineLoop")
-				return GL_LINE_LOOP;
-			else if(typeString == "lineStrip")
-				return GL_LINE_STRIP;
-			else if(typeString == "triangles")
-				return GL_TRIANGLES;
-			else if(typeString == "triangleStrip")
-				return GL_TRIANGLE_STRIP;
-			else if(typeString == "triangleFan")
-				return GL_TRIANGLE_FAN;
-			else if(typeString == "quads")
-				return GL_QUADS;
-//			else if(typeString == "quadStrip")
-//				return GL_QUAD_STRIP;
-			else return GL_TRIANGLE_FAN;
-		}
-
 
 		void log(String prefix, std::vector<vector2> array)
 		{
@@ -186,15 +172,15 @@ class GeometryResourceAdapter: public ResourceAdapter {
 
 			sprintf(vectorBuffer, "[%lu] ", array.size());
 			prefix.insert(0, vectorBuffer);
-//			prefix.append(" [");
-//
-//			for(std::vector<vector2>::iterator current = array.begin(); current != array.end(); current++) {
-//				sprintf(vectorBuffer, "<%.2f, %.2f> ", (*current).x, (*current).y);
-//				prefix.append(vectorBuffer);
-//			}
-//
-//			prefix.append(" ]");
-			logger->debug(prefix.c_str());
+			prefix.append(" [");
+
+			for(std::vector<vector2>::iterator current = array.begin(); current != array.end(); current++) {
+				sprintf(vectorBuffer, "<%.2f, %.2f> ", (*current).x, (*current).y);
+				prefix.append(vectorBuffer);
+			}
+
+			prefix.append(" ]");
+			logger->verbose(prefix.c_str());
 
 		}
 
@@ -204,15 +190,15 @@ class GeometryResourceAdapter: public ResourceAdapter {
 
 			sprintf(vectorBuffer, "[%lu] ", array.size());
 			prefix.insert(0, vectorBuffer);
-//			prefix.append(" [");
-//
-//			for(std::vector<unsigned int>::iterator current = array.begin(); current != array.end(); current++) {
-//				sprintf(vectorBuffer, "%lu, ", *current);
-//				prefix.append(vectorBuffer);
-//			}
-//
-//			prefix.append(" ]");
-			logger->debug(prefix.c_str());
+			prefix.append(" [");
+
+			for(std::vector<unsigned int>::iterator current = array.begin(); current != array.end(); current++) {
+				sprintf(vectorBuffer, "%lu, ", *current);
+				prefix.append(vectorBuffer);
+			}
+
+			prefix.append(" ]");
+			logger->verbose(prefix.c_str());
 
 		}
 
@@ -222,15 +208,15 @@ class GeometryResourceAdapter: public ResourceAdapter {
 
 			sprintf(vectorBuffer, "[%lu] ", array.size());
 			prefix.insert(0, vectorBuffer);
-//			prefix.append(" [");
-//
-//			for(std::vector<vector3>::iterator current = array.begin(); current != array.end(); current++) {
-//				sprintf(vectorBuffer, "<%.2f, %.2f, %.2f> ", (*current).x, (*current).y, (*current).z);
-//				prefix.append(vectorBuffer);
-//			}
-//
-//			prefix.append(" ]");
-			logger->debug(prefix.c_str());
+			prefix.append(" [");
+
+			for(std::vector<vector3>::iterator current = array.begin(); current != array.end(); current++) {
+				sprintf(vectorBuffer, "<%.2f, %.2f, %.2f> ", (*current).x, (*current).y, (*current).z);
+				prefix.append(vectorBuffer);
+			}
+
+			prefix.append(" ]");
+			logger->verbose(prefix.c_str());
 
 		}
 };

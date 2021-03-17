@@ -4,8 +4,8 @@
 #include "Resource.h"
 #include "FileParser.h"
 #include "ResourceAdapter.h"
-#include "../log/Logger.h"
-#include "../exceptions/Exception.h"
+#include <Logger.h>
+#include <Exception.h>
 #include<set>
 #include<vector>
 #include<map>
@@ -98,10 +98,8 @@ public:
 					if (response != null) {
 						response->setFileName(fileParser.getFilename());
 						response->setMimeType(mimeType);
-						resourceCache[getCacheKey(fileParser.getFilename(),
-								mimeType)] = response;
-						logger->debug("Loaded [%s]",
-								response->toString().c_str());
+						resourceCache[getCacheKey(fileParser.getFilename(),mimeType)] = response;
+						logger->info("Loaded [%s]", response->toString().c_str());
 					} else {
 						logger->warn(
 								"Could not load [%s] [%s] with adapter [%s]",
@@ -181,17 +179,7 @@ public:
 		String normalizedPrefix = prefix.substr(this->rootFolder.length() - 1, 1) == "/" ? prefix : prefix + "/";
 		String normalizedPostfix = postFix.substr(0, 2) == "./" ? postFix.substr(2, postFix.length() - 2) : postFix;
 
-
-		String fullPath = normalizedPostfix.substr(0, 1) == "/" ? normalizedPostfix : normalizedPrefix + normalizedPostfix;
-
-		logger->debug("\nprefix: %s, normalizedPrefix: %s\npostfix: %s, normalizedPostfix: %s\nfullpath %s\n",
-				prefix.c_str(),
-				normalizedPrefix.c_str(),
-				postFix.c_str(),
-				normalizedPostfix.c_str(),
-				fullPath.c_str());
-
-		return fullPath;
+		return normalizedPostfix.substr(0, 1) == "/" ? normalizedPostfix : normalizedPrefix + normalizedPostfix;
 	}
 
 	/**

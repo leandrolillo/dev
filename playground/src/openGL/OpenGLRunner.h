@@ -320,6 +320,31 @@ class OpenGLRunner: public SDLRunner {
 								sendVector("light.position", light.getPosition());
 		}
 
+		unsigned int asGlPrimitive(const String &typeString) {
+			if(typeString == "points")
+				return GL_POINTS;
+			else if(typeString == "points")
+				return GL_LINES;
+			else if(typeString == "lineLoop")
+				return GL_LINE_LOOP;
+			else if(typeString == "lineStrip")
+				return GL_LINE_STRIP;
+			else if(typeString == "lines")
+				return GL_LINES;
+			else if(typeString == "triangles")
+				return GL_TRIANGLES;
+			else if(typeString == "triangleStrip")
+				return GL_TRIANGLE_STRIP;
+			else if(typeString == "triangleFan")
+				return GL_TRIANGLE_FAN;
+			else if(typeString == "quads")
+				return GL_QUADS;
+			else if(typeString == "triangleFan")
+				return GL_TRIANGLE_FAN;
+			else
+				throw InvalidArgumentException("Invalid primitive type: [%s]", typeString.c_str());
+		}
+
 		/**
 		 * Expects [number of index] elements in every vertex array attribute. E.g. You can't have three vertices, six indices and six texture coordinates. See http://www.opengl.org/wiki/Vertex_Buffer_Object#Vertex_Stream
 		 */
@@ -429,9 +454,12 @@ class OpenGLRunner: public SDLRunner {
 
 		void glSphere(real radius)
 		{
-			sendMatrix("matrices.model", this->modelMatrix * matriz_4x4::matrizZoom(radius, radius, radius));
+			matriz_4x4 newModel = this->modelMatrix * matriz_4x4::matrizZoom(radius, radius, radius);
+			sendMatrix("matrices.model", newModel);
+			sendMatrix("matrices.pvm", this->projection * this->viewMatrix * newModel);
 			drawVertexArray(sphere);
 			sendMatrix("matrices.model", this->modelMatrix);
+			sendMatrix("matrices.pvm", this->projection * this->viewMatrix * this->modelMatrix);
 		}
 
 		void glPlane(vector posicion, vector normal, vector origen,
@@ -520,26 +548,13 @@ class OpenGLRunner: public SDLRunner {
 //			glEnd();
 		}
 
-		void glAxis() {
-//			glBegin(GL_LINES);
-//			glColor3f(1.0f, 0.0f, 0.0f);
-//			glVertex3f(axis_length, 0.0f, 0.0f);
-//			glVertex3f(-axis_length, 0.0f, 0.0f);
-//			glVertex3f(axis_length - 0.2f, 0.2f, 0.0f);
-//			glVertex3f(axis_length - 0.2f, -0.2f, 0.0f);
-//
-//			glColor3f(0.0f, 1.0f, 0.0f);
-//			glVertex3f(0.0f, axis_length, 0.0f);
-//			glVertex3f(0.0f, -axis_length, 0.0f);
-//			glVertex3f(0.2f, axis_length - 0.2f, 0.0f);
-//			glVertex3f(-0.2f, axis_length - 0.2f, 0.0f);
-//
-//			glColor3f(1.0f, 1.0f, 1.0f);
-//			glVertex3f(0.0f, 0.0f, axis_length);
-//			glVertex3f(0.0f, 0.0f, -axis_length);
-//			glVertex3f(0.2f, 0.0f, axis_length - 0.2f);
-//			glVertex3f(-0.2f, 0.0f, axis_length - 0.2f);
-//			glEnd();
+		void glAxis(real length = 1.0f) {
+			matriz_4x4 newModel = this->modelMatrix * matriz_4x4::matrizZoom(length, length, length);
+			sendMatrix("matrices.model", newModel);
+			sendMatrix("matrices.pvm", this->projection * this->viewMatrix * newModel);
+			drawVertexArray(axis);
+			sendMatrix("matrices.model", this->modelMatrix);
+			sendMatrix("matrices.pvm", this->projection * this->viewMatrix * this->modelMatrix);
 		}
 };
 

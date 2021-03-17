@@ -1,7 +1,7 @@
 #ifndef _EXCEPTION_H_
 #define _EXCEPTION_H_
 
-#include "../javaLike/JavaLike.h"
+#include <JavaLike.h>
 #include<string>
 #include <stdio.h>
 #include <stdarg.h>

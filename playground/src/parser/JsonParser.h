@@ -8,9 +8,9 @@
 #ifndef JSONPARSER_H_
 #define JSONPARSER_H_
 
-#include "../resources/FileParser.h"
-#include "../javaLike/JavaLike.h"
-#include "../math/Math3d.h"
+#include <FileParser.h>
+#include <JavaLike.h>
+#include <Math3d.h>
 #include "ParsingException.h"
 #include <vector>
 
