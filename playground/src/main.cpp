@@ -183,11 +183,9 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 			openGl->sendMatrices();
 			openGl->glSphere(0.1f);
 
-			lightSource->setPosition(lightPosition);
+			lightSource->setPosition(vector3(lightPosition.x, lightPosition.y, -lightPosition.z));
 			audio->updateSource(lightSource);
 			audio->updateListener(viewPosition);
-
-
 
 			MaterialResource material(vector(1.0f, 0.5f, 0.31f), vector(1.0f, 0.5f, 0.31f), vector(0.5f, 0.5f, 0.5f), 32.0f);
 			LightResource light(lightPosition, vector(0.2f, 0.2f, 0.2f), vector(0.5f, 0.5f, 0.5f), vector(1.0f, 1.0f, 1.0f), 1.0f);
@@ -214,8 +212,6 @@ class PlaygroundDemoRunner : public PlaygroundRunner {
 			openGl->setMaterial(material);
 			openGl->setLight(light);
 			openGl->sendVector("viewPosition", viewPosition);
-
-
 
 			openGl->setModelMatrix(matriz_4x4::matrizBase(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), vector3(2.0, -1.0, 0.0)));
 			openGl->sendMatrices();

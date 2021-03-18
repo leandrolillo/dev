@@ -230,11 +230,15 @@ class VertexArrayResourceAdapter: public ResourceAdapter {
 			if(vertexArrayResource->getId() != 0) {
 				glBindVertexArray(vertexArrayResource->getId());
 
+
 				for(std::map<unsigned int, VertexAttribPointer *>::iterator currentBuffer = vertexArrayResource->getAttributes().begin(); currentBuffer != vertexArrayResource->getAttributes().end(); currentBuffer++)
 				{
-					glDisableVertexAttribArray(currentBuffer->first);
-					unsigned int buffer = currentBuffer->second->getBuffer();
-					glDeleteBuffers(1, &buffer);
+					if(currentBuffer->second != null) {
+						glDisableVertexAttribArray(currentBuffer->first);
+						unsigned int buffer = currentBuffer->second->getBuffer();
+						glDeleteBuffers(1, &buffer);
+						delete currentBuffer->second;
+					}
 				}
 
 				vertexArrayResource->clearVertexAttribPointers();
