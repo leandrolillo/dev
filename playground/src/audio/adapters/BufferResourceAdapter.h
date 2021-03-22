@@ -25,7 +25,9 @@ public:
 	virtual const std::vector<String> getSupportedMimeTypes() {
 		return supportedMimeTypes;
 	}
-
+	String toString() const {
+		return logger->getBasename();
+	}
 	ALenum asOpenALFormat(AudioFormat format) {
 		switch (format) {
 		case MONO8:

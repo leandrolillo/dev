@@ -18,6 +18,11 @@
 	
 	typedef float real;
 
+#ifndef _REAL_POW
+#define _REAL_POW
+#define powr powf
+#endif
+
 	#define DELTA 0.005
 
 	#ifndef M_PI	// algunos math.h no lo definen, como el de visual studio.

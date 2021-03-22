@@ -24,4 +24,6 @@ void main()
     gl_Position = matrices.pvm * vec4(position, 1.0f);
     outputData.worldPosition = matrices.model * vec4(position, 1.0f);
     outputData.normal = normalize(matrices.normal * normal);
+    outputData.textureCoordinate =  textureCoordinate; //vec4(textureCoordinate, 1.0, 1.0);
+    outputData.color = color;
 }

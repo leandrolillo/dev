@@ -319,6 +319,8 @@ class matriz_4x4: public BaseMatrix {
 			return m[fila * 4 + columna];
 		}
 
+		const cuaternion fila(unsigned int fila);
+		const cuaternion columna(unsigned int columna);
 
 		matriz_4x4 operator=(const matriz_4x4 &op1) {
 			memcpy(this->m, op1.m, sizeof(this->m));
@@ -406,7 +408,7 @@ class matriz_4x4: public BaseMatrix {
 								this->_02,	this->_12, this->_22, this->_32,
 								this->_03, this->_13,	this->_23, this->_33));
 		}
-//
+		//
 //			unsigned char esSingular(void);
 //			const real determinante(void);
 //			unsigned char invertir(void);
@@ -541,31 +543,89 @@ class vector3 {
 		};
 
 	public:
-		vector3(real c_x, real c_y, real c_z);
-		vector3(const cuaternion &quat);
-		vector3(void);
-		vector3(const vector3 &op1);
-		unsigned char operator==(const vector3 &op2) const;
-		unsigned char operator!=(const vector3 &op2) const;
-		const vector3 operator+(const vector3 &op2) const;
-		const vector3 operator-(const vector3 &op2) const;
-		const vector3 operator-(void) const;
-		const vector3 operator*(real op2) const;
-		void operator +=(const vector3 &op2);
-		void operator -=(const vector3 &op2);
-		void operator*=(real op2);
+		vector3() {
+		}
+		vector3(real c_x , real c_y, real c_z) {
+			this->x = c_x;
+			this->y = c_y;
+			this->z = c_z;
+		}
 
-		const real operator*(const vector3 &op2) const;
-		const vector3 operator^(const vector3 &op2) const;
+		vector3(const vector3 &op1) {  //constructor de copia
+			memcpy(this->m, op1.m, sizeof(this->m));
+		}
 
-		const real modulo() const;
+		unsigned char operator==(const vector3 &op2) const {
+			return((x == op2.x && y == op2.y && z == op2.z));
+		}
 
-		operator real *() const;
+		unsigned char operator!=(const vector3 &op2) const {
+			return((x != op2.x || y != op2.y || z != op2.z));
+		}
+
+		const vector3 operator+(const vector3 &op2) const {
+			return (vector3(this->x + op2.x, this->y + op2.y, this->z + op2.z));
+		}
+
+		const vector3 operator-(const vector3 &op2) const {
+			return (vector3(this->x - op2.x, this->y - op2.y, this->z - op2.z));
+		}
+		const vector3 operator-(void) const {
+			return(vector3(-this->x, -this->y, -this->z));
+		}
+
+		const vector3 operator*(real op2) const {
+			return(vector3(this->x * op2, this->y * op2, this->z * op2));
+		}
+
+		void operator += (const vector3 &op2) {
+			this->x += op2.x;
+			this->y += op2.y;
+			this->z += op2.z;
+		}
+
+		void operator -= (const vector3 &op2) {
+			this->x -= op2.x;
+			this->y -= op2.y;
+			this->z -= op2.z;
+		}
+
+		void operator*=(real op2) {
+		       this->x *= op2;
+		       this->y *= op2;
+		       this->z *= op2;
+		}
+
+		const real operator*(const vector3 &op2) const { // Producto Escalar de vector3es
+			return(this->productoEscalar(op2));
+		}
+
+		const vector3 operator^(const vector3 &op2) const { // Producto Vectorial
+			return(productoVectorial(op2));
+		}
+
+		const real modulo(void) const { // Devuelve el modulo del vector3
+			return((real)sqrt((this->x * this->x) + (this->y * this->y) + (this->z * this->z)));
+		}
+
+		operator real *() const {
+			return((real *)this->m);
+		}
+
 //		const real operator() (int indice) const;
 //		const real modulo(void) const;
 //
 //		const real normalizar(void);
-//		const vector3 normalizado(void) const;
+		const vector3 normalizado(void) const {
+			real modulo = this->modulo();
+
+			if(modulo == 0.0f)
+				throw InvalidStateException("Vector module is 0");
+
+			real oneOverModule = (real)1 / modulo;
+			return(vector3(this->x * oneOverModule, this->y * oneOverModule, this->z * oneOverModule));
+
+		}
 //
 //		const matriz_3x3 star() const;
 
@@ -597,21 +657,107 @@ class cuaternion {
 				real m[4];
 		};
 
-		cuaternion(real new_w, real new_x, real new_y, real new_z);
-		cuaternion(real new_x, real new_y, real new_z);
-		cuaternion(const cuaternion &dedonde, const cuaternion &adonde, real t);
-		cuaternion(const vector3 &op1);
-		cuaternion(void);
-		cuaternion(const cuaternion &op1);
-		const cuaternion operator+(const cuaternion &op2) const;
-		const cuaternion operator-(const cuaternion &op2) const;
-		const cuaternion operator-(void) const;
-		const cuaternion operator*(const real op2) const;
-		void operator *=(const real op2);
-		const cuaternion operator*(const cuaternion &op2) const;
-		operator real *() const;
+		cuaternion(void) {
+			this->w = 1.0;
+			this->x = 0.0;
+			this->y = 0.0;
+			this->z = 0.0;
+		}
 
-		const real modulo() const;
+		cuaternion(real new_w, real new_x, real new_y, real new_z) {
+			this->w = new_w;
+			this->x = new_x;
+			this->y = new_y;
+			this->z = new_z;
+		}
+		cuaternion(const vector3 &op1) { // copia los atributos x, y y z a los del cuaternion, dejando w = 0
+			this->w = 0.0;
+			this->x = op1.x;
+			this->y = op1.y;
+			this->z = op1.z;
+		}
+
+		cuaternion(const cuaternion &op1) {
+			memcpy(this->m, op1.m, sizeof(this->m));
+		}
+		const cuaternion operator+(const cuaternion &op2) const {
+			return(cuaternion(this->w + op2.w, this->x + op2.x, this->y + op2.y, this->z + op2.z));
+		}
+
+		const cuaternion operator-(const cuaternion &op2) const{
+			return(cuaternion(this->w - op2.w, this->x - op2.x, this->y - op2.y, this->z - op2.z));
+		}
+		const cuaternion operator-(void) const {
+			return(cuaternion(-this->w, -this->x, -this->y, -this->z));
+		}
+
+		const cuaternion operator*(const real op2) const {
+			return(cuaternion(this->w * op2, this->x * op2, this->y * op2, this->z * op2));
+		}
+		void operator *=(const real op2) {
+			this->x *= op2;
+			this->y *= op2;
+			this->z *= op2;
+			this->w *= op2;
+		}
+
+		const cuaternion operator*(const cuaternion &op2) const {
+			return(cuaternion(this->w * op2.w - this->x * op2.x - this->y * op2.y - this->z * op2.z,	//componente W
+							this->w * op2.x + this->x * op2.w + this->y * op2.z - this->z * op2.y,	//componente X
+							this->w * op2.y + this->y * op2.w + this->z * op2.x - this->x * op2.z,		//componente Y
+							this->w * op2.z + this->z * op2.w + this->x * op2.y - this->y * op2.x));		//componente Z
+		}
+
+		operator real *() const {
+			return((real *)m);
+		}
+
+		const real modulo() const { // Devuelve el m�dulo del cuaternion
+			return((real)sqrt(this->w * this->w + this->x * this->x   +   this->y * this->y   +   this->z * this->z));
+		}
+
+		const cuaternion normalizado(void) const { // Devuelve el cuaternion normalizado
+			real modulo = this->modulo();
+
+			if(modulo == (real)0)
+				throw InvalidStateException("Cuaternion module is 0");
+
+			real unosobremodulo = (real)1 / modulo;
+
+			return(*this * unosobremodulo);
+		}
+
+		operator vector3() const {
+			return vector3(this->x, this->y, this->z);
+		}
+
+		operator matriz_4x4() const { //Obtiene la matriz de 3x3 correspondiente al cuaternion sobre el cual se aplica la operaci�n.
+			real y2 = y * y, x2 = x * x, z2 = z * z;
+			real xy = x * y;
+			real xz = x * z;
+			real wx = x * w;
+			real yz = y * z;
+			real wy = y * w;
+			real wz = w * z;
+			return(matriz_4x4(1.0f - 2.0f * (y2 + z2),  2.0f * (xy - wz),              2.0f * (xz + wy),		 0.0f,
+							  2.0f * (xy + wz),            1.0f - 2.0f * (x2 + z2),   2.0f * (yz - wx),		0.0f,
+							  2.0f * (xz - wy),            2.0f * (yz +  wx),             1.0f - 2.0f * (x2 + y2),	0.0f,
+							  0.0f,				      0.0f,				    0.0f,			         1.0f
+			));
+		}
+		operator matriz_3x3() const { // obtiene la matriz de 4x4 que corresponde al cuaternion
+			real y2 = y * y, x2 = x * x, z2 = z * z;
+			real xy = x * y;
+			real xz = x * z;
+			real wx = x * w;
+			real yz = y * z;
+			real wy = y * w;
+			real wz = w * z;
+			return(matriz_3x3( 1.0f - 2.0f * (y2 + z2),   2.0f * (xy - wz),             2.0f * (xz + wy),
+								2.0f * (xy + wz),            1.0f - 2.0f * (x2 + z2),	   2.0f * (yz - wx),
+								2.0f * (xz - wy),            2.0f * (yz +  wx),             1.0f - 2.0f * (x2 + y2)
+			));
+		}
 
 		String toString() const {
 			char temp[256];
@@ -637,10 +783,69 @@ class cuaternion {
 //			const real operator()(int nro) const;
 
 		//Factory methods
-		static const cuaternion cuaternionRotacion(real angulo, const vector3 &eje);
-		static const cuaternion cuaternionRotacion(real x, real y, real z);
-		static const cuaternion cutaernionRotacion(const vector3 &angulos);
-		static const cuaternion cuaternionAnguloEje(real angulo, const vector3 &eje);
+		static const cuaternion cuaternionRotacion(real angulo, const vector3 &eje) {
+			return cuaternion(
+					(real)cos(angulo * 0.5),
+					eje.x * (real)sin(angulo * 0.5),
+					eje.y * (real)sin(angulo * 0.5),
+					eje.z * (real)sin(angulo * 0.5));
+		}
+		static const cuaternion cuaternionRotacion(real x, real y, real z) {
+			real	ex, ey, ez;
+			real	cr, cp, cy, sr, sp, sy, cpcy, spsy;		// temp vars in roll,pitch yaw
+
+			ex = x * (real)0.5;	// convert to rads and half them
+			ey = y * (real)0.5;
+			ez = z * (real)0.5;
+
+			cr = cos(ex); sr = sin(ex);
+			cp = cos(ey); sp = sin(ey);
+			cy = cos(ez); sy = sin(ez);
+
+			cpcy = cp * cy;
+			spsy = sp * sy;
+
+			return cuaternion(real(cr * cpcy + sr * spsy),
+					real(sr * cpcy - cr * spsy),
+					real(cr * sp * cy + sr * cp * sy),
+					real(cr * cp * sy - sr * sp * cy)).normalizado();
+		}
+		static const cuaternion cuaternionRotacion(const vector3 &angulos) {
+			return cuaternionRotacion(angulos.x, angulos.y, angulos.z);
+		}
+//		static const cuaternion cuaternionAnguloEje(real angulo, const vector3 &eje) {
+//
+//		}
+
+		static const cuaternion slerp(const cuaternion &dedonde, const cuaternion &adonde, real t) { // Interpola mediante el m�todo SLERP (Spherical Linear intERPolation).
+			real sen, cos, omega, escala_0, escala_1;
+
+			cos = dedonde.x * adonde.x + dedonde.y * adonde.y + dedonde.z * adonde.z + dedonde.w * adonde.w;
+			if((1.0f + cos) > DELTA) {
+				if((1.0f - cos) > DELTA) {
+					omega = (real)acos(cos);
+					sen = (real)sin(omega);
+					escala_0 = (real)sin((1.0f - t) * omega)  / sen;
+					escala_1 = (real)sin(t * omega) / sen;
+				}
+				else {
+					escala_0 = 1.0f - t;
+					escala_1 = t;
+				}
+
+				return (  (dedonde * escala_0)  +  (adonde * escala_1)  );
+			}
+			else {
+				escala_0 = (real)sin((1.0f - t) * (M_PI / 2.0f));
+				escala_1 = (real)sin(t * (M_PI/2.0f));
+
+				return cuaternion (
+						(escala_0 * dedonde.w) - (escala_1 * adonde.z),
+						(escala_0 * dedonde.x) - (escala_1 * adonde.y),
+						(escala_0 * dedonde.y) + (escala_1 * adonde.x),
+						(escala_0 * dedonde.z) - (escala_1 * adonde.w));
+			}
+		}
 };
 
 class vectorN: public matriz_mxn {

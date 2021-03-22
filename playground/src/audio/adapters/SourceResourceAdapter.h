@@ -25,6 +25,9 @@ class SourceResourceAdapter: public ResourceAdapter {
 		virtual const std::vector<String> getSupportedMimeTypes() {
 			return supportedMimeTypes;
 		}
+		String toString() const {
+			return logger->getBasename();
+		}
 		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
 			ALenum error = 0;
 

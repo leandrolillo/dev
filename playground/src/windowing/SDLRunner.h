@@ -187,6 +187,14 @@ class SDLRunner: public PlaygroundRunner {
 		{
 		}
 
+		unsigned long getPerformanceCounter() {
+			return SDL_GetPerformanceCounter();
+		}
+
+		unsigned long getPerformanceFreq() {
+			return SDL_GetPerformanceFrequency();
+		}
+
 	protected:
 
 };

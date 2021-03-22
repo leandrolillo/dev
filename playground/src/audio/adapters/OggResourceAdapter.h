@@ -29,7 +29,9 @@ class OggResourceAdapter : public ResourceAdapter {
 		virtual const std::vector<String> getSupportedMimeTypes() {
 			return supportedMimeTypes;
 		}
-
+		String toString() const {
+			return logger->getBasename();
+		}
 		#define OGG_BUFFER_SIZE 4096 * 4
 		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
 			OggVorbis_File oggStream;
