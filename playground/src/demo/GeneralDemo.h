@@ -5,14 +5,14 @@
  *      Author: leandro
  */
 
-#ifndef SRC_PLAYGROUNDGENERALDEMO_H_
-#define SRC_PLAYGROUNDGENERALDEMO_H_
+#ifndef SRC_GENERALDEMO_H_
+#define SRC_GENERALDEMO_H_
 
 #include<Playground.h>
 #include<OpenGLRunner.h>
 #include<AudioRunner.h>
 
-class PlaygroundGeneralDemoRunner: public PlaygroundRunner {
+class GeneralDemoRunner: public PlaygroundRunner {
 private:
 	Logger *logger;
 	OpenGLRunner *openGl;
@@ -44,7 +44,7 @@ public:
 	static const unsigned char ID = 101;
 
 public:
-	PlaygroundGeneralDemoRunner() :
+	GeneralDemoRunner() :
 			material(vector(1.0f, 0.5f, 0.31f), vector(1.0f, 0.5f, 0.31f),
 					vector(0.5f, 0.5f, 0.5f), 32.0f), light(lightPosition,
 					vector(0.2f, 0.2f, 0.2f), vector(0.5f, 0.5f, 0.5f),
@@ -72,7 +72,7 @@ public:
 	}
 
 	virtual unsigned char getId() {
-		return PlaygroundGeneralDemoRunner::ID;
+		return GeneralDemoRunner::ID;
 	}
 
 	void reset() {
@@ -94,7 +94,7 @@ public:
 				this->getContainer()->getResourceManager();
 
 		// demo stuff
-		lightAnnoyingSoundSource = audio->createSource("voltage.wav");
+		lightAnnoyingSoundSource = audio->createSource("audio/voltage.wav");
 		audio->playSource(lightAnnoyingSoundSource);
 
 		pngTexture = (TextureResource*) resourceManager->load(
@@ -180,8 +180,7 @@ public:
 		audio->updateListener(viewPosition);
 
 		openGl->setMaterial(material);
-		vector color(sin(radian(rotation)), cos(radian(rotation)),
-				sin(radian(rotation)));
+		vector color(sin(radian(rotation)), cos(radian(rotation)), sin(radian(rotation)));
 		light.setDiffuse(color);
 		light.setSpecular(color);
 		light.setAmbient(color);
@@ -283,11 +282,11 @@ public:
 	}
 	void init() {
 		Playground::init();
-		this->addRunner(new PlaygroundGeneralDemoRunner());
+		this->addRunner(new GeneralDemoRunner());
 		this->addRunner(new OpenGLRunner());
 		this->addRunner(new AudioRunner());
 
 	}
 };
 
-#endif /* SRC_PLAYGROUNDGENERALDEMO_H_ */
+#endif /* SRC_GENERALDEMO_H_ */

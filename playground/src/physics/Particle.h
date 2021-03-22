@@ -13,13 +13,14 @@
 class Particle {
 	friend class ParticleIntegrator;
 
+protected:
 	vector position;
 	vector velocity;
 	vector acceleration;
 
 	real inverseMass;
 
-	bool active;
+	bool status;
 
 	/**
 	 * rough approximation of drag to avoid numerical stability issues - without this objects are likely to accelerate magically.
@@ -29,12 +30,15 @@ class Particle {
 
 public:
 
+	virtual void afterIntegrate(real dt) {
+	}
+
 	bool getStatus() {
-		return this->active;
+		return this->status;
 	}
 
 	void setStatus(bool active) {
-		this->active = active;
+		this->status = active;
 	}
 
 	void setPosition(const vector &position) {
@@ -48,6 +52,10 @@ public:
 	void setVelocity(const vector &velocity) {
 		this->velocity = velocity;
 	}
+
+	const vector &getVelocity() {
+			return this->velocity;
+		}
 
 	void setAcceleration(const vector &acceleration) {
 		this->acceleration = acceleration;

@@ -40,6 +40,8 @@ public:
 	void step(real dt) {
 		for(std::vector<Particle *>::iterator iterator = particles.begin(); iterator < particles.end(); iterator++) {
 			particleIntegrator.integrate(dt,  **iterator);
+
+			(*iterator)->afterIntegrate(dt);
 		}
 	}
 };
