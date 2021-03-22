@@ -92,8 +92,8 @@ class SDLRunner: public PlaygroundRunner {
 		    	switch(event->window.event) {
 		    		case SDL_WINDOWEVENT_RESIZED:
 		    		case SDL_WINDOWEVENT_SIZE_CHANGED:
-		    			logger->debug("WINDOW RESIZED to [%d, %d]", event->window.data1, event->window.data2);
-		    			this->getContainer()->resize(event->window.data1, event->window.data2);
+		    			logger->debug("WINDOW RESIZED to [%d, %d]", event->window.data2, event->window.data1);
+		    			this->getContainer()->resize(event->window.data2, event->window.data1);
 		    		return 0;
 		    	}
 		    	break;

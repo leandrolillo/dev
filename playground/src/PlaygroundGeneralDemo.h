@@ -14,10 +14,9 @@
 
 class PlaygroundGeneralDemoRunner: public PlaygroundRunner {
 private:
+	Logger *logger;
 	OpenGLRunner *openGl;
 	AudioRunner *audio;
-
-	Logger *logger;
 
 	//Graphical stuff
 	vector viewPosition;
@@ -186,6 +185,7 @@ public:
 		light.setDiffuse(color);
 		light.setSpecular(color);
 		light.setAmbient(color);
+		light.setPosition(lightPosition);
 		openGl->setLight(light);
 		openGl->sendVector("viewPosition", viewPosition);
 

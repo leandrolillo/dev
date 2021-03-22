@@ -12,6 +12,7 @@
 #define numberOfParticles 256
 
 class PhysicsPlaygroundRunner: public PlaygroundRunner {
+	Logger *logger = Logger::getLogger("Main.cpp");
 	OpenGLRunner *openGl = null;
 	AudioRunner *audio = null;
 
@@ -43,7 +44,7 @@ public:
 	}
 
 	void reset() {
-		for(Particle *particle = particles; particle < particles + numberOfParticles; particle++) {
+		for(Particle *particle = particles; particle < (particles + numberOfParticles); particle++) {
 			particle->setStatus(false);
 		}
 
@@ -78,9 +79,11 @@ public:
 		openGl->sendMatrices();
 		openGl->glAxis(1.0);
 
+		logger->debug("before Drawing particle");
 		int count = 0;
-		for(Particle *particle = particles; particle < particles + numberOfParticles; particle++) {
-			if(particle->getStatus()) {
+		for(Particle *particle = particles; particle < (particles + numberOfParticles); particle++) {
+			if(particle->getStatus() == true) {
+				logger->debug("Drawing particle");
 				count++;
 				openGl->setModelMatrix(matriz_4x4::matrizTraslacion(particle->getPosition()));
 
@@ -95,14 +98,38 @@ public:
 		elapsedTime += dt;
 		frames++;
 		real fps = (real)frames / elapsedTime;
-		printf("Elapsed time: %.2f, frames: %u, fps:%.2f. View position: %s - count = %d\r",
-				elapsedTime,
-				frames,
-				fps,
-				viewPosition.toString().c_str(),
-				count);
+//		printf("Elapsed time: %.2f, frames: %u, fps:%.2f. View position: %s - count = %d\r",
+//				elapsedTime,
+//				frames,
+//				fps,
+//				viewPosition.toString().c_str(),
+//				count);
 
 		return CONTINUE;
+	}
+
+	void fire() {
+		Particle *bullet = null;
+
+		logger->debug("Iterating particles");
+		for(Particle *particle = particles; particle < (particles + numberOfParticles); particle++) {
+			if(!particle->getStatus()) {
+				logger->debug("found disabled particle to reuse");
+				bullet = particle;
+				break;
+			}
+		}
+
+		if(bullet) {
+			logger->debug("configuring particle");
+			bullet->setPosition((vector)(view.columna(3)));
+			bullet->setVelocity(((vector)view.columna(2)).normalizado() * 35);
+			bullet->setMass(2.0f);
+			bullet->setDamping(0.99f);
+			bullet->setStatus(true);
+		} else {
+			logger->debug("no particle found");
+		}
 	}
 
 	void mouseWheel(int wheel) {
@@ -114,21 +141,7 @@ public:
 	}
 
 	void mouseButtonDown(unsigned char button ) {
-		Particle *bullet = null;
-		for(Particle *particle = particles; particle < particles + numberOfParticles; particle++) {
-			if(!particle->getStatus()) {
-				bullet = particle;
-				break;
-			}
-		}
-
-		if(bullet) {
-			bullet->setPosition((vector)(view.columna(3)));
-			bullet->setVelocity(((vector)view.columna(2)).normalizado() * 35);
-			bullet->setMass(2.0f);
-			bullet->setDamping(0.99f);
-			bullet->setStatus(true);
-		}
+		fire();
 	}
 
 	virtual void keyDown(unsigned int key) {
@@ -137,6 +150,7 @@ public:
 			this->getContainer()->stop();
 			break;
 		case SDLK_SPACE:
+			fire();
 			reset();
 			break;
 		case 'f':
