@@ -33,6 +33,10 @@ public:
 	virtual void afterIntegrate(real dt) {
 	}
 
+	virtual ~Particle() {
+
+	}
+
 	bool getStatus() {
 		return this->status;
 	}

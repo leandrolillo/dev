@@ -15,7 +15,7 @@ struct Material {
     vec3 specular;
     float shininess;
 };
-uniform Material material;
+uniform Material material = Material(vec3(0.2, 0.2, 0.2), vec3(1, 1, 1), vec3(1, 1, 1), 32);
 
 struct Light {
     vec3 position;
@@ -23,7 +23,7 @@ struct Light {
     vec3 diffuse;
     vec3 specular;
 };
-uniform Light light;
+uniform Light light = Light(vec3(0, 0, 0), vec3(1, 1, 1), vec3(0, 0, 0), vec3(0, 0, 0));
 
 
 uniform vec3 viewPosition;
@@ -56,5 +56,5 @@ void main()
 	vec3 specular = spec * light.specular * material.specular;
 
 
-	fragmentColor = vec4(ambient + diffuse + specular, 1.0) * texture(textureUnit, inputData.textureCoordinate);
+	fragmentColor = vec4(inputData.color + ambient + diffuse + specular, 1.0) * texture(textureUnit, inputData.textureCoordinate);
 }

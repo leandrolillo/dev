@@ -145,10 +145,7 @@ public:
 
 //			glEnable(GL_LIGHTING);
 
-		if (jpgTexture != null) {
-			glActiveTexture(GL_TEXTURE0);
-			glBindTexture(GL_TEXTURE_2D, jpgTexture->getId());
-		}
+			openGl->setTexture(0, jpgTexture);
 //
 //			glPushMatrix();
 //			glTranslatef(-1.5, 2.0, 0.0);
