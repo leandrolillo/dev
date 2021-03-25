@@ -16,12 +16,15 @@
 #include <AudioRunner.h>
 #include<PhysicsRunner.h>
 
+#include<Math3d.h>
+#include<forces/Gravity.h>
+
 #define numberOfParticles 5
 
 class BulletParticle : public Particle
 {
 	void afterIntegrate(real dt) {
-		if(abs(this->position.z) > 100) {
+		if(this->position.modulo() > 100) {
 			this->status = false;
 		}
 	}
@@ -40,6 +43,7 @@ class PhysicsDemoRunner: public PlaygroundRunner {
 	vector viewPosition;
 
 	BulletParticle particles[numberOfParticles];
+	Gravity gravity;
 
 	unsigned long to = 0;
 	real invPerformanceFreq = 1.0f;
@@ -50,7 +54,7 @@ class PhysicsDemoRunner: public PlaygroundRunner {
 	real elapsedTime = 0.0f;
 	unsigned long frames = 0;
 public:
-	PhysicsDemoRunner() {
+	PhysicsDemoRunner() : gravity(vector(0.0, -9.8, 0.0)) {
 		reset();
 	}
 
@@ -84,8 +88,10 @@ public:
 		reset();
 
 		for(BulletParticle *particle = particles; particle < (particles + numberOfParticles); particle++) {
-			physics->addParticle(particle);
+			physics->getParticleManager()->addParticle(particle);
 		}
+
+		physics->getParticleManager()->addForce(&this->gravity);
 
 		return true;
 	}
@@ -123,17 +129,16 @@ public:
 		logger->debug("Iterating particles");
 		for(BulletParticle *particle = particles; particle < (particles + numberOfParticles); particle++) {
 			if(!particle->getStatus()) {
-				logger->debug("found disabled particle to reuse");
 				bullet = particle;
 				break;
 			}
 		}
 
 		if(bullet) {
-			logger->debug("configuring particle");
 			bullet->setPosition((vector)(view.columna(3)));
 			bullet->setVelocity(((vector)view.columna(2)).normalizado() * -35);
-			bullet->setMass(2.0f);
+			bullet->setAcceleration(vector(0, 0, 0));
+			bullet->setMass(0.1);
 			bullet->setDamping(0.99f);
 			bullet->setStatus(true);
 

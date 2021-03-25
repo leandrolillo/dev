@@ -44,10 +44,6 @@ public:
 		return &this->particleManager;
 	}
 
-	void addParticle(Particle *particle) {
-		this->particleManager.addParticle(particle);
-	}
-
 	bool init() {
 		openGl = (OpenGLRunner*) this->getContainer()->getRunner(1);
 
@@ -55,6 +51,10 @@ public:
 		invPerformanceFreq = (real)1 / (real)openGl->getPerformanceFreq();
 
 		return true;
+	}
+
+	void beforeLoop() {
+		this->particleManager.clearAccumulators();
 	}
 
 	LoopResult doLoop() {

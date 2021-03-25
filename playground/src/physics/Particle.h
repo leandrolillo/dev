@@ -19,6 +19,7 @@ protected:
 	vector acceleration;
 
 	real inverseMass;
+	real mass;
 
 	bool status;
 
@@ -27,6 +28,8 @@ protected:
 	 *
 	 */
 	real damping;
+
+	vector forceAccumulator;
 
 public:
 
@@ -71,10 +74,40 @@ public:
 		} else {
 			this->inverseMass = (real)1.0 / mass;
 		}
+
+		this->mass = mass;
+	}
+
+	void setInverseMass(real inverseMass) {
+			if(inverseMass == 0.0f) {
+				this->mass = (real)0.0;
+			} else {
+				this->mass = (real)1.0 / inverseMass;
+			}
+
+			this->inverseMass = inverseMass;
+		}
+
+	real getMass() {
+		return this->mass;
+	}
+
+	real getInverseMass() {
+		return this->inverseMass;
 	}
 
 	void setDamping(real damping) {
 		this->damping = damping;
+	}
+
+	void clearForceAccumulator() {
+		this->forceAccumulator = vector(0, 0, 0);
+	}
+
+	void applyForce(vector force) {
+		this->forceAccumulator += force;
+
+		printf("Total accumulated force %s\n", forceAccumulator.toString().c_str());
 	}
 
 };

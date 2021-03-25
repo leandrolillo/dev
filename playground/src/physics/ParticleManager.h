@@ -10,21 +10,20 @@
 
 #include<Math3d.h>
 #include<Particle.h>
+#include<Force.h>
+#include<ParticleIntegrator.h>
+#include<ContactResolver.h>
+
 
 #include<vector>
 #include <algorithm>
 
-class ParticleIntegrator {
-public:
-	void integrate(real dt, Particle &particle) {
-		particle.position = particle.position + particle.velocity * dt;
-		particle.velocity = particle.velocity * powr(particle.damping, dt) + particle.acceleration * dt;
-	}
-};
 
 class ParticleManager {
 	std::vector<Particle *> particles;
+	std::vector<Force *> forces;
 	ParticleIntegrator particleIntegrator;
+	ContactResolver contactResolver;
 
 public:
 
@@ -32,16 +31,47 @@ public:
 		this->particles.push_back(particle);
 	}
 
+	void addForce(Force *force) {
+		this->forces.push_back(force);
+	}
+
 	void removeParticle(const Particle *particle) {
 		//this->particles.erase(__position)
 		particles.erase(std::remove(particles.begin(), particles.end(), particle),  particles.end());
 	}
 
-	void step(real dt) {
-		for(std::vector<Particle *>::iterator iterator = particles.begin(); iterator < particles.end(); iterator++) {
-			particleIntegrator.integrate(dt,  **iterator);
+	void clearAccumulators() const {
+		for(std::vector<Particle *>::const_iterator iterator = particles.begin(); iterator != particles.end(); iterator++) {
+			(*iterator)->clearForceAccumulator();
+		}
+	}
 
-			(*iterator)->afterIntegrate(dt);
+	void step(real dt) const {
+		applyForces(dt);
+
+		integrate(dt);
+
+		// generate contacts (collision and contact generators)
+		std::vector<Contact> contacts;
+
+		contactResolver.resolve(contacts);
+
+	}
+protected:
+	void integrate(real dt) const {
+		for(std::vector<Particle *>::const_iterator iterator = particles.begin(); iterator != particles.end(); iterator++) {
+			Particle *particle = *iterator;
+			if(particle->getStatus()) {
+				particleIntegrator.integrate(dt, *particle);
+				particle->afterIntegrate(dt);
+
+			}
+		}
+	}
+
+	void applyForces(real dt) const {
+		for(std::vector<Force *>::const_iterator iterator = forces.begin(); iterator != forces.end(); iterator++) {
+			(*iterator)->apply(dt, particles);
 		}
 	}
 };
