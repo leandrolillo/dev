@@ -9,7 +9,7 @@
 #define SRC_PHYSICS_PHYSICSRUNNER_H_
 
 #include<OpenGLRunner.h>
-#include<playground.h>
+#include<Playground.h>
 #include<ParticleManager.h>
 
 class PhysicsRunner: public PlaygroundRunner {
@@ -18,7 +18,7 @@ class PhysicsRunner: public PlaygroundRunner {
 	/**
 	 * TODO: Get rid of this dependency (it exists for timing functions).
 	 */
-	OpenGLRunner *openGl = null;
+	VideoRunner *videoRunner = null;
 
 	ParticleManager particleManager;
 
@@ -45,10 +45,10 @@ public:
 	}
 
 	bool init() {
-		openGl = (OpenGLRunner*) this->getContainer()->getRunner(1);
+		videoRunner = (VideoRunner*) this->getContainer()->getRunner(1);
 
-		to = openGl->getPerformanceCounter();
-		invPerformanceFreq = (real)1 / (real)openGl->getPerformanceFreq();
+		to = videoRunner->getPerformanceCounter();
+		invPerformanceFreq = (real)1 / (real)videoRunner->getPerformanceFreq();
 
 		return true;
 	}
@@ -58,7 +58,7 @@ public:
 	}
 
 	LoopResult doLoop() {
-		unsigned long tf = openGl->getPerformanceCounter();
+		unsigned long tf = videoRunner->getPerformanceCounter();
 		real dt = (real)(tf - to) * invPerformanceFreq;
 		to = tf;
 

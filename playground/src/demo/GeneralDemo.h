@@ -68,11 +68,15 @@ public:
 	}
 
 	virtual unsigned char getInterests() {
-		return KEY_DOWN | KEY_UP | MOUSE_MOVE | MOUSE_WHEEL;
+		return KEY_DOWN | KEY_UP | MOUSE_MOVE | MOUSE_WHEEL | RESIZE;
 	}
 
 	virtual unsigned char getId() {
 		return GeneralDemoRunner::ID;
+	}
+
+	void resize(unsigned int height, unsigned int width) {
+		openGl->setProjectionMatrix(openGl->perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 100.0));
 	}
 
 	void reset() {
@@ -113,51 +117,16 @@ public:
 		toonShaderProgram = (ShaderProgramResource*) resourceManager->load(
 				"shaders/toon.330.program.json", "video/shaderProgram");
 
-		glClearColor(0.0, 0.5, 0.0, 0.0);
-		glEnable(GL_DEPTH_TEST);
-//			glEnable(GL_CULL_FACE);
-//			glCullFace(GL_BACK);
-
-		glUseProgram(null);
+		openGl->setClearColor(0.0, 0.5, 0.0, 0.0);
+		openGl->setAttribute(DEPTH_TEST, true);
+		//openGl->setAttribute(CULL_FACE, CULL_FACE_BACK);
 
 		reset();
 		return true;
 	}
 
-	void logGlError(char *format) {
-		GLenum glError;
-		while ((glError = glGetError()) != GL_NO_ERROR) {
-			logger->error(format, glError);
-		}
-	}
-
 	virtual LoopResult doLoop() {
-		//glBindTexture(GL_TEXTURE_2D, 0);
-
-//			glDisable(GL_LIGHTING);
-//			glColor3f(1.0, 1.0, 0.0);
-//			glPushMatrix();
-//			//light w = 1: spotlight; w = 0 directional light
-//			glLightfv(GL_LIGHT0, GL_POSITION, (float *)vector4(lightPosition.x, lightPosition.y, lightPosition.z, 0));
-//			glTranslatef(lightPosition.x, lightPosition.y, lightPosition.z);
-//			openGl->glSphere(.2);
-//			glPopMatrix();
-
-//			glEnable(GL_LIGHTING);
-
-			openGl->setTexture(0, jpgTexture);
-//
-//			glPushMatrix();
-//			glTranslatef(-1.5, 2.0, 0.0);
-//			glRotatef(rotation, 0.0, 1.0, 0.0);
-//			openGl->glDrawGeometry(geometryResource);
-//			glPopMatrix();
-//
-//			glPushMatrix();
-//			glTranslatef(1.5, 2.0, 0.0);
-//			glRotatef(rotation, 0.0, 1.0, 0.0);
-//			openGl->glDrawGeometry(sphereGeometryResource);
-//			glPopMatrix();
+		openGl->setTexture(0, jpgTexture);
 
 		if (toonShaderProgram != null) {
 			openGl->useProgramResource(toonShaderProgram);
@@ -165,11 +134,11 @@ public:
 
 		openGl->setModelMatrix(matriz_4x4::Identidad);
 		openGl->sendMatrices();
-		openGl->glAxis();
+		openGl->drawAxis();
 
 		openGl->setModelMatrix(matriz_4x4::matrizTraslacion(lightPosition));
 		openGl->sendMatrices();
-		openGl->glSphere(0.1f);
+		openGl->drawSphere(0.1f);
 
 		lightAnnoyingSoundSource->setPosition(
 				vector3(lightPosition.x, lightPosition.y, -lightPosition.z));

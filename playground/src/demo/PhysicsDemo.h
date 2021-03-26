@@ -63,7 +63,11 @@ public:
 	}
 
 	virtual unsigned char getInterests() {
-			return KEY_DOWN | KEY_UP | MOUSE_MOVE | MOUSE_WHEEL | MOUSE_BUTTON_DOWN;
+			return KEY_DOWN | KEY_UP | MOUSE_MOVE | MOUSE_WHEEL | MOUSE_BUTTON_DOWN | RESIZE;
+	}
+
+	void resize(unsigned int height, unsigned int width) {
+			openGl->setProjectionMatrix(openGl->perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 100.0));
 	}
 
 	void reset() {
@@ -82,8 +86,8 @@ public:
 
 		gunshotSource = audio->createSource("audio/handgunfire.wav", vector(0, 0, 0), vector(0, 0, 0), false);
 
-		glClearColor(0.0, 0.5, 0.0, 0.0);
-		glEnable(GL_DEPTH_TEST);
+		openGl->setClearColor(0.0, 0.5, 0.0, 0.0);
+		openGl->setAttribute(DEPTH_TEST, true);
 
 		reset();
 
@@ -100,7 +104,7 @@ public:
 		openGl->setViewMatrix(matriz_4x4::matrizTraslacion(this->viewPosition));
 		openGl->setModelMatrix(matriz_4x4::Identidad);
 		openGl->sendMatrices();
-		openGl->glAxis(1.0);
+		openGl->drawAxis(1.0);
 
 //		logger->debug("Drawing");
 		int count = 0;
@@ -114,7 +118,7 @@ public:
 				openGl->setModelMatrix(matriz_4x4::matrizTraslacion(particle->getPosition()));
 
 				openGl->sendMatrices();
-				openGl->glSphere(0.1);
+				openGl->drawSphere(0.1);
 			} else {
 //				logger->debug("Particle is disabled");
 			}

@@ -5,31 +5,24 @@
  *      Author: Lean
  */
 
-#ifndef VIDEORUNNER_H_
-#define VIDEORUNNER_H_
+#ifndef OPENGLVIDEORUNNER_H_
+#define OPENGLVIDEORUNNER_H_
 
+#include <SDL2/SDL.h>
 #include <OpenGL/OpenGL.h>
 #include <OpenGL/gl3.h>
 #include <OpenGL/glext.h>
 
 #include <Playground.h>
-
-#include <adapters/PngResourceAdapter.h>
-#include <adapters/JpegResourceAdapter.h>
-#include <adapters/TgaResourceAdapter.h>
+#include <VideoRunner.h>
 #include <adapters/TextureResourceAdapter.h>
-#include <adapters/GeometryResourceAdapter.h>
 #include <adapters/VertexArrayAdapter.h>
 #include <adapters/ShaderResourceAdapter.h>
 #include <adapters/ShaderProgramResourceAdapter.h>
-#include <resources/ShaderProgramResource.h>
-#include <resources/LightResource.h>
 
-#include <SDLRunner.h>
-
-#include <Math3d.h>
-
-#define axis_length 1.0f
+#define DEPTH_TEST GL_DEPTH_TEST
+#define CULL_FACE GL_CULL_FACE
+#define CULL_FACE_BACK GL_BACK
 
 #define VERTEX_LOCATION 0
 #define INDEX_LOCATION 1
@@ -45,87 +38,69 @@
 #define GL_MINOR_VERSION 0x821C
 #endif
 
-class OpenGLRunner: public SDLRunner {
+int playgroundEventFilter(void *context, SDL_Event *event);
+
+class OpenGLRunner: public VideoRunner {
 private:
-	Logger *logger;
-	SDL_GLContext glcontext;
-	unsigned int majorVersion;
-	unsigned int minorVersion;
+	Logger *logger = Logger::getLogger("video/videoRunner.h");
 
-	ShaderProgramResource *currentShaderProgram;
+	SDL_Window *window = null;
+	SDL_GLContext glcontext = null;
+	unsigned int majorVersion = 0;
+	unsigned int minorVersion = 0;
 
-	ShaderProgramResource *defaultShaderProgram;
+	ShaderProgramResource *currentShaderProgram = null;
+	ShaderProgramResource *defaultShaderProgram = null;
 
-	VertexArrayResource *sphere;
-	VertexArrayResource *axis;
+	VertexArrayResource *sphere = null;
+	VertexArrayResource *axis = null;
 
-	matriz_4x4 projection, viewMatrix, projectionViewMatrix, modelMatrix;
-	matriz_3x3 normalMatrix;
 public:
 	static const unsigned char ID = 1;
 public:
-	OpenGLRunner() {
-		logger = Logger::getLogger("video/videoRunner.h");
-		glcontext = null;
-		majorVersion = 0;
-		minorVersion = 0;
-		currentShaderProgram = null;
-		defaultShaderProgram = null;
-
-		sphere = null;
-		axis = null;
-	}
-
 	virtual unsigned char getId() {
 		return ID;
 	}
 
-	void generateDefaultTexture() {
-		unsigned int textureHandler = 0;
-		glGenTextures(1, &textureHandler);
-
-		GLubyte data[] = { 255, 255, 255, 255 };
-
-		glBindTexture(GL_TEXTURE_2D, ID);
-
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA,
-				GL_UNSIGNED_BYTE, data);
-
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, textureHandler);
+	virtual unsigned char getInterests() {
+		return RESIZE;
 	}
 
-	void setTexture(unsigned int location, TextureResource *texture) {
-		if (texture != null) {
-			glActiveTexture(GL_TEXTURE0 + location);
-			glBindTexture(GL_TEXTURE_2D, texture->getId());
-		}
+	virtual ~OpenGLRunner() {
+		SDL_DestroyWindow(window);
+		logger->debug("OpenGL/SDL Window destroyed");
+		SDL_Quit();
+		logger->debug("SDL shutdown");
 	}
 
 	virtual bool init() {
-		SDLRunner::init();
-
-		this->getContainer()->getResourceManager()->addAdapter(
-				new PngResourceAdapter());
-		this->getContainer()->getResourceManager()->addAdapter(
-				new JpegResourceAdapter());
-		this->getContainer()->getResourceManager()->addAdapter(
-				new TgaResourceAdapter());
+		VideoRunner::init();
 		this->getContainer()->getResourceManager()->addAdapter(
 				new TextureResourceAdapter());
-		this->getContainer()->getResourceManager()->addAdapter(
-				new GeometryResourceAdapter());
 		this->getContainer()->getResourceManager()->addAdapter(
 				new VertexArrayResourceAdapter());
 		this->getContainer()->getResourceManager()->addAdapter(
 				new ShaderResourceAdapter());
 		this->getContainer()->getResourceManager()->addAdapter(
 				new ShaderProgramResourceAdapter());
+
+		if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+			logger->error("SDL_Init Error: %s", SDL_GetError());
+			return false;
+		}
+
+		logger->debug("SDL initialized");
+
+		SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
+
+		this->window = SDL_CreateWindow("SDL2/OpenGL Demo", 0, 0, 640, 480,
+				SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+
+		logger->debug("SDL Window created");
+
+		SDL_AddEventWatch(playgroundEventFilter, this);
+
+		logger->debug("SDL event watch registered");
 
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 		SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
@@ -168,67 +143,99 @@ public:
 
 		return true;
 	}
-	virtual void beforeLoop() {
-		SDLRunner::beforeLoop();
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+	virtual bool afterInit() {
+		int height = 0;
+		int width = 0;
+		SDL_GetWindowSize(window, &width, &height);
+
+		this->getContainer()->resize(height, width);
+
+		return true;
+	}
+
+	virtual void beforeLoop() {
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+
+	LoopResult doLoop() {
+		SDL_Event windowEvent;
+
+		if (SDL_PollEvent(&windowEvent)) {
+			switch (windowEvent.type) {
+			case SDL_QUIT:
+				return STOP;
+			}
+		}
+
+		return CONTINUE;
 	}
 
 	virtual void afterLoop() {
-		SDLRunner::afterLoop();
 		SDL_GL_SwapWindow(window);
 	}
 
-	virtual unsigned char getInterests() {
-		return RESIZE;
+	virtual int processEvent(SDL_Event *event) {
+		switch (event->type) {
+		case SDL_WINDOWEVENT:
+			switch (event->window.event) {
+			case SDL_WINDOWEVENT_RESIZED:
+			case SDL_WINDOWEVENT_SIZE_CHANGED:
+				logger->debug("WINDOW RESIZED to [%d, %d]", event->window.data2,
+						event->window.data1);
+				this->getContainer()->resize(event->window.data2,
+						event->window.data1);
+				return 0;
+			}
+			break;
+		case SDL_KEYDOWN:
+			//SDL_Log("SDL_KEYDOWN %d", event->key.keysym.sym);
+			logger->verbose("KEYDOWN: %d", event->key.keysym.sym);
+			this->getContainer()->keyDown(event->key.keysym.sym);
+			return 0;
+		case SDL_KEYUP:
+			//SDL_Log("SDL_KEYUP %d", event->key.keysym.sym);
+			logger->verbose("KEYUP: %d", event->key.keysym.sym);
+			this->getContainer()->keyUp(event->key.keysym.sym);
+			return 0;
+		case SDL_MOUSEMOTION:
+			//SDL_Log("SDL_MOUSEMOTION (%d,%d) delta=(%d,%d)", event->motion.x, event->motion.y, event->motion.xrel, event->motion.yrel);
+			this->getContainer()->mouseMove(event->motion.xrel,
+					event->motion.yrel);
+			logger->verbose("MOUSEMOVE: (%d, %d)", event->motion.xrel,
+					event->motion.yrel);
+			return 0;
+		case SDL_MOUSEBUTTONDOWN:
+			//SDL_Log("SDL_MOUSEBUTTONDOWN %d", event->button.button);
+			logger->verbose("MOUSEBUTTONDOWN: %d", event->button.button);
+			this->getContainer()->mouseButtonDown(event->button.button);
+			return 0;
+		case SDL_MOUSEBUTTONUP:
+			//SDL_Log("SDL_MOUSEBUTTONUP %d", event->button.button);
+			logger->verbose("MOUSEBUTTONUP: %d", event->button.button);
+			this->getContainer()->mouseButtonUp(event->button.button);
+			return 0;
+		case SDL_MOUSEWHEEL:
+			//SDL_Log("SDL_MOUSEWHEEL %d %d", event->wheel.direction, event->wheel.y);
+			logger->verbose("MOUSEWHEEL: %d", event->wheel.y);
+			this->getContainer()->mouseWheel(event->wheel.y);
+			return 0;
+		}
+
+		return 1;
+	}
+
+	unsigned long getPerformanceCounter() const {
+		return SDL_GetPerformanceCounter();
+	}
+
+	unsigned long getPerformanceFreq() const {
+		return SDL_GetPerformanceFrequency();
 	}
 
 	void resize(unsigned int height, unsigned int width) {
+		VideoRunner::resize(height, width);
 		glViewport(0, 0, (GLsizei) width, (GLsizei) height);
-		//logger->debug("glViewPort(0, 0, %d, %d", width, height);
-		glPerspective(45.0, (GLfloat) width / (GLfloat) height, 0.1, 100.0);
-	}
-
-	void glPerspective(double fovy, double aspect, double zNear, double zFar) {
-		double fW, fH;
-		fH = tan(fovy / 360.0 * M_PI) * zNear;
-		fW = fH * aspect;
-		double left = -fW;
-		double right = fW;
-		double bottom = -fH;
-		double top = fH;
-
-		// from glFrustrum manpage
-		projection(0, 0) = 2.0 * zNear / (right - left);
-		projection(0, 1) = 0.0;
-		projection(0, 2) = (right + left) / (right - left);
-		projection(0, 3) = 0.0;
-		projection(1, 0) = 0.0;
-		projection(1, 1) = 2.0 * zNear / (top - bottom);
-		projection(1, 2) = (top + bottom) / (top - bottom);
-		projection(1, 3) = 0.0;
-		projection(2, 0) = 0.0;
-		projection(2, 1) = 0.0;
-		projection(2, 2) = -(zFar + zNear) / (zFar - zNear);
-		projection(2, 3) = -(2.0 * zFar * zNear) / (zFar - zNear);
-		projection(3, 0) = 0.0;
-		projection(3, 1) = 0.0;
-		projection(3, 2) = -1.0;
-		projection(3, 3) = 0.0;
-	}
-
-	const matriz_4x4& getProjectionMatrix() const {
-		return this->projection;
-	}
-
-	void setViewMatrix(const matriz_4x4 &viewMatrix) {
-		this->viewMatrix = viewMatrix;
-		this->projectionViewMatrix = this->projection * this->viewMatrix;
-	}
-
-	void setModelMatrix(const matriz_4x4 &modelMatrix) {
-		this->modelMatrix = modelMatrix;
-		this->normalMatrix = ((matriz_3x3) modelMatrix).inversa().traspuesta();
 	}
 
 	unsigned int getMajorVersion() const {
@@ -391,30 +398,32 @@ public:
 				&& sendVector("light.position", light.getPosition());
 	}
 
-	unsigned int asGlPrimitive(const String &typeString) {
-		if (typeString == "points")
-			return GL_POINTS;
-		else if (typeString == "points")
-			return GL_LINES;
-		else if (typeString == "lineLoop")
-			return GL_LINE_LOOP;
-		else if (typeString == "lineStrip")
-			return GL_LINE_STRIP;
-		else if (typeString == "lines")
-			return GL_LINES;
-		else if (typeString == "triangles")
-			return GL_TRIANGLES;
-		else if (typeString == "triangleStrip")
-			return GL_TRIANGLE_STRIP;
-		else if (typeString == "triangleFan")
-			return GL_TRIANGLE_FAN;
-		else if (typeString == "quads")
-			return GL_QUADS;
-		else if (typeString == "triangleFan")
-			return GL_TRIANGLE_FAN;
-		else
-			throw InvalidArgumentException("Invalid primitive type: [%s]",
-					typeString.c_str());
+	void setTexture(unsigned int location, TextureResource *texture) const {
+		if (texture != null) {
+			glActiveTexture(GL_TEXTURE0 + location);
+			glBindTexture(GL_TEXTURE_2D, texture->getId());
+		}
+	}
+
+	void setClearColor(real r, real g, real b, real a) const {
+		glClearColor(r, g, b, a);
+	}
+
+	void setAttribute(unsigned int attributeCode, unsigned int param) const {
+		switch (attributeCode) {
+		case (DEPTH_TEST):
+			if ((bool) param) {
+				glEnable(GL_DEPTH_TEST);
+			} else {
+				glDisable(GL_DEPTH_TEST);
+			}
+			break;
+		case (CULL_FACE):
+			glEnable(GL_CULL_FACE);
+			glCullFace(param);
+
+			break;
+		}
 	}
 
 	/**
@@ -442,7 +451,7 @@ public:
 			}
 
 			VertexAttribPointer *indices = vertexArrayResource->getAttribute(
-					INDEX_LOCATION);
+			INDEX_LOCATION);
 			if (indices != null) {
 				glDrawElements(vertexArrayResource->getPrimitiveType(),
 						indices->getCount(), GL_UNSIGNED_INT, (GLvoid*) 0);
@@ -463,73 +472,7 @@ public:
 		}
 	}
 
-	String getGlError() const {
-		String errorMessage;
-
-		GLenum glError;
-		while ((glError = glGetError()) != GL_NO_ERROR) {
-			if (errorMessage.size() != 0) {
-				errorMessage += ", ";
-			}
-			if (glError == GL_INVALID_ENUM) {
-				errorMessage += "GL_INVALID_ENUM";
-			} else if (glError == GL_INVALID_VALUE) {
-				errorMessage += "GL_INVALID_VALUE";
-			} else if (glError == GL_INVALID_OPERATION) {
-				errorMessage += "GL_INVALID_OPERATION";
-			} else if (glError == 0x0503) {
-				errorMessage += "GL_STACK_OVERFLOW";
-			} else if (glError == 0x0504) {
-				errorMessage += "GL_STACK_UNDERFLOW";
-			} else if (glError == GL_OUT_OF_MEMORY) {
-				errorMessage += "GL_OUT_OF_MEMORY";
-			} else if (glError == GL_INVALID_FRAMEBUFFER_OPERATION) {
-				errorMessage += "GL_INVALID_FRAMEBUFFER_OPERATION";
-			} else if (glError == 0x8031) {
-				errorMessage += "GL_TABLE_TOO_LARGE";
-			} else {
-				errorMessage += std::to_string(glError);
-			}
-		}
-
-		return errorMessage;
-	}
-
-	//TODO: Review if required to migrate this method to VBOs
-	void glDrawGeometry(GeometryResource *geometry) {
-//			if(geometry != null) {
-//				glBegin(geometry->getType());
-//				for(unsigned int index = 0; index < geometry->getIndices().size(); index++)
-//				{
-//					unsigned int currentIndex = geometry->getIndices()[index];
-//
-//					if(currentIndex < geometry->getColors().size())
-//						glColor3fv((float *)geometry->getColors()[currentIndex]);
-//
-//					if(currentIndex < geometry->getTextureCoordinates().size())
-//						glTexCoord2fv((float *)geometry->getTextureCoordinates()[currentIndex]);
-//
-//					if(currentIndex < geometry->getNormals().size())
-//						glNormal3fv((float *)geometry->getNormals()[currentIndex]);
-//
-//					glVertex3fv((float *)geometry->getVertices()[currentIndex]);
-//				}
-//				glEnd();
-//	//				glDisable(GL_LIGHTING);
-//	//				glColor3f(0.0, 0.0, 0.0);
-//	//				glBegin(GL_LINES);
-//	//				for(unsigned int index = 0; index < geometry->getIndices().size(); index++)
-//	//				{
-//	//					unsigned int currentIndex = geometry->getIndices()[index];
-//	//					glVertex3fv((float *)geometry->getVertices()[currentIndex]);
-//	//					glVertex3fv((float *)(geometry->getVertices()[currentIndex] + geometry->getNormals()[currentIndex]));
-//	//				}
-//	//				glEnd();
-//	//				glEnable(GL_LIGHTING);
-//			}
-	}
-
-	void glSphere(real radius) {
+	void drawSphere(real radius) const {
 		matriz_4x4 newModel = this->modelMatrix
 				* matriz_4x4::matrizZoom(radius, radius, radius);
 		sendMatrix("matrices.model", newModel);
@@ -541,8 +484,8 @@ public:
 				this->projection * this->viewMatrix * this->modelMatrix);
 	}
 
-	void glPlane(vector posicion, vector normal, vector origen, float nro_grids,
-			float ancho) {
+	void drawPlane(vector posicion, vector normal, vector origen,
+			float nro_grids, float ancho) const {
 //	//			int pos_x, pos_z;
 //	//			pos_x = (int) (((int) (posicion.x / ancho + 0.5f)) * ancho);
 //	//			pos_z = (int) (((int) (posicion.z / ancho + 0.5f)) * ancho);
@@ -585,49 +528,8 @@ public:
 //				glVertex3f(x, y, z);
 //			glEnd();
 	}
-	void glWirePlane(vector posicion, vector normal, vector origen,
-			float nro_grids, float ancho) {
-//			int pos_x, pos_z;
-//			pos_x = (int) (((int) (posicion.x / ancho + 0.5f)) * ancho);
-//			pos_z = (int) (((int) (posicion.z / ancho + 0.5f)) * ancho);
-//
-//			float ancho_plano = nro_grids * ancho;
-//			real D = -(normal * origen);
-//			real Cz = normal.z * (pos_z + ancho_plano), Cx = normal.x
-//					* (pos_x + ancho_plano);
-//			real menosCz = normal.z * (pos_z - ancho_plano), menosCx = normal.x
-//					* (pos_x - ancho_plano);
-//			real y;
-//
-//			glBegin(GL_LINES);
-//	//			glColor3f(0.0f, 0.0f, 0.0f);
-//	//			glVertex3f(0.0f, 0.0f, 0.0f);
-//	//			glVertex3f(normal.x, normal.y, normal.z);
-//	//
-//	//			glColor3f(0.3f, 0.3f, 0.3f);
-//			for (real x = (real) (pos_x - ancho_plano);
-//					x < (real) (pos_x + ancho_plano + ancho); x += ancho) {
-//				y = -(normal.x * x + menosCz + D) / normal.y;
-//				glVertex3f(x, y, pos_z - ancho_plano);
-//
-//				y = -(normal.x * x + Cz + D) / normal.y;
-//				glVertex3f(x, y, pos_z + ancho_plano);
-//			}
-//
-//			//glColor3f(0.9f, 0.3f, 0.9f);
-//
-//			for (real z = (real) (pos_z - ancho_plano);
-//					z < (real) (pos_z + ancho_plano + ancho); z += ancho) {
-//				y = -(normal.z * z + menosCx + D) / normal.y;
-//				glVertex3f(pos_x - ancho_plano, y, z);
-//
-//				y = -(normal.z * z + Cx + D) / normal.y;
-//				glVertex3f(pos_x + ancho_plano, y, z);
-//			}
-//			glEnd();
-	}
 
-	void glAxis(real length = 1.0f) {
+	void drawAxis(real length = 1.0f) const {
 		matriz_4x4 newModel = this->modelMatrix
 				* matriz_4x4::matrizZoom(length, length, length);
 		sendMatrix("matrices.model", newModel);
@@ -638,6 +540,89 @@ public:
 		sendMatrix("matrices.pvm",
 				this->projection * this->viewMatrix * this->modelMatrix);
 	}
+
+protected:
+	void generateDefaultTexture() {
+		unsigned int textureHandler = 0;
+		glGenTextures(1, &textureHandler);
+
+		GLubyte data[] = { 255, 255, 255, 255 };
+
+		glBindTexture(GL_TEXTURE_2D, ID);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA,
+		GL_UNSIGNED_BYTE, data);
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, textureHandler);
+	}
+
+	String getGlError() const {
+		String errorMessage;
+
+		GLenum glError;
+		while ((glError = glGetError()) != GL_NO_ERROR) {
+			if (errorMessage.size() != 0) {
+				errorMessage += ", ";
+			}
+			if (glError == GL_INVALID_ENUM) {
+				errorMessage += "GL_INVALID_ENUM";
+			} else if (glError == GL_INVALID_VALUE) {
+				errorMessage += "GL_INVALID_VALUE";
+			} else if (glError == GL_INVALID_OPERATION) {
+				errorMessage += "GL_INVALID_OPERATION";
+			} else if (glError == 0x0503) {
+				errorMessage += "GL_STACK_OVERFLOW";
+			} else if (glError == 0x0504) {
+				errorMessage += "GL_STACK_UNDERFLOW";
+			} else if (glError == GL_OUT_OF_MEMORY) {
+				errorMessage += "GL_OUT_OF_MEMORY";
+			} else if (glError == GL_INVALID_FRAMEBUFFER_OPERATION) {
+				errorMessage += "GL_INVALID_FRAMEBUFFER_OPERATION";
+			} else if (glError == 0x8031) {
+				errorMessage += "GL_TABLE_TOO_LARGE";
+			} else {
+				errorMessage += std::to_string(glError);
+			}
+		}
+
+		return errorMessage;
+	}
+	unsigned int asGlPrimitive(const String &typeString) {
+		if (typeString == "points")
+			return GL_POINTS;
+		else if (typeString == "points")
+			return GL_LINES;
+		else if (typeString == "lineLoop")
+			return GL_LINE_LOOP;
+		else if (typeString == "lineStrip")
+			return GL_LINE_STRIP;
+		else if (typeString == "lines")
+			return GL_LINES;
+		else if (typeString == "triangles")
+			return GL_TRIANGLES;
+		else if (typeString == "triangleStrip")
+			return GL_TRIANGLE_STRIP;
+		else if (typeString == "triangleFan")
+			return GL_TRIANGLE_FAN;
+		else if (typeString == "quads")
+			return GL_QUADS;
+		else if (typeString == "triangleFan")
+			return GL_TRIANGLE_FAN;
+		else
+			throw InvalidArgumentException("Invalid primitive type: [%s]",
+					typeString.c_str());
+	}
 };
+
+int playgroundEventFilter(void *context, SDL_Event *event) {
+	OpenGLRunner *runner = (OpenGLRunner*) context;
+	return runner->processEvent(event);
+}
 
 #endif /* VIDEORUNNER_H_ */
