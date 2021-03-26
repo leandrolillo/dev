@@ -14,32 +14,43 @@
 
 class ResourceManager;
 
-class ResourceAdapter
-{
-	private:
-		ResourceManager *resourceManager;
-	public:
-		virtual const std::vector<String> getSupportedMimeTypes() = 0;
-		virtual Resource *load(FileParser &fileParser, const String &mimeType) = 0;
-		virtual void dispose(Resource *resource) = 0;
+class ResourceAdapter {
+private:
+	ResourceManager *resourceManager = null;
+	std::vector<String> supportedMimeTypes;
+protected:
+	Logger *logger = null;
+public:
+	ResourceManager* getResourceManager() {
+		return resourceManager;
+	}
 
-		virtual String toString() const {
-			return "Unknown Resource Adapter";
+	void setResourceManager(ResourceManager *resourceManager) {
+		this->resourceManager = resourceManager;
+	}
+
+	void addSupportedMimeType(String mimeType) {
+		supportedMimeTypes.push_back(mimeType);
+	}
+
+	const std::vector<String> getSupportedMimeTypes() const {
+		return supportedMimeTypes;
+	}
+
+	virtual Resource* load(FileParser &fileParser, const String &mimeType) = 0;
+	virtual void dispose(Resource *resource) const {};
+
+	virtual String toString() const {
+		if (logger == null) {
+			return "Unknown resource adapter";
 		}
-		virtual ~ResourceAdapter() {}
 
-		ResourceManager* getResourceManager()
-		{
-			return resourceManager;
-		}
+		return logger->getBasename();
+	}
 
-		void setResourceManager(ResourceManager* resourceManager)
-		{
-			this->resourceManager = resourceManager;
-		}
+	virtual ~ResourceAdapter() {
+	}
 
-		;
 };
-
 
 #endif /* RESOURCEADAPTER_H_ */

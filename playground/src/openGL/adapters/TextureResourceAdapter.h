@@ -14,22 +14,12 @@
 #include <OpenGL/gl3.h>
 
 class TextureResourceAdapter: public ResourceAdapter {
-	private:
-		std::vector<String> supportedMimeTypes;
-		Logger *logger;
 	public:
 		TextureResourceAdapter() {
-			supportedMimeTypes.push_back("video/texture");
-			logger = Logger::getLogger("video/TextureResourceAdapter.h");
+			logger = Logger::getLogger("video/TextureResourceAdapter");
+			this->addSupportedMimeType("video/texture");
 		}
 
-		String toString() const {
-			return logger->getBasename();
-		}
-
-		virtual const std::vector<String> getSupportedMimeTypes() {
-			return supportedMimeTypes;
-		}
 		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
 			ImageResource *imageResource = (ImageResource *)this->getResourceManager()->load(fileParser);
 			TextureResource *resource = null;

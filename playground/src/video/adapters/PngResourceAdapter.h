@@ -10,25 +10,16 @@
 
 #include <png.h>
 #include <stdio.h>
-#include "../resources/ResourceAdapter.h"
-#include "../video/resources/ImageResource.h"
+#include <ResourceAdapter.h>
+#include <resources/ImageResource.h>
 
-class PngResourceAdapter: public ResourceAdapter {
-	private:
-		std::vector<String> supportedMimeTypes;
-		Logger *logger;
+class PngResourceAdapter : public ResourceAdapter {
 		public:
 		PngResourceAdapter() {
-			supportedMimeTypes.push_back("image/png");
-			logger = Logger::getLogger("video/PngResourceAdapter.h");
-		}
-		String toString() const {
-			return logger->getBasename();
+			logger = Logger::getLogger("video/PngResourceAdapter");
+			this->addSupportedMimeType("image/png");
 		}
 
-		virtual const std::vector<String> getSupportedMimeTypes() {
-			return supportedMimeTypes;
-		}
 		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
 			unsigned char *pBitmap;
 			unsigned int width, height;

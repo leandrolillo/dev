@@ -9,25 +9,17 @@
 #define AUDIORESOURCEADAPTER_H_
 
 #include "al.h"
-#include "../resources/SourceResource.h"
-#include "../resources/BufferResource.h"
+#include <resources/SourceResource.h>
+#include <resources/BufferResource.h>
 #include <ResourceAdapter.h>
 
 class SourceResourceAdapter: public ResourceAdapter {
-	private:
-		std::vector<String> supportedMimeTypes;
-		Logger *logger;
 	public:
 		SourceResourceAdapter() {
-			supportedMimeTypes.push_back("audio/source");
-			logger = Logger::getLogger("audio/SourceResourceAdapter.h");
+			logger = Logger::getLogger("audio/SourceResourceAdapter");
+			this->addSupportedMimeType("audio/source");
 		}
-		virtual const std::vector<String> getSupportedMimeTypes() {
-			return supportedMimeTypes;
-		}
-		String toString() const {
-			return logger->getBasename();
-		}
+
 		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
 			ALenum error = 0;
 

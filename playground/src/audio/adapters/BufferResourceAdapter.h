@@ -14,20 +14,12 @@
 #include <ResourceAdapter.h>
 
 class BufferResourceAdapter: public ResourceAdapter {
-private:
-	std::vector<String> supportedMimeTypes;
-	Logger *logger;
 public:
 	BufferResourceAdapter() {
-		supportedMimeTypes.push_back("audio/buffer");
-		logger = Logger::getLogger("audio/BufferResourceAdapter.h");
+		logger = Logger::getLogger("audio/BufferResourceAdapter");
+		this->addSupportedMimeType("audio/buffer");
 	}
-	virtual const std::vector<String> getSupportedMimeTypes() {
-		return supportedMimeTypes;
-	}
-	String toString() const {
-		return logger->getBasename();
-	}
+
 	ALenum asOpenALFormat(AudioFormat format) {
 		switch (format) {
 		case MONO8:

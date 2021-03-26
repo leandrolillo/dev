@@ -16,18 +16,16 @@
  *      Author: Lean
  */
 
-#include "../../resources/ResourceAdapter.h"
-#include "../resources/ShaderProgramResource.h"
-#include "../../parser/JsonParser.h"
-#include "VideoAdapter.h"
+#include <ResourceAdapter.h>
+#include <resources/ShaderProgramResource.h>
+#include <JsonParser.h>
+
 #include <OpenGL/gl3.h>
 #include <map>
 #include <string>
 
 class ShaderProgramResourceAdapter: public ResourceAdapter {
 	private:
-		std::vector<String> supportedMimeTypes;
-		Logger *logger;
 		std::map<std::string, std::string> shadersMimeTypes;
 
 	private:
@@ -47,22 +45,14 @@ class ShaderProgramResourceAdapter: public ResourceAdapter {
 	public:
 
 		ShaderProgramResourceAdapter() {
-			supportedMimeTypes.push_back("video/shaderProgram");
-			logger = Logger::getLogger("video/ShaderProgramResourceAdapter.h");
+			logger = Logger::getLogger("video/ShaderProgramResourceAdapter");
+			this->addSupportedMimeType("video/shaderProgram");
 
 			shadersMimeTypes["vertexShaders"] = "video/vertexShader";
 			shadersMimeTypes["fragmentShaders"] = "video/fragmentShader";
 			shadersMimeTypes["geometryShaders"] = "video/geometryShader";
 			shadersMimeTypes["tesellationShaders"] = "video/tesellationShader";
 		}
-		String toString() const {
-			return logger->getBasename();
-		}
-
-		virtual const std::vector<String> getSupportedMimeTypes() {
-			return supportedMimeTypes;
-		}
-
 
 		#define BUFFER_SIZE 256
 		virtual Resource *load(FileParser &fileParser, const String &mimeType) {

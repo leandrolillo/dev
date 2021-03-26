@@ -7,14 +7,12 @@
 
 #ifndef SHADERRESOURCEADAPTER_H_
 #define SHADERRESOURCEADAPTER_H_
-#include "../../resources/ResourceAdapter.h"
-#include "../resources/ShaderResource.h"
+#include <ResourceAdapter.h>
+#include <resources/ShaderResource.h>
+
 #include <OpenGL/gl3.h>
 
 class ShaderResourceAdapter: public ResourceAdapter {
-	private:
-		std::vector<String> supportedMimeTypes;
-		Logger *logger;
 	private:
 		String getInfoLog(GLuint object)
 		{
@@ -31,17 +29,11 @@ class ShaderResourceAdapter: public ResourceAdapter {
 		}
 	public:
 		ShaderResourceAdapter() {
-			supportedMimeTypes.push_back("video/vertexShader");
-			supportedMimeTypes.push_back("video/fragmentShader");
-			logger = Logger::getLogger("video/ShaderResourceAdapter.h");
-		}
-		String toString() const {
-			return logger->getBasename();
+			logger = Logger::getLogger("video/ShaderResourceAdapter");
+			this->addSupportedMimeType("video/vertexShader");
+			this->addSupportedMimeType("video/fragmentShader");
 		}
 
-		virtual const std::vector<String> getSupportedMimeTypes() {
-			return supportedMimeTypes;
-		}
 		#define BUFFER_SIZE 256
 		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
 			ShaderResource *resource = null;

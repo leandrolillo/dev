@@ -8,8 +8,8 @@
 #ifndef VERTEXBUFFERRESOURCE_H_
 #define VERTEXBUFFERRESOURCE_H_
 
-#include "../resources/Resource.h"
-#include "TextureResource.h"
+#include <Resource.h>
+#include <resources/TextureResource.h>
 #include <OpenGL/gl3.h>
 
 enum ShaderAttributeLocation
