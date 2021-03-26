@@ -49,8 +49,8 @@ private:
 	unsigned int majorVersion = 0;
 	unsigned int minorVersion = 0;
 
-	ShaderProgramResource *currentShaderProgram = null;
-	ShaderProgramResource *defaultShaderProgram = null;
+	const ShaderProgramResource *currentShaderProgram = null;
+	const ShaderProgramResource *defaultShaderProgram = null;
 
 	VertexArrayResource *sphere = null;
 	VertexArrayResource *axis = null;
@@ -246,11 +246,11 @@ public:
 		return minorVersion;
 	}
 
-	ShaderProgramResource* getDefaultShaderProgram() const {
+	const ShaderProgramResource* getDefaultShaderProgram() const {
 		return this->defaultShaderProgram;
 	}
 
-	void useProgramResource(ShaderProgramResource *program) {
+	void useProgramResource(const ShaderProgramResource *program) {
 		if (program != null) {
 			if (currentShaderProgram == null
 					|| currentShaderProgram->getId() != program->getId()) {
@@ -398,7 +398,7 @@ public:
 				&& sendVector("light.position", light.getPosition());
 	}
 
-	void setTexture(unsigned int location, TextureResource *texture) const {
+	void setTexture(unsigned int location, const TextureResource *texture) const {
 		if (texture != null) {
 			glActiveTexture(GL_TEXTURE0 + location);
 			glBindTexture(GL_TEXTURE_2D, texture->getId());
@@ -429,7 +429,7 @@ public:
 	/**
 	 * Expects [number of index] elements in every vertex array attribute. E.g. You can't have three vertices, six indices and six texture coordinates. See http://www.opengl.org/wiki/Vertex_Buffer_Object#Vertex_Stream
 	 */
-	void drawVertexArray(VertexArrayResource *vertexArrayResource) const {
+	void drawVertexArray(const VertexArrayResource *vertexArrayResource) const {
 		String errorMessage;
 
 		if (vertexArrayResource != null) {
@@ -450,7 +450,7 @@ public:
 						errorMessage.c_str());
 			}
 
-			VertexAttribPointer *indices = vertexArrayResource->getAttribute(
+			const VertexAttribPointer *indices = vertexArrayResource->getAttribute(
 			INDEX_LOCATION);
 			if (indices != null) {
 				glDrawElements(vertexArrayResource->getPrimitiveType(),

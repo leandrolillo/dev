@@ -12,34 +12,35 @@
 #include<OpenGLRunner.h>
 #include<AudioRunner.h>
 
+#include<vector>
+
 class GeneralDemoRunner: public PlaygroundRunner {
 private:
-	Logger *logger;
-	OpenGLRunner *openGl;
-	AudioRunner *audio;
+	Logger *logger = null;
+	OpenGLRunner *openGl = null;
+	AudioRunner *audio = null;
 
 	//Graphical stuff
 	vector viewPosition;
 	vector lightPosition;
 	vector *currentPosition;
-	real rotation;
+	real rotation = 0;
 
-	Source *lightAnnoyingSoundSource;
+	Source *lightAnnoyingSoundSource = null;
 
-	TextureResource *pngTexture;
-	TextureResource *jpgTexture;
+	TextureResource *pngTexture = null;
+	TextureResource *jpgTexture = null;
 
-	VertexArrayResource *triangleVertexArray;
-	VertexArrayResource *sphereVertexArray;
+	VertexArrayResource *triangleVertexArray = null;
+	VertexArrayResource *sphereVertexArray = null;
 
-	GeometryResource *sphereGeometry;
-	GeometryResource *triangleGeometry;
+	GeometryResource *sphereGeometry = null;
+	GeometryResource *triangleGeometry = null;
 
-	ShaderProgramResource *toonShaderProgram;
+	ShaderProgramResource *toonShaderProgram = null;
 
 	MaterialResource material;
 	LightResource light;
-
 public:
 	static const unsigned char ID = 101;
 
@@ -49,22 +50,10 @@ public:
 					vector(0.5f, 0.5f, 0.5f), 32.0f), light(lightPosition,
 					vector(0.2f, 0.2f, 0.2f), vector(0.5f, 0.5f, 0.5f),
 					vector(1.0f, 1.0f, 1.0f), 1.0f) {
-		openGl = null;
-		audio = null;
 
 		logger = Logger::getLogger("Main.cpp");
 
 		currentPosition = &viewPosition;
-		rotation = 0;
-		pngTexture = null;
-		jpgTexture = null;
-		triangleVertexArray = null;
-		toonShaderProgram = null;
-		triangleGeometry = null;
-		sphereVertexArray = null;
-		sphereGeometry = null;
-
-		lightAnnoyingSoundSource = null;
 	}
 
 	virtual unsigned char getInterests() {
@@ -126,6 +115,7 @@ public:
 	}
 
 	virtual LoopResult doLoop() {
+
 		openGl->setTexture(0, jpgTexture);
 
 		if (toonShaderProgram != null) {
@@ -202,6 +192,8 @@ public:
 
 		rotation += 1;
 
+
+
 		return CONTINUE;
 	}
 	void mouseWheel(int wheel) {
@@ -239,8 +231,8 @@ public:
 			break;
 		}
 	}
-
 };
+
 class PlaygroundGeneralDemo: public Playground {
 public:
 	PlaygroundGeneralDemo(const String &resourcesBasePath) :

@@ -81,6 +81,14 @@ public:
 		return null;
 	}
 
+	/**
+	 * Loads a file using the parent file path as base for relative paths
+	 */
+	Resource* load(const String &parentFilePath, const String &fileName, const String &mimeType) {
+		return load(this->addPaths(this->getFolderPath(parentFilePath), fileName), mimeType);
+	}
+
+
 	Resource* load(FileParser &fileParser, const String &mimeType) {
 		Resource *cached = resourceCache[getCacheKey(fileParser.getFilename(),
 				mimeType)];
@@ -168,24 +176,30 @@ public:
 	 * Return an absolute path from root folder and filename.
 	 */
 	String normalize(const String &fileName) const {
+		if(fileName.substr(0, 2) == "~/") {
+			return addPaths(rootFolder, fileName.substr(2, fileName.size() - 2));
+		}
 		return addPaths(rootFolder, fileName);
 	}
 
 	/**
 	 * if the provided postfix is an absolute path, return that.
+	 * if the provided postfix starts with ~/ then make it is relative to the repository and we return that as well.
 	 * Otherwise concatenate the prefix + postfix and remove extra slashes.
 	 */
 	String addPaths(const String &prefix, const String &postFix) const {
 		String normalizedPrefix = prefix.substr(this->rootFolder.length() - 1, 1) == "/" ? prefix : prefix + "/";
 		String normalizedPostfix = postFix.substr(0, 2) == "./" ? postFix.substr(2, postFix.length() - 2) : postFix;
 
-		return normalizedPostfix.substr(0, 1) == "/" ? normalizedPostfix : normalizedPrefix + normalizedPostfix;
+		return normalizedPostfix.substr(0, 1) == "/" || normalizedPostfix.substr(0, 2) == "~/" ?
+				normalizedPostfix :
+				normalizedPrefix + normalizedPostfix;
 	}
 
 	/**
 	 * Return the folder part of a path to a file.
 	 */
-	String getFileDirectoryName(const String &filePath) {
+	const String getFolderPath(const String &filePath) const {
 		unsigned long location = filePath.find_last_of('/');
 		return (location == std::string::npos ? "" : filePath.substr(0, location + 1));
 

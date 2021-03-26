@@ -34,7 +34,14 @@ class JsonParser
 			logger = Logger::getLogger("parser/JsonParser.h");
 		}
 
+		/**
+		 * Allows tokens in double quotes and without double quotes
+		 */
 		String readToken() {
+			if(peekToken() == "\"") {
+				return readString();
+			}
+
 			return fileParser.takeToken();
 		}
 

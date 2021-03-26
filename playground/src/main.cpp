@@ -7,6 +7,20 @@
 
 #include "demo/GeneralDemo.h"
 #include "demo/PhysicsDemo.h"
+#include "demo/TerrainDemo.h"
+
+int main(int, char**){
+//	PlaygroundGeneralDemo playground("/Users/leandro/huevadas/projects/dev/media/");
+//    playground.run();
+
+    PlaygroundTerrainDemo playground("/Users/leandro/huevadas/projects/dev/media/");
+    playground.run();
+//
+//	PhysicsPlayground playground("/Users/leandro/huevadas/projects/dev/media/");
+//    playground.run();
+
+    return 0;
+}
 
 GeometryResource buildSphereGeometry()
 {
@@ -73,15 +87,5 @@ GeometryResource buildSphereGeometry()
 	}
 
 	return resource;
-}
-
-int main(int, char**){
-//	PlaygroundGeneralDemo playground("/Users/leandro/huevadas/projects/dev/media/");
-//    playground.run();
-
-	PhysicsPlayground playground("/Users/leandro/huevadas/projects/dev/media/");
-    playground.run();
-
-    return 0;
 }
 

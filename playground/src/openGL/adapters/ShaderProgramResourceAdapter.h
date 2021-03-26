@@ -74,11 +74,7 @@ class ShaderProgramResourceAdapter: public ResourceAdapter {
 					std::vector<String> vertexShadersFiles = parser->readStringArray();
 
 					for(std::vector<String>::iterator stringIterator = vertexShadersFiles.begin(); stringIterator != vertexShadersFiles.end(); stringIterator++) {
-						String filename = getResourceManager()->addPaths(
-								getResourceManager()->getFileDirectoryName(fileParser.getFilename()),
-								*stringIterator);
-
-						ShaderResource *shader = (ShaderResource *)getResourceManager()->load(filename, shadersMimeTypes[token]);
+						ShaderResource *shader = (ShaderResource *)getResourceManager()->load(fileParser.getFilename(), *stringIterator, shadersMimeTypes[token]);
 						if(shader != null)
 							resource->getShaders().push_back(shader);
 						else
@@ -139,6 +135,7 @@ class ShaderProgramResourceAdapter: public ResourceAdapter {
 			logger->verbose("normal attrib location = [%d]", glGetAttribLocation(resource->getId(), "normal"));
 			logger->verbose("textureCoordinate attrib location = [%d]", glGetAttribLocation(resource->getId(), "textureCoordinate"));
 			logger->verbose("color attrib location = [%d]", glGetAttribLocation(resource->getId(), "color"));
+
 
 			return resource;
 		}

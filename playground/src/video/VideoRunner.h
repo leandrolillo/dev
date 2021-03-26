@@ -13,6 +13,8 @@
 #include <adapters/JpegResourceAdapter.h>
 #include <adapters/TgaResourceAdapter.h>
 #include <adapters/GeometryResourceAdapter.h>
+#include <adapters/TerrainResourceAdapter.h>
+
 #include <resources/LightResource.h>
 #include <resources/ShaderProgramResource.h>
 #include <resources/VertexArrayResource.h>
@@ -60,14 +62,11 @@ public:
 	}
 
 	virtual bool init() {
-			this->getContainer()->getResourceManager()->addAdapter(
-					new PngResourceAdapter());
-			this->getContainer()->getResourceManager()->addAdapter(
-					new JpegResourceAdapter());
-			this->getContainer()->getResourceManager()->addAdapter(
-					new TgaResourceAdapter());
-			this->getContainer()->getResourceManager()->addAdapter(
-					new GeometryResourceAdapter());
+			this->getContainer()->getResourceManager()->addAdapter(new PngResourceAdapter());
+			this->getContainer()->getResourceManager()->addAdapter(new JpegResourceAdapter());
+			this->getContainer()->getResourceManager()->addAdapter(new TgaResourceAdapter());
+			this->getContainer()->getResourceManager()->addAdapter(new GeometryResourceAdapter());
+			this->getContainer()->getResourceManager()->addAdapter(new TerrainResourceAdapter());
 
 			return true;
 	}
@@ -131,7 +130,7 @@ public:
 	 * Shader methods - should this go to a shader class?
 	 */
 
-	virtual void useProgramResource(ShaderProgramResource *program) = 0;
+	virtual void useProgramResource(const ShaderProgramResource *program) = 0;
 	virtual bool sendUnsignedInt(const char *name, unsigned int value) const = 0;
 	virtual bool sendReal(const char *name, const real &value) const = 0;
 	virtual bool sendVector(const char *name, const vector &value) const = 0;
@@ -147,8 +146,8 @@ public:
 	virtual void setClearColor(real r, real g, real b, real a) const = 0;
 	virtual void setAttribute(unsigned int attributeCode, unsigned int param) const = 0;
 
-	virtual void setTexture(unsigned int location, TextureResource *texture) const = 0;
-	virtual void drawVertexArray(VertexArrayResource *vertexArrayResource) const = 0;
+	virtual void setTexture(unsigned int location, const TextureResource *texture) const = 0;
+	virtual void drawVertexArray(const VertexArrayResource *vertexArrayResource) const = 0;
 	virtual void drawSphere(real radius) const = 0;
 	virtual void drawPlane(vector posicion, vector normal, vector origen, float nro_grids, float ancho) const = 0;
 	virtual void drawAxis(real length = 1.0f) const = 0;
