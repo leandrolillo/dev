@@ -47,7 +47,6 @@ public:
 			}
 
 			glBindVertexArray(resource->getId());
-
 			GLenum glError = glGetError();
 			if (glError != GL_NO_ERROR) {
 				logger->error("Error creating vertex array [%s]: 0x[%x]",
@@ -56,16 +55,19 @@ public:
 				return null;
 			}
 
-			if (geometry->getIndices().size() != 0
-					&& !addBuffer(INDEX_LOCATION, resource,
-							GL_ELEMENT_ARRAY_BUFFER, geometry->getIndices())) {
+			if (geometry->getVertices().size() != 0
+					&& !addBuffer(VERTEX_LOCATION, resource, GL_ARRAY_BUFFER,
+							geometry->getVertices())) {
 				dispose(resource);
 				return null;
 			}
 
-			if (geometry->getVertices().size() != 0
-					&& !addBuffer(VERTEX_LOCATION, resource, GL_ARRAY_BUFFER,
-							geometry->getVertices())) {
+			/**
+			 * Indices need to be loaded after vertices
+			 */
+			if (geometry->getIndices().size() != 0
+					&& !addBuffer(INDEX_LOCATION, resource,
+							GL_ELEMENT_ARRAY_BUFFER, geometry->getIndices())) {
 				dispose(resource);
 				return null;
 			}
@@ -92,9 +94,11 @@ public:
 				return null;
 			}
 
+			glBindVertexArray(0);
+
 			// remove objects from context.
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			glBindVertexArray(0);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 			return resource;
 		}
@@ -216,7 +220,7 @@ private:
 		// create vertex buffer
 		unsigned int buffer;
 		glGenBuffers(1, &buffer); // Generate our Vertex Buffer Object
-		glBindBuffer(bufferDestination, buffer); // bind to GL_ARAY_BUFFER, as we're about to call glBufferData(GL_ARRAY_BUFFER)
+		glBindBuffer(bufferDestination, buffer); // bind to GL_ELEMENT_ARRAY_BUFFER, as we're about to call glBufferData(GL_ELEMENT_ARRAY_BUFFER)
 		glBufferData(bufferDestination, data.size() * sizeof(unsigned int),
 				(unsigned int*) data.data(), GL_STATIC_DRAW);
 
