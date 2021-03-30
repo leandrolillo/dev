@@ -1,6 +1,6 @@
 {
-	"r": "~/images/terrain/grassFlowers.png",
-	"g": "~/images/terrain/mud.png",
+	"r": "~/images/terrain/mud.png",
+	"g": "~/images/terrain/grassFlowers.png",
 	"b": "~/images/terrain/path.png",
 	"a": "~/images/terrain/grassy2.png",
 	"map": "~/images/terrain/BlendMap.png",
