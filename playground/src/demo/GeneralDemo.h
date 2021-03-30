@@ -108,7 +108,7 @@ public:
 
 		openGl->setClearColor(0.0, 0.5, 0.0, 0.0);
 		openGl->setAttribute(DEPTH_TEST, true);
-		//openGl->setAttribute(CULL_FACE, CULL_FACE_BACK);
+		openGl->setAttribute(CULL_FACE, CULL_FACE_BACK);
 
 		reset();
 		return true;
@@ -136,7 +136,7 @@ public:
 		audio->updateListener(viewPosition);
 
 		openGl->setMaterial(material);
-		vector color(sin(radian(rotation)), cos(radian(rotation)), sin(radian(rotation)));
+		vector color(0.25 + 0.75 * sin(radian(rotation)), 0.25 + 0.75 * cos(radian(rotation)), 0.25 + 0.75 * sin(radian(rotation)));
 		light.setDiffuse(color);
 		light.setSpecular(color);
 		light.setAmbient(color);
@@ -160,6 +160,7 @@ public:
 						matriz_3x3::matrizRotacion(0.0f, radian(rotation),
 								0.0f), vector3(-2.0, 1.0, 0.0)));
 		openGl->sendMatrices();
+		//openGl->drawBox(1, 1, 1);
 		openGl->drawVertexArray(sphereVertexArray);
 
 		openGl->useProgramResource(openGl->getDefaultShaderProgram());
@@ -174,7 +175,8 @@ public:
 								0.0f), vector3(2.0, -1.0, 0.0)));
 		openGl->sendMatrices();
 		openGl->sendUnsignedInt("textureUnit", 0);
-		openGl->drawVertexArray(triangleVertexArray);
+		openGl->drawBox(1, 1, 1);
+		//openGl->drawVertexArray(triangleVertexArray);
 
 		openGl->setModelMatrix(
 				matriz_4x4::matrizBase(

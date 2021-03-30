@@ -18,7 +18,7 @@
 #include <errno.h>
 
 #define _USE_PRINTF_
-#define DEBUG
+//#define DEBUG
 //#define VERBOSE
 
 

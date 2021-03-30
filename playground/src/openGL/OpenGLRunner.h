@@ -52,8 +52,10 @@ private:
 	const ShaderProgramResource *currentShaderProgram = null;
 	const ShaderProgramResource *defaultShaderProgram = null;
 
-	VertexArrayResource *sphere = null;
 	VertexArrayResource *axis = null;
+	VertexArrayResource *sphere = null;
+	VertexArrayResource *box = null;
+
 
 public:
 	static const unsigned char ID = 1;
@@ -125,12 +127,19 @@ public:
 				glGetString(GL_SHADING_LANGUAGE_VERSION), "0", //glewGetString(GLEW_VERSION),
 				glGetString(GL_VENDOR), glGetString(GL_RENDERER));
 
-		sphere =
-				(VertexArrayResource*) this->getContainer()->getResourceManager()->load(
-						"core/sphere.json", "video/vertexArray");
 		axis =
 				(VertexArrayResource*) this->getContainer()->getResourceManager()->load(
 						"core/axis.json", "video/vertexArray");
+
+		box =
+				(VertexArrayResource*) this->getContainer()->getResourceManager()->load(
+						"core/box.json", "video/vertexArray");
+
+
+		sphere =
+				(VertexArrayResource*) this->getContainer()->getResourceManager()->load(
+						"core/sphere.json", "video/vertexArray");
+
 		defaultShaderProgram =
 				(ShaderProgramResource*) this->getContainer()->getResourceManager()->load(
 						"core/simple.program.json", "video/shaderProgram");
@@ -442,7 +451,10 @@ public:
 					logger->error("Error binding texture: %s",
 							errorMessage.c_str());
 				}
+			} else {
+				glBindTexture(GL_TEXTURE_2D, 0);
 			}
+
 
 			glBindVertexArray(vertexArrayResource->getId());
 			if (!(errorMessage = getGlError()).empty()) {
@@ -450,18 +462,15 @@ public:
 						errorMessage.c_str());
 			}
 
-			const VertexAttribPointer *indices = vertexArrayResource->getAttribute(
-			INDEX_LOCATION);
+			const VertexAttribPointer *indices = vertexArrayResource->getAttribute(INDEX_LOCATION);
 			if (indices != null) {
-				glDrawElements(vertexArrayResource->getPrimitiveType(),
-						indices->getCount(), GL_UNSIGNED_INT, (GLvoid*) 0);
+				glDrawElements(vertexArrayResource->getPrimitiveType(),indices->getCount(), GL_UNSIGNED_INT, (GLvoid*) 0);
 				if (!(errorMessage = getGlError()).empty()) {
 					logger->error("Error drawing elements: %s",
 							errorMessage.c_str());
 				}
 			} else {
-				glDrawArrays(vertexArrayResource->getPrimitiveType(), 0,
-						vertexArrayResource->getAttribute(VERTEX_LOCATION)->getCount());
+				glDrawArrays(vertexArrayResource->getPrimitiveType(), 0, vertexArrayResource->getAttribute(VERTEX_LOCATION)->getCount());
 				if (!(errorMessage = getGlError()).empty()) {
 					logger->error("Error drawing arrays: %s",
 							errorMessage.c_str());
@@ -483,6 +492,19 @@ public:
 		sendMatrix("matrices.pvm",
 				this->projection * this->viewMatrix * this->modelMatrix);
 	}
+
+	void drawBox(real height, real width, real depth) const {
+		matriz_4x4 newModel = this->modelMatrix
+				* matriz_4x4::matrizZoom(height, width, depth);
+		sendMatrix("matrices.model", newModel);
+		sendMatrix("matrices.pvm",
+				this->projection * this->viewMatrix * newModel);
+		drawVertexArray(box);
+		sendMatrix("matrices.model", this->modelMatrix);
+		sendMatrix("matrices.pvm",
+				this->projection * this->viewMatrix * this->modelMatrix);
+	}
+
 
 	void drawPlane(vector posicion, vector normal, vector origen,
 			float nro_grids, float ancho) const {

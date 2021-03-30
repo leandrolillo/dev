@@ -14,11 +14,12 @@
 #include <string>
 #include<stdio.h>
 
-#define eof std::to_string('\0')
+#define eof std::to_string((char)-1)
 #define eol "\n"
 
-#define char_eof '\0'
-#define char_eol '\n'
+#define char_eof (char)-1
+#define char_newl '\n'
+#define char_eol '\0'
 
 
 class FileParser {
@@ -43,7 +44,7 @@ class FileParser {
 		bool isInSet(char character, const char *set) {
 
 			const char *currentTokenSeparator = set;
-			while(*currentTokenSeparator != '\0' && *currentTokenSeparator != char_eof) {
+			while(*currentTokenSeparator != '\0') {
 				if(*currentTokenSeparator == character){
 					return true;
 				}
@@ -56,7 +57,7 @@ class FileParser {
 
 		bool isTokenSeparator(char character)
 		{
-			return isInSet(character, tokenSeparator);
+			return isInSet(character, tokenSeparator) || character == char_eof;
 		}
 
 		bool isBlank(char character)
@@ -66,7 +67,7 @@ class FileParser {
 
 		void takeUntilEOL() {
 			char caracter;
-			while((caracter = takeByte()) != char_eol && caracter != char_eof);
+			while((caracter = takeByte()) != char_newl && caracter != char_eof);
 		}
 
 		void takeBlanks() {
@@ -199,10 +200,10 @@ class FileParser {
 		int takeByte()
 		{
 			int byte = fgetc(getStream());
-			if((char)byte == char_eol) {
+			if((char)byte == char_newl) {
 				line++;
 				column = 0;
-			} else if((char) byte != '\r' && (char)byte != char_eof && (char) byte != char_eof) {
+			} else if((char) byte != '\r' && (char)byte != char_eof) {
 				column++;
 			}
 
@@ -222,7 +223,7 @@ class FileParser {
 			char caracter[2];
 			caracter[1] = char_eof;
 
-			while((caracter[0] = takeByte()) != char_eol && caracter[0] != char_eof)
+			while((caracter[0] = takeByte()) != char_newl && caracter[0] != char_eof)
 				line.append(caracter);
 
 			return line;
@@ -237,7 +238,7 @@ class FileParser {
 		}
 
 		String takeToken() {
-			char tokenBuffer[256];
+			char tokenBuffer[256] = "";
 
 			char *token = tokenBuffer;
 
@@ -249,11 +250,13 @@ class FileParser {
 				token++;
 				longitud++;
 			}
-			if(longitud == 0) *(token+1) = char_eof;
+
+			if(longitud == 0) *(token+1) = char_eol;
 			else {
-				*token = char_eof;
+				*token = char_eol;
 				fseek(getStream(), -1, SEEK_CUR);
 			}
+
 
 			return(tokenBuffer);
 		}
@@ -280,7 +283,7 @@ class FileParser {
 
 		void setDefaultSpecialCharacters()
 		{
-			tokenSeparator = "	# ()[]{},.:;<>+-*/^®=|&!ø?\n\r\"\'\\";
+			tokenSeparator = "	# ()[]{},.:;<>+-*/^®=|&!ø?\n\r\"\'\\" ; // + std::to_string((char)-1)).c_str();
 			blanks = " \n\r\t";
 			commentChar = '#';
 		}

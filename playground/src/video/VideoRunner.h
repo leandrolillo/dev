@@ -149,6 +149,7 @@ public:
 	virtual void setTexture(unsigned int location, const TextureResource *texture) const = 0;
 	virtual void drawVertexArray(const VertexArrayResource *vertexArrayResource) const = 0;
 	virtual void drawSphere(real radius) const = 0;
+	virtual void drawBox(real height, real width, real depth) const = 0;
 	virtual void drawPlane(vector posicion, vector normal, vector origen, float nro_grids, float ancho) const = 0;
 	virtual void drawAxis(real length = 1.0f) const = 0;
 

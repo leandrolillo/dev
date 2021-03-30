@@ -8,5 +8,5 @@
 	textureCoordinates: [<0, 0>, <0.5, 1>, <1, 0>],
 	type: "triangles",
 	generateNormals: true,
-	generateIndexes: false
+	generateIndexes: true
 }

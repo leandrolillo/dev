@@ -1,8 +1,8 @@
 {
-	"r": "~/images/terrain/DRYLEAVE.PNG",
-	"g": "~/images/terrain/GRASS2.PNG",
-	"b": "~/images/terrain/GRYDIRT2.JPG",
-	"a": "~/images/terrain/SANDSHOR.JPG",
+	"r": "~/images/terrain/grassFlowers.png",
+	"g": "~/images/terrain/mud.png",
+	"b": "~/images/terrain/path.png",
+	"a": "~/images/terrain/grassy2.png",
 	"map": "~/images/terrain/BlendMap.png",
 	"model": "largeQuad.json"
 }

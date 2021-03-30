@@ -52,6 +52,12 @@ class JsonParser
 		String readElement(String expectedValue, String name)
 		{
 			String token = fileParser.takeToken();
+//			printf("token: [");
+//			for(int i = 0; i < token.size(); i++){
+//				printf("%c %d", token[i], token[i]);
+//			}
+//
+//			printf("], expectedValue: [%s]\n", token.c_str(), expectedValue.c_str());
 			if(token != expectedValue)
 				throw ParsingException("Expected %s, got [%s] at (%d, %d)", name.c_str(), token.c_str(), fileParser.getLine(), fileParser.getColumn());
 			return token;
@@ -93,8 +99,9 @@ class JsonParser
 			readElement("\"", "StartString");
 
 			char character;
-			while((character = fileParser.takeByte()) != '\"' && character != EOF)
+			while((character = fileParser.takeByte()) != '\"' && character != EOF) {
 				value += character;
+			}
 
 			return value;
 		}
