@@ -12,6 +12,8 @@
 #include<OpenGLRunner.h>
 #include<AudioRunner.h>
 
+#include<ArcBall.h>
+
 #include<vector>
 
 class TerrainRenderer {
@@ -66,13 +68,15 @@ public:
 
 class TerrainDemoRunner: public PlaygroundRunner {
 private:
-	Logger *logger = null;
+	Logger *logger = Logger::getLogger("TerrainDemoRunner");
 	OpenGLRunner *openGl = null;
 	AudioRunner *audio = null;
 	vector viewPosition;
 	TerrainRenderer terrainRenderer;
 	MaterialResource material;
 	LightResource light;
+
+	ArcBall arcball;
 
 public:
 	static const unsigned char ID = 101;
@@ -84,7 +88,7 @@ public:
 			vector(1.0f, 1.0f, 1.0f), 1.0f){
 	}
 	virtual unsigned char getInterests() {
-		return KEY_DOWN | KEY_UP | MOUSE_MOVE | MOUSE_WHEEL | RESIZE;
+		return KEY_DOWN | KEY_UP | MOUSE_MOVE | MOUSE_WHEEL | MOUSE_BUTTON_DOWN | MOUSE_BUTTON_UP | RESIZE;
 	}
 
 	virtual unsigned char getId() {
@@ -131,31 +135,51 @@ public:
 		terrainRenderer.render(openGl, light);
 		return CONTINUE;
 	}
+
+	void mouseButtonDown(unsigned char button, int x, int y)
+	{
+		logger->info("MouseButtonDown %d at <%d, %d>", button, x, y);
+		if(button == SDL_BUTTON_LEFT) {
+			arcball.startDrag(vector2(x, y));
+		}
+	}
+
+	void mouseButtonUp(unsigned char button, int x, int y)
+	{
+		logger->info("MouseButtonUp %d at <%d, %d>", button, x, y);
+
+		if(button == SDL_BUTTON_LEFT) {
+			arcball.endDrag(vector2(x, y));
+		}
+	}
+
 	void mouseWheel(int wheel) {
-			viewPosition += vector(0.0f, 0.0f, wheel);
-			logger->verbose("%s", viewPosition.toString().c_str());
-		}
+		logger->verbose("%s", viewPosition.toString().c_str());
+		viewPosition += vector(0.0f, 0.0f, wheel);
+	}
 
-		virtual void mouseMove(int dx, int dy) {
-			viewPosition += vector(0.1f * dx, 0.1f * dy, 0);
-			logger->verbose("%s", viewPosition.toString().c_str());
-		}
-		virtual void keyDown(unsigned int key) {
-			switch (key) {
-			case SDLK_SPACE:
-				reset();
-				break;
-			case SDLK_ESCAPE:
-				this->getContainer()->stop();
-				break;
-			case 'f':
-			case 'F':
-				this->openGl->setFullscreen(!this->openGl->getFullscreen());
-				break;
-			}
-		}
+	virtual void mouseMove(int dx, int dy) {
+		arcball.drag(vector2(dx, dy));
 
-	};
+		viewPosition += vector(0.1f * dx, 0.1f * dy, 0);
+		logger->verbose("%s", viewPosition.toString().c_str());
+	}
+	virtual void keyDown(unsigned int key) {
+		switch (key) {
+		case SDLK_SPACE:
+			reset();
+			break;
+		case SDLK_ESCAPE:
+			this->getContainer()->stop();
+			break;
+		case 'f':
+		case 'F':
+			this->openGl->setFullscreen(!this->openGl->getFullscreen());
+			break;
+		}
+	}
+
+};
 
 class PlaygroundTerrainDemo: public Playground {
 public:

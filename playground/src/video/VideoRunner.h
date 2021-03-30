@@ -37,25 +37,25 @@ protected:
 
 
 public:
-	unsigned char getId() {
+	virtual unsigned char getId() {
 		return ID;
 	}
 
-	bool getFullscreen() {
+	virtual bool getFullscreen() {
 		return this->fullScreen;
 	}
 
-	bool resizeWindow(unsigned int height, unsigned int width) {
+	virtual bool resizeWindow(unsigned int height, unsigned int width) {
 		this->height = height;
 		this->width = width;
 		return true;
 	}
 
-	bool move(unsigned short x, unsigned short y) {
+	virtual bool move(unsigned short x, unsigned short y) {
 		return true;
 	}
 
-	bool setFullscreen(bool fullScreen) {
+	virtual bool setFullscreen(bool fullScreen) {
 		this->fullScreen = fullScreen;
 
 		return this->fullScreen;

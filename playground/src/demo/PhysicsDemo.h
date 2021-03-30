@@ -160,7 +160,7 @@ public:
 		viewPosition += vector(0.1f * dx, 0.1f * dy, 0);
 	}
 
-	void mouseButtonDown(unsigned char button ) {
+	void mouseButtonDown(unsigned char button, int x, int y) {
 		fire();
 	}
 

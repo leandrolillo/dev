@@ -42,7 +42,7 @@ int playgroundEventFilter(void *context, SDL_Event *event);
 
 class OpenGLRunner: public VideoRunner {
 private:
-	Logger *logger = Logger::getLogger("video/videoRunner.h");
+	Logger *logger = Logger::getLogger("video/openGlRunner");
 
 	SDL_Window *window = null;
 	SDL_GLContext glcontext = null;
@@ -216,13 +216,13 @@ public:
 			return 0;
 		case SDL_MOUSEBUTTONDOWN:
 			//SDL_Log("SDL_MOUSEBUTTONDOWN %d", event->button.button);
-			logger->verbose("MOUSEBUTTONDOWN: %d", event->button.button);
-			this->getContainer()->mouseButtonDown(event->button.button);
+			logger->verbose("MOUSEBUTTONDOWN: %d at <%d, %d>", event->button.button, event->button.x, event->button.y);
+			this->getContainer()->mouseButtonDown(event->button.button, event->button.x, event->button.y);
 			return 0;
 		case SDL_MOUSEBUTTONUP:
 			//SDL_Log("SDL_MOUSEBUTTONUP %d", event->button.button);
-			logger->verbose("MOUSEBUTTONUP: %d", event->button.button);
-			this->getContainer()->mouseButtonUp(event->button.button);
+			logger->verbose("MOUSEBUTTONUP: %d at <%d, %d>", event->button.button, event->button.x, event->button.y);
+			this->getContainer()->mouseButtonUp(event->button.button, event->button.x, event->button.y);
 			return 0;
 		case SDL_MOUSEWHEEL:
 			//SDL_Log("SDL_MOUSEWHEEL %d %d", event->wheel.direction, event->wheel.y);
@@ -245,6 +245,18 @@ public:
 	void resize(unsigned int height, unsigned int width) {
 		VideoRunner::resize(height, width);
 		glViewport(0, 0, (GLsizei) width, (GLsizei) height);
+	}
+
+	bool setFullscreen(bool fullScreen) {
+		logger->info("Setting fullscreen");
+		if(VideoRunner::setFullscreen(fullScreen)) {
+			logger->info("Calling sdl setwindowfullscreen");
+			SDL_SetWindowFullscreen(this->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
+		} else {
+			SDL_SetWindowFullscreen(this->window, 0);
+		}
+
+		return this->getFullscreen();
 	}
 
 	unsigned int getMajorVersion() const {
@@ -451,9 +463,10 @@ public:
 					logger->error("Error binding texture: %s",
 							errorMessage.c_str());
 				}
-			} else {
-				glBindTexture(GL_TEXTURE_2D, 0);
 			}
+//			else {
+//				glBindTexture(GL_TEXTURE_2D, 0);
+//			}
 
 
 			glBindVertexArray(vertexArrayResource->getId());

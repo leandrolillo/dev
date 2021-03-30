@@ -92,10 +92,10 @@ public:
 	virtual void mouseMove(int dx, int dy) {
 	}
 
-	virtual void mouseButtonDown(unsigned char button) {
+	virtual void mouseButtonDown(unsigned char button, int x, int y) {
 	}
 
-	virtual void mouseButtonUp(unsigned char button) {
+	virtual void mouseButtonUp(unsigned char button, int x, int y) {
 	}
 
 	virtual void mouseWheel(int wheel) {
@@ -361,20 +361,20 @@ public:
 			(*currentRunnerIterator)->mouseMove(dx, dy);
 	}
 
-	void mouseButtonDown(unsigned char button) {
+	void mouseButtonDown(unsigned char button, int x, int y) {
 		for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
 				mouseButtonDownObservers.begin();
 				currentRunnerIterator != mouseButtonDownObservers.end();
 				currentRunnerIterator++)
-			(*currentRunnerIterator)->mouseButtonDown(button);
+			(*currentRunnerIterator)->mouseButtonDown(button, x, y);
 	}
 
-	void mouseButtonUp(unsigned char button) {
+	void mouseButtonUp(unsigned char button, int x, int y) {
 			for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
 					mouseButtonUpObservers.begin();
 					currentRunnerIterator != mouseButtonUpObservers.end();
 					currentRunnerIterator++)
-				(*currentRunnerIterator)->mouseButtonUp(button);
+				(*currentRunnerIterator)->mouseButtonUp(button, x, y);
 	}
 
 	void mouseWheel(int wheel) {
