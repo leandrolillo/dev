@@ -105,8 +105,12 @@ public:
 	}
 
 	const matriz_4x4 &getModelMatrix() const {
-			return this->modelMatrix;
-		}
+		return this->modelMatrix;
+	}
+
+	const matriz_4x4 &getProjectionViewMatrix() const {
+		return this->projectionViewMatrix;
+	}
 
 	matriz_4x4 perspectiveProjection(double fovy, double aspect, double zNear, double zFar) {
 		double fW, fH;
@@ -138,11 +142,11 @@ public:
 	 */
 
 	virtual void useProgramResource(const ShaderProgramResource *program) = 0;
-	virtual bool sendUnsignedInt(const char *name, unsigned int value) const = 0;
-	virtual bool sendReal(const char *name, const real &value) const = 0;
-	virtual bool sendVector(const char *name, const vector &value) const = 0;
-	virtual bool sendMatrix(const char *name, const matriz_4x4 &value) const = 0;
-	virtual bool sendMatrix(const char *name, const matriz_3x3 &value) const = 0;
+	virtual bool sendUnsignedInt(const String &name, unsigned int value) const = 0;
+	virtual bool sendReal(const String &name, const real &value) const = 0;
+	virtual bool sendVector(const String &name, const vector &value) const = 0;
+	virtual bool sendMatrix(const String &name, const matriz_4x4 &value) const = 0;
+	virtual bool sendMatrix(const String &name, const matriz_3x3 &value) const = 0;
 	virtual bool sendMatrices() const = 0;
 	virtual bool setMaterial(const MaterialResource &material) const = 0;
 	virtual bool setLight(const LightResource &light) const = 0;
@@ -153,7 +157,8 @@ public:
 	virtual void setClearColor(real r, real g, real b, real a) const = 0;
 	virtual void setAttribute(unsigned int attributeCode, unsigned int param) const = 0;
 
-	virtual void setTexture(unsigned int location, const TextureResource *texture) const = 0;
+	virtual void setTexture(unsigned int location, const TextureResource *texture, unsigned int type = 0x0DE1) const = 0;
+	virtual void setTexture(unsigned int location, const String &samplerName, const TextureResource *texture, unsigned int type = 0x0DE1) const = 0;
 	virtual void drawVertexArray(const VertexArrayResource *vertexArrayResource) const = 0;
 	virtual void drawSphere(real radius) const = 0;
 	virtual void drawBox(real height, real width, real depth) const = 0;

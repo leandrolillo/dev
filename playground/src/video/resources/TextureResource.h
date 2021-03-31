@@ -17,6 +17,11 @@ class TextureResource : public Resource
 		{
 
 		}
+
+		TextureResource(unsigned int id, const String &mimeType) : Resource(id, mimeType)
+		{
+
+		}
 };
 
 

@@ -15,55 +15,9 @@
 #include<ArcBall.h>
 
 #include<vector>
+#include<renderers/TerrainRenderer.h>
+#include<renderers/SkyboxRenderer.h>
 
-class TerrainRenderer {
-private:
-	ShaderProgramResource *shader = null;
-	TerrainResource *terrain = null;
-
-public:
-//	TerrainRenderer() {
-//	}
-//	TerrainRenderer(VideoRunner *videoRunner, ShaderProgramResource *shader, TerrainResource *terrains)
-//	{
-//		this->videoRunner = videoRunner;
-//		this->shader = shader;
-//		this->terrain = terrain;
-//	}
-
-	void setShaderProgram(ShaderProgramResource *shaderProgramResource) {
-			this->shader = shaderProgramResource;
-	}
-
-	void setTerrain(TerrainResource *terrain) {
-		this->terrain = terrain;
-	}
-
-	void render(VideoRunner *videoRunner, const LightResource &light) {
-		videoRunner->useProgramResource(shader);
-
-
-		videoRunner->setTexture(0, terrain->getA());
-		videoRunner->sendUnsignedInt("background", 0);
-
-		videoRunner->setTexture(1, terrain->getR());
-		videoRunner->sendUnsignedInt("textureR", 1);
-
-		videoRunner->setTexture(2, terrain->getG());
-		videoRunner->sendUnsignedInt("textureG", 2);
-
-		videoRunner->setTexture(3, terrain->getB());
-		videoRunner->sendUnsignedInt("textureB", 3);
-
-		videoRunner->setTexture(4, terrain->getMap());
-		videoRunner->sendUnsignedInt("blendMap", 4);
-
-		videoRunner->setLight(light);
-
-		videoRunner->sendMatrices();
-		videoRunner->drawVertexArray(terrain->getModel());
-	}
-};
 
 
 class TerrainDemoRunner: public PlaygroundRunner {
@@ -72,9 +26,11 @@ private:
 	OpenGLRunner *openGl = null;
 	AudioRunner *audio = null;
 	vector viewPosition;
-	TerrainRenderer terrainRenderer;
 	MaterialResource material;
 	LightResource light;
+
+	TerrainRenderer terrainRenderer;
+	SkyboxRenderer skyboxRenderer;
 
 	ArcBall arcball;
 
@@ -124,16 +80,22 @@ public:
 		terrainRenderer.setShaderProgram((ShaderProgramResource *)resourceManager->load("shaders/terrain/terrain.program.json", "video/shaderProgram"));
 		terrainRenderer.setTerrain((TerrainResource *)resourceManager->load("geometry/terrain/terrain.json", "video/terrain"));
 
+		skyboxRenderer.setShaderProgram((ShaderProgramResource *)resourceManager->load("shaders/skybox/skybox.program.json", "video/shaderProgram"));
+		skyboxRenderer.setCubeMap((CubeMapResource *)resourceManager->load("geometry/skybox/skybox.json", "video/cubemap"));
+		skyboxRenderer.setBox((VertexArrayResource*) this->getContainer()->getResourceManager()->load("core/box.json", "video/vertexArray"));
+		skyboxRenderer.setSize(400);
+
 		reset();
 		return true;
 	}
 	virtual LoopResult doLoop() {
-		//openGl->setViewMatrix(matriz_4x4::matrizTraslacion(this->viewPosition));
+	    openGl->useProgramResource(openGl->getDefaultShaderProgram());
 		openGl->setModelMatrix(matriz_4x4::Identidad);
 		openGl->sendMatrices();
 		openGl->drawAxis(1.0);
 
 		terrainRenderer.render(openGl, light);
+		skyboxRenderer.render(openGl);
 		return CONTINUE;
 	}
 
