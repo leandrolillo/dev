@@ -256,6 +256,12 @@ public:
 			SDL_SetWindowFullscreen(this->window, 0);
 		}
 
+		int height = 0;
+		int width = 0;
+		SDL_GetWindowSize(window, &width, &height);
+
+		this->getContainer()->resize(height, width);
+
 		return this->getFullscreen();
 	}
 

@@ -163,8 +163,16 @@ class matriz_3x3: public BaseMatrix {
 		// Factory methods
 		static const matriz_3x3 matrizRotacion(real x, real y, real z);
 		static const matriz_3x3 matrizRotacion(const vector3 &angulos);
-		static const matriz_3x3 matrizRotacion(real angulo, real x, real y, real z); // el eje debe estar normalizado
-		static const matriz_3x3 matrizRotacion(real angulo, const vector3 &eje); // el eje debe estar normalizado
+
+		/**
+		 * Asume que el eje está normalizado
+		 */
+		static const matriz_3x3 matrizRotacion(real angulo, real x, real y, real z);
+
+		/**
+		 * Asume que el eje está normalizado
+		 */
+		static const matriz_3x3 matrizRotacion(real angulo, const vector3 &eje);
 		static const matriz_3x3 matrizRotacion(const cuaternion &rotacion);
 
 		static const matriz_3x3 matrizZoom(real x, real y, real z);

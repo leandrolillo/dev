@@ -290,6 +290,28 @@ void matriz_2x2::operator *=(const real &op1) {
 			-sy, 		sx * cy, 					cx * cy);
 	}
 
+	const matriz_3x3 matriz_3x3::matrizRotacion(real angulo, real x, real y, real z) {
+		real c, s, umc, nxny1cos, nxnz1cos, nynz1cos;
+		c = (real)cos(angulo);
+		s = (real)sin(angulo);
+		umc = (real)(1.0 - c); // umc = Uno Menos Coseno
+
+		nxny1cos = x * y * umc;
+		nxnz1cos = x * z * umc;
+		nynz1cos = y * z * umc;
+
+		return matriz_3x3(	(x * x * umc + c), 	nxny1cos - s * z, 	nxnz1cos + s * y,
+							nxny1cos + s * z, 	(y * y * umc) + c, 	nynz1cos - s * x,
+							nxnz1cos - s * y, 	nynz1cos + s * x, 	z * z * umc + c);
+	}
+
+	/**
+	 * Asume que el eje está normalizado
+	 */
+	const matriz_3x3 matriz_3x3::matrizRotacion(real angulo, const vector3 &eje) {
+		return matrizRotacion(angulo, eje.x, eje.y, eje.z);
+	}
+
 
 //	matriz_3x3::matriz_3x3(real x, real y, real z) { //Rotaci�n de Angulos de Euler
 //		this->HacerRotacion(x, y, z);

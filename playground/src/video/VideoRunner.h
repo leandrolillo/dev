@@ -41,14 +41,21 @@ public:
 		return ID;
 	}
 
-	virtual bool getFullscreen() {
+	unsigned short getScreenHeight() {
+		return height;
+	}
+
+	unsigned short getScreenWidth() {
+		return width;
+	}
+
+	bool getFullscreen() {
 		return this->fullScreen;
 	}
 
-	virtual bool resizeWindow(unsigned int height, unsigned int width) {
+	virtual void resize(unsigned int height, unsigned int width) {
 		this->height = height;
 		this->width = width;
-		return true;
 	}
 
 	virtual bool move(unsigned short x, unsigned short y) {

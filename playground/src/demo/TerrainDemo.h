@@ -100,7 +100,8 @@ public:
 	}
 
 	void reset() {
-		viewPosition = vector(0.0, 0.0f, -6.0);
+		viewPosition = vector(0.0, -0.5f, -6.0);
+		openGl->setViewMatrix(matriz_4x4::matrizTraslacion(viewPosition));
 	}
 
 	virtual bool init() {
@@ -127,7 +128,7 @@ public:
 		return true;
 	}
 	virtual LoopResult doLoop() {
-		openGl->setViewMatrix(matriz_4x4::matrizTraslacion(this->viewPosition));
+		//openGl->setViewMatrix(matriz_4x4::matrizTraslacion(this->viewPosition));
 		openGl->setModelMatrix(matriz_4x4::Identidad);
 		openGl->sendMatrices();
 		openGl->drawAxis(1.0);
@@ -140,7 +141,7 @@ public:
 	{
 		logger->info("MouseButtonDown %d at <%d, %d>", button, x, y);
 		if(button == SDL_BUTTON_LEFT) {
-			arcball.startDrag(vector2(x, y));
+			arcball.startDrag(vector2(x, y), (matriz_3x3)openGl->getViewMatrix(), openGl->getScreenWidth(), openGl->getScreenHeight());
 		}
 	}
 
@@ -149,7 +150,8 @@ public:
 		logger->info("MouseButtonUp %d at <%d, %d>", button, x, y);
 
 		if(button == SDL_BUTTON_LEFT) {
-			arcball.endDrag(vector2(x, y));
+			openGl->setViewMatrix(matriz_4x4::matrizBase(arcball.endDrag(vector2(x, y)), viewPosition));
+			//logger->info("%s", openGl->getViewMatrix().toString().c_str());
 		}
 	}
 
@@ -159,10 +161,12 @@ public:
 	}
 
 	virtual void mouseMove(int dx, int dy) {
-		arcball.drag(vector2(dx, dy));
+		if(!arcball.isDragging()) {
+			viewPosition += vector(0.1f * dx, 0.1f * dy, 0);
+		}
 
-		viewPosition += vector(0.1f * dx, 0.1f * dy, 0);
-		logger->verbose("%s", viewPosition.toString().c_str());
+		openGl->setViewMatrix(matriz_4x4::matrizBase(arcball.drag(vector2(dx, dy)), viewPosition));
+		//logger->info("%s", openGl->getViewMatrix().toString().c_str());
 	}
 	virtual void keyDown(unsigned int key) {
 		switch (key) {

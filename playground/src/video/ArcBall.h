@@ -9,42 +9,115 @@
 #define SRC_VIDEO_ARCBALL_H_
 
 #include<Math3d.h>
+#include<math.h>
 
 class ArcBall {
 private:
-	bool isDragging = false;
+	Logger *logger = Logger::getLogger("ArcBall");
+
+	bool dragging = false;
+
 	vector2 startPosition;
 	vector2 endPosition;
+
+	matriz_3x3 viewModel;
+	unsigned short height;
+	unsigned short width;
 public:
 
-	void startDrag(const vector2 &position) {
-		this->isDragging = true;
+	bool isDragging() {
+		return this->dragging;
+	}
+
+	void startDrag(const vector2 &position, const matriz_3x3 &viewModel, unsigned short width, unsigned short height) {
+		this->dragging = true;
 		this->startPosition = position;
-		printf("start position: %s\r", position.toString().c_str());
+		this->endPosition = position;
+		this->viewModel = viewModel;
+		this->height = height;
+		this->width = width;
+
+//		logger->info("%s ---> %s (%dx%d)\n%s\n",
+//				startPosition.toString().c_str(),
+//				endPosition.toString().c_str(),
+//				height,
+//				width,
+//				viewModel.toString().c_str());
 
 	}
 
-	cuaternion drag(const vector2 &delta) {
-		if(this->isDragging) {
-			this->endPosition = this->startPosition + delta;
-			printf("dragging delta: %s\r", delta.toString().c_str());
+	matriz_3x3 drag(const vector2 &delta) {
+		if(this->dragging) {
+			this->endPosition = this->endPosition + delta;
+
+//			logger->info("%s ---> %s: (%s)\n%s\n",
+//					startPosition.toString().c_str(),
+//					endPosition.toString().c_str(),
+//					delta.toString().c_str(),
+//					getRotation().toString().c_str());
+
+			return getRotation();
 		}
 
-		return cuaternion();
+		return viewModel;
 	}
 
-	cuaternion endDrag(const vector2 &position) {
-		if(this->isDragging) {
+	matriz_3x3 endDrag(const vector2 &position) {
+		cuaternion cuaternion;
+
+		if(this->dragging) {
+			this->dragging = false;
+
 			this->endPosition = position;
-			printf("end position: %s\r", position.toString().c_str());
-		}
-		this->isDragging = false;
+//			logger->info("%s ---> %s\n%s\n",
+//					startPosition.toString().c_str(),
+//					endPosition.toString().c_str(),
+//					getRotation().toString().c_str());
 
-		return cuaternion();
+			return getRotation();
+
+		}
+
+		return viewModel;
 	}
 
-	cuaternion getRotation(unsigned int height, unsigned int width) const {
-		return cuaternion();
+	/**
+	 * Devuelve el eje y el angulo codificado en un cuaternion. NO es un cuaternion rotacion.
+	 */
+	matriz_3x3 getRotation() const {
+		/* onIdle() */
+		  if (startPosition != endPosition) {
+		    vector va = calculateVector(this->endPosition, this->width, this->height);
+		    vector vb = calculateVector( this->startPosition, this->width, this->height);
+		    float angle = acos(std::min(1.0f, va * vb));
+		    vector axis_in_camera_coord = va ^ vb;
+		    matriz_3x3 camera2object = this->viewModel.inversa();
+		    vector  axis_in_object_coord = camera2object * axis_in_camera_coord;
+
+		    return matriz_3x3::matrizRotacion(angle, axis_in_object_coord);
+		  }
+
+		return this->viewModel;
+	}
+private:
+	/**
+	 * Get a normalized vector from the center of the virtual ball O to a
+	 * point P on the virtual ball surface, such that P is aligned on
+	 * screen's (X,Y) coordinates.  If (X,Y) is too far away from the
+	 * sphere, return the nearest point on the virtual ball surface.
+	 */
+	vector calculateVector(vector2 screenPosition, unsigned int width, unsigned int height) const {
+	  vector arcballVector = vector(	1.0 * screenPosition.x / width * 2 - 1.0,
+				  	  	  				1.0 * screenPosition.y / height * 2 - 1.0,
+										0);
+	  arcballVector.y = -arcballVector.y;
+
+	  float OP_squared = arcballVector.x * arcballVector.x + arcballVector.y * arcballVector.y;
+	  if (OP_squared <= 1)
+	    arcballVector.z = sqrt(1 - OP_squared);  // Pythagoras
+	  else
+	    arcballVector = arcballVector.normalizado();  // nearest point
+	  return arcballVector;
 	}
 };
 
