@@ -6,12 +6,12 @@ uniform sampler2D textureG;
 uniform sampler2D textureB;
 uniform sampler2D background;
 
-struct Matrices {
+struct TerrainMatrices {
 	mat4 model;
 	mat4 pvm;
 	mat3 normal;
 };
-uniform Matrices matrices;
+uniform TerrainMatrices matrices;
 
 struct Material {
     vec3 ambient;
@@ -32,7 +32,7 @@ uniform Light light = Light(vec3(0, 0, 0), vec3(1, 1, 1), vec3(0, 0, 0), vec3(0,
 
 uniform vec3 viewPosition;
 
-in VertexData {
+in TerrainVertexData {
 	vec3 normal;
 	vec3 color;
 	vec2 textureCoordinate;

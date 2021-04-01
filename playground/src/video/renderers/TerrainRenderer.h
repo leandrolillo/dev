@@ -49,7 +49,13 @@ public:
 		videoRunner->sendMatrices();
 		videoRunner->drawVertexArray(terrain->getModel());
 
-		videoRunner->useProgramResource(null);
+        videoRunner->setTexture(0, "background", null);
+        videoRunner->setTexture(1, "textureR", null);
+        videoRunner->setTexture(2, "textureG", null);
+        videoRunner->setTexture(3, "textureB", null);
+        videoRunner->setTexture(4, "blendMap", null);
+
+		//videoRunner->useProgramResource(null);
 	}
 };
 

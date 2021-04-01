@@ -8,13 +8,13 @@
 #ifndef SRC_OPENGL_ADAPTERS_CUBEMAPRESOURCEADAPTER_H_
 #define SRC_OPENGL_ADAPTERS_CUBEMAPRESOURCEADAPTER_H_
 
-#include<ResourceAdapter.h>
+#include <adapters/OpenGLResourceAdapter.h>
+#include <resources/CubeMapResource.h>
 #include <JsonParser.h>
-#include <CubeMapResource.h>
 #include <OpenGL/gl3.h>
 
 
-class CubeMapResourceAdapter : public ResourceAdapter {
+class CubeMapResourceAdapter : public OpenGLResourceAdapter {
 public:
 	CubeMapResourceAdapter() {
 		logger = Logger::getLogger("video/CubeMapResourceAdapter");
@@ -27,8 +27,8 @@ public:
 		unsigned int textureHandler = 0;
 		glGetError();
 		glGenTextures(1, &textureHandler);
-		CubeMapResource *resource = new CubeMapResource(textureHandler);
 
+		CubeMapResource *resource = new CubeMapResource(textureHandler);
 		glBindTexture(GL_TEXTURE_CUBE_MAP, textureHandler);
 
 
@@ -42,19 +42,34 @@ public:
 			ImageResource *imageResource = (ImageResource *)this->getResourceManager()->load(faceFileName);
 
 			if(imageResource != null) {
-				if(imageResource->getBpp() == 32)
+				if(imageResource->getBpp() == 32) {
 					glTexImage2D(getLocation(faceName), 0, GL_RGBA, imageResource->getAncho(), imageResource->getAlto(), 0, GL_BGRA, GL_UNSIGNED_BYTE, imageResource->getData());
-				else
+				}
+				else {
 					glTexImage2D(getLocation(faceName), 0, GL_RGB, imageResource->getAncho(), imageResource->getAlto(), 0, GL_BGR, GL_UNSIGNED_BYTE, imageResource->getData());
+				}
 			}
 
 			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+            String errorMessage;
+            if (!(errorMessage = getGlError()).empty()) {
+                logger->error("Error loading [%s] cubeMap: face [%s (%u)]: [%s]",
+                        fileParser.getFilename().c_str(),
+                        faceFileName.c_str(),
+                        getLocation(faceName),
+                        errorMessage.c_str());
+                dispose(resource);
+                return null;
+            }
+
 			if (jsonParser->peekToken() == ",") {
 				jsonParser->readToken();
 			}
 		}
+
+		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
 		return resource;
 	}
@@ -67,9 +82,9 @@ public:
 private:
 	GLenum getLocation(const String &faceName) {
 		if(faceName == "top") {
-			return GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
-		} else if(faceName == "bottom") {
 			return GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
+		} else if(faceName == "bottom") {
+			return GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
 		} else if(faceName == "right") {
 			return GL_TEXTURE_CUBE_MAP_POSITIVE_X;
 		} else if(faceName == "left") {

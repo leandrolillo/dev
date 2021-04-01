@@ -7,12 +7,10 @@
 
 #ifndef SHADERRESOURCEADAPTER_H_
 #define SHADERRESOURCEADAPTER_H_
-#include <ResourceAdapter.h>
+#include <adapters/OpenGLResourceAdapter.h>
 #include <resources/ShaderResource.h>
 
-#include <OpenGL/gl3.h>
-
-class ShaderResourceAdapter: public ResourceAdapter {
+class ShaderResourceAdapter: public OpenGLResourceAdapter {
 	private:
 		String getInfoLog(GLuint object)
 		{

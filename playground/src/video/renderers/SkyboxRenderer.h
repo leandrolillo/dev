@@ -38,15 +38,19 @@ public:
 	}
 
 	void render(VideoRunner *videoRunner) {
-		videoRunner->useProgramResource(shader);
+//	    videoRunner->useProgramResource(((OpenGLRunner *)videoRunner)->getDefaultShaderProgram());
+//	    videoRunner->sendMatrices();
 
+	    videoRunner->useProgramResource(shader);
 		videoRunner->setTexture(0, "textureUnit", cubeMap, GL_TEXTURE_CUBE_MAP);
-		videoRunner->sendMatrix("pv", videoRunner->getProjectionMatrix());
+		videoRunner->sendMatrix("matrices.p", videoRunner->getProjectionMatrix());
+		videoRunner->sendMatrix("matrices.v", videoRunner->getViewMatrix());
 		videoRunner->sendReal("boxSize", this->size);
-		videoRunner->drawVertexArray(box);
-		videoRunner->useProgramResource(null);
-	}
 
+		videoRunner->drawVertexArray(box);
+
+		//videoRunner->useProgramResource(null);
+	}
 };
 
 

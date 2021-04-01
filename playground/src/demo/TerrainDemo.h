@@ -52,7 +52,7 @@ public:
 	}
 
 	void resize(unsigned int height, unsigned int width) {
-		openGl->setProjectionMatrix(openGl->perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 100.0));
+		openGl->setProjectionMatrix(openGl->perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 400.0));
 	}
 
 	void reset() {
@@ -70,8 +70,7 @@ public:
 			return false;
 		}
 
-		ResourceManager *resourceManager =
-				this->getContainer()->getResourceManager();
+		ResourceManager *resourceManager = this->getContainer()->getResourceManager();
 		openGl->setClearColor(0.0, 0.5, 0.0, 0.0);
 		openGl->setAttribute(DEPTH_TEST, true);
 		//openGl->setAttribute(CULL_FACE, CULL_FACE_BACK);
@@ -82,8 +81,8 @@ public:
 
 		skyboxRenderer.setShaderProgram((ShaderProgramResource *)resourceManager->load("shaders/skybox/skybox.program.json", "video/shaderProgram"));
 		skyboxRenderer.setCubeMap((CubeMapResource *)resourceManager->load("geometry/skybox/skybox.json", "video/cubemap"));
-		skyboxRenderer.setBox((VertexArrayResource*) this->getContainer()->getResourceManager()->load("core/box.json", "video/vertexArray"));
-		skyboxRenderer.setSize(400);
+		skyboxRenderer.setBox((VertexArrayResource*) this->getContainer()->getResourceManager()->load("geometry/skybox/skybox_geometry.json", "video/vertexArray"));
+		skyboxRenderer.setSize(300);
 
 		reset();
 		return true;
@@ -95,6 +94,7 @@ public:
 		openGl->drawAxis(1.0);
 
 		terrainRenderer.render(openGl, light);
+
 		skyboxRenderer.render(openGl);
 		return CONTINUE;
 	}
@@ -120,6 +120,8 @@ public:
 	void mouseWheel(int wheel) {
 		logger->verbose("%s", viewPosition.toString().c_str());
 		viewPosition += vector(0.0f, 0.0f, wheel);
+
+		openGl->setViewMatrix(matriz_4x4::matrizBase((matriz_3x3)openGl->getViewMatrix(), viewPosition));
 	}
 
 	virtual void mouseMove(int dx, int dy) {

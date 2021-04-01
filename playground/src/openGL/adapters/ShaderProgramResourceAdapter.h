@@ -16,15 +16,14 @@
  *      Author: Lean
  */
 
-#include <ResourceAdapter.h>
+#include <adapters/OpenGLResourceAdapter.h>
 #include <resources/ShaderProgramResource.h>
 #include <JsonParser.h>
 
-#include <OpenGL/gl3.h>
 #include <map>
 #include <string>
 
-class ShaderProgramResourceAdapter: public ResourceAdapter {
+class ShaderProgramResourceAdapter: public OpenGLResourceAdapter {
 	private:
 		std::map<std::string, std::string> shadersMimeTypes;
 
@@ -80,6 +79,11 @@ class ShaderProgramResourceAdapter: public ResourceAdapter {
 						else
 							logger->error("Could not load shader [%s]", (*stringIterator).c_str());
 					}
+
+		            if (parser->peekToken() == ",") {
+		                parser->readToken();
+		            }
+
 				} else {
 					logger->warn("Unexpected token: %s", token.c_str());
 				}

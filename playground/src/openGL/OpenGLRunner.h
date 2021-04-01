@@ -368,7 +368,7 @@ public:
 
     bool sendMatrices() const {
         return sendMatrix("matrices.model", this->modelMatrix)
-                && sendMatrix("matrices.pvm", this->projection * this->viewMatrix * this->modelMatrix)
+                && sendMatrix("matrices.pvm", this->projectionViewMatrix * this->modelMatrix)
                 && sendMatrix("matrices.normal", this->normalMatrix);
     }
 
@@ -388,6 +388,13 @@ public:
         if (texture != null) {
             glActiveTexture(GL_TEXTURE0 + location);
             glBindTexture(type, texture->getId());
+
+            String errorMessage;
+            if (!(errorMessage = getGlError()).empty()) {
+                logger->error("Error binding texture [%s] of type [%u] at location [%u]", texture->toString().c_str(), type, location, errorMessage.c_str());
+            }
+        } else {
+            glBindTexture(type, 0);
         }
     }
     void setTexture(unsigned int location, const String &samplerName, const TextureResource *texture, unsigned int type = GL_TEXTURE_2D) const {
@@ -428,7 +435,7 @@ public:
             if (vertexArrayResource->getTexture() != null) {
                 glBindTexture(GL_TEXTURE_2D, vertexArrayResource->getTexture()->getId());
                 if (!(errorMessage = getGlError()).empty()) {
-                    logger->error("Error binding texture: %s", errorMessage.c_str());
+                    logger->error("Error binding texture [%s]: %s", vertexArrayResource->toString().c_str(), errorMessage.c_str());
                 }
             }
 //			else {
@@ -437,7 +444,7 @@ public:
 
             glBindVertexArray(vertexArrayResource->getId());
             if (!(errorMessage = getGlError()).empty()) {
-                logger->error("Error binding vertex array: %s", errorMessage.c_str());
+                logger->error("Error binding vertex array [%s]: %s", vertexArrayResource->toString().c_str(), errorMessage.c_str());
             }
 
             const VertexAttribPointer *indices = vertexArrayResource->getAttribute(INDEX_LOCATION);

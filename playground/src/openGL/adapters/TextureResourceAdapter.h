@@ -8,12 +8,11 @@
 #ifndef TEXTURERESOURCEADAPTER_H_
 #define TEXTURERESOURCEADAPTER_H_
 
-#include <ResourceAdapter.h>
-#include <ImageResource.h>
-#include <TextureResource.h>
-#include <OpenGL/gl3.h>
+#include <adapters/OpenGLResourceAdapter.h>
+#include <resources/ImageResource.h>
+#include <resources/TextureResource.h>
 
-class TextureResourceAdapter: public ResourceAdapter {
+class TextureResourceAdapter: public OpenGLResourceAdapter {
 	public:
 		TextureResourceAdapter() {
 			logger = Logger::getLogger("video/TextureResourceAdapter");
@@ -40,12 +39,12 @@ class TextureResourceAdapter: public ResourceAdapter {
 
 				glBindTexture(GL_TEXTURE_2D, 0);
 
-				GLenum glError = glGetError();
-				if(glError != GL_NO_ERROR) {
-					logger->error("Error loading texture [%s]: 0x[%x]", fileParser.getFilename().c_str(), glError);
-					dispose(resource);
-					return null;
-				}
+				String errorMessage;
+                if (!(errorMessage = getGlError()).empty()) {
+                    logger->error("Error loading texture [%s]: [%s]", fileParser.getFilename().c_str(), errorMessage.c_str());
+                    dispose(resource);
+                    return null;
+                }
 			}
 
 			return resource;

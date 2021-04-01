@@ -1,18 +1,18 @@
 #version 330
 
-struct Matrices {
+struct TerrainMatrices {
 	mat4 model;
 	mat4 pvm;
 	mat3 normal;
 };
-uniform Matrices matrices;
+uniform TerrainMatrices matrices;
 
 in vec3 position;
 in vec3 normal;
 in vec2 textureCoordinate;
 in vec3 color;
 
-out VertexData {
+out TerrainVertexData {
 	vec3 normal;
 	vec3 color;
 	vec2 textureCoordinate;
