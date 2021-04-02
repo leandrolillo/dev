@@ -53,6 +53,9 @@ class PhysicsDemoRunner: public PlaygroundRunner {
 	 */
 	real elapsedTime = 0.0f;
 	unsigned long frames = 0;
+
+	Camera camera;
+	DefaultRenderer defaultRenderer;
 public:
 	PhysicsDemoRunner() : gravity(vector(0.0, -9.8, 0.0)) {
 		reset();
@@ -67,7 +70,7 @@ public:
 	}
 
 	void resize(unsigned int height, unsigned int width) {
-			openGl->setProjectionMatrix(openGl->perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 100.0));
+	    camera.setProjectionMatrix(camera.perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 100.0));
 	}
 
 	void reset() {
@@ -76,7 +79,7 @@ public:
 		}
 
 		viewPosition = vector(0.0f, 0.0f, -5.0f);
-
+        camera.setViewMatrix(matriz_4x4::matrizTraslacion(this->viewPosition));
 	}
 
 	bool init() {
@@ -85,6 +88,8 @@ public:
 		physics = (PhysicsRunner *)this->getContainer()->getRunner(4);
 
 		gunshotSource = audio->createSource("audio/handgunfire.wav", vector(0, 0, 0), vector(0, 0, 0), false);
+
+	    defaultRenderer.setVideoRunner(openGl);
 
 		openGl->setClearColor(0.0, 0.5, 0.0, 0.0);
 		openGl->setAttribute(DEPTH_TEST, true);
@@ -101,10 +106,9 @@ public:
 	}
 
 	LoopResult doLoop() {
-		openGl->setViewMatrix(matriz_4x4::matrizTraslacion(this->viewPosition));
-		openGl->setModelMatrix(matriz_4x4::Identidad);
-		openGl->sendMatrices();
-		openGl->drawAxis(1.0);
+	    defaultRenderer.clearObjects();
+	    defaultRenderer.drawAxis(matriz_4x4::Identidad);
+
 
 //		logger->debug("Drawing");
 		int count = 0;
@@ -115,14 +119,14 @@ public:
 //						particle->getVelocity().toString().c_str());
 
 				count++;
-				openGl->setModelMatrix(matriz_4x4::matrizTraslacion(particle->getPosition()));
 
-				openGl->sendMatrices();
-				openGl->drawSphere(0.1);
+				defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(particle->getPosition()), 0.1);
 			} else {
 //				logger->debug("Particle is disabled");
 			}
 		}
+
+		defaultRenderer.render(camera);
 
 		return CONTINUE;
 	}
@@ -154,10 +158,14 @@ public:
 
 	void mouseWheel(int wheel) {
 		viewPosition += vector(0.0f, 0.0f, wheel);
+        camera.setViewMatrix(matriz_4x4::matrizTraslacion(this->viewPosition));
+
 	}
 
 	virtual void mouseMove(int dx, int dy) {
 		viewPosition += vector(0.1f * dx, 0.1f * dy, 0);
+        camera.setViewMatrix(matriz_4x4::matrizTraslacion(this->viewPosition));
+
 	}
 
 	void mouseButtonDown(unsigned char button, int x, int y) {

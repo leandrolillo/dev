@@ -106,8 +106,6 @@ public:
 
 	void applyForce(vector force) {
 		this->forceAccumulator += force;
-
-		printf("Total accumulated force %s\n", forceAccumulator.toString().c_str());
 	}
 
 };

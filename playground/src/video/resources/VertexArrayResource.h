@@ -9,7 +9,6 @@
 #define VERTEXBUFFERRESOURCE_H_
 
 #include <Resource.h>
-#include <resources/TextureResource.h>
 #include <OpenGL/gl3.h>
 
 enum ShaderAttributeLocation
@@ -74,12 +73,10 @@ class VertexArrayResource : public Resource
 {
 	private:
 		std::map<unsigned int, const VertexAttribPointer *> attributes;
-		TextureResource *texture;
 		unsigned int primitiveType;
 	public:
 		VertexArrayResource(unsigned int id) : Resource(id, "video/vertexArray")
 		{
-			texture = null;
 			primitiveType = GL_TRIANGLES;
 		}
 
@@ -114,14 +111,6 @@ class VertexArrayResource : public Resource
 		void clearVertexAttribPointers()
 		{
 			attributes.clear();
-		}
-
-		TextureResource* getTexture() const {
-			return texture;
-		}
-
-		void setTexture(TextureResource *texture) {
-			this->texture = texture;
 		}
 
 		unsigned int getPrimitiveType() const {

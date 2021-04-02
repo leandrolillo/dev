@@ -90,8 +90,7 @@ public:
 
 
 	Resource* load(FileParser &fileParser, const String &mimeType) {
-		Resource *cached = resourceCache[getCacheKey(fileParser.getFilename(),
-				mimeType)];
+		Resource *cached = resourceCache[getCacheKey(fileParser.getFilename(), mimeType)];
 		try {
 			if (cached == null) {
 				logger->verbose("Resource was not cached previously");
@@ -106,7 +105,7 @@ public:
 					if (response != null) {
 						response->setFileName(fileParser.getFilename());
 						response->setMimeType(mimeType);
-						resourceCache[getCacheKey(fileParser.getFilename(),mimeType)] = response;
+						addResource(getCacheKey(fileParser.getFilename(),mimeType), response);
 						logger->info("Loaded [%s]", response->toString().c_str());
 					} else {
 						logger->warn(
@@ -134,6 +133,12 @@ public:
 
 		return cached;
 	}
+
+	Resource *addResource(const String &key, Resource *resource) {
+	    resourceCache[key] = resource;
+	    return resource;
+	}
+
 	void dispose(Resource *resource) {
 		if (resource != null) {
 			resourceCache.erase(resource->getFileName());

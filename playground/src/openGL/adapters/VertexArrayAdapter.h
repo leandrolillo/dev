@@ -37,15 +37,6 @@ public:
 			resource = new VertexArrayResource(vertexArray);
 			resource->setPrimitiveType(asGlPrimitiveType(geometry->getType()));
 
-			if (!geometry->getTextureFile().empty()) {
-				TextureResource *texture =
-						(TextureResource*) this->getResourceManager()->load(
-								geometry->getTextureFile(), "video/texture");
-				if (texture != null) {
-					resource->setTexture(texture);
-				}
-			}
-
 			glBindVertexArray(resource->getId());
 			GLenum glError = glGetError();
 			if (glError != GL_NO_ERROR) {

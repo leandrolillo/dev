@@ -50,13 +50,8 @@ private:
     unsigned int majorVersion = 0;
     unsigned int minorVersion = 0;
 
+    TextureResource *defaultTexture = 0;
     const ShaderProgramResource *currentShaderProgram = null;
-    const ShaderProgramResource *defaultShaderProgram = null;
-
-    VertexArrayResource *axis = null;
-    VertexArrayResource *sphere = null;
-    VertexArrayResource *box = null;
-
 public:
     static const unsigned char ID = 1;
 public:
@@ -120,20 +115,11 @@ public:
                 this->majorVersion, this->minorVersion, glGetString(GL_VERSION), glGetString(GL_SHADING_LANGUAGE_VERSION), "0", //glewGetString(GLEW_VERSION),
                 glGetString(GL_VENDOR), glGetString(GL_RENDERER));
 
-        axis = (VertexArrayResource*) this->getContainer()->getResourceManager()->load("core/axis.json", "video/vertexArray");
-
-        box = (VertexArrayResource*) this->getContainer()->getResourceManager()->load("core/box.json", "video/vertexArray");
-
-        sphere = (VertexArrayResource*) this->getContainer()->getResourceManager()->load("core/sphere.json", "video/vertexArray");
-
-        defaultShaderProgram = (ShaderProgramResource*) this->getContainer()->getResourceManager()->load("core/simple.program.json",
-                "video/shaderProgram");
-
         /**
          * OpenGL defaults so that something is rendered with minimum configuration.
          */
-        this->useProgramResource(defaultShaderProgram);
-        this->generateDefaultTexture();
+        defaultTexture = new TextureResource(this->generateDefaultTexture());
+        this->getContainer()->getResourceManager()->addResource("openGLRunner/defaultTexture", defaultTexture);
 
         return true;
     }
@@ -229,9 +215,7 @@ public:
     }
 
     bool setFullscreen(bool fullScreen) {
-        logger->info("Setting fullscreen");
         if (VideoRunner::setFullscreen(fullScreen)) {
-            logger->info("Calling sdl setwindowfullscreen");
             SDL_SetWindowFullscreen(this->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
         } else {
             SDL_SetWindowFullscreen(this->window, 0);
@@ -252,10 +236,6 @@ public:
 
     unsigned int getMinorVersion() const {
         return minorVersion;
-    }
-
-    const ShaderProgramResource* getDefaultShaderProgram() const {
-        return this->defaultShaderProgram;
     }
 
     void useProgramResource(const ShaderProgramResource *program) {
@@ -366,24 +346,6 @@ public:
         return true;
     }
 
-    bool sendMatrices() const {
-        return sendMatrix("matrices.model", this->modelMatrix)
-                && sendMatrix("matrices.pvm", this->projectionViewMatrix * this->modelMatrix)
-                && sendMatrix("matrices.normal", this->normalMatrix);
-    }
-
-    bool setMaterial(const MaterialResource &material) const {
-        return sendVector("material.ambient", material.getAmbient()) && sendVector("material.diffuse", material.getDiffuse())
-                && sendVector("material.specular", material.getSpecular()) && sendReal("material.shininess", material.getShininess());
-    }
-
-    bool setLight(const LightResource &light) const {
-        return sendVector("light.ambient", light.getAmbient() * light.getShininess())
-                && sendVector("light.diffuse", light.getDiffuse() * light.getShininess())
-                && sendVector("light.specular", light.getSpecular() * light.getShininess())
-                && sendVector("light.position", light.getPosition());
-    }
-
     void setTexture(unsigned int location, const TextureResource *texture, unsigned int type = GL_TEXTURE_2D) const {
         if (texture != null) {
             glActiveTexture(GL_TEXTURE0 + location);
@@ -432,16 +394,6 @@ public:
         if (vertexArrayResource != null) {
             glEnableVertexAttribArray(0);
 
-            if (vertexArrayResource->getTexture() != null) {
-                glBindTexture(GL_TEXTURE_2D, vertexArrayResource->getTexture()->getId());
-                if (!(errorMessage = getGlError()).empty()) {
-                    logger->error("Error binding texture [%s]: %s", vertexArrayResource->toString().c_str(), errorMessage.c_str());
-                }
-            }
-//			else {
-//				glBindTexture(GL_TEXTURE_2D, 0);
-//			}
-
             glBindVertexArray(vertexArrayResource->getId());
             if (!(errorMessage = getGlError()).empty()) {
                 logger->error("Error binding vertex array [%s]: %s", vertexArrayResource->toString().c_str(), errorMessage.c_str());
@@ -464,79 +416,12 @@ public:
         }
     }
 
-    void drawSphere(real radius) const {
-        matriz_4x4 newModel = this->modelMatrix * matriz_4x4::matrizZoom(radius, radius, radius);
-        sendMatrix("matrices.model", newModel);
-        sendMatrix("matrices.pvm", this->projection * this->viewMatrix * newModel);
-        drawVertexArray(sphere);
-        sendMatrix("matrices.model", this->modelMatrix);
-        sendMatrix("matrices.pvm", this->projection * this->viewMatrix * this->modelMatrix);
-    }
-
-    void drawBox(real height, real width, real depth) const {
-        matriz_4x4 newModel = this->modelMatrix * matriz_4x4::matrizZoom(height, width, depth);
-        sendMatrix("matrices.model", newModel);
-        sendMatrix("matrices.pvm", this->projection * this->viewMatrix * newModel);
-        drawVertexArray(box);
-        sendMatrix("matrices.model", this->modelMatrix);
-        sendMatrix("matrices.pvm", this->projection * this->viewMatrix * this->modelMatrix);
-    }
-
-    void drawPlane(vector posicion, vector normal, vector origen, float nro_grids, float ancho) const {
-//	//			int pos_x, pos_z;
-//	//			pos_x = (int) (((int) (posicion.x / ancho + 0.5f)) * ancho);
-//	//			pos_z = (int) (((int) (posicion.z / ancho + 0.5f)) * ancho);
-//
-//			float pos_x = posicion.x;
-//			float pos_z = posicion.z;
-//
-//			real ancho_plano = nro_grids * ancho;
-//			real D = -(normal * origen);
-//			real oneOverB = 1.0 / normal.y;
-//
-//			glBegin(GL_TRIANGLE_FAN);
-//				real x = (real)(pos_x - ancho_plano);
-//				real z = (real) (pos_z - ancho_plano);
-//				real y = D - (normal.x * (x - ancho_plano) + normal.z * z) * oneOverB;
-//
-//				glTexCoord2f(0.0f, 0.0f);
-//				glVertex3f(x, y, z);
-//
-//
-//				x = (real)(pos_x - ancho_plano);
-//				z = (real) (pos_z + ancho_plano);
-//				y = D - (normal.x * (x - ancho_plano) + normal.z * z) * oneOverB;
-//
-//				glTexCoord2f(ancho_plano, 0.0f);
-//				glVertex3f(x, y, z);
-//
-//				x = (real)(pos_x + ancho_plano);
-//				z = (real) (pos_z + ancho_plano);
-//				y = D - (normal.x * (x - ancho_plano) + normal.z * z) * oneOverB;
-//
-//				glTexCoord2f(ancho_plano, ancho_plano);
-//				glVertex3f(x, y, z);
-//
-//				x = (real)(pos_x + ancho_plano);
-//				z = (real) (pos_z - ancho_plano);
-//				y = D - (normal.x * (x - ancho_plano) + normal.z * z) * oneOverB;
-//
-//				glTexCoord2f(0.0f, ancho_plano);
-//				glVertex3f(x, y, z);
-//			glEnd();
-    }
-
-    void drawAxis(real length = 1.0f) const {
-        matriz_4x4 newModel = this->modelMatrix * matriz_4x4::matrizZoom(length, length, length);
-        sendMatrix("matrices.model", newModel);
-        sendMatrix("matrices.pvm", this->projection * this->viewMatrix * newModel);
-        drawVertexArray(axis);
-        sendMatrix("matrices.model", this->modelMatrix);
-        sendMatrix("matrices.pvm", this->projection * this->viewMatrix * this->modelMatrix);
+    TextureResource *getDefaultTexture() const {
+        return this->defaultTexture;
     }
 
 protected:
-    void generateDefaultTexture() {
+    unsigned int generateDefaultTexture() {
         unsigned int textureHandler = 0;
         glGenTextures(1, &textureHandler);
 
@@ -552,8 +437,7 @@ protected:
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA,
         GL_UNSIGNED_BYTE, data);
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, textureHandler);
+        return textureHandler;
     }
 
     String getGlError() const {

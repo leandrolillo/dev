@@ -13,46 +13,59 @@
 
 #include<VideoRunner.h>
 
-class SkyboxRenderer {
+class SkyboxRenderer: public Renderer {
 private:
-	const ShaderProgramResource *shader = null;
-	const CubeMapResource *cubeMap;
-	const VertexArrayResource *box;
-	real size = 300;
+    Logger *logger = Logger::getLogger("SkyboxRenderer");
+
+    const CubeMapResource *cubeMap;
+    const VertexArrayResource *box;
+    real size = 300;
 public:
+    void setCubeMap(const CubeMapResource *cubeMap) {
+        this->cubeMap = cubeMap;
+    }
 
-	void setShaderProgram(const ShaderProgramResource *shaderProgramResource) {
-			this->shader = shaderProgramResource;
-	}
+    void setBox(const VertexArrayResource *box) {
+        this->box = box;
+    }
 
-	void setCubeMap(const CubeMapResource *cubeMap) {
-		this->cubeMap = cubeMap;
-	}
+    void setSize(real size) {
+        this->size = size;
+    }
 
-	void setBox(const VertexArrayResource *box) {
-	    this->box = box;
-	}
+    bool init() {
+        if (this->shader == null) {
+            this->shader = (ShaderProgramResource*) this->resourceManager->load("shaders/skybox/skybox.program.json",
+                    "video/shaderProgram");
+        }
 
-	void setSize(real size) {
-	    this->size = size;
-	}
+        if (this->cubeMap == null) {
+            this->cubeMap = (CubeMapResource*) this->resourceManager->load("geometry/skybox/skybox.json", "video/cubemap");
+        }
 
-	void render(VideoRunner *videoRunner) {
-//	    videoRunner->useProgramResource(((OpenGLRunner *)videoRunner)->getDefaultShaderProgram());
-//	    videoRunner->sendMatrices();
+        if (this->box == null) {
+            this->box = (VertexArrayResource*) this->resourceManager->load("geometry/skybox/skybox_geometry.json", "video/vertexArray");
+        }
 
-	    videoRunner->useProgramResource(shader);
-		videoRunner->setTexture(0, "textureUnit", cubeMap, GL_TEXTURE_CUBE_MAP);
-		videoRunner->sendMatrix("matrices.p", videoRunner->getProjectionMatrix());
-		videoRunner->sendMatrix("matrices.v", videoRunner->getViewMatrix());
-		videoRunner->sendReal("boxSize", this->size);
+        return true;
+    }
 
-		videoRunner->drawVertexArray(box);
+    void render(const Camera &camera) {
+        if (videoRunner != null && this->shader != null && this->box != null && this->cubeMap != null) {
+            videoRunner->useProgramResource(shader);
+            videoRunner->setTexture(0, "textureUnit", cubeMap, GL_TEXTURE_CUBE_MAP);
+            videoRunner->sendMatrix("matrices.p", camera.getProjectionMatrix());
+            videoRunner->sendMatrix("matrices.v", camera.getViewMatrix());
+            videoRunner->sendReal("boxSize", this->size);
 
-		//videoRunner->useProgramResource(null);
-	}
+            videoRunner->drawVertexArray(box);
+
+            videoRunner->useProgramResource(null);
+            videoRunner->setTexture(0, cubeMap, GL_TEXTURE_CUBE_MAP);
+        } else {
+            logger->error("not rendering!: videoRunner, shader, box or cubeMap are not set");
+        }
+    }
 };
-
-
 
 #endif /* SRC_VIDEO_RENDERERS_SKYBOXRENDERER_H_ */

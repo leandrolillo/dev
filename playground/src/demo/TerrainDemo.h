@@ -29,8 +29,10 @@ private:
 	MaterialResource material;
 	LightResource light;
 
+	Camera camera;
 	TerrainRenderer terrainRenderer;
 	SkyboxRenderer skyboxRenderer;
+	DefaultRenderer defaultRenderer;
 
 	ArcBall arcball;
 
@@ -52,12 +54,12 @@ public:
 	}
 
 	void resize(unsigned int height, unsigned int width) {
-		openGl->setProjectionMatrix(openGl->perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 400.0));
+		camera.setProjectionMatrix(camera.perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 400.0));
 	}
 
 	void reset() {
 		viewPosition = vector(0.0, -0.5f, -6.0);
-		openGl->setViewMatrix(matriz_4x4::matrizTraslacion(viewPosition));
+		camera.setViewMatrix(matriz_4x4::matrizTraslacion(viewPosition));
 	}
 
 	virtual bool init() {
@@ -76,26 +78,27 @@ public:
 		//openGl->setAttribute(CULL_FACE, CULL_FACE_BACK);
 
 
-		terrainRenderer.setShaderProgram((ShaderProgramResource *)resourceManager->load("shaders/terrain/terrain.program.json", "video/shaderProgram"));
+		terrainRenderer.setVideoRunner(openGl);
 		terrainRenderer.setTerrain((TerrainResource *)resourceManager->load("geometry/terrain/terrain.json", "video/terrain"));
 
-		skyboxRenderer.setShaderProgram((ShaderProgramResource *)resourceManager->load("shaders/skybox/skybox.program.json", "video/shaderProgram"));
-		skyboxRenderer.setCubeMap((CubeMapResource *)resourceManager->load("geometry/skybox/skybox.json", "video/cubemap"));
-		skyboxRenderer.setBox((VertexArrayResource*) this->getContainer()->getResourceManager()->load("geometry/skybox/skybox_geometry.json", "video/vertexArray"));
+		skyboxRenderer.setVideoRunner(openGl);
 		skyboxRenderer.setSize(300);
 
+		defaultRenderer.setVideoRunner(openGl);
+
 		reset();
+
+		logger->info("Done configuring!");
 		return true;
 	}
 	virtual LoopResult doLoop() {
-	    openGl->useProgramResource(openGl->getDefaultShaderProgram());
-		openGl->setModelMatrix(matriz_4x4::Identidad);
-		openGl->sendMatrices();
-		openGl->drawAxis(1.0);
+	    defaultRenderer.clearObjects();
+	    defaultRenderer.drawAxis(matriz_4x4::Identidad);
+	    defaultRenderer.render(camera);
 
-		terrainRenderer.render(openGl, light);
+		terrainRenderer.render(camera);
+		skyboxRenderer.render(camera);
 
-		skyboxRenderer.render(openGl);
 		return CONTINUE;
 	}
 
@@ -103,7 +106,7 @@ public:
 	{
 		logger->info("MouseButtonDown %d at <%d, %d>", button, x, y);
 		if(button == SDL_BUTTON_LEFT) {
-			arcball.startDrag(vector2(x, y), (matriz_3x3)openGl->getViewMatrix(), openGl->getScreenWidth(), openGl->getScreenHeight());
+			arcball.startDrag(vector2(x, y), (matriz_3x3)camera.getViewMatrix(), openGl->getScreenWidth(), openGl->getScreenHeight());
 		}
 	}
 
@@ -112,7 +115,7 @@ public:
 		logger->info("MouseButtonUp %d at <%d, %d>", button, x, y);
 
 		if(button == SDL_BUTTON_LEFT) {
-			openGl->setViewMatrix(matriz_4x4::matrizBase(arcball.endDrag(vector2(x, y)), viewPosition));
+			camera.setViewMatrix(matriz_4x4::matrizBase(arcball.endDrag(vector2(x, y)), viewPosition));
 			//logger->info("%s", openGl->getViewMatrix().toString().c_str());
 		}
 	}
@@ -121,7 +124,7 @@ public:
 		logger->verbose("%s", viewPosition.toString().c_str());
 		viewPosition += vector(0.0f, 0.0f, wheel);
 
-		openGl->setViewMatrix(matriz_4x4::matrizBase((matriz_3x3)openGl->getViewMatrix(), viewPosition));
+		camera.setViewMatrix(matriz_4x4::matrizBase((matriz_3x3)camera.getViewMatrix(), viewPosition));
 	}
 
 	virtual void mouseMove(int dx, int dy) {
@@ -129,7 +132,7 @@ public:
 			viewPosition += vector(0.1f * dx, 0.1f * dy, 0);
 		}
 
-		openGl->setViewMatrix(matriz_4x4::matrizBase(arcball.drag(vector2(dx, dy)), viewPosition));
+		camera.setViewMatrix(matriz_4x4::matrizBase(arcball.drag(vector2(dx, dy)), viewPosition));
 		//logger->info("%s", openGl->getViewMatrix().toString().c_str());
 	}
 	virtual void keyDown(unsigned int key) {

@@ -10,52 +10,62 @@
 
 #include<ShaderProgramResource.h>
 #include<resources/TerrainResource.h>
+#include<resources/LightResource.h>
 #include<VideoRunner.h>
 
-class TerrainRenderer {
+class TerrainRenderer : public Renderer {
 private:
-	ShaderProgramResource *shader = null;
-	TerrainResource *terrain = null;
+    Logger *logger = Logger::getLogger("TerrainRenderer");
+
+	const TerrainResource *terrain = null;
+	const LightResource *light = null;
 
 public:
-//	TerrainRenderer() {
-//	}
-//	TerrainRenderer(VideoRunner *videoRunner, ShaderProgramResource *shader, TerrainResource *terrains)
-//	{
-//		this->videoRunner = videoRunner;
-//		this->shader = shader;
-//		this->terrain = terrain;
-//	}
-
-	void setShaderProgram(ShaderProgramResource *shaderProgramResource) {
-			this->shader = shaderProgramResource;
-	}
-
-	void setTerrain(TerrainResource *terrain) {
+	void setTerrain(const TerrainResource *terrain) {
 		this->terrain = terrain;
 	}
 
-	void render(VideoRunner *videoRunner, const LightResource &light) {
-		videoRunner->useProgramResource(shader);
+	void setLight(const LightResource *light) {
+	    this->setLight(light);
+	}
 
-		videoRunner->setTexture(0, "background", terrain->getA());
-		videoRunner->setTexture(1, "textureR", terrain->getR());
-		videoRunner->setTexture(2, "textureG", terrain->getG());
-		videoRunner->setTexture(3, "textureB",terrain->getB());
-		videoRunner->setTexture(4, "blendMap", terrain->getMap());
+    bool init() {
+        if(this->shader == null) {
+            this->shader = (ShaderProgramResource *)resourceManager->load("shaders/terrain/terrain.program.json", "video/shaderProgram");
+        }
 
-		videoRunner->setLight(light);
+        return true;
+    }
 
-		videoRunner->sendMatrices();
-		videoRunner->drawVertexArray(terrain->getModel());
+	void render(const Camera &camera) {
+	    if(videoRunner != null && shader != null && terrain != null) {
+            videoRunner->useProgramResource(shader);
 
-        videoRunner->setTexture(0, "background", null);
-        videoRunner->setTexture(1, "textureR", null);
-        videoRunner->setTexture(2, "textureG", null);
-        videoRunner->setTexture(3, "textureB", null);
-        videoRunner->setTexture(4, "blendMap", null);
+            videoRunner->setTexture(0, "background", terrain->getA());
+            videoRunner->setTexture(1, "textureR", terrain->getR());
+            videoRunner->setTexture(2, "textureG", terrain->getG());
+            videoRunner->setTexture(3, "textureB",terrain->getB());
+            videoRunner->setTexture(4, "blendMap", terrain->getMap());
 
-		//videoRunner->useProgramResource(null);
+            videoRunner->sendMatrix("matrices.model", matriz_4x4::Identidad);
+            videoRunner->sendMatrix("matrices.pvm", camera.getProjectionViewMatrix() * matriz_4x4::Identidad);
+            videoRunner->sendMatrix("matrices.normal", matriz_3x3::Identidad);
+
+            this->sendLight(light);
+
+            videoRunner->drawVertexArray(terrain->getModel());
+
+            videoRunner->setTexture(0, "background", null);
+            videoRunner->setTexture(1, "textureR", null);
+            videoRunner->setTexture(2, "textureG", null);
+            videoRunner->setTexture(3, "textureB", null);
+            videoRunner->setTexture(4, "blendMap", null);
+
+            videoRunner->useProgramResource(null);
+	    } else {
+	        logger->error("Not rendering! shader or terrain not set.");
+
+	    }
 	}
 };
 

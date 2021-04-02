@@ -12,11 +12,13 @@
 #include<OpenGLRunner.h>
 #include<AudioRunner.h>
 
+#include<renderers/DefaultRenderer.h>
+
 #include<vector>
 
 class GeneralDemoRunner: public PlaygroundRunner {
 private:
-	Logger *logger = null;
+	Logger *logger = Logger::getLogger("GeneralDemoRunner");
 	OpenGLRunner *openGl = null;
 	AudioRunner *audio = null;
 
@@ -41,6 +43,11 @@ private:
 
 	MaterialResource material;
 	LightResource light;
+
+	Camera camera;
+
+	DefaultRenderer defaultRenderer;
+	DefaultRenderer toonRenderer;
 public:
 	static const unsigned char ID = 101;
 
@@ -50,8 +57,6 @@ public:
 					vector(0.5f, 0.5f, 0.5f), 32.0f), light(lightPosition,
 					vector(0.2f, 0.2f, 0.2f), vector(0.5f, 0.5f, 0.5f),
 					vector(1.0f, 1.0f, 1.0f), 1.0f) {
-
-		logger = Logger::getLogger("Main.cpp");
 
 		currentPosition = &viewPosition;
 	}
@@ -65,12 +70,13 @@ public:
 	}
 
 	void resize(unsigned int height, unsigned int width) {
-		openGl->setProjectionMatrix(openGl->perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 100.0));
+	    camera.setProjectionMatrix(camera.perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 100.0));
 	}
 
 	void reset() {
 		viewPosition = vector(0.0, 0.0f, -6.0);
 		lightPosition = vector(0.0, 0.0, 0.0);
+        camera.setViewMatrix(matriz_4x4::matrizTraslacion(viewPosition));
 	}
 
 	virtual bool init() {
@@ -83,17 +89,14 @@ public:
 			return false;
 		}
 
-		ResourceManager *resourceManager =
-				this->getContainer()->getResourceManager();
+		ResourceManager *resourceManager = this->getContainer()->getResourceManager();
 
 		// demo stuff
 		lightAnnoyingSoundSource = audio->createSource("audio/voltage.wav");
 		audio->playSource(lightAnnoyingSoundSource);
 
-		pngTexture = (TextureResource*) resourceManager->load(
-				"images/TEXTURA.PNG", "video/texture");
-		jpgTexture = (TextureResource*) resourceManager->load("images/irs.JPG",
-				"video/texture");
+		pngTexture = (TextureResource*) resourceManager->load("images/TEXTURA.PNG", "video/texture");
+		jpgTexture = (TextureResource*) resourceManager->load("images/irs.JPG", "video/texture");
 
 		//geometryResource = (GeometryResource *)resourceManager->load("geometry/triangle.json", "video/geometry");
 		//sphereGeometryResource = (GeometryResource *)resourceManager->load("geometry/sphere.json", "video/geometry");
@@ -103,8 +106,17 @@ public:
 		triangleVertexArray = (VertexArrayResource*) resourceManager->load(
 				"geometry/triangle.json", "video/vertexArray");
 
-		toonShaderProgram = (ShaderProgramResource*) resourceManager->load(
-				"shaders/toon.330.program.json", "video/shaderProgram");
+        defaultRenderer.setVideoRunner(openGl);
+        defaultRenderer.setLight(&light);
+        defaultRenderer.setMaterial(&material);
+        defaultRenderer.setTexture(pngTexture);
+
+        toonRenderer.setShaderProgram((ShaderProgramResource*) resourceManager->load("shaders/toon.330.program.json", "video/shaderProgram"));
+        toonRenderer.setVideoRunner(openGl);
+        toonRenderer.setLight(&light);
+        toonRenderer.setMaterial(&material);
+        toonRenderer.setTexture(pngTexture);
+
 
 		openGl->setClearColor(0.0, 0.5, 0.0, 0.0);
 		openGl->setAttribute(DEPTH_TEST, true);
@@ -116,74 +128,52 @@ public:
 
 	virtual LoopResult doLoop() {
 
-		openGl->setTexture(0, jpgTexture);
+	    /**
+	     * Update audio
+	     */
+        lightAnnoyingSoundSource->setPosition(vector3(lightPosition.x, lightPosition.y, -lightPosition.z));
+        audio->updateSource(lightAnnoyingSoundSource);
+        audio->updateListener(viewPosition);
 
-		if (toonShaderProgram != null) {
-			openGl->useProgramResource(toonShaderProgram);
-		}
+        /**
+         * modulate light
+         */
+        vector color(0.25 + 0.75 * sin(radian(rotation)), 0.25 + 0.75 * cos(radian(rotation)), 0.25 + 0.75 * sin(radian(rotation)));
+        light.setDiffuse(color);
+        light.setSpecular(color);
+        light.setAmbient(color);
+        light.setPosition(lightPosition);
 
-		openGl->setModelMatrix(matriz_4x4::Identidad);
-		openGl->sendMatrices();
-		openGl->drawAxis();
 
-		openGl->setModelMatrix(matriz_4x4::matrizTraslacion(lightPosition));
-		openGl->sendMatrices();
-		openGl->drawSphere(0.1f);
+        /**
+         * Render toon objects
+         */
+        toonRenderer.clearObjects();
+	    toonRenderer.drawObject(matriz_4x4::matrizBase(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), vector3(2.0, 1.0, 0.0)),
+	            triangleVertexArray);
+	    toonRenderer.drawObject(matriz_4x4::matrizBase(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), vector3(-2.0, 1.0, 0.0)),
+	            sphereVertexArray
+	    );
 
-		lightAnnoyingSoundSource->setPosition(
-				vector3(lightPosition.x, lightPosition.y, -lightPosition.z));
-		audio->updateSource(lightAnnoyingSoundSource);
-		audio->updateListener(viewPosition);
+	    toonRenderer.render(camera);
 
-		openGl->setMaterial(material);
-		vector color(0.25 + 0.75 * sin(radian(rotation)), 0.25 + 0.75 * cos(radian(rotation)), 0.25 + 0.75 * sin(radian(rotation)));
-		light.setDiffuse(color);
-		light.setSpecular(color);
-		light.setAmbient(color);
-		light.setPosition(lightPosition);
-		openGl->setLight(light);
-		openGl->sendVector("viewPosition", viewPosition);
 
-		openGl->setViewMatrix(matriz_4x4::matrizTraslacion(viewPosition));
+        /**
+         * Render default renderer objects
+         */
+	    defaultRenderer.clearObjects();
 
-		openGl->setModelMatrix(
-				matriz_4x4::matrizBase(
-						matriz_3x3::matrizRotacion(0.0f, radian(rotation),
-								0.0f), vector3(2.0, 1.0, 0.0)));
-		openGl->sendMatrices();
+        //draw axis for viewer reference
+        defaultRenderer.drawAxis(matriz_4x4::Identidad);
 
-		openGl->sendUnsignedInt("textureUnit", 0);
-		openGl->drawVertexArray(triangleVertexArray);
+        //draw Light as a sphere
+        defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(lightPosition), 0.1f);
 
-		openGl->setModelMatrix(
-				matriz_4x4::matrizBase(
-						matriz_3x3::matrizRotacion(0.0f, radian(rotation),
-								0.0f), vector3(-2.0, 1.0, 0.0)));
-		openGl->sendMatrices();
-		//openGl->drawBox(1, 1, 1);
-		openGl->drawVertexArray(sphereVertexArray);
+        defaultRenderer.drawObject(matriz_4x4::matrizBase(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), vector3(2.0, -1.0, 0.0)),
+                triangleVertexArray);
+        defaultRenderer.drawBox(matriz_4x4::matrizBase(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), vector3(-2.0, -1.0, 0.0)));
+	    defaultRenderer.render(camera);
 
-		openGl->useProgramResource(openGl->getDefaultShaderProgram());
-
-		openGl->setMaterial(material);
-		openGl->setLight(light);
-		openGl->sendVector("viewPosition", viewPosition);
-
-		openGl->setModelMatrix(
-				matriz_4x4::matrizBase(
-						matriz_3x3::matrizRotacion(0.0f, radian(rotation),
-								0.0f), vector3(2.0, -1.0, 0.0)));
-		openGl->sendMatrices();
-		openGl->sendUnsignedInt("textureUnit", 0);
-		openGl->drawBox(1, 1, 1);
-		//openGl->drawVertexArray(triangleVertexArray);
-
-		openGl->setModelMatrix(
-				matriz_4x4::matrizBase(
-						matriz_3x3::matrizRotacion(0.0f, radian(rotation),
-								0.0f), vector3(-2.0, -1.0, 0.0)));
-		openGl->sendMatrices();
-		openGl->drawVertexArray(sphereVertexArray);
 
 		//				printf("p:\n %s\n", projection.toString().c_str());
 		//				printf("v:\n %s\n", view.toString().c_str());
@@ -201,11 +191,19 @@ public:
 	void mouseWheel(int wheel) {
 		*currentPosition += vector(0.0f, 0.0f, wheel);
 		logger->verbose("%s", (*currentPosition).toString().c_str());
+
+		if(currentPosition == &viewPosition) {
+	        camera.setViewMatrix(matriz_4x4::matrizTraslacion(viewPosition));
+		}
 	}
 
 	virtual void mouseMove(int dx, int dy) {
 		*currentPosition += vector(0.1f * dx, 0.1f * dy, 0);
 		logger->verbose("%s", (*currentPosition).toString().c_str());
+
+		if(currentPosition == &viewPosition) {
+            camera.setViewMatrix(matriz_4x4::matrizTraslacion(viewPosition));
+        }
 	}
 	virtual void keyUp(unsigned int key) {
 		switch (key) {

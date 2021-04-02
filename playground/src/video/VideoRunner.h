@@ -28,14 +28,6 @@ protected:
 	bool fullScreen;
 	unsigned short height;
 	unsigned short width;
-
-	matriz_4x4 projection;
-	matriz_4x4 viewMatrix;
-	matriz_4x4 projectionViewMatrix;
-	matriz_4x4 modelMatrix;
-	matriz_3x3 normalMatrix;
-
-
 public:
 	virtual unsigned char getId() {
 		return ID;
@@ -79,59 +71,6 @@ public:
 	}
 
 	/**
-	 * Mode, view and projection matrixes
-	 */
-	const matriz_4x4& getProjectionMatrix() const {
-		return this->projection;
-	}
-
-	void setProjectionMatrix(const matriz_4x4 &projectionMatrix) {
-			this->projection = projectionMatrix;
-			this->projectionViewMatrix = this->projection * this->viewMatrix;
-		}
-
-	void setViewMatrix(const matriz_4x4 &viewMatrix) {
-		this->viewMatrix = viewMatrix;
-		this->projectionViewMatrix = this->projection * this->viewMatrix;
-	}
-
-	const matriz_4x4 &getViewMatrix() const {
-		return this->viewMatrix;
-	}
-
-	void setModelMatrix(const matriz_4x4 &modelMatrix) {
-		this->modelMatrix = modelMatrix;
-		this->normalMatrix = ((matriz_3x3) modelMatrix).inversa().traspuesta();
-	}
-
-	const matriz_4x4 &getModelMatrix() const {
-		return this->modelMatrix;
-	}
-
-	const matriz_4x4 &getProjectionViewMatrix() const {
-		return this->projectionViewMatrix;
-	}
-
-	matriz_4x4 perspectiveProjection(double fovy, double aspect, double zNear, double zFar) {
-		double fW, fH;
-		fH = tan(fovy / 360.0 * M_PI) * zNear;
-		fW = fH * aspect;
-		double left = -fW;
-		double right = fW;
-		double bottom = -fH;
-		double top = fH;
-
-		/**
-		 * from glFrustrum man page at https://www.lri.fr/~mbl/ENS/IG2/docs/opengl1.1/glFrustum.html
-		 */
-		return matriz_4x4(
-				2.0 * zNear / (right - left), 	0.0, 							(right + left) / (right - left), 	0.0,
-				0.0, 							2.0 * zNear / (top - bottom), 	(top + bottom) / (top - bottom), 	0.0,
-				0.0, 							0.0, 							-(zFar + zNear) / (zFar - zNear), 	-(2.0 * zFar * zNear) / (zFar - zNear),
-				0.0, 							0.0, 							-1.0, 								0.0);
-	}
-
-	/**
 	 * Performance counters
 	 */
 	virtual unsigned long getPerformanceCounter() const = 0;
@@ -147,9 +86,6 @@ public:
 	virtual bool sendVector(const String &name, const vector &value) const = 0;
 	virtual bool sendMatrix(const String &name, const matriz_4x4 &value) const = 0;
 	virtual bool sendMatrix(const String &name, const matriz_3x3 &value) const = 0;
-	virtual bool sendMatrices() const = 0;
-	virtual bool setMaterial(const MaterialResource &material) const = 0;
-	virtual bool setLight(const LightResource &light) const = 0;
 
 	/**
 	 * Drawing methods
@@ -160,11 +96,9 @@ public:
 	virtual void setTexture(unsigned int location, const TextureResource *texture, unsigned int type = 0x0DE1) const = 0;
 	virtual void setTexture(unsigned int location, const String &samplerName, const TextureResource *texture, unsigned int type = 0x0DE1) const = 0;
 	virtual void drawVertexArray(const VertexArrayResource *vertexArrayResource) const = 0;
-	virtual void drawSphere(real radius) const = 0;
-	virtual void drawBox(real height, real width, real depth) const = 0;
-	virtual void drawPlane(vector posicion, vector normal, vector origen, float nro_grids, float ancho) const = 0;
-	virtual void drawAxis(real length = 1.0f) const = 0;
 
+	//TODO: get rid of this method
+	virtual TextureResource *getDefaultTexture() const = 0;
 };
 
 
