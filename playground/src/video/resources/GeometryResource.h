@@ -19,12 +19,10 @@ private:
 	std::vector<vector3> normals;
 	std::vector<vector2> textureCoordinates;
 	std::vector<vector3> colors;
-	String textureFile;
 	String type;
 public:
 	GeometryResource(unsigned int id) :
 			Resource(id, "video/geometry") {
-		textureFile = "";
 		type = 4;
 	}
 
@@ -50,14 +48,6 @@ public:
 
 	void setVertices(const std::vector<vector3> &vertex) {
 		this->vertices = vertex;
-	}
-
-	const String& getTextureFile() const {
-		return textureFile;
-	}
-
-	void setTextureFile(const String &textureFile) {
-		this->textureFile = textureFile;
 	}
 
 	std::vector<vector3>& getColors() {

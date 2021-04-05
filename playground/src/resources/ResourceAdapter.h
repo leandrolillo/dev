@@ -33,6 +33,10 @@ public:
 		supportedMimeTypes.push_back(mimeType);
 	}
 
+	void clearSupportedMimeTypes() {
+	    supportedMimeTypes.clear();
+	}
+
 	const std::vector<String> getSupportedMimeTypes() const {
 		return supportedMimeTypes;
 	}

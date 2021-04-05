@@ -33,34 +33,24 @@ public:
 		String token;
 		parser->readStartObject();
 		while ((token = parser->readToken()) != END_OBJECT && token != eof) {
+            parser->readValueSeparator();
+
 			if (token == "vertices") {
-				parser->readValueSeparator();
 				resource->setVertices(parser->readVector3Array());
 			} else if (token == "textureCoordinates") {
-				parser->readValueSeparator();
 				resource->setTextureCoordinates(parser->readVector2Array());
 			} else if (token == "normals") {
-				parser->readValueSeparator();
 				resource->setNormals(parser->readVector3Array());
-			} else if (token == "texture") {
-				parser->readValueSeparator();
-				String textureFile = parser->readString();
-				resource->setTextureFile(textureFile);
 			} else if (token == "colors") {
-				parser->readValueSeparator();
 				resource->setColors(parser->readVector3Array());
 			} else if (token == "type") {
-				parser->readValueSeparator();
 				String typeString = parser->readString();
 				resource->setType(typeString);
 			} else if (token == "indices") {
-				parser->readValueSeparator();
 				resource->setIndices(parser->readUnsignedIntegerArray());
 			} else if (token == "generateNormals") {
-				parser->readValueSeparator();
 				generateNormals = parser->readBoolean();
 			} else if (token == "generateIndexes") {
-				parser->readValueSeparator();
 				generateIndexes = parser->readBoolean();
 			} else {
 				logger->error("Unexpected token: [%s] at (%d, %d)",

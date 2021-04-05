@@ -7,13 +7,11 @@
 
 #ifndef VERTEXBUFFERADAPTER_H_
 #define VERTEXBUFFERADAPTER_H_
-#include <ResourceAdapter.h>
+#include <adapters/OpenGLResourceAdapter.h>
 #include <resources/VertexArrayResource.h>
 
-#include <OpenGl/gl3.h>
-#include <OpenGl/glext.h>
 
-class VertexArrayResourceAdapter: public ResourceAdapter {
+class VertexArrayResourceAdapter: public OpenGLResourceAdapter {
 public:
 	VertexArrayResourceAdapter() {
 		logger = Logger::getLogger("video/VertexArrayResourceAdapter");
@@ -21,83 +19,15 @@ public:
 	}
 
 	virtual Resource* load(FileParser &fileParser, const String &mimeType) {
-		GeometryResource *geometry =
-				(GeometryResource*) this->getResourceManager()->load(fileParser,
-						"video/geometry");
-
+		GeometryResource *geometry = (GeometryResource*) this->getResourceManager()->load(fileParser, "video/geometry");
 		if (geometry != null) {
-			VertexArrayResource *resource = null;
-
-			glGetError();
-
-			//Create vertex Array
-			unsigned int vertexArray;
-			glGenVertexArrays(1, &vertexArray);
-
-			resource = new VertexArrayResource(vertexArray);
-			resource->setPrimitiveType(asGlPrimitiveType(geometry->getType()));
-
-			glBindVertexArray(resource->getId());
-			GLenum glError = glGetError();
-			if (glError != GL_NO_ERROR) {
-				logger->error("Error creating vertex array [%s]: 0x[%x]",
-						fileParser.getFilename().c_str(), glError);
-				dispose(resource);
-				return null;
-			}
-
-			if (geometry->getVertices().size() != 0
-					&& !addBuffer(VERTEX_LOCATION, resource, GL_ARRAY_BUFFER,
-							geometry->getVertices())) {
-				dispose(resource);
-				return null;
-			}
-
-			/**
-			 * Indices need to be loaded after vertices
-			 */
-			if (geometry->getIndices().size() != 0
-					&& !addBuffer(INDEX_LOCATION, resource,
-							GL_ELEMENT_ARRAY_BUFFER, geometry->getIndices())) {
-				dispose(resource);
-				return null;
-			}
-
-			if (geometry->getNormals().size() != 0
-					&& !addBuffer(NORMAL_LOCATION, resource, GL_ARRAY_BUFFER,
-							geometry->getNormals())) {
-				dispose(resource);
-				return null;
-			}
-
-			if (geometry->getTextureCoordinates().size() != 0
-					&& !addBuffer(TEXTURE_COORDINATES_LOCATION, resource,
-							GL_ARRAY_BUFFER,
-							geometry->getTextureCoordinates())) {
-				dispose(resource);
-				return null;
-			}
-
-			if (geometry->getColors().size() != 0
-					&& !addBuffer(COLOR_LOCATION, resource, GL_ARRAY_BUFFER,
-							geometry->getColors())) {
-				dispose(resource);
-				return null;
-			}
-
-			glBindVertexArray(0);
-
-			// remove objects from context.
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-			return resource;
+		    return generateVertexBuffer(geometry);
 		}
+
 		return null;
 	}
 	virtual void dispose(Resource *resource) {
-		VertexArrayResource *vertexArrayResource =
-				(VertexArrayResource*) resource;
+		VertexArrayResource *vertexArrayResource = (VertexArrayResource*) resource;
 
 		if (vertexArrayResource->getId() != 0) {
 			glBindVertexArray(vertexArrayResource->getId());
@@ -123,7 +53,75 @@ public:
 			vertexArrayResource->setId(0);
 		}
 	}
-private:
+protected:
+	VertexArrayResource *generateVertexBuffer(GeometryResource *geometry) {
+        VertexArrayResource *resource = null;
+
+        glGetError();
+
+        //Create vertex Array
+        unsigned int vertexArray;
+        glGenVertexArrays(1, &vertexArray);
+
+        resource = new VertexArrayResource(vertexArray);
+        resource->setPrimitiveType(asGlPrimitiveType(geometry->getType()));
+
+        glBindVertexArray(resource->getId());
+        GLenum glError = glGetError();
+        if (glError != GL_NO_ERROR) {
+            logger->error("Error creating vertex array  0x[%x]", glError);
+            dispose(resource);
+            return null;
+        }
+
+        if (geometry->getVertices().size() != 0
+                && !addBuffer(VERTEX_LOCATION, resource, GL_ARRAY_BUFFER,
+                        geometry->getVertices())) {
+            dispose(resource);
+            return null;
+        }
+
+        /**
+         * Indices need to be loaded after vertices
+         */
+        if (geometry->getIndices().size() != 0
+                && !addBuffer(INDEX_LOCATION, resource,
+                        GL_ELEMENT_ARRAY_BUFFER, geometry->getIndices())) {
+            dispose(resource);
+            return null;
+        }
+
+        if (geometry->getNormals().size() != 0
+                && !addBuffer(NORMAL_LOCATION, resource, GL_ARRAY_BUFFER,
+                        geometry->getNormals())) {
+            dispose(resource);
+            return null;
+        }
+
+        if (geometry->getTextureCoordinates().size() != 0
+                && !addBuffer(TEXTURE_COORDINATES_LOCATION, resource,
+                        GL_ARRAY_BUFFER,
+                        geometry->getTextureCoordinates())) {
+            dispose(resource);
+            return null;
+        }
+
+        if (geometry->getColors().size() != 0
+                && !addBuffer(COLOR_LOCATION, resource, GL_ARRAY_BUFFER,
+                        geometry->getColors())) {
+            dispose(resource);
+            return null;
+        }
+
+        glBindVertexArray(0);
+
+        // remove objects from context.
+        glBindBuffer(GL_ARRAY_BUFFER, 0);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+        return resource;
+	}
+
 	bool addBuffer(ShaderAttributeLocation attributeLocation,
 			VertexArrayResource *resource, GLenum bufferDestination,
 			const std::vector<vector2> &data) {
@@ -237,32 +235,6 @@ private:
 		}
 
 		return true;
-	}
-
-	GLenum asGlPrimitiveType(const String &typeString) {
-		if (typeString == "points")
-			return GL_POINTS;
-		else if (typeString == "points")
-			return GL_LINES;
-		else if (typeString == "lineLoop")
-			return GL_LINE_LOOP;
-		else if (typeString == "lineStrip")
-			return GL_LINE_STRIP;
-		else if (typeString == "lines")
-			return GL_LINES;
-		else if (typeString == "triangles")
-			return GL_TRIANGLES;
-		else if (typeString == "triangleStrip")
-			return GL_TRIANGLE_STRIP;
-		else if (typeString == "triangleFan")
-			return GL_TRIANGLE_FAN;
-		else if (typeString == "quads")
-			return GL_QUADS;
-		else if (typeString == "triangleFan")
-			return GL_TRIANGLE_FAN;
-		else
-			throw InvalidArgumentException("Invalid primitive type: [%s]",
-					typeString.c_str());
 	}
 };
 #endif /* VERTEXBUFFERADAPTER_H_ */

@@ -9,10 +9,12 @@
 #define IMAGERESOURCE_H_
 
 #include <Resource.h>
+#include <Math3d.h>
 
 class ImageResource : public Resource
 {
 	private:
+        Logger *logger = Logger::getLogger("video/ImageResource");
 		unsigned int alto;
 		unsigned int ancho;
 		unsigned char bpp;
@@ -52,6 +54,14 @@ class ImageResource : public Resource
 			return bpp;
 		}
 
+		unsigned char getBytespp() const
+        {
+		    /**
+		     * bits divided by 8
+		     */
+            return bpp * 0.125;
+        }
+
 		void setBpp(unsigned char bpp)
 		{
 			this->bpp = bpp;
@@ -66,6 +76,25 @@ class ImageResource : public Resource
 		{
 			this->data = data;
 		}
+
+		//TODO: Should be a vector3 of integers instead of reals.
+		vector getPixel(unsigned int x, unsigned int y) {
+		    if(x < this->getAlto() && y <= this->getAncho()) {
+                unsigned int position = (y * this->getAncho() + x) * this->getBytespp();
+
+                return vector( ((unsigned char *)this->data)[position],
+                        ((unsigned char *)this->data)[position + 1],
+                        ((unsigned char *)this->data)[position + 2]
+                        );
+		    }
+
+		    return vector(0, 0, 0);
+		}
+
+        virtual String toString() const {
+            return "Image(id:" + std::to_string(this->getId()) + ") [" + this->getMimeType() + "] [" + this->getFileName() + "]: ["
+                    + std::to_string(this->getAlto()) + "x" + std::to_string(this->getAlto()) + "x" + std::to_string(this->getBpp()) + "]";
+        }
 	};
 
 

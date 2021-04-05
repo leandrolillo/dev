@@ -27,24 +27,22 @@ public:
 
 		String token;
 		while ((token = jsonParser->readToken()) != END_OBJECT && token != eof) {
+            jsonParser->readValueSeparator();
+
 			if (token == "r") {
-				jsonParser->readValueSeparator();
 				resource->setR((TextureResource *)this->getResourceManager()->load(fileParser.getFilename(), jsonParser->readString(), "video/texture"));
 			} else if (token == "g") {
-				jsonParser->readValueSeparator();
 				resource->setG((TextureResource *)this->getResourceManager()->load(fileParser.getFilename(), jsonParser->readString(), "video/texture"));
 			} else if (token == "b") {
-				jsonParser->readValueSeparator();
 				resource->setB((TextureResource *)this->getResourceManager()->load(fileParser.getFilename(), jsonParser->readString(), "video/texture"));
 			} else if (token == "a") {
-				jsonParser->readValueSeparator();
 				resource->setA((TextureResource *)this->getResourceManager()->load(fileParser.getFilename(), jsonParser->readString(), "video/texture"));
 			} else if (token == "map") {
-				jsonParser->readValueSeparator();
 				resource->setMap((TextureResource *)this->getResourceManager()->load(fileParser.getFilename(), jsonParser->readString(), "video/texture"));
 			} else if (token == "model") {
-				jsonParser->readValueSeparator();
 				resource->setModel((VertexArrayResource *)this->getResourceManager()->load(fileParser.getFilename(), jsonParser->readString(), "video/vertexArray"));
+			} else if (token == "heightmap") {
+			    resource->setModel((VertexArrayResource *)this->getResourceManager()->load(fileParser.getFilename(), jsonParser->readString(), "video/heightmap"));
 			} else {
 				logger->error("Unexpected token: [%s] at (%d, %d)",
 						token.c_str(), jsonParser->getLine(), jsonParser->getColumn());

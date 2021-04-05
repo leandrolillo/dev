@@ -44,6 +44,51 @@ protected:
 
         return errorMessage;
     }
+
+    GLenum asGlPrimitiveType(const String &typeString) const {
+        if (typeString == "points")
+            return GL_POINTS;
+        else if (typeString == "points")
+            return GL_LINES;
+        else if (typeString == "lineLoop")
+            return GL_LINE_LOOP;
+        else if (typeString == "lineStrip")
+            return GL_LINE_STRIP;
+        else if (typeString == "lines")
+            return GL_LINES;
+        else if (typeString == "triangles")
+            return GL_TRIANGLES;
+        else if (typeString == "triangleStrip")
+            return GL_TRIANGLE_STRIP;
+        else if (typeString == "triangleFan")
+            return GL_TRIANGLE_FAN;
+        else if (typeString == "quads")
+            return GL_QUADS;
+        else if (typeString == "triangleFan")
+            return GL_TRIANGLE_FAN;
+        else
+            throw InvalidArgumentException("Invalid primitive type: [%s]",
+                    typeString.c_str());
+    }
+
+    GLenum getLocation(const String &faceName) {
+        if(faceName == "top") {
+            return GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
+        } else if(faceName == "bottom") {
+            return GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
+        } else if(faceName == "right") {
+            return GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+        } else if(faceName == "left") {
+            return GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
+        } else if(faceName == "front") {
+            return GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
+        } else if(faceName == "back") {
+            return GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
+        } else {
+            return GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
+        }
+    }
+
 };
 
 

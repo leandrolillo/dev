@@ -75,6 +75,8 @@ public:
 		ResourceManager *resourceManager = this->getContainer()->getResourceManager();
 		openGl->setClearColor(0.0, 0.5, 0.0, 0.0);
 		openGl->setAttribute(DEPTH_TEST, true);
+		//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+
 		//openGl->setAttribute(CULL_FACE, CULL_FACE_BACK);
 
 
@@ -130,9 +132,11 @@ public:
 	virtual void mouseMove(int dx, int dy) {
 		if(!arcball.isDragging()) {
 			viewPosition += vector(0.1f * dx, 0.1f * dy, 0);
+			camera.setViewMatrix(matriz_4x4::matrizBase((matriz_3x3)camera.getViewMatrix(), viewPosition));
+		} else {
+		    camera.setViewMatrix(matriz_4x4::matrizBase(arcball.drag(vector2(dx, dy)), viewPosition));
 		}
 
-		camera.setViewMatrix(matriz_4x4::matrizBase(arcball.drag(vector2(dx, dy)), viewPosition));
 		//logger->info("%s", openGl->getViewMatrix().toString().c_str());
 	}
 	virtual void keyDown(unsigned int key) {

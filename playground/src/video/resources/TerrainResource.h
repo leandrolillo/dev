@@ -13,6 +13,7 @@
 #include <resources/VertexArrayResource.h>
 
 class TerrainResource: public Resource {
+    Logger *logger = Logger::getLogger("video/TerrainResource");
 	TextureResource *r = null;
 	TextureResource *g = null;
 	TextureResource *b = null;

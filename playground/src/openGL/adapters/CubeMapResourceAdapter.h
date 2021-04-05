@@ -8,16 +8,16 @@
 #ifndef SRC_OPENGL_ADAPTERS_CUBEMAPRESOURCEADAPTER_H_
 #define SRC_OPENGL_ADAPTERS_CUBEMAPRESOURCEADAPTER_H_
 
-#include <adapters/OpenGLResourceAdapter.h>
+#include <adapters/TextureResourceAdapter.h>
 #include <resources/CubeMapResource.h>
 #include <JsonParser.h>
-#include <OpenGL/gl3.h>
 
 
-class CubeMapResourceAdapter : public OpenGLResourceAdapter {
+class CubeMapResourceAdapter : public TextureResourceAdapter {
 public:
-	CubeMapResourceAdapter() {
+	CubeMapResourceAdapter() : TextureResourceAdapter() {
 		logger = Logger::getLogger("video/CubeMapResourceAdapter");
+		this->clearSupportedMimeTypes();
 		this->addSupportedMimeType("video/cubemap");
 	}
 
@@ -72,30 +72,6 @@ public:
 		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
 		return resource;
-	}
-
-	virtual void dispose(Resource *resource) {
-		CubeMapResource *textureResource = (CubeMapResource *)resource;
-		unsigned int textureHandler = textureResource->getId();
-		glDeleteTextures(1, &textureHandler);
-	}
-private:
-	GLenum getLocation(const String &faceName) {
-		if(faceName == "top") {
-			return GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
-		} else if(faceName == "bottom") {
-			return GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
-		} else if(faceName == "right") {
-			return GL_TEXTURE_CUBE_MAP_POSITIVE_X;
-		} else if(faceName == "left") {
-			return GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
-		} else if(faceName == "front") {
-			return GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
-		} else if(faceName == "back") {
-			return GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
-		} else {
-			return GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
-		}
 	}
 };
 

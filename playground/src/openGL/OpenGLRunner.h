@@ -20,6 +20,7 @@
 #include <adapters/ShaderResourceAdapter.h>
 #include <adapters/ShaderProgramResourceAdapter.h>
 #include <adapters/CubeMapResourceAdapter.h>
+#include <adapters/HeightMapResourceAdapter.h>
 
 #define DEPTH_TEST GL_DEPTH_TEST
 #define CULL_FACE GL_CULL_FACE
@@ -74,6 +75,7 @@ public:
         VideoRunner::init();
         this->getContainer()->getResourceManager()->addAdapter(new TextureResourceAdapter());
         this->getContainer()->getResourceManager()->addAdapter(new CubeMapResourceAdapter());
+        this->getContainer()->getResourceManager()->addAdapter(new HeightMapResourceAdapter());
         this->getContainer()->getResourceManager()->addAdapter(new VertexArrayResourceAdapter());
         this->getContainer()->getResourceManager()->addAdapter(new ShaderResourceAdapter());
         this->getContainer()->getResourceManager()->addAdapter(new ShaderProgramResourceAdapter());
@@ -88,9 +90,10 @@ public:
         SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
 
         this->window = SDL_CreateWindow("SDL2/OpenGL Demo", 0, 0, 640, 480, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
-
         logger->debug("SDL Window created");
 
+//        SDL_PumpEvents();
+//        SDL_SetRelativeMouseMode(SDL_TRUE);
         SDL_AddEventWatch(playgroundEventFilter, this);
 
         logger->debug("SDL event watch registered");
@@ -183,7 +186,7 @@ public:
                 return 0;
             case SDL_MOUSEBUTTONDOWN:
                 //SDL_Log("SDL_MOUSEBUTTONDOWN %d", event->button.button);
-                logger->verbose("MOUSEBUTTONDOWN: %d at <%d, %d>", event->button.button, event->button.x, event->button.y);
+                logger->info("MOUSEBUTTONDOWN: %d at <%d, %d>", event->button.button, event->button.x, event->button.y);
                 this->getContainer()->mouseButtonDown(event->button.button, event->button.x, event->button.y);
                 return 0;
             case SDL_MOUSEBUTTONUP:

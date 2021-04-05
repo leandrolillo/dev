@@ -4,5 +4,5 @@
 	"b": "~/images/terrain/path.png",
 	"a": "~/images/terrain/grassy2.png",
 	"map": "~/images/terrain/BlendMap.png",
-	"model": "largeQuad.json"
+	"heightmap": "~/images/terrain/heightMap.png"
 }

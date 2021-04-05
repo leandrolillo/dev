@@ -148,16 +148,16 @@ public:
 	}
 
 	~ResourceManager() {
-		for (std::map<String, Resource*>::iterator currentResourceIterator =
-				resourceCache.begin();
+		for (std::map<String, Resource*>::iterator currentResourceIterator = resourceCache.begin();
 				currentResourceIterator != resourceCache.end();
 				currentResourceIterator++) {
-			if ((*currentResourceIterator).second != null)
-				logger->debug("Disposing of resource ['%s' - '%s']",
+			if ((*currentResourceIterator).second != null) {
+				logger->info("Disposing of resource ['%s' - '%s']",
 						(*currentResourceIterator).second->getMimeType().c_str(),
 						(*currentResourceIterator).second->getFileName().c_str());
 
-			dispose((*currentResourceIterator).second);
+				dispose((*currentResourceIterator).second);
+			}
 		}
 
 		std::set<ResourceAdapter*> resourceAdaptersSet;
