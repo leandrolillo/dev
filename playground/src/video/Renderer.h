@@ -26,9 +26,11 @@ public:
     virtual ~Renderer() {}
 
     void setVideoRunner(VideoRunner *videoRunner) {
-        this->videoRunner = videoRunner;
-        this->resourceManager = videoRunner->getContainer()->getResourceManager();
-        this->init();
+        if(videoRunner != null && videoRunner->getContainer() != null && videoRunner->getContainer()->getResourceManager() != null) {
+            this->videoRunner = videoRunner;
+            this->resourceManager = videoRunner->getContainer()->getResourceManager();
+            this->init();
+        }
     }
 
     void setShaderProgram(const ShaderProgramResource *shaderProgramResource) {

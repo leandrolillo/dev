@@ -89,7 +89,7 @@ public:
 //                            (real)i / (maxPoints - 1),
 //                            (real)j / (maxPoints -1 ))
 //                            );
-                    logger->info("<%d, %d>--->%s", i, j, calculator.normal(i, j).toString().c_str());
+                    //logger->info("<%d, %d>--->%s", i, j, calculator.normal(i, j).toString().c_str());
 
 
                 }

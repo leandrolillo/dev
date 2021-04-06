@@ -26,7 +26,7 @@ public:
 	}
 
 	void setLight(const LightResource *light) {
-	    this->setLight(light);
+	    this->light = light;
 	}
 
     bool init() {

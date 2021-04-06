@@ -43,7 +43,7 @@ public:
 	TerrainDemoRunner() : material(vector(1.0f, 0.5f, 0.31f), vector(1.0f, 0.5f, 0.31f),
 			vector(0.5f, 0.5f, 0.5f), 32.0f), light(viewPosition,
 			vector(0.2f, 0.2f, 0.2f), vector(0.5f, 0.5f, 0.5f),
-			vector(1.0f, 1.0f, 1.0f), 1.0f){
+			vector(0.3f, 0.3f, 0.3f), 1.0f){
 	}
 	virtual unsigned char getInterests() {
 		return KEY_DOWN | KEY_UP | MOUSE_MOVE | MOUSE_WHEEL | MOUSE_BUTTON_DOWN | MOUSE_BUTTON_UP | RESIZE;
@@ -75,16 +75,17 @@ public:
 		ResourceManager *resourceManager = this->getContainer()->getResourceManager();
 		openGl->setClearColor(0.0, 0.5, 0.0, 0.0);
 		openGl->setAttribute(DEPTH_TEST, true);
-		//glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+		glPolygonMode( GL_BACK, GL_LINE );
 
 		//openGl->setAttribute(CULL_FACE, CULL_FACE_BACK);
 
 
 		terrainRenderer.setVideoRunner(openGl);
+		terrainRenderer.setLight(&light);
 		terrainRenderer.setTerrain((TerrainResource *)resourceManager->load("geometry/terrain/terrain.json", "video/terrain"));
 
 		skyboxRenderer.setVideoRunner(openGl);
-		skyboxRenderer.setSize(300);
+		skyboxRenderer.setSize(200);
 
 		defaultRenderer.setVideoRunner(openGl);
 
