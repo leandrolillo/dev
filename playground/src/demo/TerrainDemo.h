@@ -42,8 +42,8 @@ public:
 public:
 	TerrainDemoRunner() : material(vector(1.0f, 0.5f, 0.31f), vector(1.0f, 0.5f, 0.31f),
 			vector(0.5f, 0.5f, 0.5f), 32.0f), light(viewPosition,
-			vector(0.2f, 0.2f, 0.2f), vector(0.5f, 0.5f, 0.5f),
-			vector(0.3f, 0.3f, 0.3f), 1.0f){
+			vector(0.2f, 0.2f, 0.2f), vector(0.2f, 0.2f, 0.2f),
+			vector(0.1f, 0.1f, 0.1f), 1.0f){
 	}
 	virtual unsigned char getInterests() {
 		return KEY_DOWN | KEY_UP | MOUSE_MOVE | MOUSE_WHEEL | MOUSE_BUTTON_DOWN | MOUSE_BUTTON_UP | RESIZE;
@@ -123,6 +123,18 @@ public:
 		}
 	}
 
+    virtual void mouseMove(int dx, int dy) {
+        if(!arcball.isDragging()) {
+            viewPosition += vector(0.1f * dx, 0.1f * dy, 0);
+            camera.setViewMatrix(matriz_4x4::matrizBase((matriz_3x3)camera.getViewMatrix(), viewPosition));
+        } else {
+            camera.setViewMatrix(matriz_4x4::matrizBase(arcball.drag(vector2(dx, dy)), viewPosition));
+        }
+
+        //logger->info("%s", openGl->getViewMatrix().toString().c_str());
+    }
+
+
 	void mouseWheel(int wheel) {
 		logger->verbose("%s", viewPosition.toString().c_str());
 		viewPosition += vector(0.0f, 0.0f, wheel);
@@ -130,16 +142,6 @@ public:
 		camera.setViewMatrix(matriz_4x4::matrizBase((matriz_3x3)camera.getViewMatrix(), viewPosition));
 	}
 
-	virtual void mouseMove(int dx, int dy) {
-		if(!arcball.isDragging()) {
-			viewPosition += vector(0.1f * dx, 0.1f * dy, 0);
-			camera.setViewMatrix(matriz_4x4::matrizBase((matriz_3x3)camera.getViewMatrix(), viewPosition));
-		} else {
-		    camera.setViewMatrix(matriz_4x4::matrizBase(arcball.drag(vector2(dx, dy)), viewPosition));
-		}
-
-		//logger->info("%s", openGl->getViewMatrix().toString().c_str());
-	}
 	virtual void keyDown(unsigned int key) {
 		switch (key) {
 		case SDLK_SPACE:

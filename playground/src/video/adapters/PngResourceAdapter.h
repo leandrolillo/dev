@@ -116,20 +116,20 @@ class PngResourceAdapter : public ResourceAdapter {
 			if(channels == 3) {
 				for(unsigned long y = 0; y < height; y++) {
 					for(unsigned long x = 0; x < width; x++) {
-						pBitmap[(height - 1 - y) * wimage_rowbytes + x * 4] = image_data[y * image_rowbytes + x * 3+ 2];
-						pBitmap[(height - 1 - y) * wimage_rowbytes + x * 4 + 1] = image_data[y * image_rowbytes + x * 3 + 1];
-						pBitmap[(height - 1 - y) * wimage_rowbytes + x * 4 + 2] = image_data[y * image_rowbytes + x * 3];
-						pBitmap[(height - 1 - y) * wimage_rowbytes + x * 4 + 3] = 255;
+						pBitmap[y * wimage_rowbytes + x * 4] = image_data[y * image_rowbytes + x * 3+ 2];
+						pBitmap[y * wimage_rowbytes + x * 4 + 1] = image_data[y * image_rowbytes + x * 3 + 1];
+						pBitmap[y * wimage_rowbytes + x * 4 + 2] = image_data[y * image_rowbytes + x * 3];
+						pBitmap[y * wimage_rowbytes + x * 4 + 3] = 255;
 					}
 				}
 			}
 			else {
 				for(unsigned long y = 0; y < height; y++) {
 					for(unsigned long x = 0; x < width; x++) {
-						pBitmap[(height - 1 - y) * wimage_rowbytes + x * 4] = image_data[y * image_rowbytes + x * 4 + 2];
-						pBitmap[(height - 1 - y) * wimage_rowbytes + x * 4 + 1] = image_data[y * image_rowbytes + x * 4 + 1];
-						pBitmap[(height - 1 - y) * wimage_rowbytes + x * 4 + 2] = image_data[y * image_rowbytes + x * 4];
-						pBitmap[(height - 1 - y) * wimage_rowbytes + x * 4 + 3] = image_data[y * image_rowbytes + x * 4 + 3];
+						pBitmap[y * wimage_rowbytes + x * 4] = image_data[y * image_rowbytes + x * 4 + 2];
+						pBitmap[y * wimage_rowbytes + x * 4 + 1] = image_data[y * image_rowbytes + x * 4 + 1];
+						pBitmap[y * wimage_rowbytes + x * 4 + 2] = image_data[y * image_rowbytes + x * 4];
+						pBitmap[y * wimage_rowbytes + x * 4 + 3] = image_data[y * image_rowbytes + x * 4 + 3];
 					}
 				}
 			}

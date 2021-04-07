@@ -37,11 +37,8 @@ public:
 		this->height = height;
 		this->width = width;
 
-//		logger->info("%s ---> %s (%dx%d)\n%s\n",
+//		logger->info("arcball startDrag at %s with viewModel:\n%s\n",
 //				startPosition.toString().c_str(),
-//				endPosition.toString().c_str(),
-//				height,
-//				width,
 //				viewModel.toString().c_str());
 
 	}
@@ -50,7 +47,7 @@ public:
 		if(this->dragging) {
 			this->endPosition = this->endPosition + delta;
 
-//			logger->info("%s ---> %s: (%s)\n%s\n",
+//			logger->info("Arcball Dragging - %s ---> %s: (%s)\n%s\n",
 //					startPosition.toString().c_str(),
 //					endPosition.toString().c_str(),
 //					delta.toString().c_str(),
@@ -90,11 +87,18 @@ public:
 		    vector va = calculateVector(this->endPosition, this->width, this->height);
 		    vector vb = calculateVector( this->startPosition, this->width, this->height);
 		    float angle = acos(std::min(1.0f, va * vb));
-		    vector axis_in_camera_coord = va ^ vb;
-		    matriz_3x3 camera2object = this->viewModel.inversa();
-		    vector  axis_in_object_coord = camera2object * axis_in_camera_coord;
 
-		    return matriz_3x3::matrizRotacion(angle, axis_in_object_coord);
+		    vector axis_in_camera_coord = va ^ vb;
+//		    matriz_3x3 camera2object = this->viewModel.inversa();
+//		    vector  axis_in_object_coord = camera2object * axis_in_camera_coord;
+//
+//            logger->info("Arcball Rotation- axis %s angle %.2f world axis %s",
+//                    axis_in_camera_coord.toString().c_str(),
+//                    angle,
+//                    axis_in_object_coord.toString().c_str()
+//                    );
+
+		    return matriz_3x3::matrizRotacion(angle, axis_in_camera_coord) * this->viewModel;
 		  }
 
 		return this->viewModel;
@@ -113,8 +117,8 @@ private:
 	  arcballVector.y = -arcballVector.y;
 
 	  float OP_squared = arcballVector.x * arcballVector.x + arcballVector.y * arcballVector.y;
-	  if (OP_squared <= 1)
-	    arcballVector.z = sqrt(1 - OP_squared);  // Pythagoras
+	  if (OP_squared <= 1.0)
+	    arcballVector.z = sqrt(1.0 - OP_squared);  // Pythagoras
 	  else
 	    arcballVector = arcballVector.normalizado();  // nearest point
 	  return arcballVector;

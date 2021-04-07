@@ -13,7 +13,7 @@
 #include<Force.h>
 #include<ParticleIntegrator.h>
 #include<ContactResolver.h>
-
+#include<CollisionDetector.h>
 
 #include<vector>
 #include <algorithm>
@@ -24,6 +24,7 @@ class ParticleManager {
 	std::vector<Force *> forces;
 	ParticleIntegrator particleIntegrator;
 	ContactResolver contactResolver;
+	CollisionDetector collisionDetector;
 
 public:
 

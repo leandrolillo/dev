@@ -95,6 +95,7 @@ public:
 //        SDL_PumpEvents();
 //        SDL_SetRelativeMouseMode(SDL_TRUE);
         SDL_AddEventWatch(playgroundEventFilter, this);
+        SDL_SetWindowGrab(this->window, SDL_TRUE);
 
         logger->debug("SDL event watch registered");
 
@@ -144,7 +145,7 @@ public:
     LoopResult doLoop() {
         SDL_Event windowEvent;
 
-        if (SDL_PollEvent(&windowEvent)) {
+        while (SDL_PollEvent(&windowEvent)) {
             switch (windowEvent.type) {
                 case SDL_QUIT:
                     return STOP;

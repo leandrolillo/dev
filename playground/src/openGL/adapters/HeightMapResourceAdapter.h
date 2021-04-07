@@ -29,9 +29,9 @@ public:
     }
 
     vector position(unsigned int i, unsigned int j) {
-        return vector(  (real)i * boxSize,
+        return vector(  ((real)i - (real)maxPoints * 0.5) * boxSize,
                         height(i, j),
-                        (real)j * boxSize
+                        ((real)j - (real)maxPoints * 0.5) * boxSize
                      );
     }
 

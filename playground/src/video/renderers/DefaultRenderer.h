@@ -68,8 +68,6 @@ public:
     }
 
     bool init() {
-        logger->info("Initializing default renderer with resource manager %u", this->resourceManager);
-
         if(this->shader == null) {
             this->shader = (ShaderProgramResource*) this->resourceManager->load("core/simple.program.json", "video/shaderProgram");
         }

@@ -81,11 +81,11 @@ protected:
         } else if(faceName == "left") {
             return GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
         } else if(faceName == "front") {
-            return GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
-        } else if(faceName == "back") {
             return GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
-        } else {
+        } else if(faceName == "back") {
             return GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
+        } else {
+            throw InvalidArgumentException("Invalid face name[%s]", faceName.c_str());
         }
     }
 

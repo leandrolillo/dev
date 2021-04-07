@@ -1,8 +1,8 @@
 {
-	"top": "~/images/skybox/top.png",
-	"bottom": "~/images/skybox/bottom.png",
 	"right": "~/images/skybox/right.png",
 	"left": "~/images/skybox/left.png",
-	"front": "~/images/skybox/front.png",
+	"top": "~/images/skybox/top.png",
+	"bottom": "~/images/skybox/bottom.png",
 	"back": "~/images/skybox/back.png",
+	"front": "~/images/skybox/front.png"
 }
