@@ -327,8 +327,8 @@ class matriz_4x4: public BaseMatrix {
 			return m[fila * 4 + columna];
 		}
 
-		const cuaternion fila(unsigned int fila);
-		const cuaternion columna(unsigned int columna);
+		const cuaternion fila(unsigned int fila) const;
+		const cuaternion columna(unsigned int columna) const;
 
 		matriz_4x4 operator=(const matriz_4x4 &op1) {
 			memcpy(this->m, op1.m, sizeof(this->m));

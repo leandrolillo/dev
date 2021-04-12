@@ -12,6 +12,8 @@
 
 class Camera {
 protected:
+    Logger *logger = Logger::getLogger("Camera");
+
     matriz_4x4 projectionMatrix;
     matriz_4x4 viewMatrix;
     matriz_4x4 projectionViewMatrix;
@@ -39,7 +41,7 @@ public:
     }
 
     const vector getViewPosition() const {
-        return vector(this->viewMatrix (0, 3), this->viewMatrix(1, 3), this->viewMatrix(2, 3));
+        return vector(viewMatrix (0, 3), viewMatrix(1, 3), viewMatrix(2, 3));
     }
 
     const matriz_4x4 &getProjectionViewMatrix() const {

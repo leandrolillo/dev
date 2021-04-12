@@ -597,13 +597,13 @@ void matriz_2x2::operator *=(const real &op1) {
 // | |									Funciones de la Clase MATRIZ_4x4
 // | | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 //  \ \  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	const cuaternion matriz_4x4::fila(unsigned int fila) {
+	const cuaternion matriz_4x4::fila(unsigned int fila) const {
 		if (fila > this->nroFilas)
 			throw InvalidArgumentException("Index Out of Bounds - matriz_4x4::fila(%d)", fila);
 		return cuaternion(m[fila * 4 + 3], m[fila * 4 + 0], m[fila * 4 + 1], m[fila * 4 + 2]);
 	}
 
-	const cuaternion matriz_4x4::columna(unsigned int columna) {
+	const cuaternion matriz_4x4::columna(unsigned int columna) const {
 		if (columna > this->nroColumnas)
 			throw InvalidArgumentException("Index Out of Bounds - matriz_4x4::columna(%d)", columna);
 		return cuaternion(m[3 * 4 + columna], m[0 * 4 + columna], m[1 * 4 + columna], m[2 * 4 + columna]);

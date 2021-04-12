@@ -53,7 +53,7 @@ public:
 		integrate(dt);
 
 		// generate contacts (collision and contact generators)
-		std::vector<Contact> contacts;
+		std::vector<Contact> contacts = collisionDetector.detectCollisions(this->particles);
 
 		contactResolver.resolve(contacts);
 

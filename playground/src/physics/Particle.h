@@ -52,7 +52,7 @@ public:
 		this->position = position;
 	}
 
-	const vector &getPosition() {
+	const vector &getPosition() const {
 		return this->position;
 	}
 
@@ -60,7 +60,7 @@ public:
 		this->velocity = velocity;
 	}
 
-	const vector &getVelocity() {
+	const vector &getVelocity() const {
 			return this->velocity;
 		}
 
@@ -88,11 +88,11 @@ public:
 			this->inverseMass = inverseMass;
 		}
 
-	real getMass() {
+	const real getMass() const {
 		return this->mass;
 	}
 
-	real getInverseMass() {
+	const real getInverseMass() const {
 		return this->inverseMass;
 	}
 

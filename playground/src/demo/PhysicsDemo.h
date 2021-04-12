@@ -32,15 +32,12 @@ class BulletParticle : public Particle
 };
 
 class PhysicsDemoRunner: public PlaygroundRunner {
-	Logger *logger = Logger::getLogger("Main.cpp");
+	Logger *logger = Logger::getLogger("PhysicsDemoRunner");
 	OpenGLRunner *openGl = null;
 	AudioRunner *audio = null;
 	PhysicsRunner *physics = null;
 
 	Source *gunshotSource;
-
-	matriz_4x4 view;
-	vector viewPosition;
 
 	BulletParticle particles[numberOfParticles];
 	Gravity gravity;
@@ -78,8 +75,7 @@ public:
 			particle->setStatus(false);
 		}
 
-		viewPosition = vector(0.0f, 0.0f, -5.0f);
-        camera.setViewMatrix(matriz_4x4::matrizTraslacion(this->viewPosition));
+        camera.setViewMatrix(matriz_4x4::matrizTraslacion(vector(0.0f, 0.0f, -5.0f)));
 	}
 
 	bool init() {
@@ -111,16 +107,14 @@ public:
 
 
 //		logger->debug("Drawing");
-		int count = 0;
 		for(BulletParticle *particle = particles; particle < (particles + numberOfParticles); particle++) {
 			if(particle->getStatus() == true) {
-//				logger->debug("Particle is enabled: position: %s, velocity: %s",
+                defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(particle->getPosition()), 0.1);
+
+//				logger->info("Particle is enabled: position: %s, velocity: %s",
 //						particle->getPosition().toString().c_str(),
 //						particle->getVelocity().toString().c_str());
 
-				count++;
-
-				defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(particle->getPosition()), 0.1);
 			} else {
 //				logger->debug("Particle is disabled");
 			}
@@ -143,28 +137,32 @@ public:
 		}
 
 		if(bullet) {
-			bullet->setPosition((vector)(view.columna(3)));
-			bullet->setVelocity(((vector)view.columna(2)).normalizado() * -35);
+			bullet->setPosition(camera.getViewPosition());
+			//bullet->setPosition(vector(1, 1, 0));
+			bullet->setVelocity(((vector)camera.getViewMatrix().columna(2)).normalizado() * -35);
 			bullet->setAcceleration(vector(0, 0, 0));
 			bullet->setMass(0.1);
 			bullet->setDamping(0.99f);
 			bullet->setStatus(true);
 
 			audio->playSource(gunshotSource);
+
+			logger->info("bullet shot at position: %s, velocity: %s",
+			        bullet->getPosition().toString().c_str(),
+			        bullet->getVelocity().toString().c_str());
+
 		} else {
 			logger->debug("no particle found");
 		}
 	}
 
 	void mouseWheel(int wheel) {
-		viewPosition += vector(0.0f, 0.0f, wheel);
-        camera.setViewMatrix(matriz_4x4::matrizTraslacion(this->viewPosition));
+        camera.setViewMatrix(matriz_4x4::matrizTraslacion(camera.getViewPosition() + vector(0.0f, 0.0f, wheel)));
 
 	}
 
 	virtual void mouseMove(int dx, int dy) {
-		viewPosition += vector(0.1f * dx, 0.1f * dy, 0);
-        camera.setViewMatrix(matriz_4x4::matrizTraslacion(this->viewPosition));
+        camera.setViewMatrix(matriz_4x4::matrizTraslacion(camera.getViewPosition() + vector(0.1f * dx, 0.1f * dy, 0)));
 
 	}
 

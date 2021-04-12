@@ -1,6 +1,5 @@
 #this is a comment.
 {
-	texture: "images/TEXTURA.PNG",
 	vertices: [<-1.0f, -1.0f, 0.0f>,
         <0.0f,  1.0f, 0.0f>, 
         <1.0f, -1.0f, 0.0f>],

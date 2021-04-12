@@ -13,11 +13,11 @@ int main(int, char**){
 //	PlaygroundGeneralDemo playground("/Users/leandro/huevadas/projects/dev/media/");
 //    playground.run();
 
-    PlaygroundTerrainDemo playground("/Users/leandro/huevadas/projects/dev/media/");
-    playground.run();
-//
-//	PhysicsPlayground playground("/Users/leandro/huevadas/projects/dev/media/");
+//    PlaygroundTerrainDemo playground("/Users/leandro/huevadas/projects/dev/media/");
 //    playground.run();
+
+	PhysicsPlayground playground("/Users/leandro/huevadas/projects/dev/media/");
+    playground.run();
 
     return 0;
 }
