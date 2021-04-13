@@ -92,7 +92,7 @@ class ShaderProgramResourceAdapter: public OpenGLResourceAdapter {
 			for(std::vector<ShaderResource *>::iterator shaderIterator = resource->getShaders().begin(); shaderIterator != resource->getShaders().end(); shaderIterator++)
 				glAttachShader(resource->getId(), (*shaderIterator)->getId());
 
-			glBindAttribLocation(resource->getId(), VERTEX_LOCATION, "vertex");
+			glBindAttribLocation(resource->getId(), VERTEX_LOCATION, "position");
 			glBindAttribLocation(resource->getId(), INDEX_LOCATION, "index");
 			glBindAttribLocation(resource->getId(), NORMAL_LOCATION, "normal");
 			glBindAttribLocation(resource->getId(), TEXTURE_COORDINATES_LOCATION, "textureCoordinate");

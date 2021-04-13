@@ -15,6 +15,8 @@
 #include <OpenGLRunner.h>
 #include <AudioRunner.h>
 #include<PhysicsRunner.h>
+#include<renderers/SkyboxRenderer.h>
+#include<renderers/GridRenderer.h>
 
 #include<Math3d.h>
 #include<forces/Gravity.h>
@@ -53,6 +55,8 @@ class PhysicsDemoRunner: public PlaygroundRunner {
 
 	Camera camera;
 	DefaultRenderer defaultRenderer;
+	SkyboxRenderer skyboxRenderer;
+	GridRenderer gridRenderer;
 public:
 	PhysicsDemoRunner() : gravity(vector(0.0, -9.8, 0.0)) {
 		reset();
@@ -67,7 +71,7 @@ public:
 	}
 
 	void resize(unsigned int height, unsigned int width) {
-	    camera.setProjectionMatrix(camera.perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 100.0));
+	    camera.setProjectionMatrix(camera.perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 300.0));
 	}
 
 	void reset() {
@@ -86,6 +90,9 @@ public:
 		gunshotSource = audio->createSource("audio/handgunfire.wav", vector(0, 0, 0), vector(0, 0, 0), false);
 
 	    defaultRenderer.setVideoRunner(openGl);
+	    gridRenderer.setVideoRunner(openGl);
+	    skyboxRenderer.setVideoRunner(openGl);
+	    skyboxRenderer.setSize(200);
 
 		openGl->setClearColor(0.0, 0.5, 0.0, 0.0);
 		openGl->setAttribute(DEPTH_TEST, true);
@@ -121,6 +128,8 @@ public:
 		}
 
 		defaultRenderer.render(camera);
+		skyboxRenderer.render(camera);
+		gridRenderer.render(camera);
 
 		return CONTINUE;
 	}
@@ -137,8 +146,8 @@ public:
 		}
 
 		if(bullet) {
-			bullet->setPosition(camera.getViewPosition());
-			//bullet->setPosition(vector(1, 1, 0));
+			//bullet->setPosition(camera.getViewPosition());
+			bullet->setPosition(vector(1, 2, 0));
 			bullet->setVelocity(((vector)camera.getViewMatrix().columna(2)).normalizado() * -35);
 			bullet->setAcceleration(vector(0, 0, 0));
 			bullet->setMass(0.1);
