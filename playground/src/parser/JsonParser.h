@@ -8,10 +8,10 @@
 #ifndef JSONPARSER_H_
 #define JSONPARSER_H_
 
-#include <FileParser.h>
 #include <JavaLike.h>
 #include <Math3d.h>
-#include "ParsingException.h"
+#include <TextParser.h>
+#include <ParsingException.h>
 #include <vector>
 
 #define START_OBJECT "{"
@@ -22,16 +22,12 @@
 #define START_VECTOR "<"
 #define END_VECTOR ">"
 
-class JsonParser
+class JsonParser : public TextParser
 {
-	private:
-		Logger *logger;
-		FileParser &fileParser;
-
 	public:
-		JsonParser(FileParser &parser) : fileParser(parser)
+		JsonParser(FileParser &parser) : TextParser(parser)
 		{
-			logger = Logger::getLogger("parser/JsonParser.h");
+			logger = Logger::getLogger("parser/JsonParser");
 		}
 
 		/**
@@ -52,12 +48,6 @@ class JsonParser
 		String readElement(String expectedValue, String name)
 		{
 			String token = fileParser.takeToken();
-//			printf("token: [");
-//			for(int i = 0; i < token.size(); i++){
-//				printf("%c %d", token[i], token[i]);
-//			}
-//
-//			printf("], expectedValue: [%s]\n", token.c_str(), expectedValue.c_str());
 			if(token != expectedValue)
 				throw ParsingException("Expected %s, got [%s] at (%d, %d)", name.c_str(), token.c_str(), fileParser.getLine(), fileParser.getColumn());
 			return token;
@@ -92,140 +82,6 @@ class JsonParser
 		{
 			return readElement(END_OBJECT, "EndObject");
 		}
-
-		String readString()
-		{
-			String value;
-			readElement("\"", "StartString");
-
-			char character;
-			while((character = fileParser.takeByte()) != '\"' && character != EOF) {
-				value += character;
-			}
-
-			return value;
-		}
-
-		bool readBoolean()
-		{
-			String token = readToken();
-
-			if(token == "true") {
-				return true;
-			} else if (token == "false") {
-				return false;
-			}
-
-			throw ParsingException("Expected [true|false], got [%s] at (%d, %d)", token.c_str(), fileParser.getLine(), fileParser.getColumn());
-		}
-
-		unsigned int readUnsignedInteger()
-		{
-			unsigned int value = 0;
-
-			String token = fileParser.takeToken();
-			char digit;
-			bool readValue = false;
-
-			unsigned int currentPosition = 0;
-			while(currentPosition < token.length() && '0' <= (digit = token.at(currentPosition++)) && digit <= '9')
-			{
-				value = value * 10 + (unsigned int)(digit - '0');
-				readValue = true;
-			}
-
-			if(!readValue)
-				throw ParsingException("Unexpected %s at (%d, %d)", fileParser.takeToken().c_str(), fileParser.getLine(), fileParser.getColumn());
-
-			return value;
-		}
-		real readDecimals()
-		{
-			real value = 0;
-			real modifier = 0.1;
-
-			String token = fileParser.takeToken();
-			char digit;
-			bool readValue = false;
-
-			unsigned int currentPosition = 0;
-			while(currentPosition < token.length() && '0' <= (digit = token.at(currentPosition++)) && digit <= '9')
-			{
-				value = value  + (real)(digit - '0') * modifier;
-				modifier *= 0.1;
-				readValue = true;
-			}
-
-			if(!readValue)
-				throw ParsingException("Unexpected %s at (%d, %d)", fileParser.takeToken().c_str(), fileParser.getLine(), fileParser.getColumn());
-
-			return value;
-		}
-		char readSign()
-		{
-			int sign = 1;
-			String token = fileParser.peekToken();
-			if(token == "-") {
-				sign = -1;
-				fileParser.takeToken();
-			} else if(token == "+")
-				fileParser.takeToken();
-
-			return sign;
-		}
-
-		int readInteger()
-		{
-			int sign = readSign();
-			int unsignedInteger = readUnsignedInteger();
-			return (int)unsignedInteger * sign;
-		}
-
-		real readMantissa()
-		{
-			real integer = 0.0;
-			real decimal = 0.0;
-
-			real mantissaSign = readSign();
-
-			if(fileParser.peekToken() != ".")
-				integer = readUnsignedInteger();
-
-			if(fileParser.peekToken() == ".") {
-				fileParser.takeToken();
-
-				String token = fileParser.peekToken();
-
-				if('0' <= token.at(0) && token.at(0) <= '9')
-					decimal = readDecimals();
-			}
-
-			return mantissaSign * (integer + decimal);
-
-		}
-
-		int readExponent()
-		{
-			real value = 0.0;
-			String token = fileParser.peekToken();
-			if(token.at(0) == 'e' || token.at(0) == 'E') {
-				fileParser.takeToken();
-				value = readInteger();
-			}
-			return value;
-		}
-
-		real readReal()
-		{
-			fileParser.setTokenSeparator("	# ()[]{},.:;<>+-*/^�=|&!�?\n\r\"\'\\eE�");
-			real mantissa = readMantissa();
-			int exponent = readExponent();
-
-			fileParser.setDefaultSpecialCharacters();
-
-			return mantissa * pow(10.0, exponent);
-		}
-
 
 		vector3 readVector3()
 		{
@@ -267,7 +123,7 @@ class JsonParser
 			readStartArray();
 			String token;
 
-			while((token = fileParser.peekToken()) != END_ARRAY && token != eof) {
+			while((token = fileParser.peekToken()) != END_ARRAY && token != FileParser::eof) {
 				int value = readInteger();
 				array.push_back(value);
 
@@ -289,7 +145,7 @@ class JsonParser
 					readStartArray();
 					String token;
 
-					while((token = fileParser.peekToken()) != END_ARRAY && token != eof) {
+					while((token = fileParser.peekToken()) != END_ARRAY && token != FileParser::eof) {
 						unsigned int value = readUnsignedInteger();
 						array.push_back(value);
 
@@ -311,7 +167,7 @@ class JsonParser
 			readStartArray();
 			String token;
 
-			while((token = fileParser.peekToken()) != END_ARRAY && token != eof) {
+			while((token = fileParser.peekToken()) != END_ARRAY && token != FileParser::eof) {
 				vector2 vec = readVector2();
 				array.push_back(vec);
 
@@ -333,7 +189,7 @@ class JsonParser
 			readStartArray();
 			String token;
 
-			while((token = fileParser.peekToken()) != END_ARRAY && token != eof) {
+			while((token = fileParser.peekToken()) != END_ARRAY && token != FileParser::eof) {
 				vector3 vec = readVector3();
 				array.push_back(vec);
 
@@ -355,7 +211,7 @@ class JsonParser
 			readStartArray();
 			String token;
 
-			while((token = fileParser.peekToken()) != END_ARRAY && token != eof) {
+			while((token = fileParser.peekToken()) != END_ARRAY && token != FileParser::eof) {
 				String string = readString();
 				array.push_back(string);
 
@@ -367,18 +223,6 @@ class JsonParser
 
 			return array;
 		}
-
-		unsigned int getColumn() const
-		{
-			return fileParser.getColumn();
-		}
-
-		unsigned int getLine() const
-		{
-			return fileParser.getLine();
-		}
-
-
 };
 
 #endif /* JSONPARSER_H_ */
