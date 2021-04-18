@@ -14,6 +14,7 @@
 #include <adapters/TgaResourceAdapter.h>
 #include <adapters/GeometryResourceAdapter.h>
 #include <adapters/TerrainResourceAdapter.h>
+#include <adapters/ObjResourceAdapter.h>
 
 #include <resources/LightResource.h>
 #include <resources/ShaderProgramResource.h>
@@ -66,6 +67,7 @@ public:
 			this->getContainer()->getResourceManager()->addAdapter(new TgaResourceAdapter());
 			this->getContainer()->getResourceManager()->addAdapter(new GeometryResourceAdapter());
 			this->getContainer()->getResourceManager()->addAdapter(new TerrainResourceAdapter());
+			this->getContainer()->getResourceManager()->addAdapter(new ObjResourceAdapter());
 
 			return true;
 	}

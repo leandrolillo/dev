@@ -100,7 +100,7 @@ class matriz_2x2: public BaseMatrix {
 		static const matriz_2x2 matrizZoom(real x, real y);
 
 	public:
-		static matriz_2x2 Identidad;
+		static matriz_2x2 identidad;
 
 		matriz_2x2();
 		matriz_2x2(real _00, real _01, real _10, real _11);
@@ -178,7 +178,7 @@ class matriz_3x3: public BaseMatrix {
 		static const matriz_3x3 matrizZoom(real x, real y, real z);
 		static const matriz_3x3 matrizZoom(const vector3 &zoom);
 	public:
-		static matriz_3x3 Identidad;
+		static matriz_3x3 identidad;
 
 		real &operator()(unsigned int fila, unsigned int columna) {
 			if (fila > 2 || columna > 2)
@@ -293,7 +293,7 @@ class matriz_4x4: public BaseMatrix {
 		static const matriz_4x4 matrizBase(const matriz_3x3 &orientacion, const vector3 &posicion);
 
 	public:
-		static matriz_4x4 Identidad;
+		static matriz_4x4 identidad;
 
 		matriz_4x4(void) : BaseMatrix(4, 4) {
 			this->_00 = 1.0; this->_01 = 0.0; this->_02 = 0.0; this->_03 = 0.0;
@@ -518,13 +518,13 @@ class vector2 {
 
 		operator real *() const;
 
-		String toString() const {
-					char temp[256];
+		String toString(String numberFormat = "%.3e") const {
+            char temp[256];
 
-					sprintf(temp, "<%.3e, %.3e>", this->x, this->y);
+            sprintf(temp, ("<" + numberFormat + ", " + numberFormat + ">").c_str(), this->x, this->y);
 
-					return String(temp);
-				}
+            return String(temp);
+        }
 
 	private:
 		const real productoEscalar(const vector2 &op1) const {
@@ -637,10 +637,10 @@ class vector3 {
 //
 //		const matriz_3x3 star() const;
 
-		String toString() const {
+		String toString(String numberFormat = "%.3e") const {
 			char temp[256];
 
-			sprintf(temp, "<%.3e, %.3e, %.3e>", this->x, this->y, this->z);
+			sprintf(temp, ("<" + numberFormat + ", " + numberFormat + ", " + numberFormat + ">").c_str(), this->x, this->y, this->z);
 
 			return String(temp);
 		}

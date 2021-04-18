@@ -110,7 +110,7 @@ public:
 
 	LoopResult doLoop() {
 	    defaultRenderer.clearObjects();
-	    defaultRenderer.drawAxis(matriz_4x4::Identidad);
+	    defaultRenderer.drawAxis(matriz_4x4::identidad);
 
 
 //		logger->debug("Drawing");
@@ -146,8 +146,8 @@ public:
 		}
 
 		if(bullet) {
-			//bullet->setPosition(camera.getViewPosition());
-			bullet->setPosition(vector(1, 2, 0));
+			bullet->setPosition(camera.getViewPosition());
+			//bullet->setPosition(vector(1, 2, 0));
 			bullet->setVelocity(((vector)camera.getViewMatrix().columna(2)).normalizado() * -35);
 			bullet->setAcceleration(vector(0, 0, 0));
 			bullet->setMass(0.1);

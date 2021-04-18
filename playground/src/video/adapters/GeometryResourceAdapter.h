@@ -13,13 +13,11 @@
 #include <JsonParser.h>
 #include "normalGenerators/NormalGenerator.h"
 
-#include <OpenGL/gl3.h>
-#include <OpenGL/glext.h>
 
 class GeometryResourceAdapter: public ResourceAdapter {
 public:
 	GeometryResourceAdapter() {
-		logger = Logger::getLogger("video/GeometryResourceAdapter.h");
+		logger = Logger::getLogger("video/GeometryResourceAdapter");
 		this->addSupportedMimeType("video/geometry");
 	}
 
@@ -32,7 +30,7 @@ public:
 
 		String token;
 		parser->readStartObject();
-		while ((token = parser->readToken()) != END_OBJECT && token != eof) {
+		while ((token = parser->readToken()) != END_OBJECT && token != FileParser::eof) {
             parser->readValueSeparator();
 
 			if (token == "vertices") {

@@ -26,7 +26,6 @@ private:
 	OpenGLRunner *openGl = null;
 	AudioRunner *audio = null;
 	vector viewPosition;
-	MaterialResource material;
 	LightResource light;
 
 	Camera camera;
@@ -40,8 +39,7 @@ public:
 	static const unsigned char ID = 101;
 
 public:
-	TerrainDemoRunner() : material(vector(1.0f, 0.5f, 0.31f), vector(1.0f, 0.5f, 0.31f),
-			vector(0.5f, 0.5f, 0.5f), 32.0f), light(viewPosition,
+	TerrainDemoRunner() : light(viewPosition,
 			vector(0.2f, 0.2f, 0.2f), vector(0.2f, 0.2f, 0.2f),
 			vector(0.1f, 0.1f, 0.1f), 1.0f){
 	}
@@ -96,7 +94,7 @@ public:
 	}
 	virtual LoopResult doLoop() {
 	    defaultRenderer.clearObjects();
-	    defaultRenderer.drawAxis(matriz_4x4::Identidad);
+	    defaultRenderer.drawAxis(matriz_4x4::identidad);
 	    defaultRenderer.render(camera);
 
 		terrainRenderer.render(camera);

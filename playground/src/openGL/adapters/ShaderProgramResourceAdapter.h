@@ -66,7 +66,7 @@ class ShaderProgramResourceAdapter: public OpenGLResourceAdapter {
 
 			String token;
 			parser->readStartObject();
-			while((token = parser->readToken()) != END_OBJECT && token != eof)
+			while((token = parser->readToken()) != END_OBJECT && token != FileParser::eof)
 			{
 				if(token == "vertexShaders" || token == "fragmentShaders" || token == "geometryShaders" || token == "tesellationShaders") {
 					parser->readValueSeparator();

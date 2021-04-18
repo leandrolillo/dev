@@ -19,7 +19,14 @@ public:
 	}
 
 	virtual Resource* load(FileParser &fileParser, const String &mimeType) {
-		GeometryResource *geometry = (GeometryResource*) this->getResourceManager()->load(fileParser, "video/geometry");
+	    String geometryMimeType;
+	    try {
+	        geometryMimeType = this->getResourceManager()->guessMimeType(mimeType);
+	    } catch (Exception &e) {
+	        geometryMimeType = "video/geometry";
+        }
+
+		GeometryResource *geometry = (GeometryResource*) this->getResourceManager()->load(fileParser, geometryMimeType);
 		if (geometry != null) {
 		    return generateVertexBuffer(geometry);
 		}

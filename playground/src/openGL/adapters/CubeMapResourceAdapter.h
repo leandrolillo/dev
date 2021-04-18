@@ -35,7 +35,7 @@ public:
 		jsonParser->readStartObject();
 
 		String token;
-		while ((token = jsonParser->readToken()) != END_OBJECT && token != eof) {
+		while ((token = jsonParser->readToken()) != END_OBJECT && token != FileParser::eof) {
 			String faceName = token;
 			jsonParser->readValueSeparator();
 			String faceFileName = jsonParser->readString();

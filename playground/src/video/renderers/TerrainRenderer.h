@@ -47,9 +47,9 @@ public:
             videoRunner->setTexture(3, "textureB",terrain->getB());
             videoRunner->setTexture(4, "blendMap", terrain->getMap());
 
-            videoRunner->sendMatrix("matrices.model", matriz_4x4::Identidad);
-            videoRunner->sendMatrix("matrices.pvm", camera.getProjectionViewMatrix() * matriz_4x4::Identidad);
-            videoRunner->sendMatrix("matrices.normal", matriz_3x3::Identidad);
+            videoRunner->sendMatrix("matrices.model", matriz_4x4::identidad);
+            videoRunner->sendMatrix("matrices.pvm", camera.getProjectionViewMatrix() * matriz_4x4::identidad);
+            videoRunner->sendMatrix("matrices.normal", matriz_3x3::identidad);
 
             this->sendLight(light);
 

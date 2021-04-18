@@ -97,6 +97,15 @@ public:
 
         return mantissa * pow(10.0, exponent);
     }
+
+    String takeToken() {
+        return fileParser.takeToken();
+    }
+
+    String peekToken() {
+        return fileParser.peekToken();
+    }
+
 protected:
     real readDecimals()
     {

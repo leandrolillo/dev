@@ -210,49 +210,52 @@ public:
 
 	}
 
+    String guessMimeType(const String &fileName) const {
+        int position = fileName.find_last_of(".");
+        if (position > 0) {
+            String extension = fileName.substr(position + 1,
+                    fileName.length() - position - 1);
+            std::transform(extension.begin(), extension.end(),
+                    extension.begin(), ::tolower);
+            if (extension == "ogg") {
+                logger->verbose("guessMimeType: mime type for [%s] is [%s]",
+                        fileName.c_str(), "audio/ogg");
+                return "audio/ogg";
+            } else if (extension == "wav") {
+                logger->verbose("guessMimeType: mime type for [%s] is [%s]",
+                        fileName.c_str(), "audio/wav");
+                return "audio/wav";
+            } else if (extension == "jpeg" || extension == "jpg") {
+                logger->verbose("guessMimeType: mime type for [%s] is [%s]",
+                        fileName.c_str(), "image/jpeg");
+                return "image/jpeg";
+            } else if (extension == "png") {
+                logger->verbose("guessMimeType: mime type for [%s] is [%s]",
+                        fileName.c_str(), "image/png");
+                return "image/png";
+            } else if (extension == "tga") {
+                logger->verbose("guessMimeType: mime type for [%s] is [%s]",
+                        fileName.c_str(), "image/tga");
+                return "image/tga";
+            } else if (extension == "obj") {
+                logger->verbose("guessMimeType: mime type for [%s] is [%s]",
+                        fileName.c_str(), "video/obj");
+                return "video/obj";
+            }
+        }
+
+        logger->error("Could not determine mimetype for [%s]",
+                fileName.c_str());
+        throw InvalidArgumentException("Could not determine mimetype for [%s]",
+                fileName.c_str());
+    }
+
 private:
 
 	const String getCacheKey(const String &filename,
 			const String &mimeType) const {
 		return normalize(filename) + "|" + mimeType;
 	}
-
-	String guessMimeType(const String &fileName) const {
-		int position = fileName.find_last_of(".");
-		if (position > 0) {
-			String extension = fileName.substr(position + 1,
-					fileName.length() - position - 1);
-			std::transform(extension.begin(), extension.end(),
-					extension.begin(), ::tolower);
-			if (extension == "ogg") {
-				logger->verbose("guessMimeType: mime type for [%s] is [%s]",
-						fileName.c_str(), "audio/ogg");
-				return "audio/ogg";
-			} else if (extension == "wav") {
-				logger->verbose("guessMimeType: mime type for [%s] is [%s]",
-						fileName.c_str(), "audio/wav");
-				return "audio/wav";
-			} else if (extension == "jpeg" || extension == "jpg") {
-				logger->verbose("guessMimeType: mime type for [%s] is [%s]",
-						fileName.c_str(), "image/jpeg");
-				return "image/jpeg";
-			} else if (extension == "png") {
-				logger->verbose("guessMimeType: mime type for [%s] is [%s]",
-						fileName.c_str(), "image/png");
-				return "image/png";
-			} else if (extension == "tga") {
-				logger->verbose("guessMimeType: mime type for [%s] is [%s]",
-						fileName.c_str(), "image/tga");
-				return "image/tga";
-			}
-		}
-
-		logger->error("Could not determine mimetype for [%s]",
-				fileName.c_str());
-		throw InvalidArgumentException("Could not determine mimetype for [%s]",
-				fileName.c_str());
-	}
-
 };
 
 #endif /* RESOURCEMANAGER_H_ */
