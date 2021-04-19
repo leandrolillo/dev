@@ -395,9 +395,10 @@ public:
     void drawVertexArray(const VertexArrayResource *vertexArrayResource) const {
         String errorMessage;
 
-        if (vertexArrayResource != null) {
-            glEnableVertexAttribArray(0);
+        if (vertexArrayResource != null && vertexArrayResource->getId() > 0 && vertexArrayResource->getMimeType() == "video/vertexArray") {
+            //logger->info("Drawing vertexArray %s", vertexArrayResource->toString().c_str());
 
+            glEnableVertexAttribArray(0);
             glBindVertexArray(vertexArrayResource->getId());
             if (!(errorMessage = getGlError()).empty()) {
                 logger->error("Error binding vertex array [%s]: %s", vertexArrayResource->toString().c_str(), errorMessage.c_str());

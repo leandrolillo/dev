@@ -24,13 +24,22 @@ class ObjDemoRunner: public PlaygroundRunner {
 	AudioRunner *audio = null;
 
 	Camera camera;
+	LightResource light;
+	MaterialResource material;
+
 	GridRenderer gridRenderer;
 	DefaultRenderer defaultRenderer;
 
 	VertexArrayResource *obj;
+	TextureResource *texture;
+
+	real rotacion = 0.0f;
 
 public:
-	ObjDemoRunner() {
+	ObjDemoRunner() : material(vector(1.0f, 0.5f, 0.31f), vector(1.0f, 0.5f, 0.31f),
+            vector(0.5f, 0.5f, 0.5f), 32.0f), light(vector(0.0f, 0.0f, 0.0f),
+            vector(0.2f, 0.2f, 0.2f), vector(0.5f, 0.5f, 0.5f),
+            vector(1.0f, 1.0f, 1.0f), 1.0f){
 	    reset();
 	}
 
@@ -56,11 +65,23 @@ public:
 
 		gridRenderer.setVideoRunner(openGl);
 	    defaultRenderer.setVideoRunner(openGl);
+	    defaultRenderer.setLight(&light);
+
+//	    texture = (TextureResource *)this->getContainer()->getResourceManager()->load("images/fern.png", "video/texture");
+//        obj = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/fern.obj", "video/vertexArray");
+//        texture = (TextureResource *)this->getContainer()->getResourceManager()->load("images/lowPolyTree.png", "video/texture");
+//        obj = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/lowPolyTree.obj", "video/vertexArray");
+        //texture = (TextureResource *)this->getContainer()->getResourceManager()->load("images/lowPolyTree.png", "video/texture");
+        obj = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/bunny.obj", "video/vertexArray");
+
+        defaultRenderer.setTexture(texture);
+
 
 	    openGl->setClearColor(0.0, 0.5, 0.0, 0.0);
 		openGl->setAttribute(DEPTH_TEST, true);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable( GL_BLEND );
 
-		obj = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/fern.obj");
 
 		reset();
 
@@ -68,11 +89,14 @@ public:
 	}
 
 	LoopResult doLoop() {
-		gridRenderer.render(camera);
+//		gridRenderer.render(camera);
 
 		defaultRenderer.clearObjects();
-//		defaultRenderer.drawObject(matriz_4x4::identidad, obj);
+		defaultRenderer.drawAxis(matriz_4x4::identidad, 1.0f);
+		defaultRenderer.drawObject(matriz_4x4::matrizRotacion(0.0, radian(rotacion), 0.0), obj);
 		defaultRenderer.render(camera);
+
+		rotacion+=0.1;
 
 		return CONTINUE;
 	}
@@ -84,7 +108,7 @@ public:
 
 	virtual void mouseMove(int dx, int dy) {
         camera.setViewMatrix(matriz_4x4::matrizTraslacion(camera.getViewPosition() + vector(0.1f * dx, 0.1f * dy, 0)));
-
+        light.setPosition(camera.getViewPosition());
 	}
 
 	void mouseButtonDown(unsigned char button, int x, int y) {

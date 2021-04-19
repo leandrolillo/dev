@@ -51,10 +51,6 @@ public:
 
 		return logger->getBasename();
 	}
-
-	virtual ~ResourceAdapter() {
-	}
-
 };
 
 #endif /* RESOURCEADAPTER_H_ */

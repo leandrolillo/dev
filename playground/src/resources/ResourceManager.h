@@ -66,6 +66,7 @@ public:
 
 	Resource* load(const String &fileName, const String &mimeType) {
 		try {
+
 			String normalizedFileName = normalize(fileName);
 
 			if (!normalizedFileName.empty()) {
@@ -90,45 +91,50 @@ public:
 
 
 	Resource* load(FileParser &fileParser, const String &mimeType) {
-		Resource *cached = resourceCache[getCacheKey(fileParser.getFilename(), mimeType)];
-		try {
-			if (cached == null) {
-				logger->verbose("Resource was not cached previously");
-				Resource *response = null;
+		Resource *cached = null;
+		if(!mimeType.empty()) {
+            try {
+                cached = resourceCache[getCacheKey(fileParser.getFilename(), mimeType)];
+                if (cached == null) {
+                    logger->verbose("Resource was not cached previously");
+                    Resource *response = null;
 
-				if (adapters[mimeType] != null) {
-					logger->debug("Loading [%s] [%s] with adapter [%s]",
-							mimeType.c_str(), fileParser.getFilename().c_str(),
-							adapters[mimeType]->toString().c_str());
+                    if (adapters[mimeType] != null) {
+                        logger->debug("Loading [%s] [%s] with adapter [%s]",
+                                mimeType.c_str(), fileParser.getFilename().c_str(),
+                                adapters[mimeType]->toString().c_str());
 
-					response = adapters[mimeType]->load(fileParser, mimeType);
-					if (response != null) {
-						response->setFileName(fileParser.getFilename());
-						response->setMimeType(mimeType);
-						addResource(getCacheKey(fileParser.getFilename(),mimeType), response);
-						logger->info("Loaded [%s]", response->toString().c_str());
-					} else {
-						logger->warn(
-								"Could not load [%s] [%s] with adapter [%s]",
-								mimeType.c_str(),
-								fileParser.getFilename().c_str(),
-								adapters[mimeType]->toString().c_str());
-					}
-				} else {
-					logger->error(
-							"No adapter found for mimetype [%s] - file not loaded [%s]",
-							mimeType.c_str(), fileParser.getFilename().c_str());
-				}
+                        response = adapters[mimeType]->load(fileParser, mimeType);
+                        if (response != null) {
+                            response->setFileName(fileParser.getFilename());
+                            response->setMimeType(mimeType);
+                            addResource(getCacheKey(fileParser.getFilename(),mimeType), response);
+                            logger->info("Loaded [%s]", response->toString().c_str());
+                        } else {
+                            logger->warn(
+                                    "Could not load [%s] [%s] with adapter [%s]",
+                                    mimeType.c_str(),
+                                    fileParser.getFilename().c_str(),
+                                    adapters[mimeType]->toString().c_str());
+                        }
+                    } else {
+                        logger->error(
+                                "No adapter found for mimetype [%s] - file not loaded [%s]",
+                                mimeType.c_str(), fileParser.getFilename().c_str());
+                    }
 
-				return response;
-			} else {
-				logger->debug("Getting [%s] [%s] from cache", mimeType.c_str(),
-						fileParser.getFilename().c_str());
-			}
-		} catch (Exception &e) {
-			logger->error("Error loading resource [%s] [%s]: [%s]",
-					mimeType.c_str(), fileParser.getFilename().c_str(),
-					e.getMessage().c_str());
+                    return response;
+                } else {
+                    logger->debug("Getting [%s] [%s] from cache", mimeType.c_str(),
+                            fileParser.getFilename().c_str());
+                }
+            } catch (Exception &e) {
+                logger->error("Error loading resource [%s] [%s]: [%s]",
+                        mimeType.c_str(), fileParser.getFilename().c_str(),
+                        e.getMessage().c_str());
+            }
+		} else {
+		    logger->error("Error loading resource [%s]: Could not determine mimetype", fileParser.getFilename().c_str());
 		}
 
 		return cached;
@@ -244,10 +250,13 @@ public:
             }
         }
 
-        logger->error("Could not determine mimetype for [%s]",
-                fileName.c_str());
-        throw InvalidArgumentException("Could not determine mimetype for [%s]",
-                fileName.c_str());
+
+        return "";
+
+//        logger->error("Could not determine mimetype for [%s]",
+//                fileName.c_str());
+//        throw InvalidArgumentException("Could not determine mimetype for [%s]",
+//                fileName.c_str());
     }
 
 private:

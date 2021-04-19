@@ -31,6 +31,8 @@ public:
 		case STEREO16:
 			return AL_FORMAT_STEREO16;
 		}
+
+		return AL_FORMAT_STEREO16;
 	}
 	virtual Resource* load(FileParser &fileParser, const String &mimeType) {
 		ALenum error = 0;
