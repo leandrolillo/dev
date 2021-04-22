@@ -19,7 +19,7 @@
 
 
 class ObjDemoRunner: public PlaygroundRunner {
-	Logger *logger = Logger::getLogger("PhysicsDemoRunner");
+	Logger *logger = Logger::getLogger("ObjDemoRunner");
 	OpenGLRunner *openGl = null;
 	AudioRunner *audio = null;
 
@@ -35,10 +35,12 @@ class ObjDemoRunner: public PlaygroundRunner {
 
 	real rotacion = 0.0f;
 
+	vector posicion;
+
 public:
-	ObjDemoRunner() : material(vector(1.0f, 0.5f, 0.31f), vector(1.0f, 0.5f, 0.31f),
+	ObjDemoRunner() : material(vector(0.2f, 0.2f, 0.2f), vector(0.5f, 0.5f, 0.5f),
             vector(0.5f, 0.5f, 0.5f), 32.0f), light(vector(0.0f, 0.0f, 0.0f),
-            vector(0.2f, 0.2f, 0.2f), vector(0.5f, 0.5f, 0.5f),
+            vector(0.3f, 0.3f, 0.3f), vector(0.5f, 0.5f, 0.5f),
             vector(1.0f, 1.0f, 1.0f), 1.0f){
 	    reset();
 	}
@@ -56,6 +58,8 @@ public:
 	}
 
 	void reset() {
+	    posicion = vector(0, 0, -5);
+	    light.setPosition(vector(0, 0, -5));
         camera.setViewMatrix(matriz_4x4::matrizTraslacion(vector(0.0f, 0.0f, -5.0f)));
 	}
 
@@ -66,13 +70,16 @@ public:
 		gridRenderer.setVideoRunner(openGl);
 	    defaultRenderer.setVideoRunner(openGl);
 	    defaultRenderer.setLight(&light);
+	    defaultRenderer.setMaterial(&material);
 
 //	    texture = (TextureResource *)this->getContainer()->getResourceManager()->load("images/fern.png", "video/texture");
 //        obj = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/fern.obj", "video/vertexArray");
-//        texture = (TextureResource *)this->getContainer()->getResourceManager()->load("images/lowPolyTree.png", "video/texture");
-//        obj = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/lowPolyTree.obj", "video/vertexArray");
-        //texture = (TextureResource *)this->getContainer()->getResourceManager()->load("images/lowPolyTree.png", "video/texture");
-        obj = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/bunny.obj", "video/vertexArray");
+        texture = (TextureResource *)this->getContainer()->getResourceManager()->load("images/lowPolyTree.png", "video/texture");
+        obj = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/lowPolyTree.obj", "video/vertexArray");
+
+//	    texture = (TextureResource *)this->getContainer()->getResourceManager()->load("images/lowPolyTree.png", "video/texture");
+        //obj = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/bunny.obj", "video/vertexArray");
+//        obj = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/untitled.obj", "video/vertexArray");
 
         defaultRenderer.setTexture(texture);
 
@@ -93,6 +100,7 @@ public:
 
 		defaultRenderer.clearObjects();
 		defaultRenderer.drawAxis(matriz_4x4::identidad, 1.0f);
+		defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(posicion), 0.1f);
 		defaultRenderer.drawObject(matriz_4x4::matrizRotacion(0.0, radian(rotacion), 0.0), obj);
 		defaultRenderer.render(camera);
 
@@ -103,12 +111,23 @@ public:
 
 	void mouseWheel(int wheel) {
         camera.setViewMatrix(matriz_4x4::matrizTraslacion(camera.getViewPosition() + vector(0.0f, 0.0f, wheel)));
+        posicion = posicion + vector(0.0f, 0.0f, wheel);
 
+        light.setPosition(posicion);
+        logger->info("viewMatrix:\n%s\nlight:%s\nposition:%s\n",
+                camera.getViewMatrix().toString("%.2f").c_str(),
+                light.getPosition().toString("%.2f").c_str(),
+                posicion.toString("%.2f").c_str());
 	}
 
 	virtual void mouseMove(int dx, int dy) {
         camera.setViewMatrix(matriz_4x4::matrizTraslacion(camera.getViewPosition() + vector(0.1f * dx, 0.1f * dy, 0)));
         light.setPosition(camera.getViewPosition());
+        posicion = posicion + vector(0.1f * dx, 0.1f * dy, 0);
+        logger->info("viewMatrix:\n%s\nlight:%s\nposition:%s\n",
+                camera.getViewMatrix().toString("%.2f").c_str(),
+                light.getPosition().toString("%.2f").c_str(),
+                posicion.toString("%.2f").c_str());
 	}
 
 	void mouseButtonDown(unsigned char button, int x, int y) {

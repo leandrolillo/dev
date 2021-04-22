@@ -134,7 +134,7 @@ public:
 		return CONTINUE;
 	}
 
-	void fire() {
+	void fire(const vector &position) {
 		Particle *bullet = null;
 
 		logger->debug("Iterating particles");
@@ -146,8 +146,7 @@ public:
 		}
 
 		if(bullet) {
-			bullet->setPosition(camera.getViewPosition());
-			//bullet->setPosition(vector(1, 2, 0));
+			bullet->setPosition(position);
 			bullet->setVelocity(((vector)camera.getViewMatrix().columna(2)).normalizado() * -35);
 			bullet->setAcceleration(vector(0, 0, 0));
 			bullet->setMass(0.1);
@@ -156,9 +155,8 @@ public:
 
 			audio->playSource(gunshotSource);
 
-			logger->info("bullet shot at position: %s, velocity: %s",
-			        bullet->getPosition().toString().c_str(),
-			        bullet->getVelocity().toString().c_str());
+			logger->info("bullet at position: %s",
+			        bullet->getPosition().toString("%.2f").c_str());
 
 		} else {
 			logger->debug("no particle found");
@@ -167,16 +165,17 @@ public:
 
 	void mouseWheel(int wheel) {
         camera.setViewMatrix(matriz_4x4::matrizTraslacion(camera.getViewPosition() + vector(0.0f, 0.0f, wheel)));
-
+        logger->info("camera: %s", camera.getViewPosition().toString("%.2f").c_str());
 	}
 
 	virtual void mouseMove(int dx, int dy) {
         camera.setViewMatrix(matriz_4x4::matrizTraslacion(camera.getViewPosition() + vector(0.1f * dx, 0.1f * dy, 0)));
-
+        logger->info("camera: %s", camera.getViewPosition().toString("%.2f").c_str());
 	}
 
 	void mouseButtonDown(unsigned char button, int x, int y) {
-		fire();
+		fire(camera.getViewPosition() * -1);
+		fire(vector(1.0, 2.0, 0.0));
 	}
 
 	virtual void keyDown(unsigned int key) {

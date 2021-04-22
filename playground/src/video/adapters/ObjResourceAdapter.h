@@ -85,7 +85,7 @@ public:
         normals.clear();
         textCoords.clear();
 
-        //printLogInfo(geometry);
+        printLogInfo(geometry);
 
         return geometry;
     }

@@ -138,10 +138,10 @@ public:
         /**
          * modulate light
          */
-        vector color(0.25 + 0.75 * sin(radian(rotation)), 0.25 + 0.75 * cos(radian(rotation)), 0.25 + 0.75 * sin(radian(rotation)));
-        light.setDiffuse(color);
-        light.setSpecular(color);
-        light.setAmbient(color);
+//        vector color(0.25 + 0.75 * sin(radian(rotation)), 0.25 + 0.75 * cos(radian(rotation)), 0.25 + 0.75 * sin(radian(rotation)));
+//        light.setDiffuse(color);
+//        light.setSpecular(color);
+//        light.setAmbient(color);
         light.setPosition(lightPosition);
 
 
@@ -171,6 +171,8 @@ public:
 
         defaultRenderer.drawObject(matriz_4x4::matrizBase(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), vector3(2.0, -1.0, 0.0)),
                 triangleVertexArray);
+
+        defaultRenderer.drawSphere(matriz_4x4::matrizBase(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), vector3(4.0, -1.0, 0.0)));
         defaultRenderer.drawBox(matriz_4x4::matrizBase(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), vector3(-2.0, -1.0, 0.0)));
 	    defaultRenderer.render(camera);
 

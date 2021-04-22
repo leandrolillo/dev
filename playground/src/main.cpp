@@ -17,11 +17,11 @@ int main(int, char**){
 //    PlaygroundTerrainDemo playground("/Users/leandro/huevadas/projects/dev/media/");
 //    playground.run();
 
-//	PhysicsPlayground playground("/Users/leandro/huevadas/projects/dev/media/");
-//    playground.run();
-
-    ObjDemoPlayground playground("/Users/leandro/huevadas/projects/dev/media/");
+    PhysicsPlayground playground("/Users/leandro/huevadas/projects/dev/media/");
     playground.run();
+
+//    ObjDemoPlayground playground("/Users/leandro/huevadas/projects/dev/media/");
+//    playground.run();
 
     return 0;
 }

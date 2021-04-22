@@ -38,7 +38,7 @@ class BaseMatrix {
 
 		virtual real operator()(unsigned int fila, unsigned int columna) const = 0;
 
-		virtual String toString() const {
+		virtual String toString(String format = "%.3e") const {
 			std::string result;
 
 			char temp[500];
@@ -54,7 +54,7 @@ class BaseMatrix {
 				}
 
 				for(unsigned int currentColumn = 0; currentColumn < this->getNroColumnas(); currentColumn++) {
-					sprintf(temp, "%.3e", this->operator()(currentRow, currentColumn));
+					sprintf(temp, format.c_str(), this->operator()(currentRow, currentColumn));
 					//sprintf(temp, "%u %u", currentRow, currentColumn);
 					result += temp;
 

@@ -59,7 +59,12 @@ class PerVertexGLTrianglesNormalGenerator : public NormalGenerator
 				std::vector<vector3> vertices;
 				std::vector<unsigned int> indices;
 
-				this->compressVertices(resource->getVertices(), vertices, indices);
+				if(resource->getIndices().empty()) {
+				    this->compressVertices(resource->getVertices(), vertices, indices);
+				} else {
+				    vertices = resource->getVertices();
+				    indices = resource->getIndices();
+				}
 
 				logger->debug("Generating normals PER VERTEX / GL_TRIANGLES");
 
