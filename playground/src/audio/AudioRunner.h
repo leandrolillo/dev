@@ -85,10 +85,8 @@ class AudioRunner: public PlaygroundRunner {
 		Source * updateSource(Source *source)
 		{
 			if(source != null) {
-				vector position = source->getPosition();
-
-				alSourcefv(source->getId(), AL_POSITION, (float *)position);
-				alSourcefv(source->getId(), AL_VELOCITY, (float *)source->getVelocity());
+				alSourcefv(source->getId(), AL_POSITION, (real *)source->getPosition());
+				alSourcefv(source->getId(), AL_VELOCITY, (real *)source->getVelocity());
 				alSourcef (source->getId(), AL_PITCH, source->getPitch());
 				alSourcef (source->getId(), AL_GAIN, source->getGain());
 				alSourcef (source->getId(), AL_ROLLOFF_FACTOR, source->getRolloff());

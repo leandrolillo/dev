@@ -17,8 +17,10 @@ public:
         std::vector<Contact> contacts;
         for(std::vector<Particle*>::const_iterator iterator = particles.begin(); iterator != particles.end(); iterator++) {
             Particle *particle = *iterator;
-            if(particle->getPosition().y <= sphere_radius) {
-                contacts.push_back(Contact(particle, null, vector(0, 1, 0), 1.0f, sphere_radius - particle->getPosition().y));
+            if(particle->getStatus()) {
+                if(particle->getPosition().y <= sphere_radius) {
+                    contacts.push_back(Contact(particle, null, vector(0, 1, 0), 1.0f, sphere_radius - particle->getPosition().y));
+                }
             }
         }
 

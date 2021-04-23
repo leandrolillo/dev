@@ -48,6 +48,11 @@ public:
 	                    particleB->setVelocity(particleB->getVelocity() + impulsePerIMass * particleB->getInverseMass());
 	                }
 	            }
+	            particleA->onCollision();
+
+	            if(particleB) {
+	                particleB->onCollision();
+	            }
 	        }
 	    }
 	}

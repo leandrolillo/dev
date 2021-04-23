@@ -23,14 +23,17 @@
 
 #define numberOfParticles 5
 
+class PhysicsDemoRunner;
+
 class BulletParticle : public Particle
 {
-	void afterIntegrate(real dt) {
-		if(this->position.modulo() > 100) {
-			this->status = false;
-		}
-	}
+private:
+    PhysicsDemoRunner *runner = null;
 
+public:
+    void setRunner(PhysicsDemoRunner *runner);
+	void afterIntegrate(real dt);
+	void onCollision();
 };
 
 class PhysicsDemoRunner: public PlaygroundRunner {
@@ -40,6 +43,7 @@ class PhysicsDemoRunner: public PlaygroundRunner {
 	PhysicsRunner *physics = null;
 
 	Source *gunshotSource;
+	Source *bounceSource;
 
 	BulletParticle particles[numberOfParticles];
 	Gravity gravity;
@@ -88,6 +92,8 @@ public:
 		physics = (PhysicsRunner *)this->getContainer()->getRunner(4);
 
 		gunshotSource = audio->createSource("audio/handgunfire.wav", vector(0, 0, 0), vector(0, 0, 0), false);
+		bounceSource = audio->createSource("audio/twang3.wav", vector(0, 0, 0), vector(0, 0, 0), false);
+
 
 	    defaultRenderer.setVideoRunner(openGl);
 	    gridRenderer.setVideoRunner(openGl);
@@ -100,6 +106,7 @@ public:
 		reset();
 
 		for(BulletParticle *particle = particles; particle < (particles + numberOfParticles); particle++) {
+		    particle->setRunner(this);
 			physics->getParticleManager()->addParticle(particle);
 		}
 
@@ -134,6 +141,18 @@ public:
 		return CONTINUE;
 	}
 
+	void onCollision(BulletParticle *bulletParticle) {
+	    bounceSource->setPosition(bulletParticle->getPosition());
+	    audio->updateSource(bounceSource);
+        audio->playSource(bounceSource);
+	}
+
+	void afterIntegrate(BulletParticle *bulletParticle) {
+        if(bulletParticle->getPosition().modulo() > 100) {
+            bulletParticle->setStatus(false);
+        }
+	}
+
 	void fire(const vector &position) {
 		Particle *bullet = null;
 
@@ -153,6 +172,8 @@ public:
 			bullet->setDamping(0.99f);
 			bullet->setStatus(true);
 
+			gunshotSource->setPosition(position);
+			audio->updateSource(gunshotSource);
 			audio->playSource(gunshotSource);
 
 			logger->info("bullet at position: %s",
@@ -165,11 +186,13 @@ public:
 
 	void mouseWheel(int wheel) {
         camera.setViewMatrix(matriz_4x4::matrizTraslacion(camera.getViewPosition() + vector(0.0f, 0.0f, wheel)));
+        audio->updateListener(camera.getViewPosition() * -1);
         logger->info("camera: %s", camera.getViewPosition().toString("%.2f").c_str());
 	}
 
 	virtual void mouseMove(int dx, int dy) {
         camera.setViewMatrix(matriz_4x4::matrizTraslacion(camera.getViewPosition() + vector(0.1f * dx, 0.1f * dy, 0)));
+        audio->updateListener(camera.getViewPosition() * -1);
         logger->info("camera: %s", camera.getViewPosition().toString("%.2f").c_str());
 	}
 
@@ -209,6 +232,24 @@ public:
 		this->addRunner(new PhysicsDemoRunner());
 	}
 };
+
+void BulletParticle::setRunner(PhysicsDemoRunner *runner) {
+    this->runner = runner;
+}
+
+void BulletParticle::afterIntegrate(real dt) {
+    if(runner != null) {
+        runner->afterIntegrate(this);
+    }
+}
+
+void BulletParticle::onCollision() {
+    if(runner != null) {
+        runner->onCollision(this);
+    }
+
+}
+
 
 
 

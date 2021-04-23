@@ -36,6 +36,10 @@ public:
 	virtual void afterIntegrate(real dt) {
 	}
 
+	virtual void onCollision() {
+
+	}
+
 	virtual ~Particle() {
 
 	}
