@@ -24,9 +24,13 @@ class ParticleManager {
 	std::vector<Force *> forces;
 	ParticleIntegrator particleIntegrator;
 	ContactResolver contactResolver;
-	CollisionDetector collisionDetector;
+	std::vector<const CollisionDetector *> collisionDetectors;
 
 public:
+
+	void addCollisionDetector(const CollisionDetector *collisionDetector) {
+	    this->collisionDetectors.push_back(collisionDetector);
+	}
 
 	void addParticle(Particle *particle) {
 		this->particles.push_back(particle);
@@ -53,7 +57,12 @@ public:
 		integrate(dt);
 
 		// generate contacts (collision and contact generators)
-		std::vector<Contact> contacts = collisionDetector.detectCollisions(this->particles);
+		std::vector<Contact> contacts;
+
+		for(std::vector<const CollisionDetector *>::const_iterator collisionDetector = this->collisionDetectors.begin() ; collisionDetector != collisionDetectors.end(); collisionDetector++) {
+		    std::vector<Contact> currentContacts = (*collisionDetector)->detectCollisions(this->particles);
+		    contacts.insert(contacts.end(), currentContacts.begin(), currentContacts.end());
+		}
 
 		contactResolver.resolve(contacts);
 

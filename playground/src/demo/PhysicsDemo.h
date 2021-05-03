@@ -20,6 +20,8 @@
 
 #include<Math3d.h>
 #include<forces/Gravity.h>
+#include<collisionDetection/GroundPlaneCollisionDetector.h>
+#include<collisionDetection/SpheresCollisionDetector.h>
 
 #define numberOfParticles 5
 
@@ -41,6 +43,9 @@ class PhysicsDemoRunner: public PlaygroundRunner {
 	OpenGLRunner *openGl = null;
 	AudioRunner *audio = null;
 	PhysicsRunner *physics = null;
+
+	GroundPlaneCollisionDetector groundPlaneCollisionDetector;
+	SpheresCollisionDetector spheresCollisionDetector;
 
 	Source *gunshotSource;
 	Source *bounceSource;
@@ -104,6 +109,9 @@ public:
 		openGl->setAttribute(DEPTH_TEST, true);
 
 		reset();
+
+		physics->getParticleManager()->addCollisionDetector(&groundPlaneCollisionDetector);
+		physics->getParticleManager()->addCollisionDetector(&spheresCollisionDetector);
 
 		for(BulletParticle *particle = particles; particle < (particles + numberOfParticles); particle++) {
 		    particle->setRunner(this);
