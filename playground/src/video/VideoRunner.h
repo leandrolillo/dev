@@ -27,18 +27,18 @@ public:
 	static const unsigned char ID = 0;
 protected:
 	bool fullScreen;
-	unsigned short height;
-	unsigned short width;
+	unsigned int height;
+	unsigned int width;
 public:
 	virtual unsigned char getId() {
 		return ID;
 	}
 
-	unsigned short getScreenHeight() {
+	unsigned int getScreenHeight() {
 		return height;
 	}
 
-	unsigned short getScreenWidth() {
+	unsigned int getScreenWidth() {
 		return width;
 	}
 
@@ -60,6 +60,8 @@ public:
 
 		return this->fullScreen;
 	}
+
+	virtual void setMousePosition(unsigned int x, unsigned int y) = 0;
 
 	virtual bool init() {
 			this->getContainer()->getResourceManager()->addAdapter(new PngResourceAdapter());

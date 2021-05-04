@@ -23,7 +23,7 @@
 class TerrainDemoRunner: public PlaygroundRunner {
 private:
 	Logger *logger = Logger::getLogger("TerrainDemoRunner");
-	OpenGLRunner *openGl = null;
+	VideoRunner *video = null;
 	AudioRunner *audio = null;
 	vector viewPosition;
 	LightResource light;
@@ -62,30 +62,30 @@ public:
 
 	virtual bool init() {
 		//TODO: Review why can´t use public static IDs properties from each class
-		openGl = (OpenGLRunner*) this->getContainer()->getRunner(1);
+		video = (VideoRunner*) this->getContainer()->getRunner(1);
 		audio = (AudioRunner*) this->getContainer()->getRunner(3);
 
-		if (!openGl) {
+		if (!video) {
 			logger->error("Could not find openGl runner");
 			return false;
 		}
 
 		ResourceManager *resourceManager = this->getContainer()->getResourceManager();
-		openGl->setClearColor(0.0, 0.5, 0.0, 0.0);
-		openGl->setAttribute(DEPTH_TEST, true);
+		video->setClearColor(0.0, 0.5, 0.0, 0.0);
+		video->setAttribute(DEPTH_TEST, true);
 		glPolygonMode( GL_BACK, GL_LINE );
 
 		//openGl->setAttribute(CULL_FACE, CULL_FACE_BACK);
 
 
-		terrainRenderer.setVideoRunner(openGl);
+		terrainRenderer.setVideoRunner(video);
 		terrainRenderer.setLight(&light);
 		terrainRenderer.setTerrain((TerrainResource *)resourceManager->load("geometry/terrain/terrain.json", "video/terrain"));
 
-		skyboxRenderer.setVideoRunner(openGl);
+		skyboxRenderer.setVideoRunner(video);
 		skyboxRenderer.setSize(200);
 
-		defaultRenderer.setVideoRunner(openGl);
+		defaultRenderer.setVideoRunner(video);
 
 		reset();
 
@@ -107,7 +107,7 @@ public:
 	{
 		logger->info("MouseButtonDown %d at <%d, %d>", button, x, y);
 		if(button == SDL_BUTTON_LEFT) {
-			arcball.startDrag(vector2(x, y), (matriz_3x3)camera.getViewMatrix(), openGl->getScreenWidth(), openGl->getScreenHeight());
+			arcball.startDrag(vector2(x, y), (matriz_3x3)camera.getViewMatrix(), video->getScreenWidth(), video->getScreenHeight());
 		}
 	}
 
@@ -150,7 +150,7 @@ public:
 			break;
 		case 'f':
 		case 'F':
-			this->openGl->setFullscreen(!this->openGl->getFullscreen());
+			this->video->setFullscreen(!this->video->getFullscreen());
 			break;
 		}
 	}

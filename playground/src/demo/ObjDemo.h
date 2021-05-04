@@ -20,7 +20,7 @@
 
 class ObjDemoRunner: public PlaygroundRunner {
 	Logger *logger = Logger::getLogger("ObjDemoRunner");
-	OpenGLRunner *openGl = null;
+	VideoRunner *video = null;
 	AudioRunner *audio = null;
 
 	Camera camera;
@@ -64,11 +64,11 @@ public:
 	}
 
 	bool init() {
-		openGl = (OpenGLRunner*) this->getContainer()->getRunner(1);
+		video = (VideoRunner*) this->getContainer()->getRunner(1);
 		audio = (AudioRunner*) this->getContainer()->getRunner(3);
 
-		gridRenderer.setVideoRunner(openGl);
-	    defaultRenderer.setVideoRunner(openGl);
+		gridRenderer.setVideoRunner(video);
+	    defaultRenderer.setVideoRunner(video);
 	    defaultRenderer.setLight(&light);
 	    defaultRenderer.setMaterial(&material);
 
@@ -84,8 +84,8 @@ public:
         defaultRenderer.setTexture(texture);
 
 
-	    openGl->setClearColor(0.0, 0.5, 0.0, 0.0);
-		openGl->setAttribute(DEPTH_TEST, true);
+	    video->setClearColor(0.0, 0.5, 0.0, 0.0);
+		video->setAttribute(DEPTH_TEST, true);
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable( GL_BLEND );
 
@@ -144,7 +144,7 @@ public:
 			break;
 		case 'f':
 		case 'F':
-			this->openGl->setFullscreen(!this->openGl->getFullscreen());
+			this->video->setFullscreen(!this->video->getFullscreen());
 			break;
 		}
 	}

@@ -18,7 +18,7 @@ class GroundPlaneCollisionDetector : public CollisionDetector {
                 Particle *particle = *iterator;
                 if(particle->getStatus()) {
                     if(particle->getPosition().y <= sphere_radius) {
-                        contacts.push_back(Contact(particle, null, vector(0, 1, 0), 1.0f, sphere_radius - particle->getPosition().y));
+                        contacts.push_back(Contact(particle, null, vector(0, 1, 0), 0.7f, sphere_radius - particle->getPosition().y));
                     }
                 }
             }

@@ -234,6 +234,10 @@ public:
         return this->getFullscreen();
     }
 
+    void setMousePosition(unsigned int x, unsigned int y) {
+        SDL_WarpMouseInWindow(this->window, x, y);
+    }
+
     unsigned int getMajorVersion() const {
         return majorVersion;
     }

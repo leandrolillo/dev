@@ -19,7 +19,7 @@
 class GeneralDemoRunner: public PlaygroundRunner {
 private:
 	Logger *logger = Logger::getLogger("GeneralDemoRunner");
-	OpenGLRunner *openGl = null;
+	VideoRunner *video = null;
 	AudioRunner *audio = null;
 
 	//Graphical stuff
@@ -81,10 +81,10 @@ public:
 
 	virtual bool init() {
 		//TODO: Review why can´t use public static IDs properties from each class
-		openGl = (OpenGLRunner*) this->getContainer()->getRunner(1);
+		video = (VideoRunner*) this->getContainer()->getRunner(1);
 		audio = (AudioRunner*) this->getContainer()->getRunner(3);
 
-		if (!openGl) {
+		if (!video) {
 			logger->error("Could not find openGl runner");
 			return false;
 		}
@@ -106,21 +106,21 @@ public:
 		triangleVertexArray = (VertexArrayResource*) resourceManager->load(
 				"geometry/triangle.json", "video/vertexArray");
 
-        defaultRenderer.setVideoRunner(openGl);
+        defaultRenderer.setVideoRunner(video);
         defaultRenderer.setLight(&light);
         defaultRenderer.setMaterial(&material);
         defaultRenderer.setTexture(pngTexture);
 
         toonRenderer.setShaderProgram((ShaderProgramResource*) resourceManager->load("shaders/toon.330.program.json", "video/shaderProgram"));
-        toonRenderer.setVideoRunner(openGl);
+        toonRenderer.setVideoRunner(video);
         toonRenderer.setLight(&light);
         toonRenderer.setMaterial(&material);
         toonRenderer.setTexture(pngTexture);
 
 
-		openGl->setClearColor(0.0, 0.5, 0.0, 0.0);
-		openGl->setAttribute(DEPTH_TEST, true);
-		openGl->setAttribute(CULL_FACE, CULL_FACE_BACK);
+		video->setClearColor(0.0, 0.5, 0.0, 0.0);
+		video->setAttribute(DEPTH_TEST, true);
+		video->setAttribute(CULL_FACE, CULL_FACE_BACK);
 
 		reset();
 		return true;
@@ -229,7 +229,7 @@ public:
 			break;
 		case 'f':
 		case 'F':
-			this->openGl->setFullscreen(!this->openGl->getFullscreen());
+			this->video->setFullscreen(!this->video->getFullscreen());
 			break;
 		}
 	}

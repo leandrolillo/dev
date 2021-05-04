@@ -23,7 +23,7 @@
 #include<collisionDetection/GroundPlaneCollisionDetector.h>
 #include<collisionDetection/SpheresCollisionDetector.h>
 
-#define numberOfParticles 5
+#define numberOfParticles 10
 
 class PhysicsDemoRunner;
 
@@ -40,7 +40,7 @@ public:
 
 class PhysicsDemoRunner: public PlaygroundRunner {
 	Logger *logger = Logger::getLogger("PhysicsDemoRunner");
-	OpenGLRunner *openGl = null;
+	VideoRunner *video = null;
 	AudioRunner *audio = null;
 	PhysicsRunner *physics = null;
 
@@ -66,9 +66,12 @@ class PhysicsDemoRunner: public PlaygroundRunner {
 	DefaultRenderer defaultRenderer;
 	SkyboxRenderer skyboxRenderer;
 	GridRenderer gridRenderer;
+
+	MaterialResource materials[3] = {MaterialResource(vector(1, 0.5, 0.5), vector(1, 0.5, 0.5), vector(1, 1, 1), 32),
+	        MaterialResource(vector(0.5, 1, 0.5), vector(0.5, 1, 0.5), vector(1, 1, 1), 32),
+	        MaterialResource(vector(0.5, 0.5, 1), vector(0.5, 0.5, 1), vector(1, 1, 1), 32)};
 public:
 	PhysicsDemoRunner() : gravity(vector(0.0, -9.8, 0.0)) {
-		reset();
 	}
 
 	unsigned char getId() {
@@ -88,25 +91,29 @@ public:
 			particle->setStatus(false);
 		}
 
+		video->setMousePosition(video->getScreenWidth() >> 1, video->getScreenHeight() >> 1);
+
         camera.setViewMatrix(matriz_4x4::matrizTraslacion(vector(0.0f, 0.0f, -5.0f)));
 	}
 
 	bool init() {
-		openGl = (OpenGLRunner*) this->getContainer()->getRunner(1);
+		video = (VideoRunner*) this->getContainer()->getRunner(1);
 		audio = (AudioRunner*) this->getContainer()->getRunner(3);
 		physics = (PhysicsRunner *)this->getContainer()->getRunner(4);
+
+		logger->info("video is %u", video);
 
 		gunshotSource = audio->createSource("audio/handgunfire.wav", vector(0, 0, 0), vector(0, 0, 0), false);
 		bounceSource = audio->createSource("audio/twang3.wav", vector(0, 0, 0), vector(0, 0, 0), false);
 
 
-	    defaultRenderer.setVideoRunner(openGl);
-	    gridRenderer.setVideoRunner(openGl);
-	    skyboxRenderer.setVideoRunner(openGl);
+	    defaultRenderer.setVideoRunner(video);
+	    gridRenderer.setVideoRunner(video);
+	    skyboxRenderer.setVideoRunner(video);
 	    skyboxRenderer.setSize(200);
 
-		openGl->setClearColor(0.0, 0.5, 0.0, 0.0);
-		openGl->setAttribute(DEPTH_TEST, true);
+		video->setClearColor(0.0, 0.5, 0.0, 0.0);
+		video->setAttribute(DEPTH_TEST, true);
 
 		reset();
 
@@ -129,8 +136,11 @@ public:
 
 
 //		logger->debug("Drawing");
-		for(BulletParticle *particle = particles; particle < (particles + numberOfParticles); particle++) {
+		for(unsigned int index = 0; index < numberOfParticles; index++) {
+		    BulletParticle *particle = particles+index;
+
 			if(particle->getStatus() == true) {
+			    defaultRenderer.sendMaterial(&materials[index % 3]);
                 defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(particle->getPosition()), 0.1);
 
 //				logger->info("Particle is enabled: position: %s, velocity: %s",
@@ -161,7 +171,7 @@ public:
         }
 	}
 
-	void fire(const vector &position) {
+	void fire(const vector &position, bool isStatic = false) {
 		Particle *bullet = null;
 
 		logger->debug("Iterating particles");
@@ -174,10 +184,16 @@ public:
 
 		if(bullet) {
 			bullet->setPosition(position);
-			bullet->setVelocity(((vector)camera.getViewMatrix().columna(2)).normalizado() * -35);
+			if(isStatic) {
+			    bullet->setVelocity(vector(0, 0, 0));
+			    bullet->setDamping(0.99f);
+			} else {
+			    bullet->setVelocity(((vector)camera.getViewMatrix().columna(2)).normalizado() * -35);
+			    bullet->setDamping(0.99f);
+			}
 			bullet->setAcceleration(vector(0, 0, 0));
 			bullet->setMass(0.1);
-			bullet->setDamping(0.99f);
+
 			bullet->setStatus(true);
 
 			gunshotSource->setPosition(position);
@@ -206,7 +222,7 @@ public:
 
 	void mouseButtonDown(unsigned char button, int x, int y) {
 		fire(camera.getViewPosition() * -1);
-		fire(vector(1.0, 2.0, 0.0));
+		fire(vector(1.0, 2.0, 0.0), true);
 	}
 
 	virtual void keyDown(unsigned int key) {
@@ -220,7 +236,7 @@ public:
 			break;
 		case 'f':
 		case 'F':
-			this->openGl->setFullscreen(!this->openGl->getFullscreen());
+			this->video->setFullscreen(!this->video->getFullscreen());
 			break;
 		}
 	}
