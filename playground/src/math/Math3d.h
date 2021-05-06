@@ -366,6 +366,7 @@ class matriz_4x4: public BaseMatrix {
 		}
 
 		const vector3 operator*(const vector3 &op1) const;
+		const vector4 operator*(const vector4 &op1) const;
 
 		const matriz_4x4 operator +(const matriz_4x4 &op2) const {
 			return(matriz_4x4(	_00 + op2._00, _01 + op2._01, _02 + op2._02, _03 + op2._03,
@@ -416,6 +417,52 @@ class matriz_4x4: public BaseMatrix {
 								this->_02,	this->_12, this->_22, this->_32,
 								this->_03, this->_13,	this->_23, this->_33));
 		}
+
+		const real determinante(void) const { //Calcula el determinante de la matriz.
+            return(_00 * (_11 * _22 * _33 + _12 * _23 * _31 + _13 * _21 * _32
+                            - _13 * _22 * _31 - _12 * _21 * _33 - _11 * _23 * _32)
+                   - _10 * (_01 * _22 * _33 + _02 * _23 * _31 + _03 * _21 * _32
+                            - _03 * _22 * _31 - _03 * _21 * _33 - _01 * _23 * _32)
+                   + _20 * (_01 * _12 * _33 + _02 * _13 * _31 + _03 * _11 * _32
+                            - _03 * _12 * _31 - _02 * _11 * _33 - _01 * _13 * _32)
+                   - _30 * (_01 * _12 * _23 + _02 * _13 * _21 + _03 * _11 * _22
+                            - _03 * _12 * _21 - _02 * _11 * _23 - _01 * _13 * _22)
+
+            );
+        }
+
+        const matriz_4x4 inversa(void) const {
+            real invDet = this->determinante();
+            if(invDet == 0.0f) {
+                throw InvalidArgumentException("Could not calculate inverse of singular matrix (det=0). This is the matrix equivalent of a division by zero");
+            } else {
+                invDet = (real)1 / invDet;
+
+                return matriz_4x4(
+                    (_11 * _22 * _33 + _12 * _23 * _31 + _13 * _21 * _32 - _13 * _22 * _31 - _12 * _21 * _33 - _11 * _23 * _32) * invDet,
+                    (- _01 * _22 * _33 - _02 * _23 * _31 - _03 * _21 * _32 + _03 * _22 * _31 + _02 * _21 * _33 + _01 * _23 * _32) * invDet,
+                    (_01 * _12 * _33 + _02 * _13 * _31 + _03 * _11 * _32 - _03 * _12 * _31 - _02 * _11 * _33 - _01 * _13 * _32) * invDet,
+                    (- _01 * _12 * _23 - _02 * _13 * _21 - _03 * _11 * _22 + _03 * _12 * _21 + _02 * _11 * _23 + _01 * _13 * _22) * invDet,
+
+                    (- _10 * _22 * _33 - _12 * _23 * _30 - _13 * _20 * _32 + _13 * _22 * _30 + _12 * _20 * _33 + _10 * _23 * _32) * invDet,
+                    (_00 * _22 * _33 + _02 * _23 * _30 + _03 * _20 * _32 - _03 * _22 * _30 - _02 * _20 * _33 - _00 * _23 * _32) * invDet,
+                    (- _00 * _12 * _33 - _02 * _13 * _30 - _03 * _10 * _32 + _03 * _12 * _30 + _02 * _10 * _33 + _00 * _13 * _32) * invDet,
+                    (_00 * _12 * _23 + _02 * _13 * _20 + _03 * _10 * _22 - _03 * _12 * _20 - _02 * _10 * _23 - _00 * _13 * _22) * invDet,
+
+                    (_10 * _21 * _33 + _11 * _23 * _30 + _13 * _20 * _31 - _13 * _21 * _30 - _11 * _20 * _33 - _10 * _23 * _31) * invDet,
+                    (- _00 * _21 * _33 - _01 * _23 * _30 - _03 * _20 * _31 + _03 * _21 * _30 + _01 * _20 * _33 + _00 * _23 * _31) * invDet,
+                    (_00 * _11 * _33 + _01 * _12 * _30 + _03 * _10 * _31 - _03 * _11 * _30 - _01 * _10 * _33 - _00 * _12 * _31) * invDet,
+                    (- _00 * _11 * _23 - _01 * _13 * _20 - _03 * _10 * _21 + _03 * _11 * _20 + _01 * _10 * _23 + _00 * _13 * _21) * invDet,
+
+                    (-_10 * _21 * _32 - _11 * _22 * _30 - _12 * _20 * _31 + _12 * _21 * _30 + _11 * _20 * _32 + _10 * _22 * _31) * invDet,
+                    (_00 * _21 * _32 + _01 * _22 * _30 + _02 * _20 * _31 - _02 * _21 * _30 - _01 * _20 * _32 - _00 * _22 * _31) * invDet,
+                    (- _00 * _11 * _32 - _01 * _12 * _30 - _02 * _10 * _31 + _02 * _11 * _30 + _01 * _10 * _32 + _00 * _12 * _31) * invDet,
+                    (_00 * _11 * _22 + _01 * _12 * _20 + _02 * _10 * _21 - _02 * _11 * _20 - _01 * _10 * _22 - _00 * _12 * _21) * invDet
+                 );
+             }
+        }
+
+
 		//
 //			unsigned char esSingular(void);
 //			const real determinante(void);
@@ -767,10 +814,10 @@ class cuaternion {
 			));
 		}
 
-		String toString() const {
+		String toString(const String format = "%.3e") const {
 			char temp[256];
 
-			sprintf(temp, "<%.3e, %.3e, %.3e, %.3e>", this->x, this->y, this->z, this->w);
+			sprintf(temp, ("<" + format + ", " + format + ", " + format + ", " + format + ">").c_str(), this->x, this->y, this->z, this->w);
 
 			return String(temp);
 		}
