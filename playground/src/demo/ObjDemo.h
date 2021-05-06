@@ -14,6 +14,8 @@
 #define GL_SILENCE_DEPRECATION
 #include <OpenGLRunner.h>
 #include <AudioRunner.h>
+
+#include<renderers/DefaultRenderer.h>
 #include<renderers/GridRenderer.h>
 #include<Math3d.h>
 
@@ -38,10 +40,8 @@ class ObjDemoRunner: public PlaygroundRunner {
 	vector posicion;
 
 public:
-	ObjDemoRunner() : material(vector(0.2f, 0.2f, 0.2f), vector(0.5f, 0.5f, 0.5f),
-            vector(0.5f, 0.5f, 0.5f), 32.0f), light(vector(0.0f, 0.0f, 0.0f),
-            vector(0.3f, 0.3f, 0.3f), vector(0.5f, 0.5f, 0.5f),
-            vector(1.0f, 1.0f, 1.0f), 1.0f){
+	ObjDemoRunner() : material(vector(0.2f, 0.2f, 0.2f), vector(0.5f, 0.5f, 0.5f), vector(0.5f, 0.5f, 0.5f), 32.0f),
+            light(vector(0.0f, 0.0f, 1.0f), vector(0.3f, 0.3f, 0.3f), vector(0.5f, 0.5f, 0.5f), vector(1.0f, 1.0f, 1.0f), 1.0f){
 	    reset();
 	}
 
@@ -64,8 +64,8 @@ public:
 	}
 
 	bool init() {
-		video = (VideoRunner*) this->getContainer()->getRunner(1);
-		audio = (AudioRunner*) this->getContainer()->getRunner(3);
+		video = (VideoRunner*) this->getContainer()->getRequiredRunner(VideoRunner::ID);
+		audio = (AudioRunner*) this->getContainer()->getRequiredRunner(AudioRunner::ID);
 
 		gridRenderer.setVideoRunner(video);
 	    defaultRenderer.setVideoRunner(video);
@@ -86,8 +86,8 @@ public:
 
 	    video->setClearColor(0.0, 0.5, 0.0, 0.0);
 		video->setAttribute(DEPTH_TEST, true);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        glEnable( GL_BLEND );
+        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        //glEnable( GL_BLEND );
 
 
 		reset();
@@ -96,7 +96,7 @@ public:
 	}
 
 	LoopResult doLoop() {
-//		gridRenderer.render(camera);
+	    gridRenderer.render(camera);
 
 		defaultRenderer.clearObjects();
 		defaultRenderer.drawAxis(matriz_4x4::identidad, 1.0f);
@@ -160,7 +160,6 @@ public:
 		Playground::init();
 		this->addRunner(new OpenGLRunner());
 		this->addRunner(new AudioRunner());
-		this->addRunner(new PhysicsRunner());
 		this->addRunner(new ObjDemoRunner());
 	}
 };

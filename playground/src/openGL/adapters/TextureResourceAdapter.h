@@ -53,6 +53,8 @@ class TextureResourceAdapter: public OpenGLResourceAdapter {
 			return resource;
 		}
 		virtual void dispose(Resource *resource) {
+            logger->info("Disposing of Texture Resource  %s", resource->toString().c_str());
+
 			TextureResource *textureResource = (TextureResource *)resource;
 			unsigned int textureHandler = textureResource->getId();
 			glDeleteTextures(1, &textureHandler);

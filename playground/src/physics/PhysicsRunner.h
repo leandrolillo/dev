@@ -31,7 +31,7 @@ class PhysicsRunner: public PlaygroundRunner {
 	real elapsedTime = 0.0f;
 	unsigned long frames = 0;
 public:
-	static const unsigned char ID = 4;
+	static const unsigned char ID;
 public:
 	PhysicsRunner() {
 	}
@@ -81,6 +81,7 @@ public:
 	}
 };
 
+const unsigned char PhysicsRunner::ID = 4;
 
 
 #endif /* SRC_PHYSICS_PHYSICSRUNNER_H_ */

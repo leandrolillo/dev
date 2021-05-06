@@ -98,7 +98,7 @@ private:
 
         for (std::vector<unsigned int>::iterator indexIterator = geometry->getIndices().begin();
                 indexIterator != geometry->getIndices().end(); indexIterator++) {
-            logger->info("%d: %s - %s - %s", *indexIterator, geometry->getVertices().at(*indexIterator).toString("%.6f").c_str(),
+            logger->verbose("%d: %s - %s - %s", *indexIterator, geometry->getVertices().at(*indexIterator).toString("%.6f").c_str(),
                     geometry->getTextureCoordinates().at(*indexIterator).toString("%.6f").c_str(),
                     geometry->getNormals().at(*indexIterator).toString("%.6f").c_str());
         }

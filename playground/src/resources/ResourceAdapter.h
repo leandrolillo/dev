@@ -21,6 +21,9 @@ private:
 protected:
 	Logger *logger = null;
 public:
+	virtual ~ResourceAdapter() {
+	}
+
 	ResourceManager* getResourceManager() {
 		return resourceManager;
 	}

@@ -25,7 +25,7 @@ class AudioRunner: public PlaygroundRunner {
 		ALCdevice *device;
 		ALCcontext *context;
 	public:
-		static const unsigned char ID = 3;
+		static const unsigned char ID;
 	public:
 		AudioRunner()
 		{
@@ -146,5 +146,8 @@ class AudioRunner: public PlaygroundRunner {
 		}
 
 	};
+
+
+const unsigned char AudioRunner::ID = 3;
 
 #endif /* AUDIORUNNER_H_ */

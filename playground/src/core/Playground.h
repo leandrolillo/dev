@@ -161,7 +161,16 @@ public:
 		this->status = status;
 	}
 
-	PlaygroundRunner *getRunner(const unsigned char &id) {
+	PlaygroundRunner *getRequiredRunner(const unsigned char id) {
+	    if(runners_by_id[id] == null) {
+	        throw InvalidArgumentException("Could not find required playground runner");
+	    }
+
+	    return runners_by_id[id];
+	}
+
+	PlaygroundRunner *getRunner(const unsigned char id) {
+	    logger->debug("Finding runner by id %d -> %d", id, runners_by_id[id]);
 		return runners_by_id[id];
 	}
 
@@ -175,9 +184,10 @@ public:
 				currentRunnerIterator != runners.end();
 				currentRunnerIterator++) {
 			if ((*currentRunnerIterator)->getId() == runner->getId()) {
-				logger->error("Runner with id [%d] already added - skipping",
-						runner->getId());
+				logger->error("Runner with id [%d] already added - skipping", runner->getId());
 				return;
+			} else {
+			    logger->debug("Added runner with id [%d]", runner->getId());
 			}
 		}
 
@@ -207,9 +217,17 @@ public:
 				currentRunnerIterator++) {
 			logger->debug("Initializing runner [%d]", (*currentRunnerIterator)->getId());
 
-			if (!(*currentRunnerIterator)->init()) {
-				logger->error("Failed to initialize runner [%d]", (*currentRunnerIterator)->getId());
-				return false;
+			try {
+                if (!(*currentRunnerIterator)->init()) {
+                    logger->error("Failed to initialize runner [%d]", (*currentRunnerIterator)->getId());
+                    return false;
+                }
+			} catch(Exception &exception) {
+			    logger->error("Failed to initialize runner [%d]: [%s]", (*currentRunnerIterator)->getId(), exception.toString().c_str());
+			    return false;
+			} catch(...) {
+                logger->error("Failed to initialize runner [%d]", (*currentRunnerIterator)->getId());
+                return false;
 			}
 
 			unsigned char interests = (*currentRunnerIterator)->getInterests();
@@ -235,11 +253,20 @@ public:
 		for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
 				runners.begin(); currentRunnerIterator != runners.end();
 				currentRunnerIterator++) {
-			if (!(*currentRunnerIterator)->afterInit()) {
-				logger->error("Failed to after initialize runner [%d]",
-						(*currentRunnerIterator)->getId());
-				return false;
-			}
+		    try {
+                if (!(*currentRunnerIterator)->afterInit()) {
+                    logger->error("Failed to after initialize runner [%d]", (*currentRunnerIterator)->getId());
+                    return false;
+                } else {
+                    logger->debug("Successful initialization of runner [%d]", (*currentRunnerIterator)->getId());
+                }
+		    } catch(Exception &exception) {
+                logger->error("Failed to initialize runner [%d]: [%s]", (*currentRunnerIterator)->getId(), exception.toString().c_str());
+                return false;
+            } catch(...) {
+                logger->error("Failed to after initialize runner [%d]", (*currentRunnerIterator)->getId());
+                return false;
+		    }
 		}
 
 		return true;

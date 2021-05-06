@@ -701,8 +701,9 @@ void matriz_2x2::operator *=(const real &op1) {
 
 
 	const vector3 matriz_4x4::operator*(const vector3 &op1) const {
-		return(vector3(_00 * op1.x + _01 * op1.y + _02 * op1.z + _03,
-					_10 * op1.x +  _11 * op1.y +  _12 * op1.z + _13,
+		return(vector3(
+		            _00 * op1.x + _01 * op1.y + _02 * op1.z + _03,
+					_10 * op1.x + _11 * op1.y + _12 * op1.z + _13,
 					_20 * op1.x + _21 * op1.y + _22 * op1.z + _23
 		));
 	}

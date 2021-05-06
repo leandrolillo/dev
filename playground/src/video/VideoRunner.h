@@ -24,7 +24,7 @@
 
 class VideoRunner : public PlaygroundRunner {
 public:
-	static const unsigned char ID = 0;
+	static const unsigned char ID;
 protected:
 	bool fullScreen;
 	unsigned int height;
@@ -104,6 +104,8 @@ public:
 	//TODO: get rid of this method
 	virtual TextureResource *getDefaultTexture() const = 0;
 };
+
+const unsigned char VideoRunner::ID = 0;
 
 
 

@@ -1,20 +1,14 @@
 #ifndef _PLAYGROUND_TEST_H_
 #define _PLAYGROUND_TEST_H_
 
-//#include "win32/PlaygroundWin32.h"
-//#include "video/videoRunner.h"
-//#include "audio/audioRunner.h"
 
 #include "TestRunner.h"
-#include "../math/Math3d.h"
+#include <Math3d.h>
+
+#include <resources/OggResource.h>
 #include <stdio.h>
 
 
-//#define SKIP_DEMO
-#define SKIP_TESTS
-
-
-#ifndef SKIP_TESTS
 class PlaygroundTestsRunner: public TestRunner {
 		Logger *logger;
 	public:
@@ -27,26 +21,26 @@ class PlaygroundTestsRunner: public TestRunner {
 
 		virtual unsigned char getId() {
 
-			return PlaygroundTests::ID;
+			return PlaygroundTestsRunner::ID;
 		}
 
 		virtual bool init() {
-			this->addTest("testLoadWav", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadWav));
-			this->addTest("testLoadOgg", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadOgg));
-			this->addTest("testLoadBuffer", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadBuffer));
-			this->addTest("testCreateSource", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testCreateSource));
-			this->addTest("testLoadPng", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadPng));
-			this->addTest("testLoadJpeg", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadJpeg));
-			this->addTest("testLoadTga", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadTga));
-			this->addTest("testLoadTexture", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadTexture));
-			this->addTest("testLoadInvalidResource", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testInvalidResource));
-			this->addTest("testFileParser", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testFileParser));
-			this->addTest("testLoadGeometry", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadGeometry));
-			this->addTest("testLoadVertexArray", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadVertexBuffer));
-			this->addTest("testLoadShader", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadShaders));
-			this->addTest("testLoadShaderProgram", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadShaderProgram));
-			this->addTest("testLoadShaderProgramByVersion", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testLoadShaderProgramByVersion));
-			this->addTest("testMath", static_cast<void (TestRunner::*)()>(&PlaygroundTests::testMath));
+			this->addTest("testLoadWav", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testLoadWav));
+			this->addTest("testLoadOgg", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testLoadOgg));
+			this->addTest("testLoadBuffer", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testLoadBuffer));
+			this->addTest("testCreateSource", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testCreateSource));
+			this->addTest("testLoadPng", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testLoadPng));
+			this->addTest("testLoadJpeg", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testLoadJpeg));
+			this->addTest("testLoadTga", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testLoadTga));
+			this->addTest("testLoadTexture", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testLoadTexture));
+			this->addTest("testLoadInvalidResource", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testInvalidResource));
+			this->addTest("testFileParser", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testFileParser));
+			this->addTest("testLoadGeometry", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testLoadGeometry));
+			this->addTest("testLoadVertexArray", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testLoadVertexBuffer));
+			this->addTest("testLoadShader", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testLoadShaders));
+			this->addTest("testLoadShaderProgram", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testLoadShaderProgram));
+			this->addTest("testLoadShaderProgramByVersion", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testLoadShaderProgramByVersion));
+			this->addTest("testMath", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testMath));
 
 			return true;
 		}
@@ -71,13 +65,13 @@ class PlaygroundTestsRunner: public TestRunner {
 			String token;
 
 			FileParser commentFileParser(this->getContainer()->getResourceManager()->normalize("tests/commentFileToParse.txt"));
-			assertEquals("Unexpected token", eof, commentFileParser.peekToken());
-			assertEquals("Unexpected token", eof, commentFileParser.takeToken());
+			assertEquals("Unexpected token", FileParser::eof, commentFileParser.peekToken());
+			assertEquals("Unexpected token", FileParser::eof, commentFileParser.takeToken());
 			commentFileParser.close();
 
 			FileParser emptyFileParser(this->getContainer()->getResourceManager()->normalize("tests/emptyFileToParse.txt"));
-			assertEquals("Unexpected token", eof, emptyFileParser.peekToken());
-			assertEquals("Unexpected token", eof, emptyFileParser.takeToken());
+			assertEquals("Unexpected token", FileParser::eof, emptyFileParser.peekToken());
+			assertEquals("Unexpected token", FileParser::eof, emptyFileParser.takeToken());
 			commentFileParser.close();
 
 			FileParser fileParser(this->getContainer()->getResourceManager()->normalize("tests/fileToParse.txt"));
@@ -91,21 +85,21 @@ class PlaygroundTestsRunner: public TestRunner {
 			assertEquals("Unexpected token", "value", fileParser.takeToken());
 			assertEquals("Unexpected token", "\"", fileParser.takeToken());
 			assertEquals("Unexpected token", "}", fileParser.takeToken());
-			assertEquals("Unexpected token", eof, fileParser.peekToken());
-			assertEquals("Unexpected token", eof, fileParser.takeToken());
+			assertEquals("Unexpected token", FileParser::eof, fileParser.peekToken());
+			assertEquals("Unexpected token", FileParser::eof, fileParser.takeToken());
 		}
 		void testLoadWav()
 		{
 			AudioResource *resource = (AudioResource *)this->getContainer()->getResourceManager()->load("tests/audio.wav");
 			assertTrue("WAV resource not loaded", resource != null);
-			assertTrue("WAV resource data not loaded", resource->getData() != null);
+			assertTrue("WAV resource data not loaded", !resource->getData().empty());
 			assertEquals("WAV mimetype invalid", "audio/wav", resource->getMimeType());
 
 		}
 		void testLoadOgg() {
 			OggResource *resource = (OggResource *)this->getContainer()->getResourceManager()->load("tests/audio.ogg");
 			assertTrue("OGG resource not loaded", resource != null);
-			assertTrue("OGG resource data not loaded", resource->getData() != null);
+			assertTrue("OGG resource data not loaded", !resource->getData().empty() != null);
 			assertEquals("OGG mimetype invalid", "audio/ogg", resource->getMimeType());
 		}
 
@@ -125,7 +119,7 @@ class PlaygroundTestsRunner: public TestRunner {
 		}
 
 		void testLoadPng() 		{
-			PngResource *resource = (PngResource *)this->getContainer()->getResourceManager()->load("tests/image.png");
+			ImageResource *resource = (ImageResource *)this->getContainer()->getResourceManager()->load("tests/image.png");
 			assertTrue("PNG resource not loaded", resource != null);
 			assertTrue("PNG data not set properly", resource->getData() != null);
 			assertEquals("PNG Invalid width", 512, resource->getAncho());
@@ -134,7 +128,7 @@ class PlaygroundTestsRunner: public TestRunner {
 		}
 
 		void testLoadJpeg()		{
-			JpegResource *resource = (JpegResource *)this->getContainer()->getResourceManager()->load("tests/image.jpg");
+		    ImageResource *resource = (ImageResource *)this->getContainer()->getResourceManager()->load("tests/image.jpg");
 
 			assertTrue("JPEG resource not loaded", resource != null);
 			assertTrue("JPEG data not set properly", resource->getData() != null);
@@ -144,7 +138,7 @@ class PlaygroundTestsRunner: public TestRunner {
 		}
 
 		void testLoadTga()		{
-			TgaResource *resource = (TgaResource *)this->getContainer()->getResourceManager()->load("tests/image.tga");
+		    ImageResource *resource = (ImageResource *)this->getContainer()->getResourceManager()->load("tests/image.tga");
 
 			assertTrue("TGA resource not loaded", resource != null);
 			assertTrue("TGA data not set properly", resource->getData() != null);
@@ -211,29 +205,38 @@ class PlaygroundTestsRunner: public TestRunner {
 
 		void testLoadShaderProgramByVersion()
 		{
-			WglRunner *wgl = (WglRunner *) this->getContainer()->getRunner(0);
-
-			ShaderProgramResource *shaderProgramResource = null;
-
-			if(wgl->getMajorVersion() >= 3) {
-				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/lighting.140.program.json", "video/shaderProgram");
-			} else {
-				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/lighting.120.program.json", "video/shaderProgram");
-			}
-			assertTrue("Shader Program resource not loaded", shaderProgramResource != null);
-			assertEquals("Shader Program mimetype invalid", "video/shaderProgram", shaderProgramResource->getMimeType());
-
-			if(wgl->getMajorVersion() >= 3) {
-				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/toon.140.program.json", "video/shaderProgram");
-			} else {
-				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/toon.120.program.json", "video/shaderProgram");
-			}
-			assertTrue("Shader Program resource not loaded", shaderProgramResource != null);
-			assertEquals("Shader Program mimetype invalid", "video/shaderProgram", shaderProgramResource->getMimeType());
+//			WglRunner *wgl = (WglRunner *) this->getContainer()->getRunner(0);
+//
+//			ShaderProgramResource *shaderProgramResource = null;
+//
+//			if(wgl->getMajorVersion() >= 3) {
+//				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/lighting.140.program.json", "video/shaderProgram");
+//			} else {
+//				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/lighting.120.program.json", "video/shaderProgram");
+//			}
+//			assertTrue("Shader Program resource not loaded", shaderProgramResource != null);
+//			assertEquals("Shader Program mimetype invalid", "video/shaderProgram", shaderProgramResource->getMimeType());
+//
+//			if(wgl->getMajorVersion() >= 3) {
+//				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/toon.140.program.json", "video/shaderProgram");
+//			} else {
+//				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/toon.120.program.json", "video/shaderProgram");
+//			}
+//			assertTrue("Shader Program resource not loaded", shaderProgramResource != null);
+//			assertEquals("Shader Program mimetype invalid", "video/shaderProgram", shaderProgramResource->getMimeType());
 
 		}
-
 };
 
-#endif
+class TestsPlayground: public Playground {
+public:
+    TestsPlayground(const String &resourcesBasePath) :
+            Playground(resourcesBasePath) {
+    }
+    void init() {
+        Playground::init();
+        this->addRunner(new PlaygroundTestsRunner());
+    }
+};
+
 #endif

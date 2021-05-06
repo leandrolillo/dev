@@ -12,12 +12,12 @@ class Exception {
 
 		void setMessageWithVarArgs(const char *format, va_list *args)
 		{
-			char textBuffer[256];
-
-			vsprintf(textBuffer, format, *args);
-
-			this->msg = textBuffer;
-
+		    char *tempBuffer = null; //TODO: review if it is better to use a fixed buffer and truncate logs length
+            if(vasprintf(&tempBuffer, format, *args)) {
+                this->msg = tempBuffer;
+                printf("Exception initialized with error message: %s", this->msg.c_str());
+                free(tempBuffer);
+            }
 		}
 
 		public:

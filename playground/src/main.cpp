@@ -9,19 +9,33 @@
 #include "demo/PhysicsDemo.h"
 #include "demo/TerrainDemo.h"
 #include "demo/ObjDemo.h"
+#include "demo/ColDetDemo.h"
+
+#include <PlaygroundTest.h>
 
 int main(int, char**){
+//    TestsPlayground playgroundtests("/Users/leandro/huevadas/projects/dev/media/");
+//    playgroundtests.run();
+
+
 //	PlaygroundGeneralDemo playground("/Users/leandro/huevadas/projects/dev/media/");
 //    playground.run();
 
 //    PlaygroundTerrainDemo playground("/Users/leandro/huevadas/projects/dev/media/");
 //    playground.run();
 
-    PhysicsPlayground playground("/Users/leandro/huevadas/projects/dev/media/");
-    playground.run();
+//    PhysicsPlayground playground("/Users/leandro/huevadas/projects/dev/media/");
+//    playground.run();
+
+      CollisionDetectionPlayground playground("/Users/leandro/huevadas/projects/dev/media/");
+      playground.run();
+
 
 //    ObjDemoPlayground playground("/Users/leandro/huevadas/projects/dev/media/");
 //    playground.run();
+
+
+
 
     return 0;
 }

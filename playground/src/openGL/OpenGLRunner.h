@@ -54,11 +54,6 @@ private:
     TextureResource *defaultTexture = 0;
     const ShaderProgramResource *currentShaderProgram = null;
 public:
-    static const unsigned char ID = 1;
-public:
-    virtual unsigned char getId() {
-        return ID;
-    }
 
     virtual unsigned char getInterests() {
         return RESIZE;
@@ -123,7 +118,7 @@ public:
          * OpenGL defaults so that something is rendered with minimum configuration.
          */
         defaultTexture = new TextureResource(this->generateDefaultTexture());
-        this->getContainer()->getResourceManager()->addResource("openGLRunner/defaultTexture", defaultTexture);
+        this->getContainer()->getResourceManager()->addResource(defaultTexture);
 
         return true;
     }

@@ -83,11 +83,15 @@ public:
 		return resource;
 	}
 	virtual void dispose(Resource *resource) {
+	    logger->info("Adapter Disposing of %s", resource->toString().c_str());
+
 		GeometryResource *geometryResource = (GeometryResource*) resource;
 		geometryResource->getVertices().clear();
 		geometryResource->getColors().clear();
 		geometryResource->getNormals().clear();
 		geometryResource->getTextureCoordinates().clear();
+
+		logger->info("Disposed of %s", resource->toString().c_str());
 	}
 
 private:

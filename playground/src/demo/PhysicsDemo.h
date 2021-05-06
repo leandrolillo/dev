@@ -15,6 +15,8 @@
 #include <OpenGLRunner.h>
 #include <AudioRunner.h>
 #include<PhysicsRunner.h>
+
+#include<renderers/DefaultRenderer.h>
 #include<renderers/SkyboxRenderer.h>
 #include<renderers/GridRenderer.h>
 
@@ -97,11 +99,9 @@ public:
 	}
 
 	bool init() {
-		video = (VideoRunner*) this->getContainer()->getRunner(1);
-		audio = (AudioRunner*) this->getContainer()->getRunner(3);
-		physics = (PhysicsRunner *)this->getContainer()->getRunner(4);
-
-		logger->info("video is %u", video);
+		video = (VideoRunner*) this->getContainer()->getRequiredRunner(VideoRunner::ID);
+		audio = (AudioRunner*) this->getContainer()->getRequiredRunner(AudioRunner::ID);
+		physics = (PhysicsRunner *)this->getContainer()->getRequiredRunner(PhysicsRunner::ID);
 
 		gunshotSource = audio->createSource("audio/handgunfire.wav", vector(0, 0, 0), vector(0, 0, 0), false);
 		bounceSource = audio->createSource("audio/twang3.wav", vector(0, 0, 0), vector(0, 0, 0), false);
@@ -211,13 +211,13 @@ public:
 	void mouseWheel(int wheel) {
         camera.setViewMatrix(matriz_4x4::matrizTraslacion(camera.getViewPosition() + vector(0.0f, 0.0f, wheel)));
         audio->updateListener(camera.getViewPosition() * -1);
-        logger->info("camera: %s", camera.getViewPosition().toString("%.2f").c_str());
+        logger->debug("camera: %s", camera.getViewPosition().toString("%.2f").c_str());
 	}
 
 	virtual void mouseMove(int dx, int dy) {
         camera.setViewMatrix(matriz_4x4::matrizTraslacion(camera.getViewPosition() + vector(0.1f * dx, 0.1f * dy, 0)));
         audio->updateListener(camera.getViewPosition() * -1);
-        logger->info("camera: %s", camera.getViewPosition().toString("%.2f").c_str());
+        logger->debug("camera: %s", camera.getViewPosition().toString("%.2f").c_str());
 	}
 
 	void mouseButtonDown(unsigned char button, int x, int y) {

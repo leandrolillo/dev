@@ -8,7 +8,7 @@
 #ifndef OGGRESOURCE_H_
 #define OGGRESOURCE_H_
 
-#include <Resource.h>
+#include <resources/AudioResource.h>
 
 class OggResource : public AudioResource
 {

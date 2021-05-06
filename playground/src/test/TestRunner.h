@@ -8,7 +8,7 @@
 #ifndef TESTRUNNER_H_
 #define TESTRUNNER_H_
 
-#include "../core/playground.h"
+#include <playground.h>
 #include <list>
 
 class TestRunner: public PlaygroundRunner {
@@ -78,30 +78,31 @@ class TestRunner: public PlaygroundRunner {
 		{
 			assertTrue("", condition);
 		}
-		void assertTrue(String message, bool condition)
+		void assertTrue(const String &message, bool condition)
 		{
-			if(!condition)
-			assertFail(message);
+			if(!condition) {
+			    assertFail(message);
+			}
 		}
 
-		void assertEquals(String message, const String &expected, const String &actual)
+		void assertEquals(const String &message, const String &expected, const String &actual)
 		{
 			assertTrue(message + ". Expected: [" + expected + "]. Actual: [" + actual + "]", expected == actual);
 		}
 
-		void assertEquals(String message, void *expected, void *actual)
+		void assertEquals(const String &message, void *expected, void *actual)
 		{
 			assertTrue(message, expected == actual);
 		}
 
-		void assertEquals(String message, unsigned int expected, unsigned int actual)
+		void assertEquals(const String &message, unsigned int expected, unsigned int actual)
 		{
 			char buffer[256];
 			sprintf(buffer, "%s. Expected: [%d]. Actual: [%d]", message.c_str(), expected, actual);
 			assertTrue(buffer, expected == actual);
 		}
 
-		void assertFalse(String message, bool condition)
+		void assertFalse(const String &message, bool condition)
 		{
 			if(condition)
 			assertFail(message);
@@ -111,7 +112,7 @@ class TestRunner: public PlaygroundRunner {
 			assertFalse("", condition);
 		}
 
-		void assertFail(String message) {
+		void assertFail(const String &message) {
 			throw Exception(message.c_str());
 		}
 

@@ -108,7 +108,7 @@ public:
                         if (response != null) {
                             response->setFileName(fileParser.getFilename());
                             response->setMimeType(mimeType);
-                            addResource(getCacheKey(fileParser.getFilename(),mimeType), response);
+                            addResource(response);
                             logger->info("Loaded [%s]", response->toString().c_str());
                         } else {
                             logger->warn(
@@ -140,16 +140,22 @@ public:
 		return cached;
 	}
 
-	Resource *addResource(const String &key, Resource *resource) {
-	    resourceCache[key] = resource;
+	Resource *addResource(Resource *resource) {
+	    resourceCache[getCacheKey(resource)] = resource;
 	    return resource;
 	}
 
 	void dispose(Resource *resource) {
 		if (resource != null) {
-			resourceCache.erase(resource->getFileName());
-			adapters[resource->getMimeType()]->dispose(resource);
+		    logger->verbose("Disposing of %s", resource->toString().c_str());
+
+		    if(adapters[resource->getMimeType()] != null) {
+		        logger->verbose("Disposing of %s with adapter %s", resource->toString().c_str() ,adapters[resource->getMimeType()]->toString().c_str());
+		        adapters[resource->getMimeType()]->dispose(resource);
+		    }
+
 			delete resource;
+		    logger->info("Disposed of %s", resource->toString().c_str());
 		}
 	}
 
@@ -158,18 +164,20 @@ public:
 				currentResourceIterator != resourceCache.end();
 				currentResourceIterator++) {
 			if ((*currentResourceIterator).second != null) {
-				logger->info("Disposing of resource ['%s' - '%s']",
-						(*currentResourceIterator).second->getMimeType().c_str(),
-						(*currentResourceIterator).second->getFileName().c_str());
-
+				logger->verbose("Disposing of ['%s']", (*currentResourceIterator).second->toString().c_str());
 				dispose((*currentResourceIterator).second);
 			}
 		}
 
+		logger->verbose("Disposed of all resources");
+		resourceCache.clear();
+
+		logger->verbose("Disposing of resource adapters");
 		std::set<ResourceAdapter*> resourceAdaptersSet;
 		for (std::map<String, ResourceAdapter*>::iterator currentAdapterIterator =
 				adapters.begin(); currentAdapterIterator != adapters.end();
 				currentAdapterIterator++) {
+		    logger->verbose("Scheduling for removal: %s", currentAdapterIterator->second->toString().c_str());
 			resourceAdaptersSet.insert(currentAdapterIterator->second);
 		}
 
@@ -177,10 +185,16 @@ public:
 				resourceAdaptersSet.begin();
 				currentAdapterIterator != resourceAdaptersSet.end();
 				currentAdapterIterator++) {
+		    logger->verbose("Deleting: %s", (*currentAdapterIterator)->toString().c_str());
 			delete (*currentAdapterIterator);
 		}
+
+		logger->verbose("Disposed of resource adapters");
+
 		adapters.clear();
 		resourceAdaptersSet.clear();
+
+		logger->info("Resource manager shutdown complete");
 	}
 
 	/**
@@ -261,9 +275,16 @@ public:
 
 private:
 
-	const String getCacheKey(const String &filename,
-			const String &mimeType) const {
+	const String getCacheKey(const String &filename, const String &mimeType) const {
 		return normalize(filename) + "|" + mimeType;
+	}
+
+	const String getCacheKey(Resource *resource) {
+	    if(resource != null) {
+	        return normalize(resource->getFileName()) + "|" + resource->getMimeType();
+	    }
+
+	    return "";
 	}
 };
 

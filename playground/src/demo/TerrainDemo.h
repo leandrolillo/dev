@@ -15,6 +15,8 @@
 #include<ArcBall.h>
 
 #include<vector>
+
+#include<renderers/DefaultRenderer.h>
 #include<renderers/TerrainRenderer.h>
 #include<renderers/SkyboxRenderer.h>
 
@@ -34,10 +36,6 @@ private:
 	DefaultRenderer defaultRenderer;
 
 	ArcBall arcball;
-
-public:
-	static const unsigned char ID = 101;
-
 public:
 	TerrainDemoRunner() : light(viewPosition,
 			vector(0.2f, 0.2f, 0.2f), vector(0.2f, 0.2f, 0.2f),
@@ -48,7 +46,7 @@ public:
 	}
 
 	virtual unsigned char getId() {
-		return GeneralDemoRunner::ID;
+		return 200;
 	}
 
 	void resize(unsigned int height, unsigned int width) {
@@ -62,8 +60,8 @@ public:
 
 	virtual bool init() {
 		//TODO: Review why can´t use public static IDs properties from each class
-		video = (VideoRunner*) this->getContainer()->getRunner(1);
-		audio = (AudioRunner*) this->getContainer()->getRunner(3);
+		video = (VideoRunner*) this->getContainer()->getRequiredRunner(VideoRunner::ID);
+		audio = (AudioRunner*) this->getContainer()->getRequiredRunner(AudioRunner::ID);
 
 		if (!video) {
 			logger->error("Could not find openGl runner");

@@ -40,8 +40,8 @@ public:
 
             videoRunner->sendMatrix("matrices.proj", camera.getProjectionMatrix());
             videoRunner->sendMatrix("matrices.view", camera.getViewMatrix());
-            videoRunner->sendReal("near", 0.1);
-            videoRunner->sendReal("far", 300);
+            videoRunner->sendReal("near", camera.getZNear());
+            videoRunner->sendReal("far", camera.getZFar());
 
             videoRunner->drawVertexArray(plane);
 
