@@ -6,3 +6,7 @@
 'make' for generating executable file in target directory
 
 
+sample command line for rebuilding, running and tailing the log file:
+
+'./cmake-clean.sh ; cmake . ; make ; ./target/playground &  tail -n200 -f ./playground.log'
+

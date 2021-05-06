@@ -123,7 +123,7 @@ class Logger {
 				strftime(textBuffer, sizeof(textBuffer), "%d/%m/%Y %H:%M:%S", getCurrentTime());
 
 				fprintf(fileHandler, "%s - %s - %s: ", textBuffer, type, basename.c_str());
-				printf("%s - %s - %s: ", textBuffer, type, basename.c_str());
+				//printf("%s - %s - %s: ", textBuffer, type, basename.c_str());
 
 				/**
 				 * This approach was causing null pointer exceptions because args can only be iterated once
@@ -133,14 +133,14 @@ class Logger {
 
 				char *tempBuffer = null; //TODO: review if it is better to use a fixed buffer and truncate logs length
 				if(vasprintf(&tempBuffer, formato, *args)) {
-					printf("%s", tempBuffer);
+					//printf("%s", tempBuffer);
 					fprintf(fileHandler, "%s", tempBuffer);
 					free(tempBuffer);
 				}
 
 
 				fprintf(fileHandler, "\n");
-				printf("\n");
+				//printf("\n");
 			}
 		}
 		void setBasename(const String &basename)
