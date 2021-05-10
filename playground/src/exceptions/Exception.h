@@ -2,6 +2,7 @@
 #define _EXCEPTION_H_
 
 #include <JavaLike.h>
+#include<StringFormatter.h>
 #include<string>
 #include <stdio.h>
 #include <stdarg.h>
@@ -9,16 +10,6 @@
 class Exception {
 	protected:
 		String msg;
-
-		void setMessageWithVarArgs(const char *format, va_list *args)
-		{
-		    char *tempBuffer = null; //TODO: review if it is better to use a fixed buffer and truncate logs length
-            if(vasprintf(&tempBuffer, format, *args)) {
-                this->msg = tempBuffer;
-                printf("Exception initialized with error message: %s", this->msg.c_str());
-                free(tempBuffer);
-            }
-		}
 
 		public:
 		Exception()
@@ -28,7 +19,7 @@ class Exception {
 		Exception(const char *format, ...) {
 			va_list args;
 			va_start(args, format);
-			this->setMessageWithVarArgs(format, &args);
+			this->msg = StringFormatter::formatVarArgs(format, &args);
 			va_end(args);
 		}
 		std::string toString() {
@@ -43,8 +34,7 @@ class Exception {
 		{
 			va_list args;
 			va_start(args, format);
-
-			this->setMessageWithVarArgs(format, &args);
+			this->msg = StringFormatter::format(format, &args);
 			va_end(args);
 
 		}

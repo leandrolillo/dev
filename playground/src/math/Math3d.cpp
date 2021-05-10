@@ -710,10 +710,10 @@ void matriz_2x2::operator *=(const real &op1) {
 
 	const vector4 matriz_4x4::operator*(const vector4 &op1) const {
 	        return(vector4(
+                    _30 * op1.x + _31 * op1.y + _32 * op1.z + _33 * op1.w,
 	                _00 * op1.x + _01 * op1.y + _02 * op1.z + _03 * op1.w,
                     _10 * op1.x + _11 * op1.y + _12 * op1.z + _13 * op1.w,
-                    _20 * op1.x + _21 * op1.y + _22 * op1.z + _23 * op1.w,
-                    _30 * op1.x + _31 * op1.y + _32 * op1.z + _33 * op1.w
+                    _20 * op1.x + _21 * op1.y + _22 * op1.z + _23 * op1.w
 	        ));
 	    }
 

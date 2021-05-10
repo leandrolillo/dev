@@ -67,7 +67,7 @@ public:
 	}
 
 	void resize(unsigned int height, unsigned int width) {
-	    camera.setProjectionMatrix(camera.perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 100.0));
+	    camera.setProjectionMatrix(Camera::perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 100.0));
 	}
 
 	void reset() {

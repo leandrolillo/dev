@@ -9,7 +9,7 @@
 #define FUNCTION_H_
 
 	#include<vector>
-	#include "math/MathConstants.h"
+	#include <Math3d.h>
 
 
 	class FunctionMultiplication;

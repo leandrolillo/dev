@@ -11,6 +11,9 @@
 #include <playground.h>
 #include <list>
 
+#define defaultAssertMessage StringFormatter::format("Assertion Failed in [%s], at line [%d]", __FILE__, __LINE__)
+#define assertMessage(message) StringFormatter::format("Assertion Failed in [%s], at line [%d]", __FILE__, __LINE__).append(message)
+
 class TestRunner: public PlaygroundRunner {
 	private:
 		std::map<String, void (TestRunner::*)()> tests;
@@ -44,14 +47,17 @@ class TestRunner: public PlaygroundRunner {
 			{
 				try {
 					logger->info("TEST [%s]...", iterator->first.c_str());
+					printf("TEST [%s]...\n", iterator->first.c_str());
 					void (TestRunner::*currentTest)();
 					currentTest = iterator->second;
 
 					(this->*currentTest)();
 
 					logger->info("[%s] PASSED.\n", iterator->first.c_str());
+					printf("[%s] PASSED.\n", iterator->first.c_str());
 				} catch (Exception &e) {
 					logger->error("Test [%s] FAILED: %s\n", iterator->first.c_str(), e.toString().c_str());
+					printf("Test [%s] FAILED: %s\n", iterator->first.c_str(), e.toString().c_str());
 					failedTests.push_back(iterator->first);
 				}
 
@@ -97,10 +103,13 @@ class TestRunner: public PlaygroundRunner {
 
 		void assertEquals(const String &message, unsigned int expected, unsigned int actual)
 		{
-			char buffer[256];
-			sprintf(buffer, "%s. Expected: [%d]. Actual: [%d]", message.c_str(), expected, actual);
-			assertTrue(buffer, expected == actual);
+			assertTrue(StringFormatter::format("%s. Expected: [%d]. Actual: [%d]", message.c_str(), expected, actual), expected == actual);
 		}
+
+		void assertRealEquals(const String &message, real expected, real actual)
+        {
+            assertTrue(StringFormatter::format("%s. Expected: [%f]. Actual: [%f]", message.c_str(), expected, actual), equalsZero(expected - actual));
+        }
 
 		void assertFalse(const String &message, bool condition)
 		{
@@ -115,6 +124,31 @@ class TestRunner: public PlaygroundRunner {
 		void assertFail(const String &message) {
 			throw Exception(message.c_str());
 		}
+
+		void assertEquals(const String &message, const vector &expected, const vector &actual)
+        {
+		    String vectorMessage = StringFormatter::format("%s. Expected %s, got %s:",
+		            message.c_str(),
+		            expected.toString("%.2f").c_str(),
+		            actual.toString("%.2f").c_str());
+		    assertRealEquals(vectorMessage, expected.x, actual.x);
+		    assertRealEquals(vectorMessage, expected.y, actual.y);
+		    assertRealEquals(vectorMessage, expected.z, actual.z);
+        }
+
+        void assertEquals(const String &message, const matriz_mxn &expected, const matriz_mxn &actual)
+        {
+            String text = StringFormatter::format("%s. Expected dimensions: [%dx%d]. Actual: [%dx%d]", message.c_str(), expected.getNroFilas(), expected.getNroColumnas(), actual.getNroFilas(), actual.getNroColumnas());
+            assertTrue(text, expected.getNroFilas() == actual.getNroFilas() && expected.getNroColumnas() == expected.getNroColumnas());
+
+            for(unsigned int i = 0; i < expected.getNroFilas(); i++) {
+                for(unsigned int j = 0; j < expected.getNroColumnas(); j++) {
+                    text = StringFormatter::format("%s. Element (%d, %d) - Expected: [%.3f]. Actual: [%.3f]", message.c_str(), i, j, expected(i, j), actual(i, j));
+                    assertTrue(text, expected(i, j) == actual(i, j));
+                }
+            }
+        }
+
 
 	private:
 		String getFailedTestsString(std::list<String> &stringList)

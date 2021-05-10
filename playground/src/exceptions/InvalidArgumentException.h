@@ -10,7 +10,7 @@
 			{
 				va_list args;
 				va_start(args, format);
-				this->setMessageWithVarArgs(format, &args);
+                this->msg = StringFormatter::formatVarArgs(format, &args);
 				va_end(args);
 			}
 			

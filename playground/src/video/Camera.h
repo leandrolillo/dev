@@ -18,8 +18,29 @@ protected:
     matriz_4x4 viewMatrix;
     matriz_4x4 projectionViewMatrix;
 
-    real zNear = (real)0;
-    real zFar = (real)0;
+
+    //TODO: Review how to get these values from projection (if it applies)
+    real zNear = (real)0.1;
+    real zFar = (real)300;
+public:
+    static matriz_4x4 perspectiveProjection(double fovy, double aspect, double zNear, double zFar) {
+        double fW, fH;
+        fH = tan(fovy / 360.0 * M_PI) * zNear;
+        fW = fH * aspect;
+        double left = -fW;
+        double right = fW;
+        double bottom = -fH;
+        double top = fH;
+
+        /**
+         * from glFrustrum man page at https://www.lri.fr/~mbl/ENS/IG2/docs/opengl1.1/glFrustum.html
+         */
+        return matriz_4x4(
+                2.0 * zNear / (right - left),   0.0,                            (right + left) / (right - left),    0.0,
+                0.0,                            2.0 * zNear / (top - bottom),   (top + bottom) / (top - bottom),    0.0,
+                0.0,                            0.0,                            -(zFar + zNear) / (zFar - zNear),   -(2.0 * zFar * zNear) / (zFar - zNear),
+                0.0,                            0.0,                            -1.0,                               0.0);
+    }
 
 public:
     /**
@@ -59,38 +80,16 @@ public:
         return this->zFar;
     }
 
-    matriz_4x4 perspectiveProjection(double fovy, double aspect, double zNear, double zFar) {
-        double fW, fH;
-        fH = tan(fovy / 360.0 * M_PI) * zNear;
-        fW = fH * aspect;
-        double left = -fW;
-        double right = fW;
-        double bottom = -fH;
-        double top = fH;
-
-        this->zNear = zNear;
-        this->zFar = zFar;
-
-        /**
-         * from glFrustrum man page at https://www.lri.fr/~mbl/ENS/IG2/docs/opengl1.1/glFrustum.html
-         */
-        return matriz_4x4(
-                2.0 * zNear / (right - left),   0.0,                            (right + left) / (right - left),    0.0,
-                0.0,                            2.0 * zNear / (top - bottom),   (top + bottom) / (top - bottom),    0.0,
-                0.0,                            0.0,                            -(zFar + zNear) / (zFar - zNear),   -(2.0 * zFar * zNear) / (zFar - zNear),
-                0.0,                            0.0,                            -1.0,                               0.0);
-    }
-
-    vector4 getRayDirection(unsigned int x, unsigned int y, unsigned int width, unsigned int height) {
+    vector4 getRayDirection(unsigned int x, unsigned int y, unsigned int width, unsigned int height) const {
         vector4 homogeneousClipCoordinates = vector4(
-                1,
+                0,
                 (real)2 * (real)x / (real)width - (real)1,
                 (real)1 - (real)2 * (real)y / (real)height,
                 -1);
 
         vector4 cameraCoordinates = projectionMatrix.inversa() * homogeneousClipCoordinates;
         cameraCoordinates.z = (real)-1;
-        cameraCoordinates.w = (real)1;
+        cameraCoordinates.w = (real)0;
 
         vector3 worldCoordinates = ((vector3)(viewMatrix.inversa() * cameraCoordinates));
         worldCoordinates = worldCoordinates.normalizado();
