@@ -707,47 +707,47 @@ class cuaternion {
 	public:
 		union {
 				struct {
-						real w, x, y, z;
+						real x, y, z, w;
 				};
 				real m[4];
 		};
 
 		cuaternion(void) {
-			this->w = 1.0;
 			this->x = 0.0;
 			this->y = 0.0;
 			this->z = 0.0;
+            this->w = 1.0;
 		}
 
-		cuaternion(real new_w, real new_x, real new_y, real new_z) {
-			this->w = new_w;
+		cuaternion(real new_x, real new_y, real new_z, real new_w) {
 			this->x = new_x;
 			this->y = new_y;
 			this->z = new_z;
+            this->w = new_w;
 		}
 		cuaternion(const vector3 &op1) { // copia los atributos x, y y z a los del cuaternion, dejando w = 0
-			this->w = 0.0;
 			this->x = op1.x;
 			this->y = op1.y;
 			this->z = op1.z;
+            this->w = 0.0;
 		}
 
 		cuaternion(const cuaternion &op1) {
 			memcpy(this->m, op1.m, sizeof(this->m));
 		}
 		const cuaternion operator+(const cuaternion &op2) const {
-			return(cuaternion(this->w + op2.w, this->x + op2.x, this->y + op2.y, this->z + op2.z));
+			return(cuaternion(this->x + op2.x, this->y + op2.y, this->z + op2.z, this->w + op2.w));
 		}
 
 		const cuaternion operator-(const cuaternion &op2) const{
-			return(cuaternion(this->w - op2.w, this->x - op2.x, this->y - op2.y, this->z - op2.z));
+			return(cuaternion(this->x - op2.x, this->y - op2.y, this->z - op2.z, this->w - op2.w));
 		}
 		const cuaternion operator-(void) const {
-			return(cuaternion(-this->w, -this->x, -this->y, -this->z));
+			return(cuaternion(-this->x, -this->y, -this->z, -this->w));
 		}
 
 		const cuaternion operator*(const real op2) const {
-			return(cuaternion(this->w * op2, this->x * op2, this->y * op2, this->z * op2));
+			return(cuaternion(this->x * op2, this->y * op2, this->z * op2, this->w * op2));
 		}
 		void operator *=(const real op2) {
 			this->x *= op2;
@@ -757,10 +757,12 @@ class cuaternion {
 		}
 
 		const cuaternion operator*(const cuaternion &op2) const {
-			return(cuaternion(this->w * op2.w - this->x * op2.x - this->y * op2.y - this->z * op2.z,	//componente W
-							this->w * op2.x + this->x * op2.w + this->y * op2.z - this->z * op2.y,	//componente X
-							this->w * op2.y + this->y * op2.w + this->z * op2.x - this->x * op2.z,		//componente Y
-							this->w * op2.z + this->z * op2.w + this->x * op2.y - this->y * op2.x));		//componente Z
+			return(cuaternion(
+			        this->w * op2.x + this->x * op2.w + this->y * op2.z - this->z * op2.y,
+                    this->w * op2.y + this->y * op2.w + this->z * op2.x - this->x * op2.z,
+					this->w * op2.z + this->z * op2.w + this->x * op2.y - this->y * op2.x,
+					this->w * op2.w - this->x * op2.x - this->y * op2.y - this->z * op2.z
+					));
 		}
 
 		operator real *() const {
@@ -840,10 +842,10 @@ class cuaternion {
 		//Factory methods
 		static const cuaternion cuaternionRotacion(real angulo, const vector3 &eje) {
 			return cuaternion(
-					(real)cos(angulo * 0.5),
 					eje.x * (real)sin(angulo * 0.5),
 					eje.y * (real)sin(angulo * 0.5),
-					eje.z * (real)sin(angulo * 0.5));
+					eje.z * (real)sin(angulo * 0.5),
+					(real)cos(angulo * 0.5));
 		}
 		static const cuaternion cuaternionRotacion(real x, real y, real z) {
 			real	ex, ey, ez;
@@ -860,10 +862,11 @@ class cuaternion {
 			cpcy = cp * cy;
 			spsy = sp * sy;
 
-			return cuaternion(real(cr * cpcy + sr * spsy),
+			return cuaternion(
 					real(sr * cpcy - cr * spsy),
 					real(cr * sp * cy + sr * cp * sy),
-					real(cr * cp * sy - sr * sp * cy)).normalizado();
+					real(cr * cp * sy - sr * sp * cy),
+					real(cr * cpcy + sr * spsy)).normalizado();
 		}
 		static const cuaternion cuaternionRotacion(const vector3 &angulos) {
 			return cuaternionRotacion(angulos.x, angulos.y, angulos.z);
@@ -895,10 +898,10 @@ class cuaternion {
 				escala_1 = (real)sin(t * (M_PI/2.0f));
 
 				return cuaternion (
-						(escala_0 * dedonde.w) - (escala_1 * adonde.z),
 						(escala_0 * dedonde.x) - (escala_1 * adonde.y),
 						(escala_0 * dedonde.y) + (escala_1 * adonde.x),
-						(escala_0 * dedonde.z) - (escala_1 * adonde.w));
+						(escala_0 * dedonde.z) - (escala_1 * adonde.w),
+						(escala_0 * dedonde.w) - (escala_1 * adonde.z));
 			}
 		}
 };

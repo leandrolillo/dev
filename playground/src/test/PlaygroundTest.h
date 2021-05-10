@@ -48,7 +48,7 @@ class PlaygroundTestsRunner: public TestRunner {
 
 		void testMousePicking()
         {
-		    vector4 point(1, 0, 0, -1);
+		    vector4 point(0, 0, -1, 0);
 
 		    unsigned int width = 640;
 		    unsigned int height = 480;
