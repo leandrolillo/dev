@@ -70,7 +70,6 @@ public:
 		gridRenderer.setVideoRunner(video);
 	    defaultRenderer.setVideoRunner(video);
 	    defaultRenderer.setLight(&light);
-	    defaultRenderer.setMaterial(&material);
 
 //	    texture = (TextureResource *)this->getContainer()->getResourceManager()->load("images/fern.png", "video/texture");
 //        obj = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/fern.obj", "video/vertexArray");
@@ -80,8 +79,6 @@ public:
 //	    texture = (TextureResource *)this->getContainer()->getResourceManager()->load("images/lowPolyTree.png", "video/texture");
         //obj = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/bunny.obj", "video/vertexArray");
 //        obj = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/untitled.obj", "video/vertexArray");
-
-        defaultRenderer.setTexture(texture);
 
 
 	    video->setClearColor(0.0, 0.5, 0.0, 0.0);
@@ -98,8 +95,9 @@ public:
 	LoopResult doLoop() {
 	    gridRenderer.render(camera);
 
-		defaultRenderer.clearObjects();
-		defaultRenderer.drawAxis(matriz_4x4::identidad, 1.0f);
+		defaultRenderer.clear();
+        defaultRenderer.drawAxis(matriz_4x4::identidad, 1.0f);
+        defaultRenderer.setTexture(texture);
 		defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(posicion), 0.1f);
 		defaultRenderer.drawObject(matriz_4x4::matrizRotacion(0.0, radian(rotacion), 0.0), obj);
 		defaultRenderer.render(camera);

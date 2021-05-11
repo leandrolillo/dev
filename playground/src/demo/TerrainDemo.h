@@ -91,7 +91,7 @@ public:
 		return true;
 	}
 	virtual LoopResult doLoop() {
-	    defaultRenderer.clearObjects();
+	    defaultRenderer.clear();
 	    defaultRenderer.drawAxis(matriz_4x4::identidad);
 	    defaultRenderer.render(camera);
 

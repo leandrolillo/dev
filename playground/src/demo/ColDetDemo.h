@@ -47,9 +47,6 @@ class CollisionDetectionDemoRunner: public PlaygroundRunner {
 	SkyboxRenderer skyboxRenderer;
 	GridRenderer gridRenderer;
 
-	MaterialResource materials[3] = {MaterialResource(vector(1, 0.5, 0.5), vector(1, 0.5, 0.5), vector(1, 1, 1), 32),
-	        MaterialResource(vector(0.5, 1, 0.5), vector(0.5, 1, 0.5), vector(1, 1, 1), 32),
-	        MaterialResource(vector(0.5, 0.5, 1), vector(0.5, 0.5, 1), vector(1, 1, 1), 32)};
 public:
 	CollisionDetectionDemoRunner() {
 	    logger->addAppender(LoggerFactory::getAppender("stdout"));
@@ -93,7 +90,7 @@ public:
 	}
 
 	LoopResult doLoop() {
-	    defaultRenderer.clearObjects();
+	    defaultRenderer.clear();
 	    defaultRenderer.drawAxis(matriz_4x4::identidad);
 	    defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(sphere[0].getOrigin()), sphere[0].getRadius());
 	    defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(sphere[1].getOrigin()), sphere[1].getRadius());

@@ -132,24 +132,16 @@ public:
 	}
 
 	LoopResult doLoop() {
-	    defaultRenderer.clearObjects();
+	    defaultRenderer.clear();
 	    defaultRenderer.drawAxis(matriz_4x4::identidad);
 
 
-//		logger->debug("Drawing");
 		for(unsigned int index = 0; index < numberOfParticles; index++) {
 		    BulletParticle *particle = &particles[index];
 
 			if(particle->getStatus() == true) {
-			    defaultRenderer.sendMaterial(&materials[index % 3]);
+			    defaultRenderer.setMaterial(&materials[index % 3]);
                 defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(particle->getPosition()), 0.1);
-
-//				logger->info("Particle is enabled: position: %s, velocity: %s",
-//						particle->getPosition().toString().c_str(),
-//						particle->getVelocity().toString().c_str());
-
-			} else {
-//				logger->debug("Particle is disabled");
 			}
 		}
 

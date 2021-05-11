@@ -31,6 +31,7 @@ private:
 	Source *lightAnnoyingSoundSource = null;
 
 	TextureResource *pngTexture = null;
+	TextureResource *pngTexture2 = null;
 	TextureResource *jpgTexture = null;
 
 	VertexArrayResource *triangleVertexArray = null;
@@ -38,8 +39,6 @@ private:
 
 	GeometryResource *sphereGeometry = null;
 	GeometryResource *triangleGeometry = null;
-
-	ShaderProgramResource *toonShaderProgram = null;
 
 	MaterialResource material;
 	LightResource light;
@@ -92,20 +91,16 @@ public:
 		audio->playSource(lightAnnoyingSoundSource);
 
 		pngTexture = (TextureResource*) resourceManager->load("images/TEXTURA.PNG", "video/texture");
+		pngTexture2 = (TextureResource*) resourceManager->load("images/CEDFENCE.PNG", "video/texture");
 		jpgTexture = (TextureResource*) resourceManager->load("images/irs.JPG", "video/texture");
 
-		//geometryResource = (GeometryResource *)resourceManager->load("geometry/triangle.json", "video/geometry");
-		//sphereGeometryResource = (GeometryResource *)resourceManager->load("geometry/sphere.json", "video/geometry");
-
-		sphereVertexArray = (VertexArrayResource*) resourceManager->load(
-				"geometry/sphere.json", "video/vertexArray");
-		triangleVertexArray = (VertexArrayResource*) resourceManager->load(
-				"geometry/triangle.json", "video/vertexArray");
+		sphereVertexArray = (VertexArrayResource*) resourceManager->load("geometry/sphere.json", "video/vertexArray");
+		triangleVertexArray = (VertexArrayResource*) resourceManager->load("geometry/triangle.json", "video/vertexArray");
 
         defaultRenderer.setVideoRunner(video);
         defaultRenderer.setLight(&light);
-        defaultRenderer.setMaterial(&material);
-        defaultRenderer.setTexture(pngTexture);
+//        defaultRenderer.setMaterial(&material);
+//        defaultRenderer.setTexture(pngTexture);
 
         toonRenderer.setShaderProgram((ShaderProgramResource*) resourceManager->load("shaders/toon.330.program.json", "video/shaderProgram"));
         toonRenderer.setVideoRunner(video);
@@ -144,7 +139,7 @@ public:
         /**
          * Render toon objects
          */
-        toonRenderer.clearObjects();
+        toonRenderer.clear();
 	    toonRenderer.drawObject(matriz_4x4::matrizBase(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), vector3(2.0, 1.0, 0.0)),
 	            triangleVertexArray);
 	    toonRenderer.drawObject(matriz_4x4::matrizBase(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), vector3(-2.0, 1.0, 0.0)),
@@ -157,32 +152,24 @@ public:
         /**
          * Render default renderer objects
          */
-	    defaultRenderer.clearObjects();
+	    defaultRenderer.clear();
+	    defaultRenderer.setMaterial(&material);
 
-        //draw axis for viewer reference
+	    //draw axis for viewer reference
         defaultRenderer.drawAxis(matriz_4x4::identidad);
 
         //draw Light as a sphere
         defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(lightPosition), 0.1f);
 
+        defaultRenderer.setTexture(pngTexture);
         defaultRenderer.drawObject(matriz_4x4::matrizBase(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), vector3(2.0, -1.0, 0.0)),
                 triangleVertexArray);
-
         defaultRenderer.drawSphere(matriz_4x4::matrizBase(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), vector3(4.0, -1.0, 0.0)));
+        defaultRenderer.setTexture(pngTexture2);
         defaultRenderer.drawBox(matriz_4x4::matrizBase(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), vector3(-2.0, -1.0, 0.0)));
 	    defaultRenderer.render(camera);
 
-
-		//				printf("p:\n %s\n", projection.toString().c_str());
-		//				printf("v:\n %s\n", view.toString().c_str());
-		//				printf("m:\n %s\n", model.toString().c_str());
-		//				printf("pvm:\n%s\n", pvm.toString().c_str());
-		//				printf("-----------\n");
-		//				printf("%s\r", viewPosition.toString().c_str());
-
 		rotation += 1;
-
-
 
 		return LoopResult::CONTINUE;
 	}

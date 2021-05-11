@@ -54,7 +54,7 @@ private:
     const MaterialResource *currentMaterial = null;
     const LightResource *light = null;
 
-    std::vector<const WorldObject> objects;
+    std::map<const TextureResource *, std::vector<const WorldObject>>objectsByTexture;
 
     const VertexArrayResource *axis = null;
     const VertexArrayResource *sphere = null;
@@ -99,19 +99,31 @@ public:
             this->sendLight(light);
 
             const MaterialResource *lastMaterial = null;
-            for (std::vector<const WorldObject>::const_iterator iterator = objects.begin(); iterator != objects.end(); iterator++) {
-                const WorldObject &object = *iterator;
 
-                if(lastMaterial == null || lastMaterial != object.getMaterial()) {
-                    lastMaterial = object.getMaterial();
-                    if(lastMaterial != null) {
-                        this->sendMaterial(lastMaterial);
-                    }
+            for(std::map<const TextureResource *, std::vector<const WorldObject>>::iterator textureIterator = this->objectsByTexture.begin();
+                    textureIterator != this->objectsByTexture.end(); textureIterator++)
+            {
+                if((*textureIterator).first != null) {
+                    videoRunner->setTexture(0, "textureUnit", (*textureIterator).first);
+                } else {
+                    videoRunner->setTexture(0, "textureUnit", videoRunner->getDefaultTexture());
                 }
-                videoRunner->sendMatrix("matrices.model", object.getModelMatrix());
-                videoRunner->sendMatrix("matrices.pvm", camera.getProjectionViewMatrix() * object.getModelMatrix());
-                videoRunner->sendMatrix("matrices.normal", object.getNormalMatrix());
-                videoRunner->drawVertexArray(object.getVertexArray());
+
+                for (std::vector<const WorldObject>::const_iterator iterator = (*textureIterator).second.begin();
+                        iterator != (*textureIterator).second.end(); iterator++) {
+                    const WorldObject &object = *iterator;
+
+                    if(lastMaterial == null || lastMaterial != object.getMaterial()) {
+                        lastMaterial = object.getMaterial();
+                        if(lastMaterial != null) {
+                            this->sendMaterial(lastMaterial);
+                        }
+                    }
+                    videoRunner->sendMatrix("matrices.model", object.getModelMatrix());
+                    videoRunner->sendMatrix("matrices.pvm", camera.getProjectionViewMatrix() * object.getModelMatrix());
+                    videoRunner->sendMatrix("matrices.normal", object.getNormalMatrix());
+                    videoRunner->drawVertexArray(object.getVertexArray());
+                }
             }
 
             videoRunner->setTexture(0, null);
@@ -122,7 +134,7 @@ public:
     }
 
     void drawObject(const matriz_4x4 &modelMatrix, const VertexArrayResource *object) {
-        this->objects.push_back(WorldObject(modelMatrix, object, currentMaterial));
+        this->objectsByTexture[this->currentTexture].push_back(WorldObject(modelMatrix, object, currentMaterial));
     }
 
     void drawAxis(const matriz_4x4 &modelMatrix, real length = 1.0f) {
@@ -137,54 +149,11 @@ public:
         this->drawObject(modelMatrix * matriz_4x4::matrizZoom(height, width, depth), box);
     }
 
-    void clearObjects() {
-        this->objects.clear();
+    void clear() {
+        this->setTexture(null);
+        this->setMaterial(null);
+        this->objectsByTexture.clear();
     }
-
-
-//    void drawPlane(vector posicion, vector normal, vector origen, float nro_grids, float ancho) const {
-//  //          int pos_x, pos_z;
-//  //          pos_x = (int) (((int) (posicion.x / ancho + 0.5f)) * ancho);
-//  //          pos_z = (int) (((int) (posicion.z / ancho + 0.5f)) * ancho);
-//
-//          float pos_x = posicion.x;
-//          float pos_z = posicion.z;
-//
-//          real ancho_plano = nro_grids * ancho;
-//          real D = -(normal * origen);
-//          real oneOverB = 1.0 / normal.y;
-//
-//          glBegin(GL_TRIANGLE_FAN);
-//              real x = (real)(pos_x - ancho_plano);
-//              real z = (real) (pos_z - ancho_plano);
-//              real y = D - (normal.x * (x - ancho_plano) + normal.z * z) * oneOverB;
-//
-//              glTexCoord2f(0.0f, 0.0f);
-//              glVertex3f(x, y, z);
-//
-//
-//              x = (real)(pos_x - ancho_plano);
-//              z = (real) (pos_z + ancho_plano);
-//              y = D - (normal.x * (x - ancho_plano) + normal.z * z) * oneOverB;
-//
-//              glTexCoord2f(ancho_plano, 0.0f);
-//              glVertex3f(x, y, z);
-//
-//              x = (real)(pos_x + ancho_plano);
-//              z = (real) (pos_z + ancho_plano);
-//              y = D - (normal.x * (x - ancho_plano) + normal.z * z) * oneOverB;
-//
-//              glTexCoord2f(ancho_plano, ancho_plano);
-//              glVertex3f(x, y, z);
-//
-//              x = (real)(pos_x + ancho_plano);
-//              z = (real) (pos_z - ancho_plano);
-//              y = D - (normal.x * (x - ancho_plano) + normal.z * z) * oneOverB;
-//
-//              glTexCoord2f(0.0f, ancho_plano);
-//              glVertex3f(x, y, z);
-//          glEnd();
-//    }
 };
 
 #endif /* SRC_VIDEO_RENDERERS_DEFAULTRENDERER_H_ */
