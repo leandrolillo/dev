@@ -21,7 +21,7 @@
 
 
 class ObjDemoRunner: public PlaygroundRunner {
-	Logger *logger = Logger::getLogger("ObjDemoRunner");
+	Logger *logger = LoggerFactory::getLogger("ObjDemoRunner");
 	VideoRunner *video = null;
 	AudioRunner *audio = null;
 

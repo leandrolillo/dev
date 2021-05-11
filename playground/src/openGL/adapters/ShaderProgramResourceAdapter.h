@@ -44,7 +44,7 @@ class ShaderProgramResourceAdapter: public OpenGLResourceAdapter {
 	public:
 
 		ShaderProgramResourceAdapter() {
-			logger = Logger::getLogger("video/ShaderProgramResourceAdapter");
+			logger = LoggerFactory::getLogger("video/ShaderProgramResourceAdapter");
 			this->addSupportedMimeType("video/shaderProgram");
 
 			shadersMimeTypes["vertexShaders"] = "video/vertexShader";

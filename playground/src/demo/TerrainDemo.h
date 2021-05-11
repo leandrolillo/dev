@@ -24,7 +24,7 @@
 
 class TerrainDemoRunner: public PlaygroundRunner {
 private:
-	Logger *logger = Logger::getLogger("TerrainDemoRunner");
+	Logger *logger = LoggerFactory::getLogger("TerrainDemoRunner");
 	VideoRunner *video = null;
 	AudioRunner *audio = null;
 	vector viewPosition;

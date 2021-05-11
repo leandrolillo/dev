@@ -24,7 +24,7 @@ class OggResourceAdapter : public ResourceAdapter {
 	public:
 		OggResourceAdapter() {
 			supportedMimeTypes.push_back("audio/ogg");
-			logger = Logger::getLogger("audio/OggResourceAdapter.h");
+			logger = LoggerFactory::getLogger("audio/OggResourceAdapter.h");
 		}
 		virtual const std::vector<String> getSupportedMimeTypes() {
 			return supportedMimeTypes;

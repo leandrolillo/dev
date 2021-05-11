@@ -27,7 +27,7 @@ class ShaderResourceAdapter: public OpenGLResourceAdapter {
 		}
 	public:
 		ShaderResourceAdapter() {
-			logger = Logger::getLogger("video/ShaderResourceAdapter");
+			logger = LoggerFactory::getLogger("video/ShaderResourceAdapter");
 			this->addSupportedMimeType("video/vertexShader");
 			this->addSupportedMimeType("video/fragmentShader");
 		}

@@ -30,7 +30,7 @@
 
 
 class CollisionDetectionDemoRunner: public PlaygroundRunner {
-	Logger *logger = Logger::getLogger("CollisionDetectionDemoRunner");
+	Logger *logger = LoggerFactory::getLogger("CollisionDetectionDemoRunner");
 	VideoRunner *video = null;
 	AudioRunner *audio = null;
 

@@ -21,7 +21,7 @@ class CubicBezier: public FunctionRealVectorial {
 
     public:
         CubicBezier() {
-            logger = Logger::getLogger("CubicBezier");
+            logger = LoggerFactory::getLogger("CubicBezier");
 
         }
 

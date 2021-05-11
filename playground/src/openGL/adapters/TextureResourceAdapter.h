@@ -15,7 +15,7 @@
 class TextureResourceAdapter: public OpenGLResourceAdapter {
 	public:
 		TextureResourceAdapter() {
-			logger = Logger::getLogger("video/TextureResourceAdapter");
+			logger = LoggerFactory::getLogger("video/TextureResourceAdapter");
 			this->addSupportedMimeType("video/texture");
 		}
 

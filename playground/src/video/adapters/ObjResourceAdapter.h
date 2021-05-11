@@ -13,7 +13,7 @@
 class ObjResourceAdapter: public ResourceAdapter {
 public:
     ObjResourceAdapter() {
-        logger = Logger::getLogger("video/ObjResourceAdapter");
+        logger = LoggerFactory::getLogger("video/ObjResourceAdapter");
         this->addSupportedMimeType("video/obj");
     }
 

@@ -31,7 +31,7 @@ class AudioRunner: public PlaygroundRunner {
 		{
 			device = null;
 			context = null;
-			logger = Logger::getLogger("audio/AudioRunner.h");
+			logger = LoggerFactory::getLogger("audio/AudioRunner.h");
 		}
 		virtual unsigned char getId() {
 			return ID;

@@ -13,7 +13,7 @@
 
 class ArcBall {
 private:
-	Logger *logger = Logger::getLogger("ArcBall");
+	Logger *logger = LoggerFactory::getLogger("ArcBall");
 
 	bool dragging = false;
 

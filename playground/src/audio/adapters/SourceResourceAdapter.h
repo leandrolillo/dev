@@ -16,7 +16,7 @@
 class SourceResourceAdapter: public ResourceAdapter {
 	public:
 		SourceResourceAdapter() {
-			logger = Logger::getLogger("audio/SourceResourceAdapter");
+			logger = LoggerFactory::getLogger("audio/SourceResourceAdapter");
 			this->addSupportedMimeType("audio/source");
 		}
 

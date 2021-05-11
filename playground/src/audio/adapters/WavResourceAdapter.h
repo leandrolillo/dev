@@ -13,7 +13,7 @@
 class WavResourceAdapter: public ResourceAdapter {
 public:
 	WavResourceAdapter() {
-		logger = Logger::getLogger("audio/WavResourceAdapter");
+		logger = LoggerFactory::getLogger("audio/WavResourceAdapter");
 		this->addSupportedMimeType("audio/wav");
 	}
 

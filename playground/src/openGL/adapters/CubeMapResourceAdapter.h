@@ -16,7 +16,7 @@
 class CubeMapResourceAdapter : public TextureResourceAdapter {
 public:
 	CubeMapResourceAdapter() : TextureResourceAdapter() {
-		logger = Logger::getLogger("video/CubeMapResourceAdapter");
+		logger = LoggerFactory::getLogger("video/CubeMapResourceAdapter");
 		this->clearSupportedMimeTypes();
 		this->addSupportedMimeType("video/cubemap");
 	}

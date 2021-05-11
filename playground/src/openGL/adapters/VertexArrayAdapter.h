@@ -14,7 +14,7 @@
 class VertexArrayResourceAdapter: public OpenGLResourceAdapter {
 public:
 	VertexArrayResourceAdapter() {
-		logger = Logger::getLogger("video/VertexArrayResourceAdapter");
+		logger = LoggerFactory::getLogger("video/VertexArrayResourceAdapter");
 		this->addSupportedMimeType("video/vertexArray");
 	}
 

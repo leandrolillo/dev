@@ -14,7 +14,7 @@
 
 class TextParser {
 protected:
-    Logger *logger = Logger::getLogger("parser/TextParser");
+    Logger *logger = LoggerFactory::getLogger("parser/TextParser");
     FileParser &fileParser;
 
 public:

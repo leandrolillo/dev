@@ -34,7 +34,7 @@ class OpenGLRunner: public Win32apiRunner {
 			bitsPerPixel = 16;
 			hRenderingContext = null;
 
-			logger = Logger::getLogger("win32/wglRunner.h");
+			logger = LoggerFactory::getLogger("win32/wglRunner.h");
 		}
 
 		virtual ~OpenGLRunner() {

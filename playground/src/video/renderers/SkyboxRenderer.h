@@ -15,7 +15,7 @@
 
 class SkyboxRenderer: public Renderer {
 private:
-    Logger *logger = Logger::getLogger("SkyboxRenderer");
+    Logger *logger = LoggerFactory::getLogger("SkyboxRenderer");
 
     const CubeMapResource *cubeMap;
     const VertexArrayResource *box;

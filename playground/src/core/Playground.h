@@ -8,9 +8,9 @@
 #ifndef PLAYGROUND_H_
 #define PLAYGROUND_H_
 
-#include "../resources/ResourceManager.h"
-#include "../log/Logger.h"
-#include "../javaLike/JavaLike.h"
+#include <ResourceManager.h>
+#include <Logger.h>
+#include <JavaLike.h>
 #include <vector>
 #include <map>
 
@@ -129,15 +129,15 @@ private:
 
 public:
 	Playground() {
-		logger = Logger::getLogger("core/Playground.h");
-		status = CREATED;
+		logger = LoggerFactory::getLogger("core/Playground.h");
+		status = PlaygroundStatus::CREATED;
 		resourcesRootFolder = "Lean/dev/media/";
 		resourceManager = null;
 		//resourceManager = this->getResourceManager();
 	}
 
 	Playground(const String &rootFolder) {
-		logger = Logger::getLogger("core/Playground.h");
+		logger = LoggerFactory::getLogger("core/Playground.h");
 		status = CREATED;
 		resourcesRootFolder = rootFolder;
 		resourceManager = null;
@@ -323,10 +323,10 @@ public:
 				if ((*currentRunnerIterator)->getEnabled()) {
 					LoopResult result = (*currentRunnerIterator)->doLoop();
 
-					if (result != CONTINUE) {
-						if (result == STOP) {
-							this->status = STOPPED;
-						} else if (result == FINISHED) {
+					if (result != LoopResult::CONTINUE) {
+						if (result == LoopResult::STOP) {
+							this->status = PlaygroundStatus::STOPPED;
+						} else if (result == LoopResult::FINISHED) {
 							runners.erase(currentRunnerIterator);
 							delete *currentRunnerIterator;
 						} else // result == SKIP
@@ -346,13 +346,13 @@ public:
 					(*currentRunnerIterator)->afterLoop();
 
 			if (activeRunners == 0) {
-				this->status = STOPPED;
+				this->status = PlaygroundStatus::STOPPED;
 				logger->debug("There're no more runners active... stopping");
 			}
 
 		} catch (Exception &exception) {
 			logger->error("Loop broken: [%s]", exception.getMessage().c_str());
-			this->status = ERROR;
+			this->status = PlaygroundStatus::ERROR;
 		}
 	}
 
@@ -428,7 +428,7 @@ public:
 				currentRunnerIterator++)
 			delete (*currentRunnerIterator);
 
-		Logger::deleteLoggers();
+		LoggerFactory::deleteLoggers();
 	}
 };
 #endif /* PLAYGROUND_H_ */

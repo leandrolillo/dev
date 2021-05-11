@@ -16,7 +16,7 @@ class PlaygroundTestsRunner: public TestRunner {
 
 	public:
 		PlaygroundTestsRunner() {
-			logger = Logger::getLogger("PlaygroundTest.h");
+			logger = LoggerFactory::getLogger("PlaygroundTest.h");
 		}
 
 		virtual unsigned char getId() {

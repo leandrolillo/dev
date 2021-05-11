@@ -41,7 +41,7 @@ public:
 };
 
 class PhysicsDemoRunner: public PlaygroundRunner {
-	Logger *logger = Logger::getLogger("PhysicsDemoRunner");
+	Logger *logger = LoggerFactory::getLogger("PhysicsDemoRunner");
 	VideoRunner *video = null;
 	AudioRunner *audio = null;
 	PhysicsRunner *physics = null;

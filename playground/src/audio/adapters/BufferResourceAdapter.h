@@ -16,7 +16,7 @@
 class BufferResourceAdapter: public ResourceAdapter {
 public:
 	BufferResourceAdapter() {
-		logger = Logger::getLogger("audio/BufferResourceAdapter");
+		logger = LoggerFactory::getLogger("audio/BufferResourceAdapter");
 		this->addSupportedMimeType("audio/buffer");
 	}
 

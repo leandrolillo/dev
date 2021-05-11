@@ -49,7 +49,7 @@ class PerVertexGLTrianglesNormalGenerator : public NormalGenerator
 	public:
 		PerVertexGLTrianglesNormalGenerator()
 		{
-			logger = Logger::getLogger("video/normalGenerator/PerVertexGLTrianglesNormalGenerator.h");
+			logger = LoggerFactory::getLogger("video/normalGenerator/PerVertexGLTrianglesNormalGenerator.h");
 		}
 		const void generateNormals(GeometryResource *resource)
 		{

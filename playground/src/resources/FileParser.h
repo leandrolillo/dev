@@ -25,7 +25,7 @@ public:
 private:
     String filename;
     FILE *fileStream;
-    Logger *logger = Logger::getLogger("resources/FileParser");
+    Logger *logger = LoggerFactory::getLogger("resources/FileParser");
 
     const char *tokenSeparator;
     const char *blanks;

@@ -27,7 +27,7 @@ class JsonParser : public TextParser
 	public:
 		JsonParser(FileParser &parser) : TextParser(parser)
 		{
-			logger = Logger::getLogger("parser/JsonParser");
+			logger = LoggerFactory::getLogger("parser/JsonParser");
 		}
 
 		/**

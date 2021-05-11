@@ -15,7 +15,7 @@
 
 class TerrainRenderer : public Renderer {
 private:
-    Logger *logger = Logger::getLogger("TerrainRenderer");
+    Logger *logger = LoggerFactory::getLogger("TerrainRenderer");
 
 	const TerrainResource *terrain = null;
 	const LightResource *light = null;

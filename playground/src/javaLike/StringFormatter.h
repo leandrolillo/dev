@@ -8,7 +8,7 @@
 #ifndef SRC_UTIL_STRINGFORMATTER_H_
 #define SRC_UTIL_STRINGFORMATTER_H_
 
-#include<javaLike.h>
+#include<JavaLike.h>
 #include<stdio.h>
 
 class StringFormatter

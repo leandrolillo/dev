@@ -17,7 +17,7 @@
 class GeometryResourceAdapter: public ResourceAdapter {
 public:
 	GeometryResourceAdapter() {
-		logger = Logger::getLogger("video/GeometryResourceAdapter");
+		logger = LoggerFactory::getLogger("video/GeometryResourceAdapter");
 		this->addSupportedMimeType("video/geometry");
 	}
 
@@ -179,7 +179,7 @@ private:
 
 		for (std::vector<unsigned int>::iterator current = array.begin();
 				current != array.end(); current++) {
-			sprintf(vectorBuffer, "%lu, ", *current);
+			sprintf(vectorBuffer, "%u, ", *current);
 			prefix.append(vectorBuffer);
 		}
 

@@ -12,7 +12,7 @@
 
 class Camera {
 protected:
-    Logger *logger = Logger::getLogger("Camera");
+    Logger *logger = LoggerFactory::getLogger("Camera");
 
     matriz_4x4 projectionMatrix;
     matriz_4x4 viewMatrix;

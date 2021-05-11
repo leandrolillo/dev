@@ -21,7 +21,7 @@ private:
 
 public:
 	ResourceManager(const String &rootFolder) {
-		logger = Logger::getLogger("resources/ResourceManager.h");
+		logger = LoggerFactory::getLogger("resources/ResourceManager.h");
 
 		this->rootFolder = rootFolder;
 

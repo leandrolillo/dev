@@ -17,7 +17,7 @@
 
 class HeightMapCalculator {
 private:
-    Logger *logger = Logger::getLogger("video/HeightMapCalculator");
+    Logger *logger = LoggerFactory::getLogger("video/HeightMapCalculator");
     real boxSize;
     unsigned int maxPoints;
     ImageResource *heightMap;
@@ -65,7 +65,7 @@ private:
     real boxSize = 1.0;
 public:
     HeightMapResourceAdapter() : VertexArrayResourceAdapter() {
-        logger = Logger::getLogger("video/HeightMapResourceAdapter");
+        logger = LoggerFactory::getLogger("video/HeightMapResourceAdapter");
         this->clearSupportedMimeTypes();
         this->addSupportedMimeType("video/heightmap");
     }

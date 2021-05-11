@@ -14,7 +14,7 @@
 class ImageResource : public Resource
 {
 	private:
-        Logger *logger = Logger::getLogger("video/ImageResource");
+        Logger *logger = LoggerFactory::getLogger("video/ImageResource");
 		unsigned int alto;
 		unsigned int ancho;
 		unsigned char bpp;

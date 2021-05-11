@@ -13,7 +13,7 @@
 #include<ParticleManager.h>
 
 class PhysicsRunner: public PlaygroundRunner {
-	Logger *logger = Logger::getLogger("physics/PhysicsRunner");
+	Logger *logger = LoggerFactory::getLogger("physics/PhysicsRunner");
 
 	/**
 	 * TODO: Get rid of this dependency (it exists for timing functions).

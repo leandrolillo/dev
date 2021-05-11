@@ -8,7 +8,7 @@
 #ifndef TESTRUNNER_H_
 #define TESTRUNNER_H_
 
-#include <playground.h>
+#include <Playground.h>
 #include <list>
 
 #define defaultAssertMessage StringFormatter::format("Assertion Failed in [%s], at line [%d]", __FILE__, __LINE__)
@@ -17,14 +17,14 @@
 class TestRunner: public PlaygroundRunner {
 	private:
 		std::map<String, void (TestRunner::*)()> tests;
-		Logger *logger;
+		Logger *logger = LoggerFactory::getLogger("test/TestRunner.h");
 	public:
 		static const unsigned char ID = 100;
 
 	public:
 		TestRunner()
 		{
-			logger = Logger::getLogger("test/TestRunner.h");
+			logger->addAppender(LoggerFactory::getAppender("stdout"));
 		}
 		void addTest(String name, void (TestRunner::*testFunction)())
 		{
@@ -47,17 +47,14 @@ class TestRunner: public PlaygroundRunner {
 			{
 				try {
 					logger->info("TEST [%s]...", iterator->first.c_str());
-					printf("TEST [%s]...\n", iterator->first.c_str());
 					void (TestRunner::*currentTest)();
 					currentTest = iterator->second;
 
 					(this->*currentTest)();
 
 					logger->info("[%s] PASSED.\n", iterator->first.c_str());
-					printf("[%s] PASSED.\n", iterator->first.c_str());
 				} catch (Exception &e) {
 					logger->error("Test [%s] FAILED: %s\n", iterator->first.c_str(), e.toString().c_str());
-					printf("Test [%s] FAILED: %s\n", iterator->first.c_str(), e.toString().c_str());
 					failedTests.push_back(iterator->first);
 				}
 

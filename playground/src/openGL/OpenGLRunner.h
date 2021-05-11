@@ -44,7 +44,7 @@ int playgroundEventFilter(void *context, SDL_Event *event);
 
 class OpenGLRunner: public VideoRunner {
 private:
-    Logger *logger = Logger::getLogger("video/openGlRunner");
+    Logger *logger = LoggerFactory::getLogger("video/openGlRunner");
 
     SDL_Window *window = null;
     SDL_GLContext glcontext = null;

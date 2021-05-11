@@ -19,7 +19,7 @@ private:
 	}
 public:
 	TgaResourceAdapter() {
-		logger = Logger::getLogger("video/TgaResourceAdapter");
+		logger = LoggerFactory::getLogger("video/TgaResourceAdapter");
 		this->addSupportedMimeType("image/tga");
 	}
 
