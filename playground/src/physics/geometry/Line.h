@@ -18,6 +18,14 @@ public:
         this->origin = origin;
         this->direction = direction;
     }
+
+    const vector &getOrigin() const {
+        return this->origin;
+    }
+
+    const vector &getDirection() const {
+        return this->direction;
+    }
     /**
      * "Accept" method in visitor pattern / double dispatch
      */

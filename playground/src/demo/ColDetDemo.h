@@ -112,12 +112,13 @@ public:
 
 	virtual void mouseMove(int x, int y, int dx, int dy) {
 	    if(this->selectedGeometry >= 0 && this->selectedGeometry <= 2) {
-	        this->sphere[selectedGeometry].setOrigin(sphere[selectedGeometry].getOrigin() +
-	                vector((real)dx / (real)video->getScreenWidth(), -(real)dy / (real)video->getScreenHeight(), 0));
+	        Line line(camera.getViewPosition() * -1, camera.getRayDirection((unsigned int)x, (unsigned int)y, video->getScreenWidth(), video->getScreenHeight()));
+
+	        if(!equalsZero(line.getDirection().z)) {
+	            real t = (this->sphere[selectedGeometry].getOrigin().z - line.getOrigin().z) / line.getDirection().z;
+	            this->sphere[selectedGeometry].setOrigin(line.getOrigin() + t * line.getDirection());
+	        }
 	    }
-//        camera.setViewMatrix(matriz_4x4::matrizTraslacion(camera.getViewPosition() + vector(0.1f * dx, 0.1f * dy, 0)));
-//        audio->updateListener(camera.getViewPosition() * -1);
-        //logger->info("camera: %s", camera.getViewPosition().toString("%.2f").c_str());
 	}
 
 	void mouseButtonUp(unsigned char button, int x, int y)
