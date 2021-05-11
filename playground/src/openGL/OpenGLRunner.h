@@ -177,7 +177,7 @@ public:
                 return 0;
             case SDL_MOUSEMOTION:
                 //SDL_Log("SDL_MOUSEMOTION (%d,%d) delta=(%d,%d)", event->motion.x, event->motion.y, event->motion.xrel, event->motion.yrel);
-                this->getContainer()->mouseMove(event->motion.xrel, event->motion.yrel);
+                this->getContainer()->mouseMove(event->motion.x, event->motion.y, event->motion.xrel, event->motion.yrel);
                 logger->verbose("MOUSEMOVE: (%d, %d)", event->motion.xrel, event->motion.yrel);
                 return 0;
             case SDL_MOUSEBUTTONDOWN:

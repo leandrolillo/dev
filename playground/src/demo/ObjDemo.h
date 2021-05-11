@@ -120,7 +120,7 @@ public:
                 posicion.toString("%.2f").c_str());
 	}
 
-	virtual void mouseMove(int dx, int dy) {
+	virtual void mouseMove(int x, int y, int dx, int dy) {
         camera.setViewMatrix(matriz_4x4::matrizTraslacion(camera.getViewPosition() + vector(0.1f * dx, 0.1f * dy, 0)));
         light.setPosition(camera.getViewPosition());
         posicion = posicion + vector(0.1f * dx, 0.1f * dy, 0);

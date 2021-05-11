@@ -195,7 +195,7 @@ public:
 		}
 	}
 
-	virtual void mouseMove(int dx, int dy) {
+	virtual void mouseMove(int x, int y, int dx, int dy) {
 		*currentPosition += vector(0.1f * dx, 0.1f * dy, 0);
 		logger->verbose("%s", (*currentPosition).toString().c_str());
 

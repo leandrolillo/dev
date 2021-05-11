@@ -89,7 +89,7 @@ public:
 	virtual void keyUp(unsigned int key) {
 	}
 
-	virtual void mouseMove(int dx, int dy) {
+	virtual void mouseMove(int x, int y, int dx, int dy) {
 	}
 
 	virtual void mouseButtonDown(unsigned char button, int x, int y) {
@@ -380,12 +380,12 @@ public:
 			(*currentRunnerIterator)->keyUp(key);
 	}
 
-	void mouseMove(int dx, int dy) {
+	void mouseMove(int x, int y, int dx, int dy) {
 		for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
 				mouseMoveObservers.begin();
 				currentRunnerIterator != mouseMoveObservers.end();
 				currentRunnerIterator++)
-			(*currentRunnerIterator)->mouseMove(dx, dy);
+			(*currentRunnerIterator)->mouseMove(x, y, dx, dy);
 	}
 
 	void mouseButtonDown(unsigned char button, int x, int y) {

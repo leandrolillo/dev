@@ -23,6 +23,9 @@
 #include<collisionDetection/GroundPlaneCollisionDetector.h>
 #include<collisionDetection/SpheresCollisionDetector.h>
 
+#include <geometry/Sphere.h>
+#include <geometry/Line.h>
+
 #include<InvalidArgumentException.h>
 
 
@@ -33,15 +36,11 @@ class CollisionDetectionDemoRunner: public PlaygroundRunner {
 
 	GroundPlaneCollisionDetector groundPlaneCollisionDetector;
 	SpheresCollisionDetector spheresCollisionDetector;
+	Sphere sphere[2] = { Sphere(vector(-1, 0, -1), 1), Sphere(vector(1, 0, -1), 1)};
 
-	unsigned long to = 0;
-	real invPerformanceFreq = 1.0f;
-
-	/**
-	 * stats
-	 */
-	real elapsedTime = 0.0f;
-	unsigned long frames = 0;
+	char selectedGeometry = -1;
+	vector2 startPosition;
+	vector2 endPoisition;
 
 	Camera camera;
 	DefaultRenderer defaultRenderer;
@@ -60,7 +59,7 @@ public:
 	}
 
 	virtual unsigned char getInterests() {
-			return KEY_DOWN | KEY_UP | MOUSE_MOVE | MOUSE_WHEEL | MOUSE_BUTTON_DOWN | RESIZE;
+			return KEY_DOWN | KEY_UP | MOUSE_MOVE | MOUSE_WHEEL | MOUSE_BUTTON_DOWN | MOUSE_BUTTON_UP| RESIZE;
 	}
 
 	void resize(unsigned int height, unsigned int width) {
@@ -95,6 +94,8 @@ public:
 	LoopResult doLoop() {
 	    defaultRenderer.clearObjects();
 	    defaultRenderer.drawAxis(matriz_4x4::identidad);
+	    defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(sphere[0].getOrigin()), sphere[0].getRadius());
+	    defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(sphere[1].getOrigin()), sphere[1].getRadius());
 
 		defaultRenderer.render(camera);
 		skyboxRenderer.render(camera);
@@ -109,14 +110,41 @@ public:
         //logger->info("camera: %s", camera.getViewPosition().toString("%.2f").c_str());
 	}
 
-	virtual void mouseMove(int dx, int dy) {
+	virtual void mouseMove(int x, int y, int dx, int dy) {
+	    if(this->selectedGeometry >= 0 && this->selectedGeometry <= 2) {
+	        this->sphere[selectedGeometry].setOrigin(sphere[selectedGeometry].getOrigin() +
+	                vector((real)dx / (real)video->getScreenWidth(), -(real)dy / (real)video->getScreenHeight(), 0));
+	    }
 //        camera.setViewMatrix(matriz_4x4::matrizTraslacion(camera.getViewPosition() + vector(0.1f * dx, 0.1f * dy, 0)));
 //        audio->updateListener(camera.getViewPosition() * -1);
         //logger->info("camera: %s", camera.getViewPosition().toString("%.2f").c_str());
 	}
 
+	void mouseButtonUp(unsigned char button, int x, int y)
+    {
+	    if(button == SDL_BUTTON_LEFT) {
+            selectedGeometry = -1;
+	    }
+    }
+
 	void mouseButtonDown(unsigned char button, int x, int y) {
-	    camera.getRayDirection((unsigned int)x, (unsigned int)y, video->getScreenWidth(), video->getScreenHeight());
+	    if(button == SDL_BUTTON_LEFT) {
+	        this->startPosition = vector2(x, y);
+
+            Line line(camera.getViewPosition() * -1, camera.getRayDirection((unsigned int)x, (unsigned int)y, video->getScreenWidth(), video->getScreenHeight()));
+            logger->info("Line: %s", line.toString().c_str());
+
+            selectedGeometry = -1;
+            for(unsigned char index = 0; index < 2; index++) {
+                Geometry &current = sphere[index];
+
+                if(current.intersects((Geometry &)line)) {
+                    selectedGeometry = index;
+                }
+            }
+
+            printf("Selected sphere [%d]\n", selectedGeometry);
+	    }
 	}
 
 	virtual void keyDown(unsigned int key) {

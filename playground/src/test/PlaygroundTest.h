@@ -59,20 +59,20 @@ class PlaygroundTestsRunner: public TestRunner {
 
 		    vector rayDirection = camera.getRayDirection(320, 240, width, height);
 
-		    vector4 eyePoint = camera.getViewMatrix() * point;
-		    vector4 projectedPoint = camera.getProjectionMatrix() * point;
-		    vector2 ndcPoint = (vector2(projectedPoint.x, projectedPoint.y) + vector2(1, 1)) * (real)0.5;// ((vector)projectedPoint) * ((real)1 / projectedPoint.w);
-            vector2 renderedPoint = ndcPoint;
-
-		    renderedPoint.x *= (real)width;
-		    renderedPoint.y *= (real)height;
-
-		    printf("Transformed point point: %s\n->Eye point: %s\n->Projected point: %s\n->NDC point: %s\n->ViewPort point: %s\n",
-		            point.toString("%.2f").c_str(),
-		            eyePoint.toString("%.2f").c_str(),
-		            projectedPoint.toString("%.2f").c_str(),
-		            ndcPoint.toString("%.2f").c_str(),
-		            renderedPoint.toString("%.2f").c_str());
+//		    vector4 eyePoint = camera.getViewMatrix() * point;
+//		    vector4 projectedPoint = camera.getProjectionMatrix() * point;
+//		    vector2 ndcPoint = (vector2(projectedPoint.x, projectedPoint.y) + vector2(1, 1)) * (real)0.5;// ((vector)projectedPoint) * ((real)1 / projectedPoint.w);
+//            vector2 renderedPoint = ndcPoint;
+//
+//		    renderedPoint.x *= (real)width;
+//		    renderedPoint.y *= (real)height;
+//
+//		    printf("Transformed point point: %s\n->Eye point: %s\n->Projected point: %s\n->NDC point: %s\n->ViewPort point: %s\n",
+//		            point.toString("%.2f").c_str(),
+//		            eyePoint.toString("%.2f").c_str(),
+//		            projectedPoint.toString("%.2f").c_str(),
+//		            ndcPoint.toString("%.2f").c_str(),
+//		            renderedPoint.toString("%.2f").c_str());
 
 		    assertEquals(defaultAssertMessage, vector(0, 0, -1), rayDirection);
         }

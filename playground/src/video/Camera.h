@@ -82,33 +82,16 @@ public:
 
     vector4 getRayDirection(unsigned int x, unsigned int y, unsigned int width, unsigned int height) const {
         vector4 homogeneousClipCoordinates = vector4(
-                0,
                 (real)2 * (real)x / (real)width - (real)1,
                 (real)1 - (real)2 * (real)y / (real)height,
-                -1);
+                -1,
+                0);
 
         vector4 cameraCoordinates = projectionMatrix.inversa() * homogeneousClipCoordinates;
         cameraCoordinates.z = (real)-1;
         cameraCoordinates.w = (real)0;
 
-        vector3 worldCoordinates = ((vector3)(viewMatrix.inversa() * cameraCoordinates));
-        worldCoordinates = worldCoordinates.normalizado();
-
-        logger->info("projection\n%sprojection-1\n%s=\n%s",
-                projectionMatrix.toString("%.3f").c_str(),
-                projectionMatrix.inversa().toString("%.3f").c_str(),
-                (projectionMatrix.inversa() * projectionMatrix).toString("%.3f").c_str());
-
-        logger->info("view\n%sview-1\n%s=\n%s",
-                        viewMatrix.toString("%.3f").c_str(),
-                        viewMatrix.inversa().toString("%.3f").c_str(),
-                        (viewMatrix.inversa() * viewMatrix).toString("%.3f").c_str());
-
-        logger->info("click at <%u, %u> of <%u, %u>", x, y, width, height);
-        logger->info("hcc = %s", homogeneousClipCoordinates.toString("%.2f").c_str());
-
-        logger->info("camera coordinates = %s", cameraCoordinates.toString("%.2f").c_str());
-        logger->info("world coordinates = %s", worldCoordinates.toString("%.2f").c_str());
+        vector3 worldCoordinates = ((vector3)(viewMatrix.inversa() * cameraCoordinates)).normalizado();
 
         return worldCoordinates;
     }

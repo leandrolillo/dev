@@ -119,7 +119,7 @@ public:
 		}
 	}
 
-    virtual void mouseMove(int dx, int dy) {
+    virtual void mouseMove(int x, int y, int dx, int dy) {
         if(!arcball.isDragging()) {
             viewPosition += vector(0.1f * dx, 0.1f * dy, 0);
             camera.setViewMatrix(matriz_4x4::matrizBase((matriz_3x3)camera.getViewMatrix(), viewPosition));

@@ -18,6 +18,9 @@ typedef vector3 vector;
 typedef vector2 texel;
 typedef cuaternion vector4;
 
+//#define defaultNumberFormat "%.3e"
+#define defaultNumberFormat "%.2f"
+
 class BaseMatrix {
 	protected:
 		unsigned int nroFilas, nroColumnas;
@@ -38,7 +41,7 @@ class BaseMatrix {
 
 		virtual real operator()(unsigned int fila, unsigned int columna) const = 0;
 
-		virtual String toString(String format = "%.3e") const {
+		virtual String toString(String format = defaultNumberFormat) const {
 			std::string result;
 
 			char temp[500];
@@ -565,7 +568,7 @@ class vector2 {
 
 		operator real *() const;
 
-		String toString(String numberFormat = "%.3e") const {
+		String toString(String numberFormat = defaultNumberFormat) const {
             char temp[256];
 
             sprintf(temp, ("<" + numberFormat + ", " + numberFormat + ">").c_str(), this->x, this->y);
@@ -684,7 +687,7 @@ class vector3 {
 //
 //		const matriz_3x3 star() const;
 
-		String toString(String numberFormat = "%.3e") const {
+		String toString(String numberFormat = defaultNumberFormat) const {
 			char temp[256];
 
 			sprintf(temp, ("<" + numberFormat + ", " + numberFormat + ", " + numberFormat + ">").c_str(), this->x, this->y, this->z);
@@ -816,7 +819,7 @@ class cuaternion {
 			));
 		}
 
-		String toString(const String format = "%.3e") const {
+		String toString(const String format = defaultNumberFormat) const {
 			char temp[256];
 
 			sprintf(temp, ("<" + format + ", " + format + ", " + format + ", " + format + ">").c_str(), this->x, this->y, this->z, this->w);
