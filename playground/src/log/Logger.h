@@ -18,9 +18,7 @@
 #include <string.h>
 #include <errno.h>
 
-//#define _USE_PRINTF_
-//#define DEBUG
-//#define VERBOSE
+#define DEFAULT_LOG_LEVEL LogLevel::INFO
 
 enum class LogLevel {
     ERROR=0,
@@ -178,6 +176,10 @@ public:
         return this->basename;
     }
 
+    void setLogLevel(LogLevel logLevel) {
+        this->logLevel = logLevel;
+    }
+
 protected:
     void messageAppenders(const String &message) {
         for (std::vector<Appender*>::iterator iterator = appenders.begin(); iterator != appenders.end(); iterator++) {
@@ -287,6 +289,7 @@ public:
         //getFileHandler();
 
         Logger *logger = new Logger(basename);
+        logger->setLogLevel(DEFAULT_LOG_LEVEL);
         logger->addAppender(getAppender("Playground.log"));
 
         LoggerFactory::loggers.push_back(logger);
