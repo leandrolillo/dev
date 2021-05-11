@@ -14,17 +14,15 @@
 
 class ResourceManager {
 private:
-	Logger *logger;
+	Logger *logger = LoggerFactory::getLogger("resources/ResourceManager");
 	std::map<String, ResourceAdapter*> adapters;
 	std::map<String, Resource*> resourceCache;
 	String rootFolder;
 
 public:
 	ResourceManager(const String &rootFolder) {
-		logger = LoggerFactory::getLogger("resources/ResourceManager.h");
-
+		//logger->setLogLevel(LogLevel::VERBOSE);
 		this->rootFolder = rootFolder;
-
 	}
 
 	const String& getRootFolder() {
@@ -147,15 +145,17 @@ public:
 
 	void dispose(Resource *resource) {
 		if (resource != null) {
-		    logger->verbose("Disposing of %s", resource->toString().c_str());
+		    logger->verbose("Disposing of [%s]", resource->toString().c_str());
 
 		    if(adapters[resource->getMimeType()] != null) {
 		        logger->verbose("Disposing of %s with adapter %s", resource->toString().c_str() ,adapters[resource->getMimeType()]->toString().c_str());
 		        adapters[resource->getMimeType()]->dispose(resource);
 		    }
 
+		    logger->verbose("deleting [%s]", resource->toString().c_str());
+
 			delete resource;
-		    logger->info("Disposed of %s", resource->toString().c_str());
+		    logger->info("Disposed of [%s]", resource->toString().c_str());
 		}
 	}
 
@@ -177,7 +177,7 @@ public:
 		for (std::map<String, ResourceAdapter*>::iterator currentAdapterIterator =
 				adapters.begin(); currentAdapterIterator != adapters.end();
 				currentAdapterIterator++) {
-		    logger->verbose("Scheduling for removal: %s", currentAdapterIterator->second->toString().c_str());
+		    logger->verbose("Scheduling for removal [%s]", currentAdapterIterator->second->toString().c_str());
 			resourceAdaptersSet.insert(currentAdapterIterator->second);
 		}
 
@@ -185,7 +185,7 @@ public:
 				resourceAdaptersSet.begin();
 				currentAdapterIterator != resourceAdaptersSet.end();
 				currentAdapterIterator++) {
-		    logger->verbose("Deleting: %s", (*currentAdapterIterator)->toString().c_str());
+		    logger->verbose("Deleting adapter [%s]", (*currentAdapterIterator)->toString().c_str());
 			delete (*currentAdapterIterator);
 		}
 

@@ -20,11 +20,13 @@ protected:
     matriz_4x4 modelMatrix;
     matriz_3x3 normalMatrix;
     const VertexArrayResource *object;
+    const MaterialResource *material;
 public:
-    WorldObject(const matriz_4x4 &modelMatrix, const VertexArrayResource *object) {
+    WorldObject(const matriz_4x4 &modelMatrix, const VertexArrayResource *object, const MaterialResource *material) {
         this->object = object;
         this->modelMatrix = modelMatrix;
         this->normalMatrix = ((matriz_3x3) modelMatrix).inversa().traspuesta();
+        this->material = material;
     }
 
     const matriz_4x4 getModelMatrix() const {
@@ -38,14 +40,18 @@ public:
     const VertexArrayResource *getVertexArray() const {
         return this->object;
     }
+
+    const MaterialResource *getMaterial() const {
+        return this->material;
+    }
 };
 
 class DefaultRenderer : public Renderer {
 private:
     Logger *logger = LoggerFactory::getLogger("DefaultRenderer");
 
-    const TextureResource *texture = null;
-    const MaterialResource *material = null;
+    const TextureResource *currentTexture = null;
+    const MaterialResource *currentMaterial = null;
     const LightResource *light = null;
 
     std::vector<const WorldObject> objects;
@@ -56,7 +62,7 @@ private:
 
 public:
     void setMaterial(const MaterialResource *material) {
-        this->material = material;
+        this->currentMaterial = material;
     }
 
     void setLight(const LightResource *light) {
@@ -64,7 +70,7 @@ public:
     }
 
     void setTexture(const TextureResource *texture) {
-        this->texture = texture;
+        this->currentTexture = texture;
     }
 
     bool init() {
@@ -83,22 +89,29 @@ public:
         if(videoRunner != null && shader != null) {
             videoRunner->useProgramResource(shader);
 
-            if(this->texture != null) {
-                videoRunner->setTexture(0, "textureUnit", this->texture);
+            if(this->currentTexture != null) {
+                videoRunner->setTexture(0, "textureUnit", this->currentTexture);
             } else {
                 videoRunner->setTexture(0, "textureUnit", videoRunner->getDefaultTexture());
             }
 
             videoRunner->sendVector("viewPosition", camera.getViewPosition());
-
-            this->sendMaterial(material);
             this->sendLight(light);
 
+            const MaterialResource *lastMaterial = null;
             for (std::vector<const WorldObject>::const_iterator iterator = objects.begin(); iterator != objects.end(); iterator++) {
-                videoRunner->sendMatrix("matrices.model", (*iterator).getModelMatrix());
-                videoRunner->sendMatrix("matrices.pvm", camera.getProjectionViewMatrix() * (*iterator).getModelMatrix());
-                videoRunner->sendMatrix("matrices.normal", (*iterator).getNormalMatrix());
-                videoRunner->drawVertexArray((*iterator).getVertexArray());
+                const WorldObject &object = *iterator;
+
+                if(lastMaterial == null || lastMaterial != object.getMaterial()) {
+                    lastMaterial = object.getMaterial();
+                    if(lastMaterial != null) {
+                        this->sendMaterial(lastMaterial);
+                    }
+                }
+                videoRunner->sendMatrix("matrices.model", object.getModelMatrix());
+                videoRunner->sendMatrix("matrices.pvm", camera.getProjectionViewMatrix() * object.getModelMatrix());
+                videoRunner->sendMatrix("matrices.normal", object.getNormalMatrix());
+                videoRunner->drawVertexArray(object.getVertexArray());
             }
 
             videoRunner->setTexture(0, null);
@@ -109,7 +122,7 @@ public:
     }
 
     void drawObject(const matriz_4x4 &modelMatrix, const VertexArrayResource *object) {
-        this->objects.push_back(WorldObject(modelMatrix, object));
+        this->objects.push_back(WorldObject(modelMatrix, object, currentMaterial));
     }
 
     void drawAxis(const matriz_4x4 &modelMatrix, real length = 1.0f) {

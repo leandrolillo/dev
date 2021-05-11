@@ -52,6 +52,7 @@ class CollisionDetectionDemoRunner: public PlaygroundRunner {
 	        MaterialResource(vector(0.5, 0.5, 1), vector(0.5, 0.5, 1), vector(1, 1, 1), 32)};
 public:
 	CollisionDetectionDemoRunner() {
+	    logger->addAppender(LoggerFactory::getAppender("stdout"));
 	}
 
 	unsigned char getId() {
@@ -120,9 +121,9 @@ public:
 	        }
 
 	        if(sphere[0].intersects(sphere[1])) {
-	            printf("Intersecting!\n");
+	            logger->info("Intersecting!");
 	        } else {
-	            printf("Not intersecting!\n");
+	            logger->info("Not intersecting!");
 	        }
 	    }
 	}
@@ -150,7 +151,7 @@ public:
                 }
             }
 
-            printf("Selected sphere [%d]\n", selectedGeometry);
+            logger->info("Selected sphere [%d]", selectedGeometry);
 	    }
 	}
 

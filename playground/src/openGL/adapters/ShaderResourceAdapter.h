@@ -71,7 +71,7 @@ class ShaderResourceAdapter: public OpenGLResourceAdapter {
 
 		virtual void dispose(Resource *resource) {
 			ShaderResource *shaderResource = (ShaderResource *)resource;
-			if(shaderResource->getId() != 0) {
+			if(shaderResource != null && shaderResource->getId() != 0) {
 				glDeleteShader(shaderResource->getId());
 				shaderResource->setId(0);
 			}

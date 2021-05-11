@@ -51,6 +51,10 @@ public:
 		container = null;
 		enabled = true;
 	}
+
+	virtual ~PlaygroundRunner() {
+    }
+
 	virtual bool init() {
 		return true;
 	}
@@ -63,8 +67,6 @@ public:
 		return LoopResult::CONTINUE;
 	}
 	virtual void afterLoop() {
-	}
-	virtual ~PlaygroundRunner() {
 	}
 
 	void setContainer(Playground *container) {
@@ -289,7 +291,10 @@ public:
 			while (status == PlaygroundStatus::RUNNING)
 				this->loop();
 		}
-		logger->debug("Finished looping");
+		logger->debug("Finished looping... shutting down");
+
+		shutdown();
+		logger->debug("done.");
 	}
 
 	virtual void stop() {
@@ -404,23 +409,27 @@ public:
 					(*currentRunnerIterator)->mouseWheel(wheel);
 	}
 
+	virtual void shutdown() {
+        this->keyDownObservers.clear();
+        this->keyUpObservers.clear();
+        this->resizeObservers.clear();
+        this->moveObservers.clear();
+        this->mouseMoveObservers.clear();
+        this->mouseButtonDownObservers.clear();
+        this->mouseButtonUpObservers.clear();
+
+        for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
+                runners.begin(); currentRunnerIterator != runners.end();
+                currentRunnerIterator++) {
+            delete (*currentRunnerIterator);
+        }
+
+        delete resourceManager;
+
+        LoggerFactory::deleteLoggers();
+	}
+
 	virtual ~Playground() {
-		this->keyDownObservers.clear();
-		this->keyUpObservers.clear();
-		this->resizeObservers.clear();
-		this->moveObservers.clear();
-		this->mouseMoveObservers.clear();
-		this->mouseButtonDownObservers.clear();
-		this->mouseButtonUpObservers.clear();
-
-		delete resourceManager;
-
-		for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
-				runners.begin(); currentRunnerIterator != runners.end();
-				currentRunnerIterator++)
-			delete (*currentRunnerIterator);
-
-		LoggerFactory::deleteLoggers();
 	}
 };
 #endif /* PLAYGROUND_H_ */

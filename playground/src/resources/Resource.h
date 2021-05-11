@@ -55,7 +55,7 @@ class Resource {
 		}
 
 		virtual String toString() const {
-			return "Resource(id:" + std::to_string(this->getId()) + ") [" + this->getMimeType() + "] [" + this->fileName + "]";
+			return ("Resource(id:" + std::to_string(this->getId()) + ") [" + this->getMimeType() + "] [" + this->fileName + "]");
 		}
 
 	};

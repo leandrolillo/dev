@@ -82,6 +82,7 @@ public:
 		log("textureCoordinates ", resource->getTextureCoordinates());
 		return resource;
 	}
+
 	virtual void dispose(Resource *resource) {
 	    logger->info("Adapter Disposing of %s", resource->toString().c_str());
 
