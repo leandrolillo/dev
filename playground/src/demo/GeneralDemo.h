@@ -184,7 +184,7 @@ public:
 
 
 
-		return CONTINUE;
+		return LoopResult::CONTINUE;
 	}
 	void mouseWheel(int wheel) {
 		*currentPosition += vector(0.0f, 0.0f, wheel);

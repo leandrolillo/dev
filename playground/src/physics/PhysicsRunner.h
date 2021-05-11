@@ -83,7 +83,7 @@ public:
 //				viewPosition.toString().c_str(),
 //				count);
 
-		return CONTINUE;
+		return LoopResult::CONTINUE;
 	}
 };
 

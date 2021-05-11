@@ -14,7 +14,7 @@
 #include <vector>
 #include <map>
 
-enum PlaygroundStatus {
+enum class PlaygroundStatus {
 	CREATED,
 	INITIALIZED,
 	RUNNERS_BROKEN,
@@ -24,7 +24,7 @@ enum PlaygroundStatus {
 	ERROR
 };
 
-enum LoopResult {
+enum class LoopResult {
 	CONTINUE, SKIP, STOP, FINISHED
 };
 
@@ -60,7 +60,7 @@ public:
 	virtual void beforeLoop() {
 	}
 	virtual LoopResult doLoop() {
-		return CONTINUE;
+		return LoopResult::CONTINUE;
 	}
 	virtual void afterLoop() {
 	}
@@ -112,12 +112,12 @@ public:
 
 class Playground {
 private:
-	Logger *logger;
-	ResourceManager *resourceManager;
+	Logger *logger = LoggerFactory::getLogger("core/Playground.h");
+	ResourceManager *resourceManager = null;
 	String resourcesRootFolder;
 	std::vector<PlaygroundRunner *> runners;
 	std::map<unsigned char, PlaygroundRunner *> runners_by_id;
-	PlaygroundStatus status;
+	PlaygroundStatus status = PlaygroundStatus::CREATED;
 	std::vector<PlaygroundRunner *> resizeObservers;
 	std::vector<PlaygroundRunner *> moveObservers;
 	std::vector<PlaygroundRunner *> keyDownObservers;
@@ -128,19 +128,11 @@ private:
 	std::vector<PlaygroundRunner *> mouseWheelObservers;
 
 public:
-	Playground() {
-		logger = LoggerFactory::getLogger("core/Playground.h");
-		status = PlaygroundStatus::CREATED;
-		resourcesRootFolder = "Lean/dev/media/";
-		resourceManager = null;
-		//resourceManager = this->getResourceManager();
+	Playground() : Playground("Lean/dev/media/"){
 	}
 
 	Playground(const String &rootFolder) {
-		logger = LoggerFactory::getLogger("core/Playground.h");
-		status = CREATED;
 		resourcesRootFolder = rootFolder;
-		resourceManager = null;
 	}
 
 	virtual ResourceManager *getResourceManager() {
@@ -273,35 +265,35 @@ public:
 	}
 
 	virtual void run() {
-		if (status == CREATED) {
+		if (status == PlaygroundStatus::CREATED) {
 			logger->debug("Initializing playground");
 			init();
-			status = INITIALIZED;
+			status = PlaygroundStatus::INITIALIZED;
 		}
 
-		if (status == INITIALIZED) {
+		if (status == PlaygroundStatus::INITIALIZED) {
 			if (initRunners()) {
-				status = RUNNERS_INITIALIZED;
+				status = PlaygroundStatus::RUNNERS_INITIALIZED;
 				logger->debug("Runners initialization completed");
 			} else {
-				status = RUNNERS_BROKEN;
+				status = PlaygroundStatus::RUNNERS_BROKEN;
 				logger->error("Runners initialization failed");
 			}
 		}
 
-		if (status == RUNNERS_INITIALIZED || status == STOPPED) {
+		if (status == PlaygroundStatus::RUNNERS_INITIALIZED || status == PlaygroundStatus::STOPPED) {
 			logger->debug("Entering loop");
 
-			status = RUNNING;
+			status = PlaygroundStatus::RUNNING;
 
-			while (status == RUNNING)
+			while (status == PlaygroundStatus::RUNNING)
 				this->loop();
 		}
 		logger->debug("Finished looping");
 	}
 
 	virtual void stop() {
-		status = STOPPED;
+		status = PlaygroundStatus::STOPPED;
 	}
 
 	virtual void loop() {

@@ -157,7 +157,7 @@ public:
 		skyboxRenderer.render(camera);
 		gridRenderer.render(camera);
 
-		return CONTINUE;
+		return LoopResult::CONTINUE;
 	}
 
 	void onCollision(BulletParticle *bulletParticle) {

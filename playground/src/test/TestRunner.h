@@ -74,7 +74,7 @@ class TestRunner: public PlaygroundRunner {
 		}
 
 		virtual LoopResult doLoop() {
-			return FINISHED;
+			return LoopResult::FINISHED;
 		}
 
 		void assertTrue(bool condition)

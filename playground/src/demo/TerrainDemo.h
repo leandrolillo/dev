@@ -98,7 +98,7 @@ public:
 		terrainRenderer.render(camera);
 		skyboxRenderer.render(camera);
 
-		return CONTINUE;
+		return LoopResult::CONTINUE;
 	}
 
 	void mouseButtonDown(unsigned char button, int x, int y)

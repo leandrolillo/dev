@@ -143,11 +143,11 @@ public:
         while (SDL_PollEvent(&windowEvent)) {
             switch (windowEvent.type) {
                 case SDL_QUIT:
-                    return STOP;
+                    return LoopResult::STOP;
             }
         }
 
-        return CONTINUE;
+        return LoopResult::CONTINUE;
     }
 
     virtual void afterLoop() {

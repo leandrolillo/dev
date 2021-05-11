@@ -101,7 +101,7 @@ public:
 		skyboxRenderer.render(camera);
 		gridRenderer.render(camera);
 
-		return CONTINUE;
+		return LoopResult::CONTINUE;
 	}
 
 	void mouseWheel(int wheel) {

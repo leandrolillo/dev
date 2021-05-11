@@ -106,7 +106,7 @@ public:
 
 		rotacion+=0.1;
 
-		return CONTINUE;
+		return LoopResult::CONTINUE;
 	}
 
 	void mouseWheel(int wheel) {

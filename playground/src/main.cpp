@@ -14,15 +14,15 @@
 #include <PlaygroundTest.h>
 
 int main(int, char**){
-    TestsPlayground playgroundtests("/Users/leandro/huevadas/projects/dev/media/");
-    playgroundtests.run();
+//    TestsPlayground playgroundtests("/Users/leandro/huevadas/projects/dev/media/");
+//    playgroundtests.run();
 
 //    CollisionDetectionPlayground playground("/Users/leandro/huevadas/projects/dev/media/");
 //    playground.run();
 
 
-//	PlaygroundGeneralDemo playground("/Users/leandro/huevadas/projects/dev/media/");
-//    playground.run();
+	PlaygroundGeneralDemo playground("/Users/leandro/huevadas/projects/dev/media/");
+    playground.run();
 
 //    PlaygroundTerrainDemo playground("/Users/leandro/huevadas/projects/dev/media/");
 //    playground.run();
