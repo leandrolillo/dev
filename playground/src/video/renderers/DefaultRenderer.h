@@ -42,7 +42,7 @@ public:
 
 class DefaultRenderer : public Renderer {
 private:
-    Logger *logger = Logger::getLogger("DefaultRenderer");
+    Logger *logger = LoggerFactory::getLogger("DefaultRenderer");
 
     const TextureResource *texture = null;
     const MaterialResource *material = null;
