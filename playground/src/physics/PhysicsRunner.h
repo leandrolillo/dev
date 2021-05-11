@@ -25,6 +25,8 @@ class PhysicsRunner: public PlaygroundRunner {
 	unsigned long to = 0;
 	real invPerformanceFreq = 1.0f;
 
+	real playbackSpeed = 1.0f;
+
 	/**
 	 * stats
 	 */
@@ -44,8 +46,12 @@ public:
 		return &this->particleManager;
 	}
 
+	void setPlaybackSpeed(real playbackspeed) {
+	    this->playbackSpeed = playbackspeed;
+	}
+
 	bool init() {
-		videoRunner = (VideoRunner*) this->getContainer()->getRunner(1);
+		videoRunner = (VideoRunner*) this->getContainer()->getRequiredRunner(VideoRunner::ID);
 
 		to = videoRunner->getPerformanceCounter();
 		invPerformanceFreq = (real)1 / (real)videoRunner->getPerformanceFreq();
@@ -62,7 +68,7 @@ public:
 		real dt = (real)(tf - to) * invPerformanceFreq;
 		to = tf;
 
-		this->particleManager.step(dt);
+		this->particleManager.step(dt * playbackSpeed);
 
 		/**
 		 * stats

@@ -10,8 +10,6 @@
 
 #include<Math3d.h>
 
-
-
 class Line;
 class Sphere;
 

@@ -118,6 +118,12 @@ public:
 	            real t = (this->sphere[selectedGeometry].getOrigin().z - line.getOrigin().z) / line.getDirection().z;
 	            this->sphere[selectedGeometry].setOrigin(line.getOrigin() + t * line.getDirection());
 	        }
+
+	        if(sphere[0].intersects(sphere[1])) {
+	            printf("Intersecting!\n");
+	        } else {
+	            printf("Not intersecting!\n");
+	        }
 	    }
 	}
 

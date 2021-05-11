@@ -102,6 +102,7 @@ public:
 		video = (VideoRunner*) this->getContainer()->getRequiredRunner(VideoRunner::ID);
 		audio = (AudioRunner*) this->getContainer()->getRequiredRunner(AudioRunner::ID);
 		physics = (PhysicsRunner *)this->getContainer()->getRequiredRunner(PhysicsRunner::ID);
+		physics->setPlaybackSpeed(0.3);
 
 		gunshotSource = audio->createSource("audio/handgunfire.wav", vector(0, 0, 0), vector(0, 0, 0), false);
 		bounceSource = audio->createSource("audio/twang3.wav", vector(0, 0, 0), vector(0, 0, 0), false);
@@ -137,7 +138,7 @@ public:
 
 //		logger->debug("Drawing");
 		for(unsigned int index = 0; index < numberOfParticles; index++) {
-		    BulletParticle *particle = particles+index;
+		    BulletParticle *particle = &particles[index];
 
 			if(particle->getStatus() == true) {
 			    defaultRenderer.sendMaterial(&materials[index % 3]);
@@ -214,7 +215,7 @@ public:
         logger->debug("camera: %s", camera.getViewPosition().toString("%.2f").c_str());
 	}
 
-	virtual void mouseMove(int dx, int dy) {
+	void mouseMove(int x, int y, int dx, int dy) {
         camera.setViewMatrix(matriz_4x4::matrizTraslacion(camera.getViewPosition() + vector(0.1f * dx, 0.1f * dy, 0)));
         audio->updateListener(camera.getViewPosition() * -1);
         logger->debug("camera: %s", camera.getViewPosition().toString("%.2f").c_str());

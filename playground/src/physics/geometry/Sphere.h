@@ -9,6 +9,7 @@
 #define SRC_PHYSICS_GEOMETRY_SPHERE_H_
 
 #include<geometry/Geometry.h>
+#include<collisionDetection/IntersectionTester.h>
 
 class Sphere : public Geometry {
     real radius;
@@ -19,12 +20,12 @@ public:
         this->radius = radius;
     }
 
-    const vector &getOrigin() const {
-        return this->origin;
-    }
-
     void setOrigin(const vector &origin) {
         this->origin = origin;
+    }
+
+    const vector &getOrigin() const {
+        return this->origin;
     }
 
     real getRadius() const {
@@ -43,19 +44,17 @@ public:
      * "Visit" methods in visitor pattern / double dispatch
      */
 
-    bool intersects(const Line &geometry) const {
+    bool intersects(const Line &line) const {
+        //return IntersectionTester::areIntersecting(line.getOrigin(), line.getDirection(), this->getOrigin(), this->getRadius());
         return false;
     }
 
-    bool intersects(const Sphere &geometry) const {
-        return false;
+    bool intersects(const Sphere &sphere) const {
+        return IntersectionTester::areIntersecting(sphere.getOrigin(), sphere.getRadius(), this->getOrigin(), this->getRadius());
     }
 
     String toString() const {
         return "Sphere(origin: " + this->origin.toString("%.2f") + ", radius: " + std::to_string(this->radius) + ")";
     }
 };
-
-
-
 #endif /* SRC_PHYSICS_GEOMETRY_SPHERE_H_ */

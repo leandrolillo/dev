@@ -17,8 +17,8 @@ int main(int, char**){
 //    TestsPlayground playgroundtests("/Users/leandro/huevadas/projects/dev/media/");
 //    playgroundtests.run();
 
-    CollisionDetectionPlayground playground("/Users/leandro/huevadas/projects/dev/media/");
-    playground.run();
+//    CollisionDetectionPlayground playground("/Users/leandro/huevadas/projects/dev/media/");
+//    playground.run();
 
 
 //	PlaygroundGeneralDemo playground("/Users/leandro/huevadas/projects/dev/media/");
@@ -27,8 +27,8 @@ int main(int, char**){
 //    PlaygroundTerrainDemo playground("/Users/leandro/huevadas/projects/dev/media/");
 //    playground.run();
 
-//    PhysicsPlayground playground("/Users/leandro/huevadas/projects/dev/media/");
-//    playground.run();
+    PhysicsPlayground playground("/Users/leandro/huevadas/projects/dev/media/");
+    playground.run();
 
 //    ObjDemoPlayground playground("/Users/leandro/huevadas/projects/dev/media/");
 //    playground.run();

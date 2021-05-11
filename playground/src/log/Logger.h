@@ -17,7 +17,7 @@
 #include <string.h>
 #include <errno.h>
 
-#define _USE_PRINTF_
+//#define _USE_PRINTF_
 //#define DEBUG
 //#define VERBOSE
 
@@ -123,7 +123,10 @@ class Logger {
 				strftime(textBuffer, sizeof(textBuffer), "%d/%m/%Y %H:%M:%S", getCurrentTime());
 
 				fprintf(fileHandler, "%s - %s - %s: ", textBuffer, type, basename.c_str());
-				//printf("%s - %s - %s: ", textBuffer, type, basename.c_str());
+
+#ifdef _USE_PRINTF_
+				printf("%s - %s - %s: ", textBuffer, type, basename.c_str());
+#endif
 
 				/**
 				 * This approach was causing null pointer exceptions because args can only be iterated once
@@ -133,14 +136,19 @@ class Logger {
 
 				char *tempBuffer = null; //TODO: review if it is better to use a fixed buffer and truncate logs length
 				if(vasprintf(&tempBuffer, formato, *args)) {
-					//printf("%s", tempBuffer);
+#ifdef _USE_PRINTF_
+					printf("%s", tempBuffer);
+#endif
 					fprintf(fileHandler, "%s", tempBuffer);
 					free(tempBuffer);
 				}
 
 
 				fprintf(fileHandler, "\n");
-				//printf("\n");
+#ifdef _USE_PRINTF_
+				printf("\n");
+#endif
+
 			}
 		}
 		void setBasename(const String &basename)
