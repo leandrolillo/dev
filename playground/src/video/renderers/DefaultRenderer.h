@@ -25,7 +25,17 @@ public:
     WorldObject(const matriz_4x4 &modelMatrix, const VertexArrayResource *object, const MaterialResource *material) {
         this->object = object;
         this->modelMatrix = modelMatrix;
-        this->normalMatrix = ((matriz_3x3) modelMatrix).inversa().traspuesta();
+
+        /**
+         * Do not calculate inverse if determinant is zero - alternative to throwing the exception and stopping, specially for
+         * drawLine functionality which generates singular matrixes.
+         */
+        matriz_3x3 reducedModelMatrix = (matriz_3x3) modelMatrix;
+        if(reducedModelMatrix.determinante() != 0.0f) {
+            this->normalMatrix = reducedModelMatrix.inversa().traspuesta();
+        } else {
+            this->normalMatrix = matriz_3x3::identidad;
+        }
         this->material = material;
     }
 
@@ -59,6 +69,7 @@ private:
     const VertexArrayResource *axis = null;
     const VertexArrayResource *sphere = null;
     const VertexArrayResource *box = null;
+    const VertexArrayResource *line = null;
 
 public:
     void setMaterial(const MaterialResource *material) {
@@ -79,6 +90,7 @@ public:
         }
 
         this->axis = (VertexArrayResource*) this->resourceManager->load("core/axis.json", "video/vertexArray");
+        this->line = (VertexArrayResource*) this->resourceManager->load("core/line.json", "video/vertexArray");
         this->box = (VertexArrayResource*) this->resourceManager->load("core/box.json", "video/vertexArray");
         this->sphere = (VertexArrayResource*) this->resourceManager->load("core/sphere.json", "video/vertexArray");
 
@@ -88,12 +100,6 @@ public:
     void render(const Camera &camera) {
         if(videoRunner != null && shader != null) {
             videoRunner->useProgramResource(shader);
-
-            if(this->currentTexture != null) {
-                videoRunner->setTexture(0, "textureUnit", this->currentTexture);
-            } else {
-                videoRunner->setTexture(0, "textureUnit", videoRunner->getDefaultTexture());
-            }
 
             videoRunner->sendVector("viewPosition", camera.getViewPosition());
             this->sendLight(light);
@@ -147,6 +153,12 @@ public:
 
     void drawBox(const matriz_4x4 &modelMatrix, real height = 1.0f, real width = 1.0f, real depth = 1.0f) {
         this->drawObject(modelMatrix * matriz_4x4::matrizZoom(height, width, depth), box);
+    }
+    void drawLine(const matriz_4x4 &modelMatrix, const vector &start, const vector &end) {
+        matriz_4x4 traslacion = matriz_4x4::matrizTraslacion(start);
+        matriz_4x4 zoom = matriz_4x4::matrizZoom(end - start);
+        matriz_4x4 lineMatrix = modelMatrix * traslacion * zoom;
+        this->drawObject(lineMatrix, line);
     }
 
     void clear() {

@@ -56,9 +56,10 @@ public:
 
 		integrate(dt);
 
-		// generate contacts (collision and contact generators)
+		/**
+		 * generate contacts (collision and contact generators)
+		 */
 		std::vector<Contact> contacts;
-
 		for(std::vector<const CollisionDetector *>::const_iterator collisionDetector = this->collisionDetectors.begin() ; collisionDetector != collisionDetectors.end(); collisionDetector++) {
 		    std::vector<Contact> currentContacts = (*collisionDetector)->detectCollisions(this->particles);
 		    contacts.insert(contacts.end(), currentContacts.begin(), currentContacts.end());

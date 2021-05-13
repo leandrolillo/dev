@@ -56,7 +56,7 @@ void main()
 	vec3 specular = spec * light.specular * material.specular;
 
 
-	fragmentColor = vec4(ambient + diffuse + specular, 1.0) * texture(textureUnit, inputData.textureCoordinate);
+	//fragmentColor = vec4(ambient + diffuse + specular, 1.0) * texture(textureUnit, inputData.textureCoordinate);
 	 //fragmentColor = vec4(inputData.color, 1.0) * vec4(ambient + diffuse + specular, 1.0) * texture(textureUnit, inputData.textureCoordinate);
-	 //fragmentColor = vec4(inputData.color + ambient + diffuse + specular, 1.0) * texture(textureUnit, inputData.textureCoordinate);
+	fragmentColor = vec4(inputData.color + ambient + diffuse + specular, 1.0) * texture(textureUnit, inputData.textureCoordinate);
 }

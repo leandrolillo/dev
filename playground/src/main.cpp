@@ -16,12 +16,11 @@
 int main(int, char**){
 //    TestsPlayground playgroundtests("/Users/leandro/huevadas/projects/dev/media/");
 //    playgroundtests.run();
-//
+
     CollisionDetectionPlayground colDetplayground("/Users/leandro/huevadas/projects/dev/media/");
     colDetplayground.run();
-//
-//
-//	PlaygroundGeneralDemo playground("/Users/leandro/huevadas/projects/dev/media/");
+
+ //	PlaygroundGeneralDemo playground("/Users/leandro/huevadas/projects/dev/media/");
 //    playground.run();
 
 //    PlaygroundTerrainDemo terrainPlayground("/Users/leandro/huevadas/projects/dev/media/");

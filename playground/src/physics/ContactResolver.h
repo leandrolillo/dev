@@ -35,16 +35,16 @@ public:
             real deltaVelocity = newSepVelocity - separatingVelocity;
 
             real totalInverseMass = particleA->getInverseMass();
-            if (particleB) totalInverseMass += particleA->getInverseMass();
+            if (particleB) {
+                totalInverseMass += particleB->getInverseMass();
+            }
 
             if(totalInverseMass > 0) {
-                real impulse = deltaVelocity / totalInverseMass;
+                real impulsePerIMass = deltaVelocity / totalInverseMass;
 
-                vector impulsePerIMass = contact.getNormal() * impulse;
-
-                particleA->setVelocity(particleA->getVelocity() + impulsePerIMass * particleA->getInverseMass());
+                particleA->setVelocity(particleA->getVelocity() + contact.getNormal() * impulsePerIMass * particleA->getInverseMass());
                 if (particleB) {
-                    particleB->setVelocity(particleB->getVelocity() + impulsePerIMass * particleB->getInverseMass());
+                    particleB->setVelocity(particleB->getVelocity() - contact.getNormal() * impulsePerIMass * particleB->getInverseMass());
                 }
             }
             particleA->onCollision();
