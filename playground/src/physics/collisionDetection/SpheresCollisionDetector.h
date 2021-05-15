@@ -20,7 +20,7 @@ class SpheresCollisionDetector : public CollisionDetector {
         for(std::vector<Particle *>::const_iterator particleA = particles.begin(); particleA != particles.end(); particleA++) {
             for(std::vector<Particle *>::const_iterator particleB = particleA+1; particleB != particles.end(); particleB++) {
                 if((*particleA)->getStatus() && (*particleB)->getStatus()) {
-                    if(IntersectionTester::areIntersecting((*particleA)->getPosition(), sphere_radius, (*particleB)->getPosition(), sphere_radius)) {
+                    if(IntersectionTester::sphereSphere((*particleA)->getPosition(), sphere_radius, (*particleB)->getPosition(), sphere_radius)) {
                         vector delta = (*particleB)->getPosition() - (*particleA)->getPosition();
                         real modulo = delta.modulo();
                         vector normal = delta * (1.0 / modulo);

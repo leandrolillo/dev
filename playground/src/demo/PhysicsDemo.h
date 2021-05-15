@@ -133,7 +133,7 @@ public:
 
 	LoopResult doLoop() {
 	    defaultRenderer.clear();
-	    defaultRenderer.drawAxis(matriz_4x4::identidad);
+	    defaultRenderer.drawAxes(matriz_4x4::identidad);
         defaultRenderer.drawLine(matriz_4x4::identidad, vector(-1, 0, 0), vector(1, 0, 0));
         defaultRenderer.drawLine(matriz_4x4::identidad, vector(0, -1, 0), vector(0, 1, 0));
         defaultRenderer.drawLine(matriz_4x4::identidad, vector(0, 0, -1), vector(0, 0, 1));
@@ -177,7 +177,7 @@ public:
 			}
 		}
 
-		if(bullet) {
+		if(bullet != null) {
 			bullet->setPosition(position);
 			if(isStatic) {
 			    bullet->setVelocity(vector(0, 0, 0));

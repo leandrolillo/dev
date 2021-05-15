@@ -96,7 +96,7 @@ public:
 	    gridRenderer.render(camera);
 
 		defaultRenderer.clear();
-        defaultRenderer.drawAxis(matriz_4x4::identidad, 1.0f);
+        defaultRenderer.drawAxes(matriz_4x4::identidad, 1.0f);
         defaultRenderer.setTexture(texture);
 		defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(posicion), 0.1f);
 		defaultRenderer.drawObject(matriz_4x4::matrizRotacion(0.0, radian(rotacion), 0.0), obj);

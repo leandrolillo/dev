@@ -145,17 +145,18 @@ public:
 
 	void dispose(Resource *resource) {
 		if (resource != null) {
-		    logger->verbose("Disposing of [%s]", resource->toString().c_str());
+		    String resourceToString = resource->toString();
+		    logger->verbose("Disposing of [%s]", resourceToString.c_str());
 
 		    if(adapters[resource->getMimeType()] != null) {
-		        logger->verbose("Disposing of %s with adapter %s", resource->toString().c_str() ,adapters[resource->getMimeType()]->toString().c_str());
+		        logger->verbose("Disposing of %s with adapter %s", resourceToString.c_str() ,adapters[resource->getMimeType()]->toString().c_str());
 		        adapters[resource->getMimeType()]->dispose(resource);
 		    }
 
-		    logger->verbose("deleting [%s]", resource->toString().c_str());
+		    logger->verbose("deleting [%s]", resourceToString.c_str());
 
 			delete resource;
-		    logger->info("Disposed of [%s]", resource->toString().c_str());
+		    logger->info("Disposed of [%s]", resourceToString.c_str());
 		}
 	}
 

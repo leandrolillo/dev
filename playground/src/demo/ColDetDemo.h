@@ -23,8 +23,7 @@
 #include<collisionDetection/GroundPlaneCollisionDetector.h>
 #include<collisionDetection/SpheresCollisionDetector.h>
 
-#include <geometry/Sphere.h>
-#include <geometry/Line.h>
+#include <geometry/Geometry.h>
 
 #include<InvalidArgumentException.h>
 
@@ -36,7 +35,8 @@ class CollisionDetectionDemoRunner: public PlaygroundRunner {
 
 	GroundPlaneCollisionDetector groundPlaneCollisionDetector;
 	SpheresCollisionDetector spheresCollisionDetector;
-	Sphere sphere[2] = { Sphere(vector(-1, 0, -1), 1), Sphere(vector(1, 0, -1), 1)};
+	Sphere sphere[2] = { Sphere(vector(-1, 0, 0), 1), Sphere(vector(1, 0, 0), 0.5)};
+	Plane plane = Plane(vector(0, 0, 0), vector(0, 1, 0));
 
 	char selectedGeometry = -1;
 	vector2 startPosition;
@@ -46,6 +46,10 @@ class CollisionDetectionDemoRunner: public PlaygroundRunner {
 	DefaultRenderer defaultRenderer;
 	SkyboxRenderer skyboxRenderer;
 	GridRenderer gridRenderer;
+
+	MaterialResource red = MaterialResource(vector(1, 0, 0), vector(1, 0, 0), vector(1, 0, 0), 1.0);
+	MaterialResource green = MaterialResource(vector(0, 1, 0), vector(0, 1, 0), vector(0, 1, 0), 1.0);
+	MaterialResource blue = MaterialResource(vector(0, 0, 1), vector(0, 0, 1), vector(0, 0, 1), 1.0);
 
 public:
 	CollisionDetectionDemoRunner() {
@@ -66,7 +70,7 @@ public:
 
 	void reset() {
 		video->setMousePosition(video->getScreenWidth() >> 1, video->getScreenHeight() >> 1);
-        camera.setViewMatrix(matriz_4x4::matrizTraslacion(vector(0.0f, 0.0f, -5.0f)));
+        camera.setViewMatrix(matriz_4x4::matrizTraslacion(vector(0.0f, -1.0f, -5.0f)));
 	}
 
 	bool init() {
@@ -91,9 +95,30 @@ public:
 
 	LoopResult doLoop() {
 	    defaultRenderer.clear();
-	    defaultRenderer.drawAxis(matriz_4x4::identidad);
+	    defaultRenderer.drawAxes(matriz_4x4::identidad);
+
+	    if(sphere[0].intersects(sphere[1])) {
+	        defaultRenderer.setMaterial(&red);
+	    } else if(sphere[0].intersects(plane)){
+	        defaultRenderer.setMaterial(&blue);
+	    } else {
+	        defaultRenderer.setMaterial(null);
+	    }
 	    defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(sphere[0].getOrigin()), sphere[0].getRadius());
+
+	    if(sphere[1].intersects(sphere[0])) {
+            defaultRenderer.setMaterial(&red);
+        } else if(sphere[1].intersects(plane)){
+            defaultRenderer.setMaterial(&blue);
+        } else {
+            defaultRenderer.setMaterial(null);
+        }
 	    defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(sphere[1].getOrigin()), sphere[1].getRadius());
+
+
+        defaultRenderer.setMaterial(&red);
+        defaultRenderer.drawLine(matriz_4x4::identidad, sphere[0].getOrigin() + vector(0, 0, sphere[0].getRadius()),
+                sphere[1].getOrigin() + vector(0, 0, sphere[1].getRadius()));
 
 		defaultRenderer.render(camera);
 		skyboxRenderer.render(camera);
@@ -116,12 +141,6 @@ public:
 	            real t = (this->sphere[selectedGeometry].getOrigin().z - line.getOrigin().z) / line.getDirection().z;
 	            this->sphere[selectedGeometry].setOrigin(line.getOrigin() + t * line.getDirection());
 	        }
-
-	        if(sphere[0].intersects(sphere[1])) {
-	            logger->info("Intersecting!");
-	        } else {
-	            logger->info("Not intersecting!");
-	        }
 	    }
 	}
 
@@ -137,7 +156,7 @@ public:
 	        this->startPosition = vector2(x, y);
 
             Line line(camera.getViewPosition() * -1, camera.getRayDirection((unsigned int)x, (unsigned int)y, video->getScreenWidth(), video->getScreenHeight()));
-            logger->info("Line: %s", line.toString().c_str());
+            //logger->info("Line: %s", line.toString().c_str());
 
             selectedGeometry = -1;
             for(unsigned char index = 0; index < 2; index++) {
@@ -147,8 +166,6 @@ public:
                     selectedGeometry = index;
                 }
             }
-
-            logger->info("Selected sphere [%d]", selectedGeometry);
 	    }
 	}
 

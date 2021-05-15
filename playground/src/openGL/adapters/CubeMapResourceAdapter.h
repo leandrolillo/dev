@@ -25,7 +25,7 @@ public:
 		JsonParser *jsonParser = new JsonParser(fileParser);
 
 		unsigned int textureHandler = 0;
-		glGetError();
+		getGlError();
 		glGenTextures(1, &textureHandler);
 
 		CubeMapResource *resource = new CubeMapResource(textureHandler);
@@ -48,6 +48,8 @@ public:
 				else {
 					glTexImage2D(getLocation(faceName), 0, GL_RGB, imageResource->getAncho(), imageResource->getAlto(), 0, GL_BGR, GL_UNSIGNED_BYTE, imageResource->getData());
 				}
+
+				this->getResourceManager()->dispose(imageResource);
 			}
 
 			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

@@ -290,7 +290,7 @@ public:
 
         Logger *logger = new Logger(basename);
         logger->setLogLevel(DEFAULT_LOG_LEVEL);
-        logger->addAppender(getAppender("Playground.log"));
+        logger->addAppender(getAppender("playground.log"));
 
         LoggerFactory::loggers.push_back(logger);
 

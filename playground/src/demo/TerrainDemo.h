@@ -92,7 +92,7 @@ public:
 	}
 	virtual LoopResult doLoop() {
 	    defaultRenderer.clear();
-	    defaultRenderer.drawAxis(matriz_4x4::identidad);
+	    defaultRenderer.drawAxes(matriz_4x4::identidad);
 	    defaultRenderer.render(camera);
 
 		terrainRenderer.render(camera);

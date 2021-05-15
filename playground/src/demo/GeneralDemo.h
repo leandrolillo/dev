@@ -156,7 +156,7 @@ public:
 	    defaultRenderer.setMaterial(&material);
 
 	    //draw axis for viewer reference
-        defaultRenderer.drawAxis(matriz_4x4::identidad);
+        defaultRenderer.drawAxes(matriz_4x4::identidad);
 
         //draw Light as a sphere
         defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(lightPosition), 0.1f);

@@ -32,7 +32,7 @@ int main(int, char**){
 //    ObjDemoPlayground objPlayground("/Users/leandro/huevadas/projects/dev/media/");
 //    objPlayground.run();
 
-    printf("done");
+    printf("done\n");
     return 0;
 }
 

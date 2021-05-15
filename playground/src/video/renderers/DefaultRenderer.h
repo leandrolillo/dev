@@ -66,10 +66,12 @@ private:
 
     std::map<const TextureResource *, std::vector<const WorldObject>>objectsByTexture;
 
-    const VertexArrayResource *axis = null;
+    const VertexArrayResource *axes = null;
     const VertexArrayResource *sphere = null;
     const VertexArrayResource *box = null;
     const VertexArrayResource *line = null;
+
+    const MaterialResource defaultMaterial = MaterialResource(vector(0.3, 0.3, 0.3), vector(0.3, 0.3, 0.3), vector(0.3, 0.3, 0.3), 32);
 
 public:
     void setMaterial(const MaterialResource *material) {
@@ -89,7 +91,7 @@ public:
             this->shader = (ShaderProgramResource*) this->resourceManager->load("core/simple.program.json", "video/shaderProgram");
         }
 
-        this->axis = (VertexArrayResource*) this->resourceManager->load("core/axis.json", "video/vertexArray");
+        this->axes = (VertexArrayResource*) this->resourceManager->load("core/axis.json", "video/vertexArray");
         this->line = (VertexArrayResource*) this->resourceManager->load("core/line.json", "video/vertexArray");
         this->box = (VertexArrayResource*) this->resourceManager->load("core/box.json", "video/vertexArray");
         this->sphere = (VertexArrayResource*) this->resourceManager->load("core/sphere.json", "video/vertexArray");
@@ -119,7 +121,7 @@ public:
                         iterator != (*textureIterator).second.end(); iterator++) {
                     const WorldObject &object = *iterator;
 
-                    if(lastMaterial == null || lastMaterial != object.getMaterial()) {
+                    if(lastMaterial != object.getMaterial()) {
                         lastMaterial = object.getMaterial();
                         if(lastMaterial != null) {
                             this->sendMaterial(lastMaterial);
@@ -143,8 +145,8 @@ public:
         this->objectsByTexture[this->currentTexture].push_back(WorldObject(modelMatrix, object, currentMaterial));
     }
 
-    void drawAxis(const matriz_4x4 &modelMatrix, real length = 1.0f) {
-        this->drawObject(modelMatrix * matriz_4x4::matrizZoom(length, length, length), axis);
+    void drawAxes(const matriz_4x4 &modelMatrix, real length = 1.0f) {
+        this->drawObject(modelMatrix * matriz_4x4::matrizZoom(length, length, length), axes);
     }
 
     void drawSphere(const matriz_4x4 &modelMatrix, real radius = 1.0f) {
@@ -162,8 +164,8 @@ public:
     }
 
     void clear() {
-        this->setTexture(null);
-        this->setMaterial(null);
+        this->setTexture(videoRunner->getDefaultTexture());
+        this->setMaterial(&defaultMaterial);
         this->objectsByTexture.clear();
     }
 };
