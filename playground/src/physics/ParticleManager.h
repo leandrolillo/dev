@@ -24,14 +24,9 @@ class ParticleManager {
 	std::vector<Force *> forces;
 	ParticleIntegrator particleIntegrator;
 	ContactResolver contactResolver;
-	std::vector<const CollisionDetector *> collisionDetectors;
+	CollisionDetector collisionDetector;
 
 public:
-
-	void addCollisionDetector(const CollisionDetector *collisionDetector) {
-	    this->collisionDetectors.push_back(collisionDetector);
-	}
-
 	void addParticle(Particle *particle) {
 		this->particles.push_back(particle);
 	}
@@ -43,6 +38,10 @@ public:
 	void removeParticle(const Particle *particle) {
 		//this->particles.erase(__position)
 		particles.erase(std::remove(particles.begin(), particles.end(), particle),  particles.end());
+	}
+
+	CollisionDetector &getCollisionDetector() {
+	    return this->collisionDetector;
 	}
 
 	void clearAccumulators() const {
@@ -59,23 +58,19 @@ public:
 		/**
 		 * generate contacts (collision and contact generators)
 		 */
-		std::vector<Contact> contacts;
-		for(std::vector<const CollisionDetector *>::const_iterator collisionDetector = this->collisionDetectors.begin() ; collisionDetector != collisionDetectors.end(); collisionDetector++) {
-		    std::vector<Contact> currentContacts = (*collisionDetector)->detectCollisions(this->particles);
-		    contacts.insert(contacts.end(), currentContacts.begin(), currentContacts.end());
-		}
-
+		std::vector<Contact> contacts = collisionDetector.detectCollisions(this->particles);
 		contactResolver.resolve(contacts);
 
 	}
+
 protected:
+
 	void integrate(real dt) const {
 		for(std::vector<Particle *>::const_iterator iterator = particles.begin(); iterator != particles.end(); iterator++) {
 			Particle *particle = *iterator;
-			if(particle->getStatus()) {
+			if(particle != null && particle->getStatus()) {
 				particleIntegrator.integrate(dt, *particle);
 				particle->afterIntegrate(dt);
-
 			}
 		}
 	}

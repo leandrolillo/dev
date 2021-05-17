@@ -24,6 +24,8 @@
 #include<forces/Gravity.h>
 #include<collisionDetection/GroundPlaneCollisionDetector.h>
 #include<collisionDetection/SpheresCollisionDetector.h>
+#include<LinkedSphere.h>
+#include<Plane.h>
 
 #define numberOfParticles 10
 
@@ -33,11 +35,18 @@ class BulletParticle : public Particle
 {
 private:
     PhysicsDemoRunner *runner = null;
+    LinkedSphere boundingSphere;
 
 public:
+    BulletParticle() : boundingSphere(this->position, 0.1) {
+
+    }
     void setRunner(PhysicsDemoRunner *runner);
 	void afterIntegrate(real dt);
-	void onCollision();
+	void onCollisionResolved(const Contact &contact);
+	virtual const Geometry *getGeometry() const {
+	    return &boundingSphere;
+	}
 };
 
 class PhysicsDemoRunner: public PlaygroundRunner {
@@ -53,7 +62,8 @@ class PhysicsDemoRunner: public PlaygroundRunner {
 	Source *bounceSource;
 
 	BulletParticle particles[numberOfParticles];
-	Gravity gravity;
+	Gravity gravity = Gravity(vector(0.0, -9.8, 0.0));
+	Plane ground = Plane(vector(0, 0, 0), vector(0, 1, 0));
 
 	unsigned long to = 0;
 	real invPerformanceFreq = 1.0f;
@@ -73,7 +83,7 @@ class PhysicsDemoRunner: public PlaygroundRunner {
 	        MaterialResource(vector(0.5, 1, 0.5), vector(0.5, 1, 0.5), vector(1, 1, 1), 32),
 	        MaterialResource(vector(0.5, 0.5, 1), vector(0.5, 0.5, 1), vector(1, 1, 1), 32)};
 public:
-	PhysicsDemoRunner() : gravity(vector(0.0, -9.8, 0.0)) {
+	PhysicsDemoRunner() {
 	}
 
 	unsigned char getId() {
@@ -103,6 +113,8 @@ public:
 		audio = (AudioRunner*) this->getContainer()->getRequiredRunner(AudioRunner::ID);
 		physics = (PhysicsRunner *)this->getContainer()->getRequiredRunner(PhysicsRunner::ID);
 		physics->setPlaybackSpeed(0.3);
+		physics->getParticleManager()->getCollisionDetector().addScenery(&ground);
+
 
 		gunshotSource = audio->createSource("audio/handgunfire.wav", vector(0, 0, 0), vector(0, 0, 0), false);
 		bounceSource = audio->createSource("audio/twang3.wav", vector(0, 0, 0), vector(0, 0, 0), false);
@@ -110,16 +122,13 @@ public:
 
 	    defaultRenderer.setVideoRunner(video);
 	    gridRenderer.setVideoRunner(video);
-	    skyboxRenderer.setVideoRunner(video);
-	    skyboxRenderer.setSize(200);
+//	    skyboxRenderer.setVideoRunner(video);
+//	    skyboxRenderer.setSize(200);
 
 		video->setClearColor(0.0, 0.5, 0.0, 0.0);
 		video->setAttribute(DEPTH_TEST, true);
 
 		reset();
-
-		physics->getParticleManager()->addCollisionDetector(&groundPlaneCollisionDetector);
-		physics->getParticleManager()->addCollisionDetector(&spheresCollisionDetector);
 
 		for(BulletParticle *particle = particles; particle < (particles + numberOfParticles); particle++) {
 		    particle->setRunner(this);
@@ -148,7 +157,7 @@ public:
 		}
 
 		defaultRenderer.render(camera);
-		skyboxRenderer.render(camera);
+		//skyboxRenderer.render(camera);
 		gridRenderer.render(camera);
 
 		return LoopResult::CONTINUE;
@@ -262,7 +271,7 @@ void BulletParticle::afterIntegrate(real dt) {
     }
 }
 
-void BulletParticle::onCollision() {
+void BulletParticle::onCollisionResolved(const Contact &contact) {
     if(runner != null) {
         runner->onCollision(this);
     }

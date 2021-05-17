@@ -23,19 +23,54 @@
 #include<collisionDetection/GroundPlaneCollisionDetector.h>
 #include<collisionDetection/SpheresCollisionDetector.h>
 
-#include <geometry/Geometry.h>
+#include <collisionDetection/geometry/Geometry.h>
 
 #include<InvalidArgumentException.h>
 
+#include<Sphere.h>
+#include<Plane.h>
+#include<Line.h>
+
+class CollisionDetectionDemoRunner;
+
+class SphereParticle : public Particle
+{
+private:
+    CollisionDetectionDemoRunner *runner = null;
+    LinkedSphere boundingSphere;
+    bool _isColliding = false;
+
+public:
+    SphereParticle(const vector &position, real radius) : boundingSphere(this->position, radius) {
+        this->position = position;
+    }
+    virtual const Geometry *getGeometry() const {
+        return &boundingSphere;
+    }
+
+    void setIsColliding(bool isColliding) {
+        this->_isColliding = isColliding;
+    }
+
+    bool isColliding() const {
+        return this->_isColliding;
+    }
+
+    void setRunner(CollisionDetectionDemoRunner *runner);
+    void afterIntegrate(real dt);
+    void onCollision(const Contact &contact);
+};
+
+#define number_of_sphere_particles 2
 
 class CollisionDetectionDemoRunner: public PlaygroundRunner {
 	Logger *logger = LoggerFactory::getLogger("CollisionDetectionDemoRunner");
 	VideoRunner *video = null;
 	AudioRunner *audio = null;
 
-	GroundPlaneCollisionDetector groundPlaneCollisionDetector;
-	SpheresCollisionDetector spheresCollisionDetector;
-	Sphere sphere[2] = { Sphere(vector(-1, 0, 0), 1), Sphere(vector(1, 0, 0), 0.5)};
+	CollisionDetector collisionDetector;
+	std::vector<Particle *>particles;
+	SphereParticle sphereParticles[number_of_sphere_particles] = { SphereParticle(vector(-1, 0, 0), 1), SphereParticle(vector(1, 0, 0), 0.5)};
 	Plane plane = Plane(vector(0, 0, 0), vector(0, 1, 0));
 
 	char selectedGeometry = -1;
@@ -87,6 +122,14 @@ public:
 		video->setClearColor(0.0, 0.5, 0.0, 0.0);
 		video->setAttribute(DEPTH_TEST, true);
 
+		collisionDetector.addScenery(&plane);
+
+		for(unsigned char index = 0; index < number_of_sphere_particles; index ++) {
+	        sphereParticles[index].setRunner(this);
+	        sphereParticles[index].setStatus(true);
+	        particles.push_back(&sphereParticles[index]);
+		}
+
 		reset();
 
 		logger->debug("Completed initialization");
@@ -97,28 +140,27 @@ public:
 	    defaultRenderer.clear();
 	    defaultRenderer.drawAxes(matriz_4x4::identidad);
 
-	    if(sphere[0].intersects(sphere[1])) {
-	        defaultRenderer.setMaterial(&red);
-	    } else if(sphere[0].intersects(plane)){
-	        defaultRenderer.setMaterial(&blue);
-	    } else {
-	        defaultRenderer.setMaterial(null);
+	    std::vector<Contact> contacts = collisionDetector.detectCollisions(particles);
+
+	    for(std::vector<Contact>::iterator contactIterator = contacts.begin(); contactIterator != contacts.end(); contactIterator++) {
+	        //Draw contacts
 	    }
-	    defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(sphere[0].getOrigin()), sphere[0].getRadius());
 
-	    if(sphere[1].intersects(sphere[0])) {
-            defaultRenderer.setMaterial(&red);
-        } else if(sphere[1].intersects(plane)){
-            defaultRenderer.setMaterial(&blue);
-        } else {
-            defaultRenderer.setMaterial(null);
-        }
-	    defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(sphere[1].getOrigin()), sphere[1].getRadius());
+	    logger->info("Found %d contacts.", contacts.size());
 
+	    for(std::vector<Particle *>::iterator particleIterator = particles.begin() ; particleIterator != particles.end(); particleIterator++) {
+	        SphereParticle *sphereParticle = (SphereParticle *)*particleIterator;
+	        if(sphereParticle->isColliding()) {
+	            defaultRenderer.setMaterial(&red);
+	        } else {
+	            defaultRenderer.setMaterial(null);
+	        }
 
-        defaultRenderer.setMaterial(&red);
-        defaultRenderer.drawLine(matriz_4x4::identidad, sphere[0].getOrigin() + vector(0, 0, sphere[0].getRadius()),
-                sphere[1].getOrigin() + vector(0, 0, sphere[1].getRadius()));
+	        Sphere *sphere = (Sphere *)sphereParticle->getGeometry();
+	        defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(sphere->getOrigin()), sphere->getRadius());
+
+	        sphereParticle->setIsColliding(false);
+	    }
 
 		defaultRenderer.render(camera);
 		skyboxRenderer.render(camera);
@@ -126,6 +168,19 @@ public:
 
 		return LoopResult::CONTINUE;
 	}
+
+    void onCollision(SphereParticle *sphereParticle) {
+        sphereParticle->setIsColliding(true);
+    }
+
+    void afterIntegrate(SphereParticle *sphereParticle) {
+        if(sphereParticle->getPosition().modulo() > 100) {
+            sphereParticle->setStatus(false);
+        }
+
+        sphereParticle->setIsColliding(false);
+    }
+
 
 	void mouseWheel(int wheel) {
 //        camera.setViewMatrix(matriz_4x4::matrizTraslacion(camera.getViewPosition() + vector(0.0f, 0.0f, wheel)));
@@ -138,8 +193,10 @@ public:
 	        Line line(camera.getViewPosition() * -1, camera.getRayDirection((unsigned int)x, (unsigned int)y, video->getScreenWidth(), video->getScreenHeight()));
 
 	        if(!equalsZero(line.getDirection().z)) {
-	            real t = (this->sphere[selectedGeometry].getOrigin().z - line.getOrigin().z) / line.getDirection().z;
-	            this->sphere[selectedGeometry].setOrigin(line.getOrigin() + t * line.getDirection());
+	            Sphere *selectedSphere = (Sphere *)this->particles[selectedGeometry]->getGeometry();
+
+	            real t = (selectedSphere->getOrigin().z - line.getOrigin().z) / line.getDirection().z;
+	            this->particles[selectedGeometry]->setPosition(line.getOrigin() + t * line.getDirection());
 	        }
 	    }
 	}
@@ -160,9 +217,9 @@ public:
 
             selectedGeometry = -1;
             for(unsigned char index = 0; index < 2; index++) {
-                Geometry &current = sphere[index];
+                const Geometry *current = particles[index]->getGeometry();
 
-                if(current.intersects((Geometry &)line)) {
+                if(current->intersects((Geometry &)line)) {
                     selectedGeometry = index;
                 }
             }
@@ -186,6 +243,25 @@ public:
 	}
 
 };
+
+void SphereParticle::setRunner(CollisionDetectionDemoRunner *runner) {
+    this->runner = runner;
+}
+
+void SphereParticle::afterIntegrate(real dt) {
+    if(runner != null) {
+        runner->afterIntegrate(this);
+    }
+}
+
+void SphereParticle::onCollision(const Contact &contact) {
+    if(runner != null) {
+        runner->onCollision(this);
+    }
+
+}
+
+
 
 class CollisionDetectionPlayground: public Playground {
 public:

@@ -9,7 +9,7 @@
 #define SRC_PHYSICS_COLLISIONDETECTION_INTERSECTIONTESTER_H_
 
 #include<Math3d.h>
-#include<geometry/Geometry.h>
+#include<Geometry.h>
 
 class IntersectionTester {
 public:

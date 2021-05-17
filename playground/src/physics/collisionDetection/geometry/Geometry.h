@@ -11,12 +11,14 @@
 #include<Math3d.h>
 #include<collisionDetection/IntersectionTester.h>
 
-class Line;
-class Sphere;
-class Plane;
+class AbstractLine;
+class AbstractSphere;
+class AbstractPlane;
 
 class Geometry {
 public:
+    virtual ~Geometry() {}
+    virtual const vector& getOrigin() const = 0;
 
     /**
      * "Accept" method in visitor pattern / double dispatch
@@ -27,30 +29,20 @@ public:
      * "Visit" method in visitor pattern
      */
 
-    virtual bool intersects(const Line &line) const = 0;
-    virtual bool intersects(const Sphere &sphere) const = 0;
-    virtual bool intersects(const Plane &plane) const = 0;
+    virtual bool intersects(const AbstractLine &line) const = 0;
+    virtual bool intersects(const AbstractSphere &sphere) const = 0;
+    virtual bool intersects(const AbstractPlane &plane) const = 0;
 
     virtual String toString() const {
         return "Geometry";
     }
 };
 
-class Sphere: public Geometry {
+class AbstractSphere: public Geometry {
     real radius;
-    vector origin;
 public:
-    Sphere(const vector &origin, real radius) {
-        this->origin = origin;
+    AbstractSphere(real radius) {
         this->radius = radius;
-    }
-
-    void setOrigin(const vector &origin) {
-        this->origin = origin;
-    }
-
-    const vector& getOrigin() const {
-        return this->origin;
     }
 
     real getRadius() const {
@@ -69,26 +61,20 @@ public:
      * "Visit" methods in visitor pattern / double dispatch
      */
 
-    bool intersects(const Line &line) const;
-    bool intersects(const Sphere &sphere) const;
-    bool intersects(const Plane &plane) const;
+    bool intersects(const AbstractLine &line) const;
+    bool intersects(const AbstractSphere &sphere) const;
+    bool intersects(const AbstractPlane &plane) const;
 
     String toString() const {
-        return "Sphere(origin: " + this->origin.toString("%.2f") + ", radius: " + std::to_string(this->radius) + ")";
+        return "Sphere(origin: " + this->getOrigin().toString("%.2f") + ", radius: " + std::to_string(this->radius) + ")";
     }
 };
 
-class Line: public Geometry {
-    vector origin;
+class AbstractLine: public Geometry {
     vector direction;
 public:
-    Line(const vector &origin, const vector &direction) {
-        this->origin = origin;
+    AbstractLine(const vector &direction) {
         this->direction = direction.normalizado();
-    }
-
-    const vector& getOrigin() const {
-        return this->origin;
     }
 
     const vector& getDirection() const {
@@ -104,27 +90,21 @@ public:
     /**
      * "Visit" methods in visitor pattern / double dispatch
      */
-    bool intersects(const Line &line) const;
-    bool intersects(const Sphere &sphere) const;
-    bool intersects(const Plane &plane) const;
+    bool intersects(const AbstractLine &line) const;
+    bool intersects(const AbstractSphere &sphere) const;
+    bool intersects(const AbstractPlane &plane) const;
 
     String toString() const {
-        return "Line(origin: " + this->origin.toString("%.2f") + ", dir: " + this->direction.toString("%.2f") + ")";
+        return "Line(origin: " + this->getOrigin().toString("%.2f") + ", dir: " + this->direction.toString("%.2f") + ")";
     }
 };
 
 
-class Plane: public Geometry {
-    vector origin;
+class AbstractPlane: public Geometry {
     vector normal;
 public:
-    Plane(const vector &origin, const vector &normal) {
-        this->origin = origin;
+    AbstractPlane(const vector &normal) {
         this->normal = normal.normalizado();
-    }
-
-    const vector& getOrigin() const {
-        return this->origin;
     }
 
     const vector &getNormal() const {
@@ -141,25 +121,25 @@ public:
     /**
     * "Visit" methods in visitor pattern / double dispatch
     */
-    bool intersects(const Line &line) const;
-    bool intersects(const Sphere &sphere) const;
-    bool intersects(const Plane &plane) const;
+    bool intersects(const AbstractLine &line) const;
+    bool intersects(const AbstractSphere &sphere) const;
+    bool intersects(const AbstractPlane &plane) const;
 };
 
 /**
  * Sphere intersection tests
  */
 
-bool Sphere::intersects(const Line &line) const {
+bool AbstractSphere::intersects(const AbstractLine &line) const {
     return IntersectionTester::lineSphere(line.getOrigin(), line.getDirection(), this->getOrigin(), this->getRadius());
     return false;
 }
 
-bool Sphere::intersects(const Sphere &sphere) const {
+bool AbstractSphere::intersects(const AbstractSphere &sphere) const {
     return IntersectionTester::sphereSphere(sphere.getOrigin(), sphere.getRadius(), this->getOrigin(), this->getRadius());
 }
 
-bool Sphere::intersects(const Plane &plane) const {
+bool AbstractSphere::intersects(const AbstractPlane &plane) const {
     return IntersectionTester::planeSphere(plane.getOrigin(), plane.getNormal(), this->getOrigin(), this->getRadius());
 }
 
@@ -167,14 +147,14 @@ bool Sphere::intersects(const Plane &plane) const {
 /**
  * Line intersection tests
  */
-bool Line::intersects(const Line &line) const {
+bool AbstractLine::intersects(const AbstractLine &line) const {
     return false;
 }
 
-bool Line::intersects(const Sphere &sphere) const {
+bool AbstractLine::intersects(const AbstractSphere &sphere) const {
     return IntersectionTester::lineSphere(this->getOrigin(), this->getDirection(), sphere.getOrigin(), sphere.getRadius());
 }
-bool Line::intersects(const Plane &plane) const {
+bool AbstractLine::intersects(const AbstractPlane &plane) const {
     return false;
 }
 
@@ -183,14 +163,14 @@ bool Line::intersects(const Plane &plane) const {
  * Plane intersection tests
  */
 
-bool Plane::intersects(const Line &line) const {
+bool AbstractPlane::intersects(const AbstractLine &line) const {
     return false;
 }
 
-bool Plane::intersects(const Sphere &sphere) const {
-    return IntersectionTester::planeSphere(this->origin, this->normal, sphere.getOrigin(), sphere.getRadius());
+bool AbstractPlane::intersects(const AbstractSphere &sphere) const {
+    return IntersectionTester::planeSphere(this->getOrigin(), this->normal, sphere.getOrigin(), sphere.getRadius());
 }
-bool Plane::intersects(const Plane &plane) const {
+bool AbstractPlane::intersects(const AbstractPlane &plane) const {
     return false;
 }
 

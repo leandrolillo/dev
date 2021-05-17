@@ -9,6 +9,9 @@
 #define SRC_PHYSICS_PARTICLE_H_
 
 #include <Math3d.h>
+#include <Geometry.h>
+
+class Contact;
 
 class Particle {
 	friend class ParticleIntegrator;
@@ -18,16 +21,16 @@ protected:
 	vector velocity;
 	vector acceleration;
 
-	real inverseMass;
-	real mass;
+	real inverseMass = 0.0f;
+	real mass = 0.0f;
 
-	bool status;
+	bool _status = false;
 
 	/**
 	 * rough approximation of drag to avoid numerical stability issues - without this objects are likely to accelerate magically.
 	 *
 	 */
-	real damping;
+	real damping = 0.0f;
 
 	vector forceAccumulator;
 
@@ -36,7 +39,10 @@ public:
 	virtual void afterIntegrate(real dt) {
 	}
 
-	virtual void onCollision() {
+	virtual void onCollision(const Contact &contact) {
+
+	}
+	virtual void onCollisionResolved(const Contact &contact) {
 
 	}
 
@@ -45,11 +51,11 @@ public:
 	}
 
 	bool getStatus() {
-		return this->status;
+		return this->_status;
 	}
 
 	void setStatus(bool active) {
-		this->status = active;
+		this->_status = active;
 	}
 
 	void setPosition(const vector &position) {
@@ -112,6 +118,9 @@ public:
 		this->forceAccumulator += force;
 	}
 
+	virtual const Geometry *getGeometry() const {
+	    return null;
+	}
 };
 
 #endif /* SRC_PHYSICS_PARTICLE_H_ */

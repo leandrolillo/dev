@@ -61,10 +61,11 @@ public:
             videoRunner->drawVertexArray(box);
 
             videoRunner->useProgramResource(null);
-            videoRunner->setTexture(0, cubeMap, GL_TEXTURE_CUBE_MAP);
-        } else {
-            logger->error("not rendering!: videoRunner, shader, box or cubeMap are not set");
+            videoRunner->setTexture(0, null, GL_TEXTURE_CUBE_MAP);
         }
+//        else {
+//            logger->error("not rendering!: videoRunner, shader, box or cubeMap are not set");
+//        }
     }
 };
 

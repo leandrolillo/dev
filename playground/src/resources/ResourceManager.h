@@ -154,9 +154,11 @@ public:
 		    }
 
 		    logger->verbose("deleting [%s]", resourceToString.c_str());
+            resourceCache.erase(getCacheKey(resource));
 
 			delete resource;
 		    logger->info("Disposed of [%s]", resourceToString.c_str());
+
 		}
 	}
 

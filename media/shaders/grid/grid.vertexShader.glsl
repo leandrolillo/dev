@@ -15,9 +15,8 @@ out GridVertexData {
 in vec3 position;
 
 vec3 UnprojectPoint(float x, float y, float z, mat4 view, mat4 projection) {
-    mat4 viewInv = inverse(view);
-    mat4 projInv = inverse(projection);
-    vec4 unprojectedPoint =  viewInv * projInv * vec4(x, y, z, 1.0);
+    mat4 projViewInv = inverse(projection * view);
+    vec4 unprojectedPoint =  projViewInv * vec4(x, y, z, 1.0);
     return unprojectedPoint.xyz / unprojectedPoint.w;
 }
 

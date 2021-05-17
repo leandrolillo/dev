@@ -47,11 +47,11 @@ public:
                     particleB->setVelocity(particleB->getVelocity() - contact.getNormal() * impulsePerIMass * particleB->getInverseMass());
                 }
             }
-            particleA->onCollision();
-
-            if(particleB) {
-                particleB->onCollision();
-            }
+//            particleA->onCollision();
+//
+//            if(particleB) {
+//                particleB->onCollision();
+//            }
         }
     }
 
@@ -85,10 +85,10 @@ public:
 	        Particle *particleA = (*iterator).getParticleA();
 	        Particle *particleB = (*iterator).getParticleB();
 
-            particleA->onCollision();
+            particleA->onCollisionResolved(*iterator);
 
             if(particleB) {
-                particleB->onCollision();
+                particleB->onCollisionResolved(*iterator);
             }
         }
     }
