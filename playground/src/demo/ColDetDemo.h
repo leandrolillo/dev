@@ -115,8 +115,8 @@ public:
 		logger->debug("Initializing renderers");
 	    defaultRenderer.setVideoRunner(video);
 	    gridRenderer.setVideoRunner(video);
-	    skyboxRenderer.setVideoRunner(video);
-	    skyboxRenderer.setSize(200);
+//	    skyboxRenderer.setVideoRunner(video);
+//	    skyboxRenderer.setSize(200);
 
 	    logger->debug("Setting up video %d", video);
 		video->setClearColor(0.0, 0.5, 0.0, 0.0);
@@ -146,7 +146,7 @@ public:
 	        //Draw contacts
 	    }
 
-	    logger->info("Found %d contacts.", contacts.size());
+	    logger->debug("Found %d contacts.", contacts.size());
 
 	    for(std::vector<Particle *>::iterator particleIterator = particles.begin() ; particleIterator != particles.end(); particleIterator++) {
 	        SphereParticle *sphereParticle = (SphereParticle *)*particleIterator;
@@ -163,7 +163,7 @@ public:
 	    }
 
 		defaultRenderer.render(camera);
-		skyboxRenderer.render(camera);
+		//skyboxRenderer.render(camera);
 		gridRenderer.render(camera);
 
 		return LoopResult::CONTINUE;

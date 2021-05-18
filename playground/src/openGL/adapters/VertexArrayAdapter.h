@@ -34,9 +34,11 @@ public:
 		return null;
 	}
 	virtual void dispose(Resource *resource) {
+	    logger->debug("Deleting [%s]", resource->toString().c_str());
 		VertexArrayResource *vertexArrayResource = (VertexArrayResource*) resource;
 
 		if (vertexArrayResource->getId() != 0) {
+		    logger->debug("VAB [%s] bound", resource->getId());
 			glBindVertexArray(vertexArrayResource->getId());
 
 			for (std::map<unsigned int, const VertexAttribPointer*>::iterator currentBuffer =
@@ -51,10 +53,14 @@ public:
 				}
 			}
 
+			logger->debug("VAB [%s] buffers deleted", resource->getId());
+
 			vertexArrayResource->clearVertexAttribPointers();
 
 			unsigned int vertexArray = vertexArrayResource->getId();
 			glDeleteVertexArrays(1, &vertexArray);
+
+			logger->debug("VAB [%s] deleted", resource->getId());
 
 			glBindVertexArray(0);
 			vertexArrayResource->setId(0);

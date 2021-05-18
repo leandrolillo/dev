@@ -60,7 +60,12 @@ public:
     }
 
     virtual ~OpenGLRunner() {
+        SDL_HideWindow(window);
+        logger->debug("HIding sdl window");
+        SDL_GL_DeleteContext(glcontext);
+        logger->debug("Deleted opengl context");
         this->useProgramResource(null);
+        logger->debug("Remove active shaders");
         SDL_DestroyWindow(window);
         logger->debug("OpenGL/SDL Window destroyed");
         SDL_Quit();
@@ -68,6 +73,7 @@ public:
     }
 
     virtual bool init() {
+        //logger->setLogLevel(LogLevel::DEBUG);
         VideoRunner::init();
         this->getContainer()->getResourceManager()->addAdapter(new TextureResourceAdapter());
         this->getContainer()->getResourceManager()->addAdapter(new CubeMapResourceAdapter());
@@ -83,7 +89,7 @@ public:
 
         logger->debug("SDL initialized");
 
-        SDL_LogSetAllPriority(SDL_LOG_PRIORITY_VERBOSE);
+        SDL_LogSetAllPriority(SDL_LOG_PRIORITY_INFO);
 
         this->window = SDL_CreateWindow("SDL2/OpenGL Demo", 0, 0, 640, 480, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
         logger->debug("SDL Window created");
@@ -119,6 +125,7 @@ public:
          * OpenGL defaults so that something is rendered with minimum configuration.
          */
         defaultTexture = new TextureResource(this->generateDefaultTexture());
+        defaultTexture->setFileName("OpenGLRunner::defaultTextureResource");
         this->getContainer()->getResourceManager()->addResource(defaultTexture);
 
         return true;

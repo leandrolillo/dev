@@ -154,28 +154,30 @@ public:
 		    }
 
 		    logger->verbose("deleting [%s]", resourceToString.c_str());
-            resourceCache.erase(getCacheKey(resource));
+            //resourceCache.erase(getCacheKey(resource)); // this messes with the iterators in the destructor
 
 			delete resource;
-		    logger->info("Disposed of [%s]", resourceToString.c_str());
+		    logger->debug("Disposed of [%s]", resourceToString.c_str());
 
 		}
 	}
 
 	~ResourceManager() {
+	    logger->debug("Shutting down resource manager");
 		for (std::map<String, Resource*>::iterator currentResourceIterator = resourceCache.begin();
 				currentResourceIterator != resourceCache.end();
 				currentResourceIterator++) {
 			if ((*currentResourceIterator).second != null) {
 				logger->verbose("Disposing of ['%s']", (*currentResourceIterator).second->toString().c_str());
 				dispose((*currentResourceIterator).second);
+				logger->verbose("Done disposing resource");
 			}
 		}
 
-		logger->verbose("Disposed of all resources");
+		logger->debug("Disposed of all resources");
 		resourceCache.clear();
 
-		logger->verbose("Disposing of resource adapters");
+		logger->debug("Disposing of resource adapters");
 		std::set<ResourceAdapter*> resourceAdaptersSet;
 		for (std::map<String, ResourceAdapter*>::iterator currentAdapterIterator =
 				adapters.begin(); currentAdapterIterator != adapters.end();
@@ -192,7 +194,7 @@ public:
 			delete (*currentAdapterIterator);
 		}
 
-		logger->verbose("Disposed of resource adapters");
+		logger->debug("Disposed of resource adapters");
 
 		adapters.clear();
 		resourceAdaptersSet.clear();
