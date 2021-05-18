@@ -43,13 +43,11 @@ class Playground;
 
 class PlaygroundRunner {
 private:
-	Playground *container;
-	bool enabled;
+	Playground *container = null;
+	bool _enabled = true;
 
 public:
 	PlaygroundRunner() {
-		container = null;
-		enabled = true;
 	}
 
 	virtual ~PlaygroundRunner() {
@@ -104,11 +102,11 @@ public:
 	}
 
 	unsigned char getEnabled() const {
-		return enabled;
+		return _enabled;
 	}
 
 	void setEnabled(unsigned char enabled) {
-		this->enabled = enabled;
+		this->_enabled = enabled;
 	}
 };
 
@@ -276,7 +274,7 @@ public:
 		if (status == PlaygroundStatus::INITIALIZED) {
 			if (initRunners()) {
 				status = PlaygroundStatus::RUNNERS_INITIALIZED;
-				logger->debug("Runners initialization completed");
+				logger->info("Initialization completed");
 			} else {
 				status = PlaygroundStatus::RUNNERS_BROKEN;
 				logger->error("Runners initialization failed");
@@ -284,7 +282,7 @@ public:
 		}
 
 		if (status == PlaygroundStatus::RUNNERS_INITIALIZED || status == PlaygroundStatus::STOPPED) {
-			logger->debug("Entering loop");
+			logger->info("Entering loop");
 
 			status = PlaygroundStatus::RUNNING;
 
@@ -294,7 +292,7 @@ public:
 		logger->debug("Finished looping... shutting down");
 
 		shutdown();
-		logger->debug("done.");
+		logger->info("done.");
 	}
 
 	virtual void stop() {
@@ -303,7 +301,7 @@ public:
 
 	virtual void loop() {
 		try {
-			logger->verbose("Calling enabled runners beforeLoop");
+			logger->info("Calling enabled runners beforeLoop");
 			for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator = runners.begin();
 					currentRunnerIterator != runners.end();
 					currentRunnerIterator++) {
@@ -312,12 +310,13 @@ public:
 				}
 			}
 
-			logger->verbose("Calling enabled runners doLoop");
+			logger->info("Calling enabled runners doLoop");
 			unsigned int activeRunners = 0;
 			for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
 					runners.begin(); currentRunnerIterator != runners.end();
 					currentRunnerIterator++) {
 				if ((*currentRunnerIterator)->getEnabled()) {
+				    logger->info("Running Loop of %d", (*currentRunnerIterator)->getId());
 					LoopResult result = (*currentRunnerIterator)->doLoop();
 
 					if (result != LoopResult::CONTINUE) {
@@ -335,7 +334,7 @@ public:
 				}
 			}
 
-			logger->verbose("Calling enabled runners afterLoop");
+			logger->info("Calling enabled runners afterLoop");
 			for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
 					runners.begin(); currentRunnerIterator != runners.end();
 					currentRunnerIterator++)

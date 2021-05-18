@@ -64,6 +64,7 @@ public:
 	}
 
 	LoopResult doLoop() {
+	    logger->info("Begin PhysicsRunner::doLoop");
 		unsigned long tf = videoRunner->getPerformanceCounter();
 		real dt = (real)(tf - to) * invPerformanceFreq;
 		to = tf;
@@ -75,7 +76,7 @@ public:
 		 */
 		elapsedTime += dt;
 		frames++;
-		real fps = (real)frames / elapsedTime;
+//      real fps = (real)frames / elapsedTime;
 //		printf("Elapsed time: %.2f, frames: %u, fps:%.2f. View position: %s - count = %d\r",
 //				elapsedTime,
 //				frames,

@@ -58,10 +58,12 @@ class PhysicsDemoRunner: public PlaygroundRunner {
 	GroundPlaneCollisionDetector groundPlaneCollisionDetector;
 	SpheresCollisionDetector spheresCollisionDetector;
 
-	Source *gunshotSource;
-	Source *bounceSource;
+	Source *gunshotSource = null;
+	Source *bounceSource = null;
 
-	BulletParticle particles[numberOfParticles];
+	BulletParticle bulletParticles[numberOfParticles];
+
+	std::vector<BulletParticle *> particles;
 	Gravity gravity = Gravity(vector(0.0, -9.8, 0.0));
 	Plane ground = Plane(vector(0, 0, 0), vector(0, 1, 0));
 
@@ -99,9 +101,10 @@ public:
 	}
 
 	void reset() {
-		for(Particle *particle = particles; particle < (particles + numberOfParticles); particle++) {
-			particle->setStatus(false);
-		}
+	    for(std::vector<BulletParticle *>::iterator particleIterator = particles.begin(); particleIterator != particles.end(); particleIterator++)
+        {
+	        (*particleIterator)->setStatus(false);
+        }
 
 		video->setMousePosition(video->getScreenWidth() >> 1, video->getScreenHeight() >> 1);
 
@@ -128,33 +131,38 @@ public:
 		video->setClearColor(0.0, 0.5, 0.0, 0.0);
 		video->setAttribute(DEPTH_TEST, true);
 
-		reset();
+        for(int index = 0; index < numberOfParticles; index++) {
+            bulletParticles[index].setStatus(false);
+            bulletParticles[index].setRunner(this);
+            particles.push_back(&bulletParticles[index]);
 
-		for(BulletParticle *particle = particles; particle < (particles + numberOfParticles); particle++) {
-		    particle->setRunner(this);
-			physics->getParticleManager()->addParticle(particle);
-		}
+            physics->getParticleManager()->addParticle(particles.back());
+        }
 
 		physics->getParticleManager()->addForce(&this->gravity);
+
+        reset();
 
 		return true;
 	}
 
 	LoopResult doLoop() {
+	    logger->info("Begin physicsDemo::doLoop");
 	    defaultRenderer.clear();
 	    defaultRenderer.drawAxes(matriz_4x4::identidad);
         defaultRenderer.drawLine(matriz_4x4::identidad, vector(-1, 0, 0), vector(1, 0, 0));
         defaultRenderer.drawLine(matriz_4x4::identidad, vector(0, -1, 0), vector(0, 1, 0));
         defaultRenderer.drawLine(matriz_4x4::identidad, vector(0, 0, -1), vector(0, 0, 1));
 
-		for(unsigned int index = 0; index < numberOfParticles; index++) {
-		    BulletParticle *particle = &particles[index];
+        for(std::vector<BulletParticle *>::iterator particleIterator = particles.begin(); particleIterator != particles.end(); particleIterator++)
+        {
+            BulletParticle *particle = *particleIterator;
 
-			if(particle->getStatus() == true) {
-			    defaultRenderer.setMaterial(&materials[index % 3]);
+            if(particle->getStatus() == true) {
+                defaultRenderer.setMaterial(&materials[(particleIterator - particles.begin()) % 3]);
                 defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(particle->getPosition()), 0.1);
-			}
-		}
+            }
+        }
 
 		defaultRenderer.render(camera);
 		//skyboxRenderer.render(camera);
@@ -176,15 +184,17 @@ public:
 	}
 
 	void fire(const vector &position, bool isStatic = false) {
-		Particle *bullet = null;
+		BulletParticle *bullet = null;
 
 		logger->debug("Iterating particles");
-		for(BulletParticle *particle = particles; particle < (particles + numberOfParticles); particle++) {
-			if(!particle->getStatus()) {
-				bullet = particle;
-				break;
-			}
-		}
+		for(std::vector<BulletParticle *>::iterator particleIterator = particles.begin(); particleIterator != particles.end(); particleIterator++)
+        {
+            BulletParticle *particle = *particleIterator;
+            if(!particle->getStatus()) {
+                bullet = particle;
+                break;
+            }
+        }
 
 		if(bullet != null) {
 			bullet->setPosition(position);

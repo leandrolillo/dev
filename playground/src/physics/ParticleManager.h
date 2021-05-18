@@ -20,6 +20,7 @@
 
 
 class ParticleManager {
+    Logger *logger = LoggerFactory::getLogger("ParticleManager");
 	std::vector<Particle *> particles;
 	std::vector<Force *> forces;
 	ParticleIntegrator particleIntegrator;
@@ -66,6 +67,7 @@ public:
 protected:
 
 	void integrate(real dt) const {
+	    logger->info("Begin integrating");
 		for(std::vector<Particle *>::const_iterator iterator = particles.begin(); iterator != particles.end(); iterator++) {
 			Particle *particle = *iterator;
 			if(particle != null && particle->getStatus()) {
@@ -73,6 +75,7 @@ protected:
 				particle->afterIntegrate(dt);
 			}
 		}
+		logger->info("Done integrating");
 	}
 
 	void applyForces(real dt) const {
