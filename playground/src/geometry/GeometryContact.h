@@ -21,7 +21,7 @@ private:
     const Geometry *particleB;
 
 public:
-    GeometryContact(const Geometry *particleA, const Geometry *particleB, vector normal, real restitution, real penetration = 0.0) : BaseContact (normal, restitution, penetration){
+    GeometryContact(const Geometry *particleA, const Geometry *particleB, const vector &intersection, const vector &normal, real restitution, real penetration = 0.0) : BaseContact (intersection, normal, restitution, penetration){
         this->particleA = particleA;
         this->particleB = particleB;
     }
@@ -35,5 +35,5 @@ public:
     }
 };
 
-GeometryContact GeometryContact::noContact(null, null, vector(0, 0, 0), 0.0, -1.0);
+GeometryContact GeometryContact::noContact(null, null, vector(0, 0, 0), vector(0, 0, 0), 0.0, -1.0);
 #endif /* SRC_PHYSICS_COLLISIONDETECTION_GEOMETRY_GEOMETRYCONTACT_H_ */

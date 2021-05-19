@@ -91,11 +91,6 @@ public:
             this->shader = (ShaderProgramResource*) this->resourceManager->load("core/simple.program.json", "video/shaderProgram");
         }
 
-        this->axes = (VertexArrayResource*) this->resourceManager->load("core/axis.json", "video/vertexArray");
-        this->line = (VertexArrayResource*) this->resourceManager->load("core/line.json", "video/vertexArray");
-        this->box = (VertexArrayResource*) this->resourceManager->load("core/box.json", "video/vertexArray");
-        this->sphere = (VertexArrayResource*) this->resourceManager->load("core/sphere.json", "video/vertexArray");
-
         return true;
     }
 
@@ -146,21 +141,21 @@ public:
     }
 
     void drawAxes(const matriz_4x4 &modelMatrix, real length = 1.0f) {
-        this->drawObject(modelMatrix * matriz_4x4::matrizZoom(length, length, length), axes);
+        this->drawObject(modelMatrix * matriz_4x4::matrizZoom(length, length, length), getAxes());
     }
 
     void drawSphere(const matriz_4x4 &modelMatrix, real radius = 1.0f) {
-        this->drawObject(modelMatrix * matriz_4x4::matrizZoom(radius, radius, radius), sphere);
+        this->drawObject(modelMatrix * matriz_4x4::matrizZoom(radius, radius, radius), getSphere());
     }
 
     void drawBox(const matriz_4x4 &modelMatrix, real height = 1.0f, real width = 1.0f, real depth = 1.0f) {
-        this->drawObject(modelMatrix * matriz_4x4::matrizZoom(height, width, depth), box);
+        this->drawObject(modelMatrix * matriz_4x4::matrizZoom(height, width, depth), getBox());
     }
     void drawLine(const matriz_4x4 &modelMatrix, const vector &start, const vector &end) {
         matriz_4x4 traslacion = matriz_4x4::matrizTraslacion(start);
         matriz_4x4 zoom = matriz_4x4::matrizZoom(end - start);
         matriz_4x4 lineMatrix = modelMatrix * traslacion * zoom;
-        this->drawObject(lineMatrix, line);
+        this->drawObject(lineMatrix, getLine());
     }
 
     void clear() {
@@ -168,6 +163,38 @@ public:
         this->setMaterial(&defaultMaterial);
         this->objectsByTexture.clear();
     }
+private:
+    const VertexArrayResource *getSphere() {
+        if(this->sphere == null) {
+            this->sphere = (VertexArrayResource*) this->resourceManager->load("core/sphere.json", "video/vertexArray");
+        }
+
+        return this->sphere;
+    }
+
+    const VertexArrayResource *getLine() {
+        if(this->line == null) {
+            this->line= (VertexArrayResource*) this->resourceManager->load("core/line.json", "video/vertexArray");
+        }
+
+        return this->line;
+    }
+
+    const VertexArrayResource *getAxes() {
+        if(this->axes == null) {
+            this->axes= (VertexArrayResource*) this->resourceManager->load("core/axis.json", "video/vertexArray");
+        }
+
+        return this->axes;
+    }
+
+    const VertexArrayResource *getBox() {
+            if(this->box == null) {
+                this->box= (VertexArrayResource*) this->resourceManager->load("core/box.json", "video/vertexArray");
+            }
+
+            return this->box;
+        }
 };
 
 #endif /* SRC_VIDEO_RENDERERS_DEFAULTRENDERER_H_ */

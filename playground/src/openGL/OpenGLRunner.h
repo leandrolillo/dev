@@ -25,6 +25,7 @@
 #define DEPTH_TEST GL_DEPTH_TEST
 #define CULL_FACE GL_CULL_FACE
 #define CULL_FACE_BACK GL_BACK
+#define BLEND GL_BLEND
 
 #define VERTEX_LOCATION 0
 #define INDEX_LOCATION 1
@@ -345,6 +346,18 @@ public:
         return true;
     }
 
+    bool sendVector4(const String &name, const vector4 &value) const {
+        if (currentShaderProgram != null) {
+            String errorMessage;
+            glUniform4fv(glGetUniformLocation(currentShaderProgram->getId(), name.c_str()), 1, (real*) value);
+            if (!(errorMessage = getGlError()).empty()) {
+                logger->error("Error sending vector %s: %s", name.c_str(), errorMessage.c_str());
+                return false;
+            }
+        }
+        return true;
+    }
+
     bool sendReal(const String &name, const real &value) const {
         if (currentShaderProgram != null) {
             String errorMessage;
@@ -379,20 +392,37 @@ public:
         glClearColor(r, g, b, a);
     }
 
-    void setAttribute(unsigned int attributeCode, unsigned int param) const {
+    void enable(unsigned int attributeCode, unsigned int param1, unsigned int param2 = 0) const {
         switch (attributeCode) {
             case (DEPTH_TEST):
-                if ((bool) param) {
+                if ((bool) param1) {
                     glEnable(GL_DEPTH_TEST);
                 } else {
                     glDisable(GL_DEPTH_TEST);
                 }
                 break;
             case (CULL_FACE):
+                glCullFace(param1);
                 glEnable(GL_CULL_FACE);
-                glCullFace(param);
-
                 break;
+            case(BLEND): {
+                glBlendFunc(param1, param2);
+                glEnable(GL_BLEND);
+            }
+        }
+    }
+
+    void disable(unsigned int attributeCode) const {
+        switch (attributeCode) {
+            case (DEPTH_TEST):
+                glDisable(GL_DEPTH_TEST);
+                break;
+            case (CULL_FACE):
+                glDisable(GL_CULL_FACE);
+                break;
+            case(BLEND): {
+                glDisable(GL_BLEND);
+            }
         }
     }
 

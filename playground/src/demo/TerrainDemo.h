@@ -70,7 +70,7 @@ public:
 
 		ResourceManager *resourceManager = this->getContainer()->getResourceManager();
 		video->setClearColor(0.0, 0.5, 0.0, 0.0);
-		video->setAttribute(DEPTH_TEST, true);
+		video->enable(DEPTH_TEST, true);
 		glPolygonMode( GL_BACK, GL_LINE );
 
 		//openGl->setAttribute(CULL_FACE, CULL_FACE_BACK);

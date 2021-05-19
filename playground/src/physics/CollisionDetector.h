@@ -42,8 +42,10 @@ public:
                             contacts.push_back(
                                     ParticleContact(particleA,
                                             null,
-                                            (particleA->getGeometry() == contact.getParticleA() ? contact.getNormal() : contact.getNormal() * (real)-1),
-                                            contact.getRestitution())
+                                            contact.getIntersection(),
+                                            contact.getNormal(), //(particleA->getGeometry() == contact.getParticleA() ? contact.getNormal() : contact.getNormal() * (real)-1),
+                                            contact.getRestitution(),
+                                            contact.getPenetration())
                             );
 
                             particleA->onCollision(contacts.back());
@@ -58,8 +60,10 @@ public:
                                 contacts.push_back(
                                         ParticleContact((particleA->getGeometry() == contact.getParticleA() ? particleA : particleB),
                                                 (particleB->getGeometry() == contact.getParticleB() ? particleB : particleA),
+                                                contact.getIntersection(),
                                                 (particleA->getGeometry() == contact.getParticleA() ? contact.getNormal() : contact.getNormal() * (real)-1),
-                                                contact.getRestitution())
+                                                contact.getRestitution(),
+                                                contact.getPenetration())
                                 );
 
                                 particleA->onCollision(contacts.back());

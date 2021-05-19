@@ -110,8 +110,8 @@ public:
 
 
 		video->setClearColor(0.0, 0.5, 0.0, 0.0);
-		video->setAttribute(DEPTH_TEST, true);
-		video->setAttribute(CULL_FACE, CULL_FACE_BACK);
+		video->enable(DEPTH_TEST, true);
+		video->enable(CULL_FACE, CULL_FACE_BACK);
 
 		reset();
 		return true;

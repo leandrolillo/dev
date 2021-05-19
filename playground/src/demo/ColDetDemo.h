@@ -80,7 +80,7 @@ class CollisionDetectionDemoRunner: public PlaygroundRunner {
 	SkyboxRenderer skyboxRenderer;
 	GridRenderer gridRenderer;
 
-	MaterialResource red = MaterialResource(vector(1, 0, 0), vector(1, 0, 0), vector(1, 0, 0), 1.0);
+	MaterialResource red = MaterialResource(vector4(1, 0, 0, 0.5), vector4(1, 0, 0, 0.5), vector4(1, 0, 0, 0.5), 1.0);
 	MaterialResource green = MaterialResource(vector(0, 1, 0), vector(0, 1, 0), vector(0, 1, 0), 1.0);
 	MaterialResource blue = MaterialResource(vector(0, 0, 1), vector(0, 0, 1), vector(0, 0, 1), 1.0);
 
@@ -103,7 +103,7 @@ public:
 
 	void reset() {
 		video->setMousePosition(video->getScreenWidth() >> 1, video->getScreenHeight() >> 1);
-        camera.setViewMatrix(matriz_4x4::matrizTraslacion(vector(0.0f, -1.0f, -5.0f)));
+        camera.setViewMatrix(matriz_4x4::matrizTraslacion(vector(0.0f, -0.5f, -5.0f)));
 	}
 
 	bool init() {
@@ -118,7 +118,8 @@ public:
 
 	    logger->debug("Setting up video %d", video);
 		video->setClearColor(0.0, 0.5, 0.0, 0.0);
-		video->setAttribute(DEPTH_TEST, true);
+		video->enable(DEPTH_TEST, true);
+		video->enable(BLEND, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		collisionDetector.addScenery(&plane);
 
@@ -134,23 +135,35 @@ public:
 		return true;
 	}
 
+	void drawContact(ParticleContact &contact) {
+        vector offset = vector(0, 0, 0); // vector(0, 0, ((AbstractSphere *)contact.getParticleA()->getGeometry())->getRadius());
+        vector start = contact.getIntersection(); //contact.getParticleA()->getPosition();
+        vector end = start - contact.getNormal() * contact.getPenetration();
+
+        defaultRenderer.drawLine(matriz_4x4::identidad, start + offset, end + offset);
+
+        if(contact.getParticleB() != null) {
+            offset = vector(0, 0, 0); // vector(0, 0, ((AbstractSphere *)contact.getParticleB()->getGeometry())->getRadius());
+            start = contact.getIntersection();
+            end = start - contact.getNormal() * contact.getPenetration();
+
+            defaultRenderer.drawLine(matriz_4x4::identidad, start + offset, end + offset);
+        }
+	}
+
 	LoopResult doLoop() {
 	    defaultRenderer.clear();
 	    defaultRenderer.drawAxes(matriz_4x4::identidad);
+        defaultRenderer.drawLine(matriz_4x4::identidad, vector(-1, 0, 0), vector(1, 0, 0));
+        defaultRenderer.drawLine(matriz_4x4::identidad, vector(0, -1, 0), vector(0, 1, 0));
+        defaultRenderer.drawLine(matriz_4x4::identidad, vector(0, 0, -1), vector(0, 0, 1));
+
 
 	    std::vector<ParticleContact> contacts = collisionDetector.detectCollisions(particles);
 
-	    defaultRenderer.setMaterial(&blue);
+	    //defaultRenderer.setMaterial(&blue);
 	    for(std::vector<ParticleContact>::iterator contactIterator = contacts.begin(); contactIterator != contacts.end(); contactIterator++) {
-	        ParticleContact *contact = &*contactIterator;
-	        vector start = contact->getParticleA()->getPosition() + vector(0, 0, -((AbstractSphere *)contact->getParticleA()->getGeometry())->getRadius());
-	        vector end = start + contact->getNormal() * contact->getPenetration();
-	        defaultRenderer.drawLine(matriz_4x4::identidad, start, end);
-
-	        if(contact->getParticleA() != null && contact->getParticleB() != null) {
-	            defaultRenderer.drawLine(matriz_4x4::identidad, contact->getParticleA()->getPosition(), contact->getParticleB()->getPosition());
-	        }
-	        defaultRenderer.drawLine(matriz_4x4::identidad, start, end);
+	        drawContact(*contactIterator);
 	        //Draw contacts
 	    }
 
@@ -165,7 +178,10 @@ public:
 	        }
 
 	        Sphere *sphere = (Sphere *)sphereParticle->getGeometry();
-//	        defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(sphere->getOrigin()), sphere->getRadius());
+	        defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(sphere->getOrigin()), sphere->getRadius());
+//	        defaultRenderer.setMaterial(&blue);
+//          defaultRenderer.drawLine(matriz_4x4::identidad, vector(0, 0, 0), sphereParticle->getPosition());
+//	        defaultRenderer.drawLine(matriz_4x4::identidad, vector(0, 0, 0), sphereParticle->getPosition() + vector(0, 0, sphere->getRadius()));
 
 	        sphereParticle->setIsColliding(false);
 	    }

@@ -19,7 +19,7 @@ private:
     Particle *particleB;
 
 public:
-    ParticleContact(Particle *particleA, Particle *particleB, vector normal, real restitution, real penetration = 0.0) : BaseContact(normal, restitution, penetration){
+    ParticleContact(Particle *particleA, Particle *particleB, const vector &intersection, const vector &normal, real restitution, real penetration = 0.0) : BaseContact(intersection, normal, restitution, penetration){
         this->particleA = particleA;
         this->particleB = particleB;
     }

@@ -13,11 +13,13 @@
 class BaseContact {
 protected:
     vector normal;
+    vector intersection;
     real penetration;
     real restitution;
 
 public:
-    BaseContact(vector normal, real restitution, real penetration = 0.0) {
+    BaseContact(const vector &intersection, const vector &normal, real restitution, real penetration = 0.0) {
+        this->intersection = intersection;
         this->normal = normal;
         this->penetration = penetration;
         this->restitution = restitution;
@@ -25,6 +27,10 @@ public:
 
     const vector &getNormal() const {
         return this->normal;
+    }
+
+    const vector &getIntersection() const {
+        return this->intersection;
     }
 
     real getPenetration() const {

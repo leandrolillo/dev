@@ -26,8 +26,8 @@ int main(int, char**){
 //    PlaygroundTerrainDemo terrainPlayground("/Users/leandro/huevadas/projects/dev/media/");
 //    terrainPlayground.run();
 
-//    PhysicsPlayground physicsPlayground("/Users/leandro/huevadas/projects/dev/media/");
-//    physicsPlayground.run();
+    PhysicsPlayground physicsPlayground("/Users/leandro/huevadas/projects/dev/media/");
+    physicsPlayground.run();
 
 //    ObjDemoPlayground objPlayground("/Users/leandro/huevadas/projects/dev/media/");
 //    objPlayground.run();

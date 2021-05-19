@@ -110,13 +110,11 @@ public:
 		video = (VideoRunner*) this->getContainer()->getRequiredRunner(VideoRunner::ID);
 		audio = (AudioRunner*) this->getContainer()->getRequiredRunner(AudioRunner::ID);
 		physics = (PhysicsRunner *)this->getContainer()->getRequiredRunner(PhysicsRunner::ID);
-		physics->setPlaybackSpeed(0.3);
+		//physics->setPlaybackSpeed(0.3);
 		physics->getParticleManager()->getCollisionDetector().addScenery(&ground);
-
 
 		gunshotSource = audio->createSource("audio/handgunfire.wav", vector(0, 0, 0), vector(0, 0, 0), false);
 		bounceSource = audio->createSource("audio/twang3.wav", vector(0, 0, 0), vector(0, 0, 0), false);
-
 
 	    defaultRenderer.setVideoRunner(video);
 	    gridRenderer.setVideoRunner(video);
@@ -124,7 +122,7 @@ public:
 //	    skyboxRenderer.setSize(200);
 
 		video->setClearColor(0.0, 0.5, 0.0, 0.0);
-		video->setAttribute(DEPTH_TEST, true);
+		video->enable(DEPTH_TEST, true);
 
         for(int index = 0; index < numberOfParticles; index++) {
             bulletParticles[index].setStatus(false);

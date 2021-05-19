@@ -10,12 +10,12 @@ struct Matrices {
 uniform Matrices matrices;
 
 struct Material {
-    vec3 ambient;
-    vec3 diffuse;
-    vec3 specular;
+    vec4 ambient;
+    vec4 diffuse;
+    vec4 specular;
     float shininess;
 };
-uniform Material material = Material(vec3(0.3, 0.3, 0.3), vec3(0.3, 0.3, 0.3), vec3(0.3, 0.3, 0.3), 32);
+uniform Material material = Material(vec4(0.3, 0.3, 0.3, 1.0), vec4(0.3, 0.3, 0.3, 1.0), vec4(0.3, 0.3, 0.3, 1.0), 32);
 
 struct Light {
     vec3 position;
@@ -41,22 +41,22 @@ out vec4 fragmentColor;
 void main()
 {
 	// ambient
-	vec3 ambient = light.ambient * material.ambient;
+	vec4 ambient = vec4(light.ambient, 1.0) * material.ambient;
 
 	// diffuse
 	vec3 norm = normalize(inputData.normal);
 	vec3 lightDir = normalize(light.position - vec3(inputData.worldPosition));
 	float diff = max(dot(norm, lightDir), 0.0);
-	vec3 diffuse = diff * light.diffuse * material.diffuse;
+	vec4 diffuse = diff * vec4(light.diffuse, 1.0) * material.diffuse;
 
 	// specular
 	vec3 viewDir = normalize(viewPosition - vec3(inputData.worldPosition));
 	vec3 reflectDir = reflect(lightDir, norm);
 	float spec = pow(max(dot(viewDir, reflectDir), 0.0), material.shininess);
-	vec3 specular = spec * light.specular * material.specular;
+	vec4 specular = spec * vec4(light.specular, 1.0) * material.specular;
 
 
 	//fragmentColor = vec4(ambient + diffuse + specular, 1.0) * texture(textureUnit, inputData.textureCoordinate);
 	 //fragmentColor = vec4(inputData.color, 1.0) * vec4(ambient + diffuse + specular, 1.0) * texture(textureUnit, inputData.textureCoordinate);
-	fragmentColor = vec4(inputData.color + ambient + diffuse + specular, 1.0) * texture(textureUnit, inputData.textureCoordinate);
+	fragmentColor = (vec4(inputData.color, 1.0) + ambient + diffuse + specular) * texture(textureUnit, inputData.textureCoordinate);
 }

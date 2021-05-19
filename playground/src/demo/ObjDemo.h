@@ -82,7 +82,7 @@ public:
 
 
 	    video->setClearColor(0.0, 0.5, 0.0, 0.0);
-		video->setAttribute(DEPTH_TEST, true);
+		video->enable(DEPTH_TEST, true);
         //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         //glEnable( GL_BLEND );
 
