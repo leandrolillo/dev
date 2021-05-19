@@ -223,7 +223,7 @@ class PlaygroundTestsRunner: public TestRunner {
 		void testLoadOgg() {
 			OggResource *resource = (OggResource *)this->getContainer()->getResourceManager()->load("tests/audio.ogg");
 			assertTrue("OGG resource not loaded", resource != null);
-			assertTrue("OGG resource data not loaded", !resource->getData().empty() != null);
+			assertTrue("OGG resource data not loaded", !resource->getData().empty());
 			assertEquals("OGG mimetype invalid", "audio/ogg", resource->getMimeType());
 		}
 

@@ -12,6 +12,6 @@
 
 #define String std::string
 
-#define null 0
+#define null nullptr
 
 #endif

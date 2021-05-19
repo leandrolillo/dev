@@ -11,7 +11,7 @@
 #include <Math3d.h>
 #include <Geometry.h>
 
-class Contact;
+class ParticleContact;
 
 class Particle {
 	friend class ParticleIntegrator;
@@ -39,10 +39,10 @@ public:
 	virtual void afterIntegrate(real dt) {
 	}
 
-	virtual void onCollision(const Contact &contact) {
+	virtual void onCollision(const ParticleContact &contact) {
 
 	}
-	virtual void onCollisionResolved(const Contact &contact) {
+	virtual void onCollisionResolved(const ParticleContact &contact) {
 
 	}
 

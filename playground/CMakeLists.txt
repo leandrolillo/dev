@@ -23,6 +23,7 @@ add_subdirectory(src/video)
 add_subdirectory(src/openGL)
 add_subdirectory(src/parser)
 add_subdirectory(src/audio)
+add_subdirectory(src/geometry)
 add_subdirectory(src/physics)
 add_subdirectory(src/test)
 

@@ -11,7 +11,7 @@
 #define sphere_radius 0.1
 
 #include<vector>
-#include<Contact.h>
+#include<ParticleContact.h>
 #include<Particle.h>
 
 #include <Geometry.h>
@@ -27,8 +27,8 @@ public:
         this->scenery.push_back(scenery);
     }
 
-    virtual std::vector<Contact>detectCollisions(const std::vector<Particle *> &particles) const {
-            std::vector<Contact> contacts;
+    virtual std::vector<ParticleContact>detectCollisions(const std::vector<Particle *> &particles) const {
+            std::vector<ParticleContact> contacts;
 
             for(std::vector<Particle *>::const_iterator iteratorA = particles.begin(); iteratorA != particles.end(); iteratorA++) {
                 Particle *particleA = *iteratorA;
@@ -36,26 +36,34 @@ public:
                     for(std::vector<const Geometry *>::const_iterator sceneryIterator = scenery.begin();
                             sceneryIterator != scenery.end();
                             sceneryIterator ++)  {
-                        if(particleA->getGeometry()->intersects(**sceneryIterator)) {
-                            Contact contact = Contact(particleA, null, vector(0, 1, 0), 0.7f, sphere_radius - particleA->getPosition().y);
-                            contacts.push_back(contact);
 
-                            particleA->onCollision(contact);
+                        GeometryContact contact = particleA->getGeometry()->detectCollision(**sceneryIterator);
+                        if(contact.isIntersecting()) {
+                            contacts.push_back(
+                                    ParticleContact(particleA,
+                                            null,
+                                            (particleA->getGeometry() == contact.getParticleA() ? contact.getNormal() : contact.getNormal() * (real)-1),
+                                            contact.getRestitution())
+                            );
+
+                            particleA->onCollision(contacts.back());
                         }
                     }
 
                     for(std::vector<Particle *>::const_iterator iteratorB = iteratorA+1; iteratorB != particles.end(); iteratorB++) {
                         Particle *particleB = *iteratorB;
                         if(particleB->getStatus() && particleB->getGeometry() != null) {
-                            if(particleA->getGeometry()->intersects(*particleB->getGeometry())) {
-                                vector delta = particleB->getPosition() - particleA->getPosition();
-                                real modulo = delta.modulo();
-                                vector normal = delta * (1.0 / modulo);
-                                Contact contact = Contact(particleA, particleB, normal, 1.0f,  2* sphere_radius - modulo);
-                                contacts.push_back(contact);
+                            GeometryContact contact = particleA->getGeometry()->detectCollision(*particleB->getGeometry());
+                            if(contact.isIntersecting()) {
+                                contacts.push_back(
+                                        ParticleContact((particleA->getGeometry() == contact.getParticleA() ? particleA : particleB),
+                                                (particleB->getGeometry() == contact.getParticleB() ? particleB : particleA),
+                                                (particleA->getGeometry() == contact.getParticleA() ? contact.getNormal() : contact.getNormal() * (real)-1),
+                                                contact.getRestitution())
+                                );
 
-                                particleA->onCollision(contact);
-                                particleB->onCollision(contact);
+                                particleA->onCollision(contacts.back());
+                                particleB->onCollision(contacts.back());
                             }
                         }
                     }

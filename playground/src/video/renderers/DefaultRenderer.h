@@ -75,7 +75,7 @@ private:
 
 public:
     void setMaterial(const MaterialResource *material) {
-        this->currentMaterial = material;
+        this->currentMaterial = (material == null ? &defaultMaterial : material);
     }
 
     void setLight(const LightResource *light) {

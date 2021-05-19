@@ -64,7 +64,6 @@ public:
 	}
 
 	LoopResult doLoop() {
-	    logger->info("Begin PhysicsRunner::doLoop");
 		unsigned long tf = videoRunner->getPerformanceCounter();
 		real dt = (real)(tf - to) * invPerformanceFreq;
 		to = tf;

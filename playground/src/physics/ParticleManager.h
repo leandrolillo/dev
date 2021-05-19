@@ -59,7 +59,7 @@ public:
 		/**
 		 * generate contacts (collision and contact generators)
 		 */
-		std::vector<Contact> contacts = collisionDetector.detectCollisions(this->particles);
+		std::vector<ParticleContact> contacts = collisionDetector.detectCollisions(this->particles);
 		contactResolver.resolve(contacts);
 
 	}
@@ -67,7 +67,7 @@ public:
 protected:
 
 	void integrate(real dt) const {
-	    logger->info("Begin integrating");
+	    logger->verbose("Begin integrating");
 		for(std::vector<Particle *>::const_iterator iterator = particles.begin(); iterator != particles.end(); iterator++) {
 			Particle *particle = *iterator;
 			if(particle != null && particle->getStatus()) {
@@ -75,7 +75,7 @@ protected:
 				particle->afterIntegrate(dt);
 			}
 		}
-		logger->info("Done integrating");
+		logger->verbose("Done integrating");
 	}
 
 	void applyForces(real dt) const {

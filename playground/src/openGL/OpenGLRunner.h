@@ -190,7 +190,7 @@ public:
                 return 0;
             case SDL_MOUSEBUTTONDOWN:
                 //SDL_Log("SDL_MOUSEBUTTONDOWN %d", event->button.button);
-                logger->info("MOUSEBUTTONDOWN: %d at <%d, %d>", event->button.button, event->button.x, event->button.y);
+                logger->verbose("MOUSEBUTTONDOWN: %d at <%d, %d>", event->button.button, event->button.x, event->button.y);
                 this->getContainer()->mouseButtonDown(event->button.button, event->button.x, event->button.y);
                 return 0;
             case SDL_MOUSEBUTTONUP:

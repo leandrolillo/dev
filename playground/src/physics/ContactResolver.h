@@ -8,12 +8,12 @@
 #ifndef SRC_PHYSICS_CONTACTRESOLVER_H_
 #define SRC_PHYSICS_CONTACTRESOLVER_H_
 
-#include "Contact.h"
+#include "ParticleContact.h"
 #include <vector>
 
 class ContactResolver {
 protected:
-    real calculateSeparatingVelocity(const Contact &contact) const {
+    real calculateSeparatingVelocity(const ParticleContact &contact) const {
         vector relativeVelocity = contact.getParticleA()->getVelocity();
 
         if(contact.getParticleB() != null) {
@@ -25,7 +25,7 @@ protected:
 
 public:
 
-    void resolveVelocity(const Contact &contact) const {
+    void resolveVelocity(const ParticleContact &contact) const {
         Particle *particleA = contact.getParticleA();
         Particle *particleB = contact.getParticleB();
 
@@ -55,7 +55,7 @@ public:
         }
     }
 
-    void resolveInterpenetration(const Contact &contact) const {
+    void resolveInterpenetration(const ParticleContact &contact) const {
         if(contact.getPenetration() > (real)0) {
             Particle *particleA = contact.getParticleA();
             Particle *particleB = contact.getParticleB();
@@ -77,8 +77,8 @@ public:
 
     }
 
-	void resolve(const std::vector<Contact> &contacts) const {
-	    for(std::vector<Contact>::const_iterator iterator = contacts.begin(); iterator != contacts.end(); iterator++) {
+	void resolve(const std::vector<ParticleContact> &contacts) const {
+	    for(std::vector<ParticleContact>::const_iterator iterator = contacts.begin(); iterator != contacts.end(); iterator++) {
 	        resolveVelocity(*iterator);
 	        resolveInterpenetration(*iterator);
 

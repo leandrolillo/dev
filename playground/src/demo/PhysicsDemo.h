@@ -22,8 +22,6 @@
 
 #include<Math3d.h>
 #include<forces/Gravity.h>
-#include<collisionDetection/GroundPlaneCollisionDetector.h>
-#include<collisionDetection/SpheresCollisionDetector.h>
 #include<LinkedSphere.h>
 #include<Plane.h>
 
@@ -43,7 +41,7 @@ public:
     }
     void setRunner(PhysicsDemoRunner *runner);
 	void afterIntegrate(real dt);
-	void onCollisionResolved(const Contact &contact);
+	void onCollisionResolved(const ParticleContact &contact);
 	virtual const Geometry *getGeometry() const {
 	    return &boundingSphere;
 	}
@@ -54,9 +52,6 @@ class PhysicsDemoRunner: public PlaygroundRunner {
 	VideoRunner *video = null;
 	AudioRunner *audio = null;
 	PhysicsRunner *physics = null;
-
-	GroundPlaneCollisionDetector groundPlaneCollisionDetector;
-	SpheresCollisionDetector spheresCollisionDetector;
 
 	Source *gunshotSource = null;
 	Source *bounceSource = null;
@@ -147,7 +142,6 @@ public:
 	}
 
 	LoopResult doLoop() {
-	    logger->info("Begin physicsDemo::doLoop");
 	    defaultRenderer.clear();
 	    defaultRenderer.drawAxes(matriz_4x4::identidad);
         defaultRenderer.drawLine(matriz_4x4::identidad, vector(-1, 0, 0), vector(1, 0, 0));
@@ -281,7 +275,7 @@ void BulletParticle::afterIntegrate(real dt) {
     }
 }
 
-void BulletParticle::onCollisionResolved(const Contact &contact) {
+void BulletParticle::onCollisionResolved(const ParticleContact &contact) {
     if(runner != null) {
         runner->onCollision(this);
     }

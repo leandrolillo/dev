@@ -20,10 +20,8 @@
 
 #include<Math3d.h>
 #include<forces/Gravity.h>
-#include<collisionDetection/GroundPlaneCollisionDetector.h>
-#include<collisionDetection/SpheresCollisionDetector.h>
 
-#include <collisionDetection/geometry/Geometry.h>
+#include <Geometry.h>
 
 #include<InvalidArgumentException.h>
 
@@ -58,7 +56,7 @@ public:
 
     void setRunner(CollisionDetectionDemoRunner *runner);
     void afterIntegrate(real dt);
-    void onCollision(const Contact &contact);
+    void onCollision(const ParticleContact &contact);
 };
 
 #define number_of_sphere_particles 2
@@ -140,13 +138,23 @@ public:
 	    defaultRenderer.clear();
 	    defaultRenderer.drawAxes(matriz_4x4::identidad);
 
-	    std::vector<Contact> contacts = collisionDetector.detectCollisions(particles);
+	    std::vector<ParticleContact> contacts = collisionDetector.detectCollisions(particles);
 
-	    for(std::vector<Contact>::iterator contactIterator = contacts.begin(); contactIterator != contacts.end(); contactIterator++) {
+	    defaultRenderer.setMaterial(&blue);
+	    for(std::vector<ParticleContact>::iterator contactIterator = contacts.begin(); contactIterator != contacts.end(); contactIterator++) {
+	        ParticleContact *contact = &*contactIterator;
+	        vector start = contact->getParticleA()->getPosition() + vector(0, 0, -((AbstractSphere *)contact->getParticleA()->getGeometry())->getRadius());
+	        vector end = start + contact->getNormal() * contact->getPenetration();
+	        defaultRenderer.drawLine(matriz_4x4::identidad, start, end);
+
+	        if(contact->getParticleA() != null && contact->getParticleB() != null) {
+	            defaultRenderer.drawLine(matriz_4x4::identidad, contact->getParticleA()->getPosition(), contact->getParticleB()->getPosition());
+	        }
+	        defaultRenderer.drawLine(matriz_4x4::identidad, start, end);
 	        //Draw contacts
 	    }
 
-	    logger->debug("Found %d contacts.", contacts.size());
+	    //logger->info("Found %d contacts.", contacts.size());
 
 	    for(std::vector<Particle *>::iterator particleIterator = particles.begin() ; particleIterator != particles.end(); particleIterator++) {
 	        SphereParticle *sphereParticle = (SphereParticle *)*particleIterator;
@@ -157,7 +165,7 @@ public:
 	        }
 
 	        Sphere *sphere = (Sphere *)sphereParticle->getGeometry();
-	        defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(sphere->getOrigin()), sphere->getRadius());
+//	        defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(sphere->getOrigin()), sphere->getRadius());
 
 	        sphereParticle->setIsColliding(false);
 	    }
@@ -254,7 +262,7 @@ void SphereParticle::afterIntegrate(real dt) {
     }
 }
 
-void SphereParticle::onCollision(const Contact &contact) {
+void SphereParticle::onCollision(const ParticleContact &contact) {
     if(runner != null) {
         runner->onCollision(this);
     }
