@@ -83,10 +83,10 @@ public:
 	virtual void resize(unsigned int height, unsigned width) {
 	}
 
-	virtual void keyDown(unsigned int key) {
+	virtual void keyDown(unsigned int key, unsigned int keyModifier) {
 	}
 
-	virtual void keyUp(unsigned int key) {
+	virtual void keyUp(unsigned int key, unsigned int keyModifier) {
 	}
 
 	virtual void mouseMove(int x, int y, int dx, int dy) {
@@ -359,20 +359,20 @@ public:
 			(*currentRunnerIterator)->resize(height, width);
 	}
 
-	void keyDown(unsigned int key) {
+	void keyDown(unsigned int key, unsigned int keyModifier) {
 		for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
 				keyDownObservers.begin();
 				currentRunnerIterator != keyDownObservers.end();
 				currentRunnerIterator++)
-			(*currentRunnerIterator)->keyDown(key);
+			(*currentRunnerIterator)->keyDown(key, keyModifier);
 	}
 
-	void keyUp(unsigned int key) {
+	void keyUp(unsigned int key, unsigned int keyModifier) {
 		for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
 				keyUpObservers.begin();
 				currentRunnerIterator != keyUpObservers.end();
 				currentRunnerIterator++)
-			(*currentRunnerIterator)->keyUp(key);
+			(*currentRunnerIterator)->keyUp(key, keyModifier);
 	}
 
 	void mouseMove(int x, int y, int dx, int dy) {

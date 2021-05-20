@@ -41,6 +41,7 @@ private:
 public:
     SphereParticle(const vector &position, real radius) : boundingSphere(this->position, radius) {
         this->position = position;
+        this->setMass(M_PI * radius * radius);
     }
     virtual const Geometry *getGeometry() const {
         return &boundingSphere;
@@ -67,20 +68,21 @@ class CollisionDetectionDemoRunner: public PlaygroundRunner {
 	AudioRunner *audio = null;
 
 	CollisionDetector collisionDetector;
+	ContactResolver contactSolver;
 	std::vector<Particle *>particles;
 	SphereParticle sphereParticles[number_of_sphere_particles] = { SphereParticle(vector(-1, 0, 0), 1), SphereParticle(vector(1, 0, 0), 0.5)};
 	Plane plane = Plane(vector(0, 0, 0), vector(0, 1, 0));
 
 	char selectedGeometry = -1;
 	vector2 startPosition;
-	vector2 endPoisition;
+	vector2 endPosition;
 
 	Camera camera;
 	DefaultRenderer defaultRenderer;
 	SkyboxRenderer skyboxRenderer;
 	GridRenderer gridRenderer;
 
-	MaterialResource red = MaterialResource(vector4(1, 0, 0, 0.5), vector4(1, 0, 0, 0.5), vector4(1, 0, 0, 0.5), 1.0);
+	MaterialResource red = MaterialResource(vector(1, 0, 0), vector(1, 0, 0), vector(1, 0, 0), 1.0, 0.5);
 	MaterialResource green = MaterialResource(vector(0, 1, 0), vector(0, 1, 0), vector(0, 1, 0), 1.0);
 	MaterialResource blue = MaterialResource(vector(0, 0, 1), vector(0, 0, 1), vector(0, 0, 1), 1.0);
 
@@ -119,6 +121,7 @@ public:
 	    logger->debug("Setting up video %d", video);
 		video->setClearColor(0.0, 0.5, 0.0, 0.0);
 		video->enable(DEPTH_TEST, true);
+		video->enable(CULL_FACE, CULL_FACE_BACK);
 		video->enable(BLEND, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		collisionDetector.addScenery(&plane);
@@ -250,21 +253,17 @@ public:
 	    }
 	}
 
-	virtual void keyDown(unsigned int key) {
-		switch (key) {
-		case SDLK_ESCAPE:
-			this->getContainer()->stop();
-			break;
-		case SDLK_SPACE:
-			reset();
-			//fire();
-			break;
-		case 'f':
-		case 'F':
-			this->video->setFullscreen(!this->video->getFullscreen());
-			break;
-		}
-	}
+    virtual void keyDown(unsigned int key, unsigned int keyModifier) {
+        switch (key) {
+//            case SDLK_ESCAPE:
+//                reset();
+//                break;
+            case SDLK_SPACE:
+                    contactSolver.resolve(collisionDetector.detectCollisions(particles));
+
+                break;
+        }
+    }
 
 };
 

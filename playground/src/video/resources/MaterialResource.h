@@ -9,34 +9,29 @@
  */
 class MaterialResource: public Resource {
 private:
-	vector4 ambient;
-	vector4 diffuse;
-	vector4 specular;
-	real shininess;
+	vector3 ambient;
+	vector3 diffuse;
+	vector3 specular;
+	real alpha = 1.0;
+	real shininess = 2;
 public:
-	MaterialResource(const vector &ambient, const vector &diffuse, const vector &specular, real shininess) : Resource(0, "video/material") {
+	MaterialResource(const vector &ambient, const vector &diffuse, const vector &specular, real shininess, real alpha = 1.0) : Resource(0, "video/material") {
 		this->ambient = ambient;
 		this->diffuse = diffuse;
 		this->specular = specular;
 		this->shininess = shininess;
+		this->alpha = alpha;
 	}
 
-	MaterialResource(const vector4 &ambient, const vector4 &diffuse, const vector4 &specular, real shininess) : Resource(0, "video/material") {
-	        this->ambient = ambient;
-	        this->diffuse = diffuse;
-	        this->specular = specular;
-	        this->shininess = shininess;
-	    }
-
-	const vector4& getAmbient() const {
+	const vector& getAmbient() const {
 		return this->ambient;
 	}
 
-	const vector4& getDiffuse() const {
+	const vector& getDiffuse() const {
 		return this->diffuse;
 	}
 
-	const vector4& getSpecular() const {
+	const vector& getSpecular() const {
 		return this->specular;
 	}
 
@@ -44,15 +39,19 @@ public:
 		return this->shininess;
 	}
 
-	void setAmbient(const vector4 &ambient) {
+	const real &getAlpha() const {
+	    return this->alpha;
+	}
+
+	void setAmbient(const vector &ambient) {
 		this->ambient = ambient;
 	}
 
-	void setDiffuse(const vector4 &diffuse) {
+	void setDiffuse(const vector &diffuse) {
 		this->diffuse = diffuse;
 	}
 
-	void setSpecular(const vector4 &specular) {
+	void setSpecular(const vector &specular) {
 		this->specular = specular;
 	}
 

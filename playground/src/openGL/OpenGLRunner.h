@@ -57,7 +57,7 @@ private:
 public:
 
     virtual unsigned char getInterests() {
-        return RESIZE;
+        return RESIZE | KEY_DOWN;
     }
 
     virtual ~OpenGLRunner() {
@@ -176,13 +176,13 @@ public:
                 break;
             case SDL_KEYDOWN:
                 //SDL_Log("SDL_KEYDOWN %d", event->key.keysym.sym);
-                logger->verbose("KEYDOWN: %d", event->key.keysym.sym);
-                this->getContainer()->keyDown(event->key.keysym.sym);
+                logger->info("KEYDOWN: %d, %d", event->key.keysym.sym, event->key.keysym.mod);
+                this->getContainer()->keyDown(event->key.keysym.sym, event->key.keysym.mod);
                 return 0;
             case SDL_KEYUP:
                 //SDL_Log("SDL_KEYUP %d", event->key.keysym.sym);
                 logger->verbose("KEYUP: %d", event->key.keysym.sym);
-                this->getContainer()->keyUp(event->key.keysym.sym);
+                this->getContainer()->keyUp(event->key.keysym.sym, event->key.keysym.mod);
                 return 0;
             case SDL_MOUSEMOTION:
                 //SDL_Log("SDL_MOUSEMOTION (%d,%d) delta=(%d,%d)", event->motion.x, event->motion.y, event->motion.xrel, event->motion.yrel);
@@ -220,6 +220,35 @@ public:
     void resize(unsigned int height, unsigned int width) {
         VideoRunner::resize(height, width);
         glViewport(0, 0, (GLsizei) width, (GLsizei) height);
+    }
+
+    virtual void keyDown(unsigned int key, unsigned int keyModifier) {
+        //                    logger->info("KMOD_ALT: %d", keyModifier & KMOD_ALT);
+        //                    logger->info("KMOD_CTRL: %d", keyModifier & KMOD_CTRL);
+        //                    logger->info("KMOD_SHIFT: %d", keyModifier & KMOD_SHIFT);
+        //                    logger->info("KMOD_GUI: %d", keyModifier & KMOD_GUI);
+        //                    logger->info("KMOD_MODE: %d", keyModifier & KMOD_MODE);
+
+        switch (key) {
+            case SDLK_F4:
+                if (keyModifier & KMOD_GUI) {
+                    this->getContainer()->stop();
+                }
+                break;
+            case 'W':
+            case 'w':
+
+                if (keyModifier & KMOD_ALT) {
+                    this->getContainer()->stop();
+                }
+                break;
+
+            case SDLK_RETURN:
+                if (keyModifier & KMOD_GUI) {
+                    this->setFullscreen(!this->getFullscreen());
+                }
+                break;
+        }
     }
 
     bool setFullscreen(bool fullScreen) {

@@ -190,7 +190,7 @@ public:
             camera.setViewMatrix(matriz_4x4::matrizTraslacion(viewPosition));
         }
 	}
-	virtual void keyUp(unsigned int key) {
+	virtual void keyUp(unsigned int key, unsigned int keyModifier) {
 		switch (key) {
 		case SDLK_RCTRL:
 		case SDLK_LCTRL:
@@ -198,24 +198,17 @@ public:
 			break;
 		}
 	}
-	virtual void keyDown(unsigned int key) {
-		switch (key) {
-		case SDLK_RCTRL:
-		case SDLK_LCTRL:
-			currentPosition = &lightPosition;
-			break;
-		case SDLK_SPACE:
-			reset();
-			break;
-		case SDLK_ESCAPE:
-			this->getContainer()->stop();
-			break;
-		case 'f':
-		case 'F':
-			this->video->setFullscreen(!this->video->getFullscreen());
-			break;
-		}
-	}
+    virtual void keyDown(unsigned int key, unsigned int keyModifier) {
+        switch (key) {
+            case SDLK_RCTRL:
+            case SDLK_LCTRL:
+                currentPosition = &lightPosition;
+                break;
+            case SDLK_ESCAPE:
+                reset();
+                break;
+        }
+    }
 };
 
 class PlaygroundGeneralDemo: public Playground {

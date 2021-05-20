@@ -131,22 +131,13 @@ public:
 	void mouseButtonDown(unsigned char button, int x, int y) {
 	}
 
-	virtual void keyDown(unsigned int key) {
-		switch (key) {
-		case SDLK_ESCAPE:
-			this->getContainer()->stop();
-			break;
-		case SDLK_SPACE:
-			reset();
-			//fire();
-			break;
-		case 'f':
-		case 'F':
-			this->video->setFullscreen(!this->video->getFullscreen());
-			break;
-		}
-	}
-
+    virtual void keyDown(unsigned int key, unsigned int keyModifier) {
+        switch (key) {
+            case SDLK_ESCAPE:
+                reset();
+                break;
+        }
+    }
 };
 
 class ObjDemoPlayground: public Playground {

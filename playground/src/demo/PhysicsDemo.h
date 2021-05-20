@@ -123,6 +123,7 @@ public:
 
 		video->setClearColor(0.0, 0.5, 0.0, 0.0);
 		video->enable(DEPTH_TEST, true);
+		video->enable(CULL_FACE, CULL_FACE_BACK);
 
         for(int index = 0; index < numberOfParticles; index++) {
             bulletParticles[index].setStatus(false);
@@ -231,22 +232,13 @@ public:
 		fire(vector(1.0, 2.0, 0.0), true);
 	}
 
-	virtual void keyDown(unsigned int key) {
-		switch (key) {
-		case SDLK_ESCAPE:
-			this->getContainer()->stop();
-			break;
-		case SDLK_SPACE:
-			reset();
-			//fire();
-			break;
-		case 'f':
-		case 'F':
-			this->video->setFullscreen(!this->video->getFullscreen());
-			break;
-		}
-	}
-
+    virtual void keyDown(unsigned int key, unsigned int keyModifier) {
+        switch (key) {
+            case SDLK_ESCAPE:
+                reset();
+                break;
+        }
+    }
 };
 
 class PhysicsPlayground: public Playground {

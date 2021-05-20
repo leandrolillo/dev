@@ -138,21 +138,13 @@ public:
 		camera.setViewMatrix(matriz_4x4::matrizBase((matriz_3x3)camera.getViewMatrix(), viewPosition));
 	}
 
-	virtual void keyDown(unsigned int key) {
-		switch (key) {
-		case SDLK_SPACE:
-			reset();
-			break;
-		case SDLK_ESCAPE:
-			this->getContainer()->stop();
-			break;
-		case 'f':
-		case 'F':
-			this->video->setFullscreen(!this->video->getFullscreen());
-			break;
-		}
-	}
-
+    virtual void keyDown(unsigned int key, unsigned int keyModifier) {
+        switch (key) {
+            case SDLK_ESCAPE:
+                reset();
+                break;
+        }
+    }
 };
 
 class PlaygroundTerrainDemo: public Playground {

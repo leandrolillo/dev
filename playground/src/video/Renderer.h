@@ -39,9 +39,10 @@ public:
 
     void sendMaterial(const MaterialResource *material) const {
         if(material != null) {
-            videoRunner->sendVector4("material.ambient", material->getAmbient());
-            videoRunner->sendVector4("material.diffuse", material->getDiffuse());
-            videoRunner->sendVector4("material.specular", material->getSpecular());
+            videoRunner->sendVector("material.ambient", material->getAmbient());
+            videoRunner->sendVector("material.diffuse", material->getDiffuse());
+            videoRunner->sendVector("material.specular", material->getSpecular());
+            videoRunner->sendReal("material.alpha", material->getAlpha());
             videoRunner->sendReal("material.shininess", material->getShininess());
         }
     }
