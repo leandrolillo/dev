@@ -24,7 +24,7 @@ protected:
 	real inverseMass = 0.0f;
 	real mass = 0.0f;
 
-	bool _status = false;
+	bool _status = true;
 
 	/**
 	 * rough approximation of drag to avoid numerical stability issues - without this objects are likely to accelerate magically.

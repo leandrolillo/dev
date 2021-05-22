@@ -54,6 +54,10 @@ public:
         return this->radius;
     }
 
+    void setRadius(real radius) {
+        this->radius = radius;
+    }
+
     /**
      * "Accept" method in visitor pattern / double dispatch
      */

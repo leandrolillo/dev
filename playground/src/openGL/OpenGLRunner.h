@@ -176,12 +176,12 @@ public:
                 break;
             case SDL_KEYDOWN:
                 //SDL_Log("SDL_KEYDOWN %d", event->key.keysym.sym);
-                logger->info("KEYDOWN: %d, %d", event->key.keysym.sym, event->key.keysym.mod);
+                logger->verbose("KEYDOWN: %d, %d", event->key.keysym.sym, event->key.keysym.mod);
                 this->getContainer()->keyDown(event->key.keysym.sym, event->key.keysym.mod);
                 return 0;
             case SDL_KEYUP:
                 //SDL_Log("SDL_KEYUP %d", event->key.keysym.sym);
-                logger->verbose("KEYUP: %d", event->key.keysym.sym);
+                logger->verbose("KEYUP: %d, %d", event->key.keysym.sym, event->key.keysym.mod);
                 this->getContainer()->keyUp(event->key.keysym.sym, event->key.keysym.mod);
                 return 0;
             case SDL_MOUSEMOTION:

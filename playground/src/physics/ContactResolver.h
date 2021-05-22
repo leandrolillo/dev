@@ -12,6 +12,8 @@
 #include <vector>
 
 class ContactResolver {
+    Logger *logger = LoggerFactory::getLogger("ContactResolver");
+
 protected:
     real calculateSeparatingVelocity(const ParticleContact &contact) const {
         vector relativeVelocity = contact.getParticleA()->getVelocity();
@@ -20,7 +22,7 @@ protected:
             relativeVelocity -= contact.getParticleB()->getVelocity();
         }
 
-        return relativeVelocity * contact.getNormal();
+        return -relativeVelocity * contact.getNormal();
     }
 
 public:
@@ -40,18 +42,15 @@ public:
             }
 
             if(totalInverseMass > 0) {
-                real impulsePerIMass = deltaVelocity / totalInverseMass;
+                real impulseAmountPerIMass = deltaVelocity / totalInverseMass;
 
-                particleA->setVelocity(particleA->getVelocity() + contact.getNormal() * impulsePerIMass * particleA->getInverseMass());
+//                vector impulsePerIMass = contact.getNormal() * (deltaVelocity / totalInverseMass);
+
+                particleA->setVelocity(particleA->getVelocity() - impulseAmountPerIMass * particleA->getInverseMass() * contact.getNormal());
                 if (particleB) {
-                    particleB->setVelocity(particleB->getVelocity() - contact.getNormal() * impulsePerIMass * particleB->getInverseMass());
+                    particleB->setVelocity(particleB->getVelocity() + impulseAmountPerIMass * particleB->getInverseMass() * contact.getNormal());
                 }
             }
-//            particleA->onCollision();
-//
-//            if(particleB) {
-//                particleB->onCollision();
-//            }
         }
     }
 
@@ -67,10 +66,21 @@ public:
             }
 
             if(totalInverseMass > (real)0) {
-                particleA->setPosition(particleA->getPosition() + contact.getNormal() * (contact.getPenetration() * particleA->getInverseMass() / totalInverseMass));
+                vector movePerIMass = contact.getNormal() * (-contact.getPenetration() / totalInverseMass);
+
+                vector deltaA = movePerIMass * particleA->getInverseMass();
+                particleA->setPosition(particleA->getPosition() + deltaA);
+
+                logger->info("normal: %s, penetration: %.2f", contact.getNormal().toString().c_str(), contact.getPenetration());
+                logger->info("normal * penetration: %s", (contact.getNormal() * contact.getPenetration()).toString().c_str());
+                logger->info("Particle A displaced: %s", deltaA.toString().c_str());
 
                 if(particleB != null) {
-                    particleB->setPosition(particleB->getPosition() + contact.getNormal() * (contact.getPenetration() * particleB->getInverseMass() / totalInverseMass));
+                    vector deltaB = movePerIMass * particleB->getInverseMass();
+                    particleB->setPosition(particleB->getPosition() - deltaB);
+
+                    logger->info("Particle B displaced: %s", deltaB.toString().c_str());
+                    logger->info("particle A + particle B displacement: %s", (deltaA + deltaB).toString().c_str());
                 }
             }
         }

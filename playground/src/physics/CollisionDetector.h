@@ -43,7 +43,7 @@ public:
                                     ParticleContact(particleA,
                                             null,
                                             contact.getIntersection(),
-                                            contact.getNormal(), //(particleA->getGeometry() == contact.getParticleA() ? contact.getNormal() : contact.getNormal() * (real)-1),
+                                            (particleA->getGeometry() == contact.getGeometryA() ? contact.getNormal() : contact.getNormal() * (real)-1),
                                             contact.getRestitution(),
                                             contact.getPenetration())
                             );
@@ -58,10 +58,10 @@ public:
                             GeometryContact contact = particleA->getGeometry()->detectCollision(*particleB->getGeometry());
                             if(contact.isIntersecting()) {
                                 contacts.push_back(
-                                        ParticleContact((particleA->getGeometry() == contact.getParticleA() ? particleA : particleB),
-                                                (particleB->getGeometry() == contact.getParticleB() ? particleB : particleA),
+                                        ParticleContact((particleA->getGeometry() == contact.getGeometryA() ? particleA : particleB),
+                                                (particleB->getGeometry() == contact.getGeometryB() ? particleB : particleA),
                                                 contact.getIntersection(),
-                                                (particleA->getGeometry() == contact.getParticleA() ? contact.getNormal() : contact.getNormal() * (real)-1),
+                                                (particleA->getGeometry() == contact.getGeometryA() ? contact.getNormal() : contact.getNormal() * (real)-1),
                                                 contact.getRestitution(),
                                                 contact.getPenetration())
                                 );

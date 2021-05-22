@@ -17,21 +17,21 @@ class GeometryContact : public BaseContact {
 public:
     static GeometryContact noContact;
 private:
-    const Geometry *particleA;
-    const Geometry *particleB;
+    const Geometry *geometryA;
+    const Geometry *geometryB;
 
 public:
-    GeometryContact(const Geometry *particleA, const Geometry *particleB, const vector &intersection, const vector &normal, real restitution, real penetration = 0.0) : BaseContact (intersection, normal, restitution, penetration){
-        this->particleA = particleA;
-        this->particleB = particleB;
+    GeometryContact(const Geometry *geometryA, const Geometry *geometryB, const vector &intersection, const vector &normal, real restitution, real penetration = 0.0) : BaseContact (intersection, normal, restitution, penetration){
+        this->geometryA = geometryA;
+        this->geometryB = geometryB;
     }
 
-    const Geometry *getParticleA() const {
-        return this->particleA;
+    const Geometry *getGeometryA() const {
+        return this->geometryA;
     }
 
-    const Geometry *getParticleB() const {
-        return this->particleB;
+    const Geometry *getGeometryB() const {
+        return this->geometryB;
     }
 };
 

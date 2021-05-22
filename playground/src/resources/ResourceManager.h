@@ -107,7 +107,7 @@ public:
                             response->setFileName(fileParser.getFilename());
                             response->setMimeType(mimeType);
                             addResource(response);
-                            logger->info("Loaded [%s]", response->toString().c_str());
+                            logger->debug("Loaded [%s]", response->toString().c_str());
                         } else {
                             logger->warn(
                                     "Could not load [%s] [%s] with adapter [%s]",
