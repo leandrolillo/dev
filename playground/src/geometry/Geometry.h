@@ -219,25 +219,25 @@ public:
         real radiuses = sphereA.getRadius() + sphereB.getRadius();
 
         if(delta * delta <= radiuses * radiuses) {
-            real modulo = delta.modulo();
-            vector normal = delta * (1.0 / modulo);
-            real penetration = radiuses - modulo;
+            real distance = delta.modulo();
+            vector normal = delta * (1.0 / distance);
+            real penetration = radiuses - distance;
             vector intersection = sphereA.getOrigin() + (normal * sphereA.getRadius());
-            return GeometryContact(&sphereA, &sphereB, intersection, normal, 1.0f,  penetration);
+            return GeometryContact(&sphereA, &sphereB, intersection, normal, 0.8f,  penetration);
         }
 
         return GeometryContact::noContact;
     }
 
     static GeometryContact planeSphereContact(const AbstractPlane &plane, const AbstractSphere &sphere) {
-        real distance = ((sphere.getOrigin() - plane.getOrigin()) * plane.getNormal());
+        real distance = (sphere.getOrigin() - plane.getOrigin()) * plane.getNormal();
 
         if(distance <= sphere.getRadius()) {
             vector delta = distance * plane.getNormal();
             real penetration = sphere.getRadius() - distance;
             vector intersection = sphere.getOrigin() - (plane.getNormal() * sphere.getRadius());
 
-            return GeometryContact(&plane, &sphere, intersection, plane.getNormal(), 0.7f, penetration);
+            return GeometryContact(&plane, &sphere, intersection, plane.getNormal(), 0.8f, penetration);
         }
 
         return GeometryContact::noContact;

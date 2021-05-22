@@ -21,7 +21,7 @@ private:
 
 public:
 	ResourceManager(const String &rootFolder) {
-		//logger->setLogLevel(LogLevel::VERBOSE);
+		logger->setLogLevel(LogLevel::DEBUG);
 		this->rootFolder = rootFolder;
 	}
 

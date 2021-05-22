@@ -25,7 +25,7 @@
 #include<LinkedSphere.h>
 #include<Plane.h>
 
-#define numberOfParticles 10
+#define numberOfParticles 30
 
 class PhysicsDemoRunner;
 
@@ -118,8 +118,8 @@ public:
 
 	    defaultRenderer.setVideoRunner(video);
 	    gridRenderer.setVideoRunner(video);
-//	    skyboxRenderer.setVideoRunner(video);
-//	    skyboxRenderer.setSize(200);
+	    skyboxRenderer.setVideoRunner(video);
+	    skyboxRenderer.setSize(200);
 
 		video->setClearColor(0.0, 0.5, 0.0, 0.0);
 		video->enable(DEPTH_TEST, true);
@@ -158,7 +158,7 @@ public:
         }
 
 		defaultRenderer.render(camera);
-		//skyboxRenderer.render(camera);
+		skyboxRenderer.render(camera);
 		gridRenderer.render(camera);
 
 		return LoopResult::CONTINUE;
@@ -207,8 +207,7 @@ public:
 			audio->updateSource(gunshotSource);
 			audio->playSource(gunshotSource);
 
-			logger->info("bullet at position: %s",
-			        bullet->getPosition().toString("%.2f").c_str());
+			//logger->info("bullet at position: %s", bullet->getPosition().toString("%.2f").c_str());
 
 		} else {
 			logger->debug("no particle found");
@@ -234,7 +233,7 @@ public:
 
     virtual void keyDown(unsigned int key, unsigned int keyModifier) {
         switch (key) {
-            case SDLK_ESCAPE:
+            case SDLK_SPACE:
                 reset();
                 break;
         }

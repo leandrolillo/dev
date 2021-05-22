@@ -16,25 +16,25 @@ class ContactResolver {
 
 protected:
     real calculateSeparatingVelocity(const ParticleContact &contact) const {
-        vector relativeVelocity = contact.getParticleA()->getVelocity();
+        vector relativeVelocity = -contact.getParticleA()->getVelocity();
 
         if(contact.getParticleB() != null) {
-            relativeVelocity -= contact.getParticleB()->getVelocity();
+            relativeVelocity += contact.getParticleB()->getVelocity();
         }
 
-        return -relativeVelocity * contact.getNormal();
+        return relativeVelocity * contact.getNormal();
     }
 
 public:
 
     void resolveVelocity(const ParticleContact &contact) const {
-        Particle *particleA = contact.getParticleA();
-        Particle *particleB = contact.getParticleB();
-
         real separatingVelocity = calculateSeparatingVelocity(contact);
         if(separatingVelocity <= 0.0) {
-            real newSepVelocity = -separatingVelocity * contact.getRestitution();
-            real deltaVelocity = newSepVelocity - separatingVelocity;
+            real newSepVelocity = separatingVelocity * contact.getRestitution();
+            real deltaVelocity = newSepVelocity + separatingVelocity;
+
+            Particle *particleA = contact.getParticleA();
+            Particle *particleB = contact.getParticleB();
 
             real totalInverseMass = particleA->getInverseMass();
             if (particleB) {
@@ -46,9 +46,9 @@ public:
 
 //                vector impulsePerIMass = contact.getNormal() * (deltaVelocity / totalInverseMass);
 
-                particleA->setVelocity(particleA->getVelocity() - impulseAmountPerIMass * particleA->getInverseMass() * contact.getNormal());
+                particleA->setVelocity(particleA->getVelocity() + impulseAmountPerIMass * particleA->getInverseMass() * contact.getNormal());
                 if (particleB) {
-                    particleB->setVelocity(particleB->getVelocity() + impulseAmountPerIMass * particleB->getInverseMass() * contact.getNormal());
+                    particleB->setVelocity(particleB->getVelocity() - impulseAmountPerIMass * particleB->getInverseMass() * contact.getNormal());
                 }
             }
         }
@@ -71,20 +71,19 @@ public:
                 vector deltaA = movePerIMass * particleA->getInverseMass();
                 particleA->setPosition(particleA->getPosition() + deltaA);
 
-                logger->info("normal: %s, penetration: %.2f", contact.getNormal().toString().c_str(), contact.getPenetration());
-                logger->info("normal * penetration: %s", (contact.getNormal() * contact.getPenetration()).toString().c_str());
-                logger->info("Particle A displaced: %s", deltaA.toString().c_str());
+//                logger->verbose("normal: %s, penetration: %.2f", contact.getNormal().toString().c_str(), contact.getPenetration());
+//                logger->verbose("normal * penetration: %s", (contact.getNormal() * contact.getPenetration()).toString().c_str());
+//                logger->verbose("Particle A displaced: %s", deltaA.toString().c_str());
 
                 if(particleB != null) {
                     vector deltaB = movePerIMass * particleB->getInverseMass();
                     particleB->setPosition(particleB->getPosition() - deltaB);
 
-                    logger->info("Particle B displaced: %s", deltaB.toString().c_str());
-                    logger->info("particle A + particle B displacement: %s", (deltaA + deltaB).toString().c_str());
+//                    logger->verbose("Particle B displaced: %s", deltaB.toString().c_str());
+//                    logger->verbose("particle A + particle B displacement: %s", (deltaA + deltaB).toString().c_str());
                 }
             }
         }
-
     }
 
 	void resolve(const std::vector<ParticleContact> &contacts) const {

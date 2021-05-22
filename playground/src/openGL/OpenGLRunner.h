@@ -230,6 +230,9 @@ public:
         //                    logger->info("KMOD_MODE: %d", keyModifier & KMOD_MODE);
 
         switch (key) {
+            case SDLK_ESCAPE:
+                this->getContainer()->stop();
+                break;
             case SDLK_F4:
                 if (keyModifier & KMOD_GUI) {
                     this->getContainer()->stop();

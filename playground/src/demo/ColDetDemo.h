@@ -158,18 +158,18 @@ public:
 
     void drawContact(ParticleContact &contact) {
         vector start = contact.getIntersection(); //contact.getParticleA()->getPosition();
-        vector end = start - contact.getNormal() * contact.getPenetration();
+        vector end = start + contact.getNormal() * contact.getPenetration();
 
         defaultRenderer.setMaterial(&green);
         defaultRenderer.drawLine(matriz_4x4::identidad, start, end);
 
-        if (contact.getParticleB() != null) {
-            start = contact.getIntersection();
-            end = start - contact.getNormal() * contact.getPenetration();
-
-            defaultRenderer.setMaterial(&green);
-            defaultRenderer.drawLine(matriz_4x4::identidad, start, end);
-        }
+//        if (contact.getParticleB() != null) {
+//            start = contact.getIntersection();
+//            end = start - contact.getNormal() * contact.getPenetration();
+//
+//            defaultRenderer.setMaterial(&green);
+//            defaultRenderer.drawLine(matriz_4x4::identidad, start, end);
+//        }
     }
 
     LoopResult doLoop() {
@@ -278,12 +278,11 @@ public:
 
     virtual void keyDown(unsigned int key, unsigned int keyModifier) {
         switch (key) {
-            case SDLK_ESCAPE:
+            case SDLK_BACKSPACE:
                 reset();
                 break;
             case SDLK_SPACE:
                 contactSolver.resolve(collisionDetector.detectCollisions(particles));
-
                 break;
         }
     }
