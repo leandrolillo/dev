@@ -76,9 +76,13 @@ class PhysicsDemoRunner: public PlaygroundRunner {
 	SkyboxRenderer skyboxRenderer;
 	GridRenderer gridRenderer;
 
+	TextureResource *textureResource = null;
 	MaterialResource materials[3] = {MaterialResource(vector(1, 0.5, 0.5), vector(1, 0.5, 0.5), vector(1, 1, 1), 32),
 	        MaterialResource(vector(0.5, 1, 0.5), vector(0.5, 1, 0.5), vector(1, 1, 1), 32),
 	        MaterialResource(vector(0.5, 0.5, 1), vector(0.5, 0.5, 1), vector(1, 1, 1), 32)};
+
+	LightResource light = LightResource(vector(0, 0, 3), vector(0.4f, 0.4f, 0.4f), vector(0.5f, 0.5f, 0.5f), vector(1, 1, 1), 1.0);
+	MaterialResource material = MaterialResource(vector(0.5, 0.5, 0.5), vector(0.7, 0.7, 0.7), vector(1, 1, 1), 32);
 public:
 	PhysicsDemoRunner() {
 	}
@@ -116,10 +120,15 @@ public:
 		gunshotSource = audio->createSource("audio/handgunfire.wav", vector(0, 0, 0), vector(0, 0, 0), false);
 		bounceSource = audio->createSource("audio/twang3.wav", vector(0, 0, 0), vector(0, 0, 0), false);
 
+		textureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("images/basketball.png", "video/texture");
+
 	    defaultRenderer.setVideoRunner(video);
 	    gridRenderer.setVideoRunner(video);
 	    skyboxRenderer.setVideoRunner(video);
 	    skyboxRenderer.setSize(200);
+
+        defaultRenderer.setLight(&light);
+
 
 		video->setClearColor(0.0, 0.5, 0.0, 0.0);
 		video->enable(DEPTH_TEST, true);
@@ -147,12 +156,14 @@ public:
         defaultRenderer.drawLine(matriz_4x4::identidad, vector(0, -1, 0), vector(0, 1, 0));
         defaultRenderer.drawLine(matriz_4x4::identidad, vector(0, 0, -1), vector(0, 0, 1));
 
+        defaultRenderer.setTexture(textureResource);
         for(std::vector<BulletParticle *>::iterator particleIterator = particles.begin(); particleIterator != particles.end(); particleIterator++)
         {
             BulletParticle *particle = *particleIterator;
 
             if(particle->getStatus() == true) {
-                defaultRenderer.setMaterial(&materials[(particleIterator - particles.begin()) % 3]);
+                //defaultRenderer.setMaterial(&materials[(particleIterator - particles.begin()) % 3]);
+                defaultRenderer.setMaterial(&material);
                 defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(particle->getPosition()), 0.1);
             }
         }

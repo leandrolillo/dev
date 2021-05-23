@@ -49,10 +49,8 @@ private:
 	DefaultRenderer toonRenderer;
 public:
 	GeneralDemoRunner() :
-			material(vector(1.0f, 0.5f, 0.31f), vector(1.0f, 0.5f, 0.31f),
-					vector(0.5f, 0.5f, 0.5f), 32.0f), light(lightPosition,
-					vector(0.2f, 0.2f, 0.2f), vector(0.5f, 0.5f, 0.5f),
-					vector(1.0f, 1.0f, 1.0f), 1.0f) {
+			material(vector(1.0f, 0.5f, 0.31f), vector(1.0f, 0.5f, 0.31f), vector(0.5f, 0.5f, 0.5f), 32.0f),
+			light(lightPosition, vector(0.2f, 0.2f, 0.2f), vector(0.5f, 0.5f, 0.5f), vector(1.0f, 1.0f, 1.0f), 1.0f) {
 
 		currentPosition = &viewPosition;
 	}
