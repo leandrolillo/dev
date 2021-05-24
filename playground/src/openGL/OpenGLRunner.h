@@ -464,7 +464,8 @@ public:
     void drawVertexArray(const VertexArrayResource *vertexArrayResource) const {
         String errorMessage;
 
-        if (vertexArrayResource != null && vertexArrayResource->getId() > 0 && vertexArrayResource->getMimeType() == "video/vertexArray") {
+        if (vertexArrayResource != null && vertexArrayResource->getId() > 0 /*&& vertexArrayResource->getMimeType() == "video/vertexArray"*/) {
+            getGlError();
             //logger->info("Drawing vertexArray %s", vertexArrayResource->toString().c_str());
 
             glEnableVertexAttribArray(0);
