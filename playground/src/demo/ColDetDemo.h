@@ -25,24 +25,16 @@
 
 #include<InvalidArgumentException.h>
 
-#include<Sphere.h>
-#include<Plane.h>
-#include<Line.h>
-
 class CollisionDetectionDemoRunner;
 
 class SphereParticle: public Particle {
 private:
     CollisionDetectionDemoRunner *runner = null;
-    LinkedSphere boundingSphere;
     bool _isColliding = false;
     MaterialResource material;
 
 public:
-    SphereParticle() : boundingSphere(this->position, (real) 1.0), material(vector(0, 0, 0), vector(0, 0, 0), vector(0, 0, 0), 2.0) {
-    }
-    virtual const Geometry* getGeometry() const {
-        return &boundingSphere;
+    SphereParticle() : Particle(std::unique_ptr<Geometry>(new Sphere(vector(0, 0, 0), (real) 1.0))), material(vector(0, 0, 0), vector(0, 0, 0), vector(0, 0, 0), 2.0) {
     }
 
     const MaterialResource &getMaterial() const {
@@ -115,13 +107,13 @@ public:
 
         real radius = (real) 0.5;
         sphereParticles[0].setPosition(vector(-1, 0, 0));
-        ((AbstractSphere*) sphereParticles[0].getGeometry())->setRadius(radius);
+        ((Sphere*) sphereParticles[0].getGeometry())->setRadius(radius);
         sphereParticles[0].setMass(M_PI * radius * radius);
         sphereParticles[0].setVelocity(vector(1, 1, 0));
         sphereParticles[0].setMaterial(blue);
 
         sphereParticles[1].setPosition(vector(1, 0, 0));
-        ((AbstractSphere*) sphereParticles[1].getGeometry())->setRadius(radius);
+        ((Sphere*) sphereParticles[1].getGeometry())->setRadius(radius);
         sphereParticles[1].setMass(M_PI * radius * radius);
         sphereParticles[1].setVelocity(vector(-1, -1, 0));
         sphereParticles[1].setMaterial(green);

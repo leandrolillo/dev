@@ -11,14 +11,26 @@
 #include<Math3d.h>
 #include<GeometryContact.h>
 
-class AbstractLine;
-class AbstractSphere;
-class AbstractPlane;
+class Line;
+class Sphere;
+class Plane;
 
 class Geometry {
+    vector origin;
 public:
+    Geometry(const vector &origin) {
+        this->origin = origin;
+    }
+
     virtual ~Geometry() {}
-    virtual const vector& getOrigin() const = 0;
+
+    const vector& getOrigin() const {
+        return this->origin;
+    }
+
+    void setOrigin(const vector &origin) {
+        this->origin = origin;
+    }
 
     /**
      * "Accept" method in visitor pattern / double dispatch
@@ -30,23 +42,23 @@ public:
      * "Visit" method in visitor pattern
      */
 
-    virtual bool intersects(const AbstractLine &line) const = 0;
-    virtual bool intersects(const AbstractSphere &sphere) const = 0;
-    virtual bool intersects(const AbstractPlane &plane) const = 0;
+    virtual bool intersects(const Line &line) const = 0;
+    virtual bool intersects(const Sphere &sphere) const = 0;
+    virtual bool intersects(const Plane &plane) const = 0;
 
-    virtual GeometryContact detectCollision(const AbstractLine &line) const = 0;
-    virtual GeometryContact detectCollision(const AbstractSphere &sphere) const = 0;
-    virtual GeometryContact detectCollision(const AbstractPlane &plane) const = 0;
+    virtual GeometryContact detectCollision(const Line &line) const = 0;
+    virtual GeometryContact detectCollision(const Sphere &sphere) const = 0;
+    virtual GeometryContact detectCollision(const Plane &plane) const = 0;
 
     virtual String toString() const {
         return "Geometry";
     }
 };
 
-class AbstractSphere: public Geometry {
+class Sphere: public Geometry {
     real radius;
 public:
-    AbstractSphere(real radius) {
+    Sphere(const vector &origin, real radius) : Geometry(origin) {
         this->radius = radius;
     }
 
@@ -74,13 +86,13 @@ public:
      * "Visit" methods in visitor pattern / double dispatch
      */
 
-    bool intersects(const AbstractLine &line) const;
-    bool intersects(const AbstractSphere &sphere) const;
-    bool intersects(const AbstractPlane &plane) const;
+    bool intersects(const Line &line) const;
+    bool intersects(const Sphere &sphere) const;
+    bool intersects(const Plane &plane) const;
 
-    GeometryContact detectCollision(const AbstractLine &line) const;
-    GeometryContact detectCollision(const AbstractPlane &plane) const;
-    GeometryContact detectCollision(const AbstractSphere &sphere) const;
+    GeometryContact detectCollision(const Line &line) const;
+    GeometryContact detectCollision(const Plane &plane) const;
+    GeometryContact detectCollision(const Sphere &sphere) const;
 
 
     String toString() const {
@@ -88,10 +100,10 @@ public:
     }
 };
 
-class AbstractLine: public Geometry {
+class Line: public Geometry {
     vector direction;
 public:
-    AbstractLine(const vector &direction) {
+    Line(const vector &origin, const vector &direction) : Geometry(origin){
         this->direction = direction.normalizado();
     }
 
@@ -113,13 +125,13 @@ public:
     /**
      * "Visit" methods in visitor pattern / double dispatch
      */
-    bool intersects(const AbstractLine &line) const;
-    bool intersects(const AbstractSphere &sphere) const;
-    bool intersects(const AbstractPlane &plane) const;
+    bool intersects(const Line &line) const;
+    bool intersects(const Sphere &sphere) const;
+    bool intersects(const Plane &plane) const;
 
-    GeometryContact detectCollision(const AbstractLine &line) const;
-    GeometryContact detectCollision(const AbstractSphere &sphere) const;
-    GeometryContact detectCollision(const AbstractPlane &plane) const;
+    GeometryContact detectCollision(const Line &line) const;
+    GeometryContact detectCollision(const Sphere &sphere) const;
+    GeometryContact detectCollision(const Plane &plane) const;
 
 
     String toString() const {
@@ -128,10 +140,10 @@ public:
 };
 
 
-class AbstractPlane: public Geometry {
+class Plane: public Geometry {
     vector normal;
 public:
-    AbstractPlane(const vector &normal) {
+    Plane(const vector &origin, const vector &normal) : Geometry(origin) {
         this->normal = normal.normalizado();
     }
 
@@ -154,19 +166,19 @@ public:
     /**
     * "Visit" methods in visitor pattern / double dispatch
     */
-    bool intersects(const AbstractLine &line) const;
-    bool intersects(const AbstractSphere &sphere) const;
-    bool intersects(const AbstractPlane &plane) const;
+    bool intersects(const Line &line) const;
+    bool intersects(const Sphere &sphere) const;
+    bool intersects(const Plane &plane) const;
 
-    GeometryContact detectCollision(const AbstractLine &line) const;
-    GeometryContact detectCollision(const AbstractSphere &sphere) const;
-    GeometryContact detectCollision(const AbstractPlane &plane) const;
+    GeometryContact detectCollision(const Line &line) const;
+    GeometryContact detectCollision(const Sphere &sphere) const;
+    GeometryContact detectCollision(const Plane &plane) const;
 
 };
 
 class IntersectionTester {
 public:
-    static bool lineSphere(const AbstractLine &line, const AbstractSphere &sphere)
+    static bool lineSphere(const Line &line, const Sphere &sphere)
     {
        real projection = (sphere.getOrigin() - line.getOrigin()) * line.getDirection();
        vector projectedSphereCenter = line.getOrigin() + line.getDirection() * projection;
@@ -175,46 +187,46 @@ public:
        return (lineToSphere * lineToSphere <= sphere.getRadius() * sphere.getRadius());
     }
 
-    static bool linePlane(const AbstractLine &line, const AbstractPlane &plane)
+    static bool linePlane(const Line &line, const Plane &plane)
     {
        return false;
     }
 
-    static bool lineLine(const AbstractLine &line, const AbstractLine &anotherLine)
+    static bool lineLine(const Line &line, const Line &anotherLine)
     {
        return false;
     }
 
-    static bool sphereSphere(const AbstractSphere &sphere, const AbstractSphere &anotherSphere) {
+    static bool sphereSphere(const Sphere &sphere, const Sphere &anotherSphere) {
         vector delta = sphere.getOrigin() - anotherSphere.getOrigin();
         real radiuses = sphere.getRadius() + anotherSphere.getRadius();
 
         return (delta * delta <= radiuses * radiuses);
     }
 
-    static bool planeSphere(const AbstractPlane &plane, const AbstractSphere &sphere) {
+    static bool planeSphere(const Plane &plane, const Sphere &sphere) {
         vector delta = ((sphere.getOrigin() - plane.getOrigin()) * plane.getNormal()) * plane.getNormal();
         return (delta * delta <= sphere.getRadius() * sphere.getRadius());
     }
 
-    static bool planePlane(const AbstractPlane &plane, const AbstractPlane &anotherPlane) {
+    static bool planePlane(const Plane &plane, const Plane &anotherPlane) {
         return false;
     }
 
-    static GeometryContact lineSphereContact(const AbstractLine &line, const AbstractSphere &sphere)
+    static GeometryContact lineSphereContact(const Line &line, const Sphere &sphere)
     {
        return GeometryContact::noContact;
     }
 
-    static GeometryContact linePlaneContact(const AbstractLine &line, const AbstractPlane &plane) {
+    static GeometryContact linePlaneContact(const Line &line, const Plane &plane) {
         return GeometryContact::noContact;
     }
 
-    static GeometryContact lineLineContact(const AbstractLine &line, const AbstractLine &anotherLine) {
+    static GeometryContact lineLineContact(const Line &line, const Line &anotherLine) {
         return GeometryContact::noContact;
     }
 
-    static GeometryContact sphereSphereContact(const AbstractSphere &sphereA, const AbstractSphere &sphereB) {
+    static GeometryContact sphereSphereContact(const Sphere &sphereA, const Sphere &sphereB) {
         vector delta = sphereB.getOrigin() - sphereA.getOrigin();
         real radiuses = sphereA.getRadius() + sphereB.getRadius();
 
@@ -229,7 +241,7 @@ public:
         return GeometryContact::noContact;
     }
 
-    static GeometryContact planeSphereContact(const AbstractPlane &plane, const AbstractSphere &sphere) {
+    static GeometryContact planeSphereContact(const Plane &plane, const Sphere &sphere) {
         real distance = (sphere.getOrigin() - plane.getOrigin()) * plane.getNormal();
 
         if(distance <= sphere.getRadius()) {
@@ -243,7 +255,7 @@ public:
         return GeometryContact::noContact;
     }
 
-    static GeometryContact planePlaneContact(const AbstractPlane &plane, const AbstractPlane &anotherPlane) {
+    static GeometryContact planePlaneContact(const Plane &plane, const Plane &anotherPlane) {
         return GeometryContact::noContact;
     }
 
@@ -254,25 +266,25 @@ public:
  * Sphere intersection tests
  */
 
-bool AbstractSphere::intersects(const AbstractLine &line) const {
+bool Sphere::intersects(const Line &line) const {
     return IntersectionTester::lineSphere(line, *this);
 }
 
-bool AbstractSphere::intersects(const AbstractSphere &sphere) const {
+bool Sphere::intersects(const Sphere &sphere) const {
     return IntersectionTester::sphereSphere(sphere, *this);
 }
 
-bool AbstractSphere::intersects(const AbstractPlane &plane) const {
+bool Sphere::intersects(const Plane &plane) const {
     return IntersectionTester::planeSphere(plane, *this);
 }
 
-GeometryContact AbstractSphere::detectCollision(const AbstractLine &line) const {
+GeometryContact Sphere::detectCollision(const Line &line) const {
     return IntersectionTester::lineSphereContact(line, *this);
 }
-GeometryContact AbstractSphere::detectCollision(const AbstractSphere &sphere) const {
+GeometryContact Sphere::detectCollision(const Sphere &sphere) const {
     return IntersectionTester::sphereSphereContact(sphere, *this);
 }
-GeometryContact AbstractSphere::detectCollision(const AbstractPlane &plane) const {
+GeometryContact Sphere::detectCollision(const Plane &plane) const {
     return IntersectionTester::planeSphereContact(plane, *this);
 }
 
@@ -280,24 +292,24 @@ GeometryContact AbstractSphere::detectCollision(const AbstractPlane &plane) cons
 /**
  * Line intersection tests
  */
-bool AbstractLine::intersects(const AbstractLine &line) const {
+bool Line::intersects(const Line &line) const {
     return IntersectionTester::lineLine(*this, line);
 }
 
-bool AbstractLine::intersects(const AbstractSphere &sphere) const {
+bool Line::intersects(const Sphere &sphere) const {
     return IntersectionTester::lineSphere(*this, sphere);
 }
-bool AbstractLine::intersects(const AbstractPlane &plane) const {
+bool Line::intersects(const Plane &plane) const {
     return IntersectionTester::linePlane(*this, plane);
 }
 
-GeometryContact AbstractLine::detectCollision(const AbstractLine &line) const {
+GeometryContact Line::detectCollision(const Line &line) const {
     return IntersectionTester::lineLineContact(*this, line);
 }
-GeometryContact AbstractLine::detectCollision(const AbstractSphere &sphere) const {
+GeometryContact Line::detectCollision(const Sphere &sphere) const {
     return IntersectionTester::lineSphereContact(*this, sphere);
 }
-GeometryContact AbstractLine::detectCollision(const AbstractPlane &plane) const {
+GeometryContact Line::detectCollision(const Plane &plane) const {
     return IntersectionTester::linePlaneContact(*this, plane);
 }
 
@@ -306,24 +318,24 @@ GeometryContact AbstractLine::detectCollision(const AbstractPlane &plane) const 
  * Plane intersection tests
  */
 
-bool AbstractPlane::intersects(const AbstractLine &line) const {
+bool Plane::intersects(const Line &line) const {
     return IntersectionTester::linePlane(line, *this);
 }
 
-bool AbstractPlane::intersects(const AbstractSphere &sphere) const {
+bool Plane::intersects(const Sphere &sphere) const {
     return IntersectionTester::planeSphere(*this, sphere);
 }
-bool AbstractPlane::intersects(const AbstractPlane &plane) const {
+bool Plane::intersects(const Plane &plane) const {
     return IntersectionTester::planePlane(*this, plane);
 }
 
-GeometryContact AbstractPlane::detectCollision(const AbstractLine &line) const {
+GeometryContact Plane::detectCollision(const Line &line) const {
     return IntersectionTester::linePlaneContact(line, *this);
 }
-GeometryContact AbstractPlane::detectCollision(const AbstractSphere &sphere) const {
+GeometryContact Plane::detectCollision(const Sphere &sphere) const {
     return IntersectionTester::planeSphereContact(*this, sphere);
 }
-GeometryContact AbstractPlane::detectCollision(const AbstractPlane &plane) const {
+GeometryContact Plane::detectCollision(const Plane &plane) const {
     return IntersectionTester::planePlaneContact(*this, plane);
 }
 

@@ -17,7 +17,7 @@ class Particle {
 	friend class ParticleIntegrator;
 
 protected:
-	vector position;
+	std::unique_ptr<Geometry> boundingGeometry;
 	vector velocity;
 	vector acceleration;
 
@@ -35,6 +35,12 @@ protected:
 	vector forceAccumulator;
 
 public:
+	Particle(std::unique_ptr<Geometry> geometry) {
+	   this->boundingGeometry = std::move(geometry);
+	}
+    virtual ~Particle() {
+
+    }
 
 	virtual void afterIntegrate(real dt) {
 	}
@@ -43,10 +49,6 @@ public:
 
 	}
 	virtual void onCollisionResolved(const ParticleContact &contact) {
-
-	}
-
-	virtual ~Particle() {
 
 	}
 
@@ -59,11 +61,11 @@ public:
 	}
 
 	void setPosition(const vector &position) {
-		this->position = position;
+		this->boundingGeometry->setOrigin(position);
 	}
 
 	const vector &getPosition() const {
-		return this->position;
+		return this->boundingGeometry->getOrigin();
 	}
 
 	void setVelocity(const vector &velocity) {
@@ -119,7 +121,7 @@ public:
 	}
 
 	virtual const Geometry *getGeometry() const {
-	    return null;
+	    return this->boundingGeometry.get();
 	}
 };
 

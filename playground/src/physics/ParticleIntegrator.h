@@ -17,7 +17,7 @@ class ParticleIntegrator {
 public:
 	void integrate(real dt, Particle &particle) const {
 		particle.acceleration = particle.forceAccumulator * particle.inverseMass;
-		particle.position = particle.position + particle.velocity * dt + 0.5 * particle.acceleration * dt * dt;
+		particle.setPosition(particle.getPosition() + particle.velocity * dt + 0.5 * particle.acceleration * dt * dt);
 		particle.velocity = particle.velocity * powr(particle.damping, dt) + particle.acceleration * dt;
 	}
 };

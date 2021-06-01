@@ -22,8 +22,6 @@
 
 #include<Math3d.h>
 #include<forces/Gravity.h>
-#include<LinkedSphere.h>
-#include<Plane.h>
 
 #define numberOfParticles 30
 
@@ -33,18 +31,14 @@ class BulletParticle : public Particle
 {
 private:
     PhysicsDemoRunner *runner = null;
-    LinkedSphere boundingSphere;
 
 public:
-    BulletParticle() : boundingSphere(this->position, 0.1) {
+    BulletParticle() : Particle(std::unique_ptr<Geometry>(new Sphere(vector(0, 0, 0), 0.1))) {
 
     }
     void setRunner(PhysicsDemoRunner *runner);
 	void afterIntegrate(real dt);
 	void onCollisionResolved(const ParticleContact &contact);
-	virtual const Geometry *getGeometry() const {
-	    return &boundingSphere;
-	}
 };
 
 class PhysicsDemoRunner: public PlaygroundRunner {
