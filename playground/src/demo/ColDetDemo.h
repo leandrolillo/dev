@@ -69,7 +69,8 @@ class CollisionDetectionDemoRunner: public PlaygroundRunner {
     ContactResolver contactSolver;
     std::vector<Particle*> particles;
     SphereParticle sphereParticles[number_of_sphere_particles];
-    Plane plane = Plane(vector(0, 0, 0), vector(0, 1, 0));
+    Particle ground;
+    //Plane plane = Plane(vector(0, 0, 0), vector(0, 1, 0));
 
     char selectedGeometry = -1;
     vector2 startPosition;
@@ -85,7 +86,7 @@ class CollisionDetectionDemoRunner: public PlaygroundRunner {
     MaterialResource blue = MaterialResource(vector(0, 0, 1), vector(0, 0, 1), vector(0, 0, 1), 1.0);
 
 public:
-    CollisionDetectionDemoRunner() {
+    CollisionDetectionDemoRunner() : ground(std::unique_ptr<Geometry>(new Plane(vector(0, 0, 0), vector(0, 1, 0)))){
         logger->addAppender(LoggerFactory::getAppender("stdout"));
     }
 
@@ -135,12 +136,14 @@ public:
         video->enable(CULL_FACE, CULL_FACE_BACK);
         video->enable(BLEND, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        collisionDetector.addScenery(&plane);
-
         for (unsigned char index = 0; index < number_of_sphere_particles; index++) {
             sphereParticles[index].setRunner(this);
             particles.push_back(&sphereParticles[index]);
         }
+
+        //collisionDetector.addScenery(&plane);
+        ground.setInverseMass((real)0);
+        particles.push_back(&ground);
 
         reset();
 

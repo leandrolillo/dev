@@ -58,10 +58,10 @@ public:
                             GeometryContact contact = particleA->getGeometry()->detectCollision(*particleB->getGeometry());
                             if(contact.isIntersecting()) {
                                 contacts.push_back(
-                                        ParticleContact((particleA->getGeometry() == contact.getGeometryA() ? particleA : particleB),
-                                                (particleB->getGeometry() == contact.getGeometryB() ? particleB : particleA),
+                                        ParticleContact(particleA,
+                                                particleB,
                                                 contact.getIntersection(),
-                                                (particleA->getGeometry() == contact.getGeometryA() ? contact.getNormal() : contact.getNormal() * (real)-1),
+                                                contact.getNormal(),
                                                 contact.getRestitution(),
                                                 contact.getPenetration())
                                 );

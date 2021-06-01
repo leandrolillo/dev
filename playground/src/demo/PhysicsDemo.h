@@ -54,7 +54,8 @@ class PhysicsDemoRunner: public PlaygroundRunner {
 
 	std::vector<BulletParticle *> particles;
 	Gravity gravity = Gravity(vector(0.0, -9.8, 0.0));
-	Plane ground = Plane(vector(0, 0, 0), vector(0, 1, 0));
+	//Plane ground = Plane(vector(0, 0, 0), vector(0, 1, 0));
+	Particle ground;
 
 	unsigned long to = 0;
 	real invPerformanceFreq = 1.0f;
@@ -78,7 +79,7 @@ class PhysicsDemoRunner: public PlaygroundRunner {
 	LightResource light = LightResource(vector(0, 0, 3), vector(0.4f, 0.4f, 0.4f), vector(0.5f, 0.5f, 0.5f), vector(1, 1, 1), 1.0);
 	MaterialResource material = MaterialResource(vector(0.5, 0.5, 0.5), vector(0.7, 0.7, 0.7), vector(1, 1, 1), 32);
 public:
-	PhysicsDemoRunner() {
+	PhysicsDemoRunner() : ground(std::unique_ptr<Geometry>(new Plane(vector(0, 0, 0), vector(0, 1, 0)))) {
 	}
 
 	unsigned char getId() {
@@ -109,7 +110,6 @@ public:
 		audio = (AudioRunner*) this->getContainer()->getRequiredRunner(AudioRunner::ID);
 		physics = (PhysicsRunner *)this->getContainer()->getRequiredRunner(PhysicsRunner::ID);
 		//physics->setPlaybackSpeed(0.3);
-		physics->getParticleManager()->getCollisionDetector().addScenery(&ground);
 
 		gunshotSource = audio->createSource("audio/handgunfire.wav", vector(0, 0, 0), vector(0, 0, 0), false);
 		bounceSource = audio->createSource("audio/twang3.wav", vector(0, 0, 0), vector(0, 0, 0), false);
@@ -127,6 +127,9 @@ public:
 		video->setClearColor(0.0, 0.5, 0.0, 0.0);
 		video->enable(DEPTH_TEST, true);
 		video->enable(CULL_FACE, CULL_FACE_BACK);
+
+        //physics->getParticleManager()->getCollisionDetector().addScenery(&ground);
+        physics->getParticleManager()->addParticle(&ground);
 
         for(int index = 0; index < numberOfParticles; index++) {
             bulletParticles[index].setStatus(false);
@@ -233,7 +236,10 @@ public:
 
 	void mouseButtonDown(unsigned char button, int x, int y) {
 		fire(camera.getViewPosition() * -1);
-		fire(vector(1.0, 2.0, 0.0), true);
+
+		float randomDx = ((real)rand()/(real)RAND_MAX * 0.1 - 0.05);
+		logger->info("RandomDx %f", randomDx);
+		fire(vector(1.0 + randomDx, 2.0, 0.0), true);
 	}
 
     virtual void keyDown(unsigned int key, unsigned int keyModifier) {

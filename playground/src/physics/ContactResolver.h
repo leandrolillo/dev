@@ -36,18 +36,25 @@ public:
             Particle *particleA = contact.getParticleA();
             Particle *particleB = contact.getParticleB();
 
-            real totalInverseMass = particleA->getInverseMass();
+            real totalInverseMass = (real)0;
+
+            if(particleA) {
+                totalInverseMass = particleA->getInverseMass();
+            }
+
             if (particleB) {
                 totalInverseMass += particleB->getInverseMass();
             }
 
-            if(totalInverseMass > 0) {
+            if(totalInverseMass > (real)0) {
                 real impulseAmountPerIMass = deltaVelocity / totalInverseMass;
 
 //                vector impulsePerIMass = contact.getNormal() * (deltaVelocity / totalInverseMass);
+                if (particleA != null && particleA->getInverseMass() > (real)0) {
+                    particleA->setVelocity(particleA->getVelocity() + impulseAmountPerIMass * particleA->getInverseMass() * contact.getNormal());
+                }
 
-                particleA->setVelocity(particleA->getVelocity() + impulseAmountPerIMass * particleA->getInverseMass() * contact.getNormal());
-                if (particleB) {
+                if (particleB != null && particleB->getInverseMass() > (real)0) {
                     particleB->setVelocity(particleB->getVelocity() - impulseAmountPerIMass * particleB->getInverseMass() * contact.getNormal());
                 }
             }
@@ -59,7 +66,11 @@ public:
             Particle *particleA = contact.getParticleA();
             Particle *particleB = contact.getParticleB();
 
-            real totalInverseMass = particleA->getInverseMass();
+            real totalInverseMass = (real)0;
+
+            if(particleA) {
+                totalInverseMass += particleA->getInverseMass();
+            }
 
             if(particleB != null) {
                 totalInverseMass += particleB->getInverseMass();
@@ -68,19 +79,14 @@ public:
             if(totalInverseMass > (real)0) {
                 vector movePerIMass = contact.getNormal() * (-contact.getPenetration() / totalInverseMass);
 
-                vector deltaA = movePerIMass * particleA->getInverseMass();
-                particleA->setPosition(particleA->getPosition() + deltaA);
+                if(particleA != null && particleA->getInverseMass() > (real)0) {
+                    vector deltaA = movePerIMass * particleA->getInverseMass();
+                    particleA->setPosition(particleA->getPosition() + deltaA);
+                }
 
-//                logger->verbose("normal: %s, penetration: %.2f", contact.getNormal().toString().c_str(), contact.getPenetration());
-//                logger->verbose("normal * penetration: %s", (contact.getNormal() * contact.getPenetration()).toString().c_str());
-//                logger->verbose("Particle A displaced: %s", deltaA.toString().c_str());
-
-                if(particleB != null) {
+                if(particleB != null && particleB->getInverseMass() > (real)0) {
                     vector deltaB = movePerIMass * particleB->getInverseMass();
                     particleB->setPosition(particleB->getPosition() - deltaB);
-
-//                    logger->verbose("Particle B displaced: %s", deltaB.toString().c_str());
-//                    logger->verbose("particle A + particle B displacement: %s", (deltaA + deltaB).toString().c_str());
                 }
             }
         }

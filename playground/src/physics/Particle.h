@@ -38,8 +38,13 @@ public:
 	Particle(std::unique_ptr<Geometry> geometry) {
 	   this->boundingGeometry = std::move(geometry);
 	}
+
     virtual ~Particle() {
 
+    }
+
+    virtual const Geometry *getGeometry() const {
+        return this->boundingGeometry.get();
     }
 
 	virtual void afterIntegrate(real dt) {
@@ -118,10 +123,6 @@ public:
 
 	void applyForce(vector force) {
 		this->forceAccumulator += force;
-	}
-
-	virtual const Geometry *getGeometry() const {
-	    return this->boundingGeometry.get();
 	}
 };
 
