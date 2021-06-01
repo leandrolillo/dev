@@ -238,8 +238,8 @@ public:
                     this->getContainer()->stop();
                 }
                 break;
-            case 'W':
-            case 'w':
+            case 'Q':
+            case 'q':
 
                 if (keyModifier & KMOD_ALT) {
                     this->getContainer()->stop();
