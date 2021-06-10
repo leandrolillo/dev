@@ -106,6 +106,7 @@ public:
 
         camera.setViewMatrix(matriz_4x4::matrizTraslacion(vector(0.0f, 0.0f, -5.0f)));
         platform.setPosition(vector(0, 0.5, 0));
+        elapsedTime = 0;
 	}
 
 	bool init() {
@@ -180,7 +181,7 @@ public:
 		skyboxRenderer.render(camera);
 		gridRenderer.render(camera);
 
-        platform.setVelocity(vector(sin(elapsedTime), 0, 0));
+        platform.setVelocity(vector(sin(elapsedTime + M_PI_2), 0, 0));
 
 		return LoopResult::CONTINUE;
 	}
