@@ -56,6 +56,7 @@ class PhysicsDemoRunner: public PlaygroundRunner {
 	Gravity gravity = Gravity(vector(0.0, -9.8, 0.0));
 	//Plane ground = Plane(vector(0, 0, 0), vector(0, 1, 0));
 	Particle ground;
+	Particle platform;
 
 	unsigned long to = 0;
 	real invPerformanceFreq = 1.0f;
@@ -79,7 +80,8 @@ class PhysicsDemoRunner: public PlaygroundRunner {
 	LightResource light = LightResource(vector(0, 0, 3), vector(0.4f, 0.4f, 0.4f), vector(0.5f, 0.5f, 0.5f), vector(1, 1, 1), 1.0);
 	MaterialResource material = MaterialResource(vector(0.5, 0.5, 0.5), vector(0.7, 0.7, 0.7), vector(1, 1, 1), 32);
 public:
-	PhysicsDemoRunner() : ground(std::unique_ptr<Geometry>(new Plane(vector(0, 0, 0), vector(0, 1, 0)))) {
+	PhysicsDemoRunner() :   ground(std::unique_ptr<Geometry>(new Plane(vector(0, 0, 0), vector(0, 1, 0)))),
+	                        platform(std::unique_ptr<Geometry>(new Sphere(vector(0, 0, 0), 0.1))) {
 	}
 
 	unsigned char getId() {
@@ -103,6 +105,7 @@ public:
 		video->setMousePosition(video->getScreenWidth() >> 1, video->getScreenHeight() >> 1);
 
         camera.setViewMatrix(matriz_4x4::matrizTraslacion(vector(0.0f, 0.0f, -5.0f)));
+        platform.setPosition(vector(0, 0.5, 0));
 	}
 
 	bool init() {
@@ -128,6 +131,9 @@ public:
 		video->enable(DEPTH_TEST, true);
 		video->enable(CULL_FACE, CULL_FACE_BACK);
 
+		ground.setInverseMass(0.0); // this is actually the default value
+		platform.setInverseMass(0.0);
+
         //physics->getParticleManager()->getCollisionDetector().addScenery(&ground);
         physics->getParticleManager()->addParticle(&ground);
 
@@ -139,6 +145,8 @@ public:
             physics->getParticleManager()->addParticle(particles.back());
         }
 
+        physics->getParticleManager()->addParticle(&platform);
+
 		physics->getParticleManager()->addForce(&this->gravity);
 
         reset();
@@ -147,6 +155,8 @@ public:
 	}
 
 	LoopResult doLoop() {
+	    elapsedTime += 0.01;
+
 	    defaultRenderer.clear();
 	    defaultRenderer.drawAxes(matriz_4x4::identidad);
         defaultRenderer.drawLine(matriz_4x4::identidad, vector(-1, 0, 0), vector(1, 0, 0));
@@ -154,6 +164,7 @@ public:
         defaultRenderer.drawLine(matriz_4x4::identidad, vector(0, 0, -1), vector(0, 0, 1));
 
         defaultRenderer.setTexture(textureResource);
+        defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(platform.getPosition()), 0.1);
         for(std::vector<BulletParticle *>::iterator particleIterator = particles.begin(); particleIterator != particles.end(); particleIterator++)
         {
             BulletParticle *particle = *particleIterator;
@@ -168,6 +179,8 @@ public:
 		defaultRenderer.render(camera);
 		skyboxRenderer.render(camera);
 		gridRenderer.render(camera);
+
+        platform.setVelocity(vector(sin(elapsedTime), 0, 0));
 
 		return LoopResult::CONTINUE;
 	}
