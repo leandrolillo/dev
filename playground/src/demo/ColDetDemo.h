@@ -277,7 +277,7 @@ public:
                 reset();
                 break;
             case SDLK_SPACE:
-                contactSolver.resolve(collisionDetector.detectCollisions(particles));
+                contactSolver.resolve(collisionDetector.detectCollisions(particles), 0.1);
                 break;
         }
     }

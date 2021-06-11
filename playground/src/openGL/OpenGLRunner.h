@@ -139,6 +139,8 @@ public:
 
         this->getContainer()->resize(height, width);
 
+        SDL_WarpMouseInWindow(window, width >> 1, height >> 1);
+
         return true;
     }
 

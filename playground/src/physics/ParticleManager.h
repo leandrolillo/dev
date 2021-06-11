@@ -60,7 +60,7 @@ public:
 		 * generate contacts (collision and contact generators)
 		 */
 		std::vector<ParticleContact> contacts = collisionDetector.detectCollisions(this->particles);
-		contactResolver.resolve(contacts);
+		contactResolver.resolve(contacts, dt);
 
 	}
 

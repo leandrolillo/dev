@@ -85,6 +85,10 @@ public:
 		this->acceleration = acceleration;
 	}
 
+	const vector &getAcceleration() const {
+        return this->acceleration;
+    }
+
 	void setMass(real mass) {
 		if(mass == 0.0f) {
 			this->inverseMass = (real)0.0;
