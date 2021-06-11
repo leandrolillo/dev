@@ -22,7 +22,7 @@ protected:
             relativeVelocity += contact.getParticleB()->getVelocity();
         }
 
-        return relativeVelocity * contact.getNormal();
+        return -relativeVelocity * contact.getNormal();
     }
 
 public:
@@ -51,11 +51,11 @@ public:
 
 //                vector impulsePerIMass = contact.getNormal() * (deltaVelocity / totalInverseMass);
                 if (particleA != null && particleA->getInverseMass() > (real)0) {
-                    particleA->setVelocity(particleA->getVelocity() + impulseAmountPerIMass * particleA->getInverseMass() * contact.getNormal());
+                    particleA->setVelocity(particleA->getVelocity() - impulseAmountPerIMass * particleA->getInverseMass() * contact.getNormal());
                 }
 
                 if (particleB != null && particleB->getInverseMass() > (real)0) {
-                    particleB->setVelocity(particleB->getVelocity() - impulseAmountPerIMass * particleB->getInverseMass() * contact.getNormal());
+                    particleB->setVelocity(particleB->getVelocity() + impulseAmountPerIMass * particleB->getInverseMass() * contact.getNormal());
                 }
             }
         }
@@ -77,7 +77,7 @@ public:
             }
 
             if(totalInverseMass > (real)0) {
-                vector movePerIMass = contact.getNormal() * (-contact.getPenetration() / totalInverseMass);
+                vector movePerIMass = contact.getNormal() * (contact.getPenetration() / totalInverseMass);
 
                 if(particleA != null && particleA->getInverseMass() > (real)0) {
                     vector deltaA = movePerIMass * particleA->getInverseMass();

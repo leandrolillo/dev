@@ -136,8 +136,6 @@ public:
 		platform.setInverseMass(0.0);
 
         //physics->getParticleManager()->getCollisionDetector().addScenery(&ground);
-        physics->getParticleManager()->addParticle(&ground);
-
         for(int index = 0; index < numberOfParticles; index++) {
             bulletParticles[index].setStatus(false);
             bulletParticles[index].setRunner(this);
@@ -147,6 +145,7 @@ public:
         }
 
         physics->getParticleManager()->addParticle(&platform);
+        physics->getParticleManager()->addParticle(&ground);
 
 		physics->getParticleManager()->addForce(&this->gravity);
 

@@ -242,14 +242,16 @@ public:
     }
 
     static GeometryContact planeSphereContact(const Plane &plane, const Sphere &sphere) {
-        real distance = (sphere.getOrigin() - plane.getOrigin()) * plane.getNormal();
+        vector normal = plane.getNormal();
+
+        real distance = (sphere.getOrigin() - plane.getOrigin()) * normal;
 
         if(distance <= sphere.getRadius()) {
-            vector delta = distance * plane.getNormal();
+            vector delta = distance * normal;
             real penetration = sphere.getRadius() - distance;
-            vector intersection = sphere.getOrigin() - (plane.getNormal() * sphere.getRadius());
+            vector intersection = sphere.getOrigin() - (normal * sphere.getRadius());
 
-            return GeometryContact(&plane, &sphere, intersection, plane.getNormal(), 0.8f, penetration);
+            return GeometryContact(&plane, &sphere, intersection, normal, 0.8f, penetration);
         }
 
         return GeometryContact::noContact;
@@ -279,13 +281,13 @@ bool Sphere::intersects(const Plane &plane) const {
 }
 
 GeometryContact Sphere::detectCollision(const Line &line) const {
-    return IntersectionTester::lineSphereContact(line, *this);
+    return IntersectionTester::lineSphereContact(line, *this).reverse();
 }
 GeometryContact Sphere::detectCollision(const Sphere &sphere) const {
-    return IntersectionTester::sphereSphereContact(sphere, *this);
+    return IntersectionTester::sphereSphereContact(sphere, *this).reverse();
 }
 GeometryContact Sphere::detectCollision(const Plane &plane) const {
-    return IntersectionTester::planeSphereContact(plane, *this);
+    return IntersectionTester::planeSphereContact(plane, *this).reverse();
 }
 
 
@@ -330,7 +332,7 @@ bool Plane::intersects(const Plane &plane) const {
 }
 
 GeometryContact Plane::detectCollision(const Line &line) const {
-    return IntersectionTester::linePlaneContact(line, *this);
+    return IntersectionTester::linePlaneContact(line, *this).reverse();
 }
 GeometryContact Plane::detectCollision(const Sphere &sphere) const {
     return IntersectionTester::planeSphereContact(*this, sphere);

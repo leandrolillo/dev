@@ -33,6 +33,10 @@ public:
     const Geometry *getGeometryB() const {
         return this->geometryB;
     }
+
+    GeometryContact reverse() const {
+        return GeometryContact(this->geometryB, this->geometryA, intersection, normal * -1, restitution, penetration);
+    }
 };
 
 GeometryContact GeometryContact::noContact(null, null, vector(0, 0, 0), vector(0, 0, 0), 0.0, -1.0);

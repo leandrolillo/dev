@@ -43,7 +43,7 @@ public:
                                     ParticleContact(particleA,
                                             null,
                                             contact.getIntersection(),
-                                            (particleA->getGeometry() == contact.getGeometryA() ? contact.getNormal() : contact.getNormal() * (real)-1),
+                                            contact.getNormal(),
                                             contact.getRestitution(),
                                             contact.getPenetration())
                             );
