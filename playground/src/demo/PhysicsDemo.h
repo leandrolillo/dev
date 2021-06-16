@@ -23,7 +23,7 @@
 #include<Math3d.h>
 #include<forces/Gravity.h>
 
-#define numberOfParticles 30
+#define numberOfParticles 60
 
 class PhysicsDemoRunner;
 

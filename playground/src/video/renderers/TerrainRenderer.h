@@ -62,8 +62,6 @@ public:
             videoRunner->useProgramResource(shader);
 
             this->sendLight(light);
-            videoRunner->sendMatrix("matrices.pvm", camera.getProjectionViewMatrix());
-
             for(const auto &terrainTile : terrainTiles) {
                 videoRunner->setTexture(0, "background", terrainTile.getTerrain()->getA());
                 videoRunner->setTexture(1, "textureR", terrainTile.getTerrain()->getR());
@@ -71,7 +69,8 @@ public:
                 videoRunner->setTexture(3, "textureB",terrainTile.getTerrain()->getB());
                 videoRunner->setTexture(4, "blendMap", terrainTile.getTerrain()->getMap());
 
-                videoRunner->sendMatrix("matrices.model", terrainTile.getModelMatrix());
+                videoRunner->sendMatrix("matrices.pvm", camera.getProjectionViewMatrix() * terrainTile.getModelMatrix());
+//                videoRunner->sendMatrix("matrices.model", terrainTile.getModelMatrix());
                 videoRunner->sendMatrix("matrices.normal", matriz_3x3::identidad);
 
                 logger->info("Drawing terrain at\n%s", terrainTile.getModelMatrix().toString().c_str());

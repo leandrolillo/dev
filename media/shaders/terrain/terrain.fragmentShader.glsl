@@ -69,7 +69,7 @@ void main()
 	vec4 blendMapColor = texture(blendMap, inputData.textureCoordinate);
 
 	float backAmount = 1.0f - (blendMapColor.r + blendMapColor.g + blendMapColor.b);
-	vec2 tiledCoords = inputData.textureCoordinate * 40.0;
+	vec2 tiledCoords = inputData.textureCoordinate * 30.0;
 
 	vec4 backgroundColor = texture(background, tiledCoords) * backAmount;
 	vec4 textureRColor = texture(textureR, tiledCoords) * blendMapColor.r;

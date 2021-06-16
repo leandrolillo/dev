@@ -81,9 +81,9 @@ public:
 
 		TerrainResource *terrain = (TerrainResource *)resourceManager->load("geometry/terrain/terrain.json", "video/terrain");
 		terrainRenderer.addTerrain(vector(0, 0, 0), terrain);
-//		terrainRenderer.addTerrain(vector(terrain->getHeightMap()->getWidth(), 0, 0), terrain);
-//		terrainRenderer.addTerrain(vector(0, 0, -terrain->getHeightMap()->getDepth()), terrain);
-//		terrainRenderer.addTerrain(vector(terrain->getHeightMap()->getWidth(), 0, -terrain->getHeightMap()->getDepth()), terrain);
+		terrainRenderer.addTerrain(vector(-terrain->getHeightMap()->getWidth(), 0, 0), terrain);
+		terrainRenderer.addTerrain(vector(0, 0, -terrain->getHeightMap()->getDepth()), terrain);
+		terrainRenderer.addTerrain(vector(-terrain->getHeightMap()->getWidth(), 0, -terrain->getHeightMap()->getDepth()), terrain);
 
 		skyboxRenderer.setVideoRunner(video);
 		skyboxRenderer.setSize(700);
