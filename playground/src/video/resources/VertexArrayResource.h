@@ -9,7 +9,6 @@
 #define VERTEXBUFFERRESOURCE_H_
 
 #include <Resource.h>
-#include <OpenGL/gl3.h>
 
 enum ShaderAttributeLocation
 {

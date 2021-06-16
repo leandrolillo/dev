@@ -11,6 +11,7 @@
 #include <Resource.h>
 #include <resources/TextureResource.h>
 #include <resources/VertexArrayResource.h>
+#include "HeightMapResource.h"
 
 class TerrainResource: public Resource {
     Logger *logger = LoggerFactory::getLogger("video/TerrainResource");
@@ -21,12 +22,12 @@ class TerrainResource: public Resource {
 
 	TextureResource *map = null;
 
+	HeightMapResource *heightmap = null;
+
 	VertexArrayResource *model = null;
 
 public:
-	TerrainResource() :
-			Resource(0, "video/terrain") {
-
+	TerrainResource() : Resource(0, "video/terrain") {
 	}
 
 	const TextureResource* getA() const {
@@ -75,6 +76,14 @@ public:
 
 	void setModel(VertexArrayResource *model) {
 		this->model = model;
+	}
+
+	const HeightMapResource * getHeightMap() const {
+	    return heightmap;
+	}
+
+	void setHeightmap(HeightMapResource *heightmap) {
+	    this->heightmap = heightmap;
 	}
 };
 

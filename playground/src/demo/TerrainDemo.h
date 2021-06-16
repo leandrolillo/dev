@@ -50,7 +50,7 @@ public:
 	}
 
 	void resize(unsigned int height, unsigned int width) {
-		camera.setProjectionMatrix(Camera::perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 400.0));
+		camera.setProjectionMatrix(Camera::perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 1000.0));
 	}
 
 	void reset() {
@@ -73,15 +73,20 @@ public:
 		video->enable(DEPTH_TEST, true);
 		glPolygonMode( GL_BACK, GL_LINE );
 
-		//openGl->setAttribute(CULL_FACE, CULL_FACE_BACK);
+		video->enable(CULL_FACE, CULL_FACE_BACK);
 
 
 		terrainRenderer.setVideoRunner(video);
 		terrainRenderer.setLight(&light);
-		terrainRenderer.setTerrain((TerrainResource *)resourceManager->load("geometry/terrain/terrain.json", "video/terrain"));
+
+		TerrainResource *terrain = (TerrainResource *)resourceManager->load("geometry/terrain/terrain.json", "video/terrain");
+		terrainRenderer.addTerrain(vector(0, 0, 0), terrain);
+//		terrainRenderer.addTerrain(vector(terrain->getHeightMap()->getWidth(), 0, 0), terrain);
+//		terrainRenderer.addTerrain(vector(0, 0, -terrain->getHeightMap()->getDepth()), terrain);
+//		terrainRenderer.addTerrain(vector(terrain->getHeightMap()->getWidth(), 0, -terrain->getHeightMap()->getDepth()), terrain);
 
 		skyboxRenderer.setVideoRunner(video);
-		skyboxRenderer.setSize(200);
+		skyboxRenderer.setSize(700);
 
 		defaultRenderer.setVideoRunner(video);
 
@@ -140,7 +145,7 @@ public:
 
     virtual void keyDown(unsigned int key, unsigned int keyModifier) {
         switch (key) {
-            case SDLK_ESCAPE:
+            case SDLK_SPACE:
                 reset();
                 break;
         }

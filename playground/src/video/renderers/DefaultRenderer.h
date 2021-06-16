@@ -39,11 +39,11 @@ public:
         this->material = material;
     }
 
-    const matriz_4x4 getModelMatrix() const {
+    const matriz_4x4 &getModelMatrix() const {
         return this->modelMatrix;
     }
 
-    const matriz_3x3 getNormalMatrix() const {
+    const matriz_3x3 &getNormalMatrix() const {
         return this->normalMatrix;
     }
 

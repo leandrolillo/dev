@@ -13,16 +13,36 @@
 #include<resources/LightResource.h>
 #include<VideoRunner.h>
 
+class TerrainTile {
+protected:
+    matriz_4x4 position;
+    const TerrainResource *terrain;
+public:
+    TerrainTile(const vector &posicion, const TerrainResource *terrain) {
+        this->terrain = terrain;
+        this->position = matriz_4x4::matrizTraslacion(posicion);
+    }
+
+    const matriz_4x4 &getModelMatrix() const {
+        return this->position;
+    }
+
+    const TerrainResource* getTerrain() const {
+        return this->terrain;
+    }
+
+};
 class TerrainRenderer : public Renderer {
 private:
     Logger *logger = LoggerFactory::getLogger("TerrainRenderer");
 
-	const TerrainResource *terrain = null;
 	const LightResource *light = null;
 
+	std::vector<TerrainTile>terrainTiles;
+
 public:
-	void setTerrain(const TerrainResource *terrain) {
-		this->terrain = terrain;
+	void addTerrain(const vector &position, const TerrainResource *terrain) {
+		this->terrainTiles.push_back(TerrainTile(position, terrain));
 	}
 
 	void setLight(const LightResource *light) {
@@ -38,22 +58,26 @@ public:
     }
 
 	void render(const Camera &camera) {
-	    if(videoRunner != null && shader != null && terrain != null) {
+	    if(videoRunner != null && shader != null && !terrainTiles.empty()) {
             videoRunner->useProgramResource(shader);
 
-            videoRunner->setTexture(0, "background", terrain->getA());
-            videoRunner->setTexture(1, "textureR", terrain->getR());
-            videoRunner->setTexture(2, "textureG", terrain->getG());
-            videoRunner->setTexture(3, "textureB",terrain->getB());
-            videoRunner->setTexture(4, "blendMap", terrain->getMap());
-
-            videoRunner->sendMatrix("matrices.model", matriz_4x4::identidad);
-            videoRunner->sendMatrix("matrices.pvm", camera.getProjectionViewMatrix() * matriz_4x4::identidad);
-            videoRunner->sendMatrix("matrices.normal", matriz_3x3::identidad);
-
             this->sendLight(light);
+            videoRunner->sendMatrix("matrices.pvm", camera.getProjectionViewMatrix());
 
-            videoRunner->drawVertexArray(terrain->getModel());
+            for(const auto &terrainTile : terrainTiles) {
+                videoRunner->setTexture(0, "background", terrainTile.getTerrain()->getA());
+                videoRunner->setTexture(1, "textureR", terrainTile.getTerrain()->getR());
+                videoRunner->setTexture(2, "textureG", terrainTile.getTerrain()->getG());
+                videoRunner->setTexture(3, "textureB",terrainTile.getTerrain()->getB());
+                videoRunner->setTexture(4, "blendMap", terrainTile.getTerrain()->getMap());
+
+                videoRunner->sendMatrix("matrices.model", terrainTile.getModelMatrix());
+                videoRunner->sendMatrix("matrices.normal", matriz_3x3::identidad);
+
+                logger->info("Drawing terrain at\n%s", terrainTile.getModelMatrix().toString().c_str());
+                videoRunner->drawVertexArray(terrainTile.getTerrain()->getModel());
+            }
+
 
             videoRunner->setTexture(0, "background", null);
             videoRunner->setTexture(1, "textureR", null);

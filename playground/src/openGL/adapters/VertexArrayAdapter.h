@@ -66,8 +66,8 @@ public:
 			vertexArrayResource->setId(0);
 		}
 	}
-protected:
-	VertexArrayResource *generateVertexBuffer(GeometryResource *geometry) {
+
+    VertexArrayResource *generateVertexBuffer(GeometryResource *geometry) {
         VertexArrayResource *resource = null;
 
         glGetError();
@@ -133,8 +133,8 @@ protected:
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
         return resource;
-	}
-
+    }
+protected:
 	bool addBuffer(ShaderAttributeLocation attributeLocation,
 			VertexArrayResource *resource, GLenum bufferDestination,
 			const std::vector<vector2> &data) {

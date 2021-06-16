@@ -41,7 +41,11 @@ public:
 		adapter->setResourceManager(this);
 	}
 
-	Resource* load(String fileName) {
+	ResourceAdapter *getAdapter(const String &mimetype) {
+	    return adapters[mimetype];
+	}
+
+	Resource* load(const String &fileName) {
 		try {
 			return load(fileName, guessMimeType(fileName));
 		} catch (Exception &e) {

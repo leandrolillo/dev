@@ -54,6 +54,7 @@ private:
 
     TextureResource *defaultTexture = null;
     const ShaderProgramResource *currentShaderProgram = null;
+    std::map<unsigned int, unsigned int> boundTextures;
 public:
 
     virtual unsigned char getInterests() {
@@ -404,20 +405,24 @@ public:
         return true;
     }
 
-    void setTexture(unsigned int location, const TextureResource *texture, unsigned int type = GL_TEXTURE_2D) const {
+    void setTexture(unsigned int location, const TextureResource *texture, unsigned int type = GL_TEXTURE_2D) {
+        glActiveTexture(GL_TEXTURE0 + location);
         if (texture != null) {
-            glActiveTexture(GL_TEXTURE0 + location);
-            glBindTexture(type, texture->getId());
+            if(boundTextures.count(GL_TEXTURE0 + location) == 0 || boundTextures.at(GL_TEXTURE0 + location) != texture->getId()) {
+                boundTextures[GL_TEXTURE0 + location] = texture->getId();
+                glBindTexture(type, texture->getId());
 
-            String errorMessage;
-            if (!(errorMessage = getGlError()).empty()) {
-                logger->error("Error binding texture [%s] of type [%u] at location [%u]", texture->toString().c_str(), type, location, errorMessage.c_str());
+                String errorMessage;
+                if (!(errorMessage = getGlError()).empty()) {
+                    logger->error("Error binding texture [%s] of type [%u] at location [%u]", texture->toString().c_str(), type, location, errorMessage.c_str());
+                }
             }
         } else {
+            boundTextures[GL_TEXTURE0 + location] = 0;
             glBindTexture(type, 0);
         }
     }
-    void setTexture(unsigned int location, const String &samplerName, const TextureResource *texture, unsigned int type = GL_TEXTURE_2D) const {
+    void setTexture(unsigned int location, const String &samplerName, const TextureResource *texture, unsigned int type = GL_TEXTURE_2D) {
         setTexture(location, texture, type);
         sendUnsignedInt(samplerName, location);
     }

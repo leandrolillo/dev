@@ -99,8 +99,8 @@ public:
 	virtual void enable(unsigned int attributeCode, unsigned int param1, unsigned int param2 = 0) const = 0;
 	virtual void disable(unsigned int attributeCode) const = 0;
 
-	virtual void setTexture(unsigned int location, const TextureResource *texture, unsigned int type = 0x0DE1) const = 0;
-	virtual void setTexture(unsigned int location, const String &samplerName, const TextureResource *texture, unsigned int type = 0x0DE1) const = 0;
+	virtual void setTexture(unsigned int location, const TextureResource *texture, unsigned int type = 0x0DE1) = 0;
+	virtual void setTexture(unsigned int location, const String &samplerName, const TextureResource *texture, unsigned int type = 0x0DE1) = 0;
 	virtual void drawVertexArray(const VertexArrayResource *vertexArrayResource) const = 0;
 
 	//TODO: get rid of this method
