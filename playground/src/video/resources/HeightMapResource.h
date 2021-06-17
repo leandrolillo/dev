@@ -15,7 +15,7 @@
 #include<ImageResource.h>
 
 #define max_height 20.0
-#define one_over_max_color_over_two 0.00000011920929 // 1.0 / (256.0 * 256.0 * 256.0 * 0.5)
+#define one_over_max_color_over_two 0.000000059604645 // 1.0 / (256.0 * 256.0 * 256.0)
 
 
 class HeightMapResource : public Resource
@@ -35,7 +35,7 @@ class HeightMapResource : public Resource
         }
 
         real getWidth() const {
-            return (real)this->heightMap->getAncho() * voxelSize.x;
+            return (real)(this->heightMap->getAncho() - 1) * voxelSize.x;
         }
 
         real getHeight() const {
@@ -43,23 +43,20 @@ class HeightMapResource : public Resource
         }
 
         real getDepth() const {
-            return (real)this->heightMap->getAlto() * voxelSize.z;
+            return (real)(this->heightMap->getAlto() - 1) * voxelSize.z;
         }
 
-        unsigned int getWidthInVoxels() const {
+        unsigned int getGridWidth() const {
             return this->heightMap->getAncho();
         }
 
-        unsigned int getHeightInVoxels() const {
+        unsigned int getGridHeight() const {
             return this->heightMap->getAlto();
         }
 
-        /**
-         * Returns the position in the range <[-maxPoints / 2, maxPoints/2], [-max_height, max_height], [-maxPoints / 2, maxPoints/2]> for the given (i, j) coordinates
-         */
         vector position(unsigned int i, unsigned int j) const {
-            i = std::min(i, this->heightMap->getAncho());
-            j = std::min(j, this->heightMap->getAlto());
+            i = std::min(i, this->getGridWidth());
+            j = std::min(j, this->getGridHeight());
 
             return vector(  (real)i * voxelSize.x,
                             height(i, j),
@@ -68,8 +65,8 @@ class HeightMapResource : public Resource
         }
 
         vector normal(unsigned int i, unsigned int j) const {
-            i = std::min(i, this->heightMap->getAncho());
-            j = std::min(j, this->heightMap->getAlto());
+            i = std::min(i, this->getGridWidth());
+            j = std::min(j, this->getGridHeight());
 
             //return vector(0, 1, 0);
             real hL = height(i-1 , j);
@@ -84,8 +81,8 @@ class HeightMapResource : public Resource
          * Returns texture coordinates in the range [0, 1] for the given (i, j) coordinates
          */
         vector2 textCoord(unsigned int i, unsigned int j) const {
-            i = std::min(i, this->heightMap->getAncho());
-            j = std::min(j, this->heightMap->getAlto());
+            i = std::min(i, this->getGridWidth());
+            j = std::min(j, this->getGridHeight());
 
             return vector2((real)i / (real)(this->heightMap->getAncho() - 1), (real)j / (real)(this->heightMap->getAlto() - 1));
         }
@@ -95,15 +92,15 @@ class HeightMapResource : public Resource
          * Returns height in the range [-max_height, max_height] for the given (i, j) coordinates
          */
         real height(unsigned int i, unsigned int j) const {
-            i = std::min(i, this->heightMap->getAncho());
-            j = std::min(j, this->heightMap->getAlto());
+            i = std::min(i, this->getGridWidth());
+            j = std::min(j, this->getGridHeight());
 
             vector pixel = this->heightMap->getPixel(i, j);
 
     //        logger->info("<%u, %u) = <%.0f, %.0f, %.0f>", i, j, pixel.x, pixel.y, pixel.z);
 
 
-            return (pixel.x * pixel.y * pixel.z * one_over_max_color_over_two - 1.0) * voxelSize.y;
+            return (pixel.x * pixel.y * pixel.z * one_over_max_color_over_two) * voxelSize.y;
         }
 };
 

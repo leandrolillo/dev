@@ -65,23 +65,23 @@ protected:
             GeometryResource heightMapGeometry(0);
             heightMapGeometry.setType("triangles");
 
-            for(unsigned int i = 0; i < heightMap->getWidthInVoxels(); i++) {
-                for(unsigned int j = 0; j < heightMap->getHeightInVoxels(); j++) {
+            for(unsigned int i = 0; i < heightMap->getGridWidth(); i++) {
+                for(unsigned int j = 0; j < heightMap->getGridHeight(); j++) {
                     heightMapGeometry.getVertices().push_back(heightMap->position(i, j));
                     heightMapGeometry.getNormals().push_back(heightMap->normal(i, j));
                     heightMapGeometry.getTextureCoordinates().push_back(heightMap->textCoord(i, j));
                 }
             }
 
-            for(unsigned int i = 1; i < heightMap->getWidthInVoxels(); i++) {
-                for(unsigned int j = 1; j < heightMap->getHeightInVoxels(); j++) {
-                    heightMapGeometry.getIndices().push_back(i * heightMap->getWidthInVoxels() + j);
-                    heightMapGeometry.getIndices().push_back(i * heightMap->getWidthInVoxels() + (j - 1));
-                    heightMapGeometry.getIndices().push_back((i - 1) * heightMap->getWidthInVoxels() + (j - 1));
+            for(unsigned int i = 1; i < heightMap->getGridWidth(); i++) {
+                for(unsigned int j = 1; j < heightMap->getGridHeight(); j++) {
+                    heightMapGeometry.getIndices().push_back(i * heightMap->getGridWidth() + j);
+                    heightMapGeometry.getIndices().push_back(i * heightMap->getGridWidth() + (j - 1));
+                    heightMapGeometry.getIndices().push_back((i - 1) * heightMap->getGridWidth() + (j - 1));
 
-                    heightMapGeometry.getIndices().push_back((i - 1) * heightMap->getWidthInVoxels() + j);
-                    heightMapGeometry.getIndices().push_back(i * heightMap->getWidthInVoxels() + j);
-                    heightMapGeometry.getIndices().push_back((i - 1) * heightMap->getWidthInVoxels() + (j - 1));
+                    heightMapGeometry.getIndices().push_back((i - 1) * heightMap->getGridWidth() + j);
+                    heightMapGeometry.getIndices().push_back(i * heightMap->getGridWidth() + j);
+                    heightMapGeometry.getIndices().push_back((i - 1) * heightMap->getGridWidth() + (j - 1));
                 }
             }
 
