@@ -67,9 +67,9 @@ protected:
 
             for(unsigned int i = 0; i < heightMap->getGridWidth(); i++) {
                 for(unsigned int j = 0; j < heightMap->getGridHeight(); j++) {
-                    heightMapGeometry.getVertices().push_back(heightMap->position(i, j));
-                    heightMapGeometry.getNormals().push_back(heightMap->normal(i, j));
-                    heightMapGeometry.getTextureCoordinates().push_back(heightMap->textCoord(i, j));
+                    heightMapGeometry.getVertices().push_back(heightMap->positionAtGrid(i, j));
+                    heightMapGeometry.getNormals().push_back(heightMap->normalAtGrid(i, j));
+                    heightMapGeometry.getTextureCoordinates().push_back(heightMap->textCoordAtGrid(i, j));
                 }
             }
 

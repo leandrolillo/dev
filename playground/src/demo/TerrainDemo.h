@@ -28,6 +28,7 @@ private:
 	VideoRunner *video = null;
 	AudioRunner *audio = null;
 	vector viewPosition;
+	vector viewVelocity = vector(0, 0, 0);
 	LightResource light;
 
 	Camera camera;
@@ -36,6 +37,8 @@ private:
 	DefaultRenderer defaultRenderer;
 
 	ArcBall arcball;
+
+	TerrainResource *terrain = null;
 public:
 	TerrainDemoRunner() : light(viewPosition,
 			vector(0.2f, 0.2f, 0.2f), vector(0.2f, 0.2f, 0.2f),
@@ -54,7 +57,9 @@ public:
 	}
 
 	void reset() {
-		viewPosition = vector(0.0, -0.5f, -6.0);
+		viewPosition = vector(0.0, -0.5f, -6.0f);
+		viewVelocity = vector(0, 0, 0);
+		light.setPosition(viewPosition);
 		camera.setViewMatrix(matriz_4x4::matrizTraslacion(viewPosition));
 	}
 
@@ -79,7 +84,7 @@ public:
 		terrainRenderer.setVideoRunner(video);
 		terrainRenderer.setLight(&light);
 
-		TerrainResource *terrain = (TerrainResource *)resourceManager->load("geometry/terrain/terrain.json", "video/terrain");
+		terrain = (TerrainResource *)resourceManager->load("geometry/terrain/terrain.json", "video/terrain");
 		terrainRenderer.addTerrain(vector(0, 0, 0), terrain);
 		terrainRenderer.addTerrain(vector(-terrain->getHeightMap()->getWidth(), 0, 0), terrain);
 		terrainRenderer.addTerrain(vector(0, 0, -terrain->getHeightMap()->getDepth()), terrain);
@@ -103,6 +108,8 @@ public:
 		terrainRenderer.render(camera);
 		skyboxRenderer.render(camera);
 
+		move(viewVelocity);
+
 		return LoopResult::CONTINUE;
 	}
 
@@ -124,12 +131,21 @@ public:
 		}
 	}
 
+	void move(const vector &delta) {
+	    viewPosition += delta;
+        viewPosition.y = terrain->getHeightMap()->heightAt(
+                viewPosition.x - floor(viewPosition.x / terrain->getHeightMap()->getWidth()) * terrain->getHeightMap()->getWidth(),
+                viewPosition.z - floor(viewPosition.z / terrain->getHeightMap()->getDepth()) * terrain->getHeightMap()->getDepth()
+                );
+
+        camera.setViewMatrix(matriz_4x4::matrizBase((matriz_3x3)camera.getViewMatrix(), -viewPosition - vector(0, 1, 0)));
+	}
+
     virtual void mouseMove(int x, int y, int dx, int dy) {
         if(!arcball.isDragging()) {
-            viewPosition += vector(0.1f * dx, 0.1f * dy, 0);
-            camera.setViewMatrix(matriz_4x4::matrizBase((matriz_3x3)camera.getViewMatrix(), viewPosition));
+            move(vector(0.1f * dx, 0.1f * dy, 0));
         } else {
-            camera.setViewMatrix(matriz_4x4::matrizBase(arcball.drag(vector2(dx, dy)), viewPosition));
+            camera.setViewMatrix(matriz_4x4::matrizBase(arcball.drag(vector2(dx, dy)), -viewPosition));
         }
 
         //logger->info("%s", openGl->getViewMatrix().toString().c_str());
@@ -138,13 +154,45 @@ public:
 
 	void mouseWheel(int wheel) {
 		logger->verbose("%s", viewPosition.toString().c_str());
-		viewPosition += vector(0.0f, 0.0f, wheel);
-
-		camera.setViewMatrix(matriz_4x4::matrizBase((matriz_3x3)camera.getViewMatrix(), viewPosition));
+		move(vector(0.0f, 0.0f, wheel));
 	}
 
     virtual void keyDown(unsigned int key, unsigned int keyModifier) {
         switch (key) {
+
+            case 'w':
+            case 'W':
+                viewVelocity.z = -0.1;
+                break;
+            case 's':
+            case 'S':
+                viewVelocity.z = 0.1;
+                break;
+            case 'a':
+            case 'A':
+                viewVelocity.x = -0.1;
+                break;
+            case 'd':
+            case 'D':
+                viewVelocity.x = 0.1;
+                break;
+        }
+    }
+
+    virtual void keyUp(unsigned int key, unsigned int keyModifier) {
+        switch (key) {
+            case 'w':
+            case 'W':
+            case 's':
+            case 'S':
+                viewVelocity.z = 0;;
+                break;
+            case 'a':
+            case 'A':
+            case 'd':
+            case 'D':
+                viewVelocity.x = 0;
+                break;
             case SDLK_SPACE:
                 reset();
                 break;
