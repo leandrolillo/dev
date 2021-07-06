@@ -11,11 +11,11 @@
 #include "demo/ObjDemo.h"
 #include "demo/ColDetDemo.h"
 
-#include <PlaygroundTest.h>
+#include "demo/PlaygroundTest.h"
 
 int main(int, char**){
-//    TestsPlayground playgroundtests("/Users/leandro/huevadas/projects/dev/media/");
-//    playgroundtests.run();
+    TestsPlayground playgroundtests("/Users/leandro/huevadas/projects/dev/media/");
+    playgroundtests.run();
 
 //    CollisionDetectionPlayground colDetplayground("/Users/leandro/huevadas/projects/dev/media/");
 //    colDetplayground.run();
@@ -23,11 +23,11 @@ int main(int, char**){
  //	PlaygroundGeneralDemo playground("/Users/leandro/huevadas/projects/dev/media/");
 //    playground.run();
 
-    PlaygroundTerrainDemo terrainPlayground("/Users/leandro/huevadas/projects/dev/media/");
-    terrainPlayground.run();
+//    PlaygroundTerrainDemo terrainPlayground("/Users/leandro/huevadas/projects/dev/media/");
+//    terrainPlayground.run();
 
-//    PhysicsPlayground physicsPlayground("/Users/leandro/huevadas/projects/dev/media/");
-//    physicsPlayground.run();
+    PhysicsPlayground physicsPlayground("/Users/leandro/huevadas/projects/dev/media/");
+    physicsPlayground.run();
 
 //    ObjDemoPlayground objPlayground("/Users/leandro/huevadas/projects/dev/media/");
 //    objPlayground.run();

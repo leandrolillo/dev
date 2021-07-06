@@ -21,9 +21,11 @@
 #include<Math3d.h>
 #include<forces/Gravity.h>
 
-#include <Geometry.h>
+#include<Geometry.h>
+#include<IntersectionTester.h>
 
 #include<InvalidArgumentException.h>
+#include<Camera.h>
 
 class CollisionDetectionDemoRunner;
 
@@ -66,6 +68,7 @@ class CollisionDetectionDemoRunner: public PlaygroundRunner {
     AudioRunner *audio = null;
 
     CollisionDetector collisionDetector;
+    IntersectionTester intersectionTester;
     ContactResolver contactSolver;
     std::vector<Particle*> particles;
     SphereParticle sphereParticles[number_of_sphere_particles];
@@ -264,7 +267,7 @@ public:
             for (unsigned char index = 0; index < 2; index++) {
                 const Geometry *current = particles[index]->getGeometry();
 
-                if (current->intersects((Geometry&) line)) {
+                if (intersectionTester.intersects(*current, (Geometry &)line)) {
                     selectedGeometry = index;
                 }
             }

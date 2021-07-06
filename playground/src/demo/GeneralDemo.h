@@ -13,6 +13,7 @@
 #include<AudioRunner.h>
 
 #include<renderers/DefaultRenderer.h>
+#include<Camera.h>
 
 #include<vector>
 

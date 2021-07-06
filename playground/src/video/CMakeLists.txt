@@ -1,5 +1,5 @@
 add_library(video INTERFACE)
-target_include_directories(video INTERFACE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/resources ${CMAKE_CURRENT_SOURCE_DIR}/adapters)
+target_include_directories(video INTERFACE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/resources ${CMAKE_CURRENT_SOURCE_DIR}/adapters ${CMAKE_CURRENT_SOURCE_DIR}/renderers ${CMAKE_CURRENT_SOURCE_DIR}/camera)
 
 #this needs to be present in every CmakeList that requires files from playground/cmake
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")

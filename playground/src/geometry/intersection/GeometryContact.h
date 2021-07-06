@@ -14,8 +14,6 @@
 class Geometry;
 
 class GeometryContact : public BaseContact {
-public:
-    static GeometryContact noContact;
 private:
     const Geometry *geometryA;
     const Geometry *geometryB;
@@ -38,6 +36,4 @@ public:
         return GeometryContact(this->geometryB, this->geometryA, intersection, normal * -1, restitution, penetration);
     }
 };
-
-GeometryContact GeometryContact::noContact(null, null, vector(0, 0, 0), vector(0, 0, 0), 0.0, -1.0);
 #endif /* SRC_PHYSICS_COLLISIONDETECTION_GEOMETRY_GEOMETRYCONTACT_H_ */

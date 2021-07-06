@@ -2,46 +2,69 @@
 #define _PLAYGROUND_TEST_H_
 
 
-#include "TestRunner.h"
+#include<Playground.h>
+#include <Tests.h>
 #include <Math3d.h>
 
 #include <resources/OggResource.h>
 #include <stdio.h>
 
+#include<GeometryTests.h>
 
-class PlaygroundTestsRunner: public TestRunner {
+class PlaygroundTestsRunner: public PlaygroundRunner, UnitTest {
 		Logger *logger;
+		TestsManager testsManager;
+		GeometryTests geometryTests;
+
 	public:
 		static const unsigned char ID = 100;
 
 	public:
 		PlaygroundTestsRunner() {
-			logger = LoggerFactory::getLogger("PlaygroundTest.h");
+		    logger = LoggerFactory::getLogger("PlaygroundTestsRunner");
+
+		    this->addTest("testMousePicking", static_cast<void (UnitTest::*)()>(&PlaygroundTestsRunner::testMousePicking));
 		}
-
-		virtual unsigned char getId() {
-
+		unsigned char getId() {
 			return PlaygroundTestsRunner::ID;
 		}
 
+        virtual bool afterInit()    {
+            //before();
+            //tests
+            testsManager.doTests();
+
+            //after();
+
+            return true;
+        }
+
+        virtual LoopResult doLoop() {
+            return LoopResult::FINISHED;
+        }
+
 		virtual bool init() {
-//			this->addTest("testLoadWav", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testLoadWav));
-//			this->addTest("testLoadOgg", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testLoadOgg));
-//			this->addTest("testLoadBuffer", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testLoadBuffer));
-//			this->addTest("testCreateSource", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testCreateSource));
-//			this->addTest("testLoadPng", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testLoadPng));
-//			this->addTest("testLoadJpeg", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testLoadJpeg));
-//			this->addTest("testLoadTga", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testLoadTga));
-//			this->addTest("testLoadTexture", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testLoadTexture));
-//			this->addTest("testLoadInvalidResource", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testInvalidResource));
-//			this->addTest("testFileParser", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testFileParser));
-//			this->addTest("testLoadGeometry", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testLoadGeometry));
-//			this->addTest("testLoadVertexArray", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testLoadVertexBuffer));
-//			this->addTest("testLoadShader", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testLoadShaders));
-//			this->addTest("testLoadShaderProgram", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testLoadShaderProgram));
-//			this->addTest("testLoadShaderProgramByVersion", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testLoadShaderProgramByVersion));
-//			this->addTest("testMath", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testMath));
-			this->addTest("testMousePicking", static_cast<void (TestRunner::*)()>(&PlaygroundTestsRunner::testMousePicking));
+            this->testsManager.addTest(geometryTests);
+            this->testsManager.addTest(*this);
+
+
+//			testsManager.addTest("testLoadWav", static_cast<void (UnitTest::*)()>(&PlaygroundTestsRunner::testLoadWav));
+//			testsManager.addTest("testLoadOgg", static_cast<void (UnitTest::*)()>(&PlaygroundTestsRunner::testLoadOgg));
+//			testsManager.addTest("testLoadBuffer", static_cast<void (UnitTest::*)()>(&PlaygroundTestsRunner::testLoadBuffer));
+//			testsManager.addTest("testCreateSource", static_cast<void (UnitTest::*)()>(&PlaygroundTestsRunner::testCreateSource));
+//			testsManager.addTest("testLoadPng", static_cast<void (UnitTest::*)()>(&PlaygroundTestsRunner::testLoadPng));
+//			testsManager.addTest("testLoadJpeg", static_cast<void (UnitTest::*)()>(&PlaygroundTestsRunner::testLoadJpeg));
+//			testsManager.addTest("testLoadTga", static_cast<void (UnitTest::*)()>(&PlaygroundTestsRunner::testLoadTga));
+//			testsManager.addTest("testLoadTexture", static_cast<void (UnitTest::*)()>(&PlaygroundTestsRunner::testLoadTexture));
+//			testsManager.addTest("testLoadInvalidResource", static_cast<void (UnitTest::*)()>(&PlaygroundTestsRunner::testInvalidResource));
+//			testsManager.addTest("testFileParser", static_cast<void (UnitTest::*)()>(&PlaygroundTestsRunner::testFileParser));
+//			testsManager.addTest("testLoadGeometry", static_cast<void (UnitTest::*)()>(&PlaygroundTestsRunner::testLoadGeometry));
+//			testsManager.addTest("testLoadVertexArray", static_cast<void (UnitTest::*)()>(&PlaygroundTestsRunner::testLoadVertexBuffer));
+//			testsManager.addTest("testLoadShader", static_cast<void (UnitTest::*)()>(&PlaygroundTestsRunner::testLoadShaders));
+//			testsManager.addTest("testLoadShaderProgram", static_cast<void (UnitTest::*)()>(&PlaygroundTestsRunner::testLoadShaderProgram));
+//			testsManager.addTest("testLoadShaderProgramByVersion", static_cast<void (UnitTest::*)()>(&PlaygroundTestsRunner::testLoadShaderProgramByVersion));
+//			testsManager.addTest("testMath", static_cast<void (UnitTest::*)()>(&PlaygroundTestsRunner::testMath));
+			//testsManager.addTest("testMousePicking", static_cast<void (UnitTest::*)()>(&PlaygroundTestsRunner::testMousePicking));
 
 			return true;
 		}

@@ -1,0 +1,208 @@
+/*
+ * TestRunner.h
+ *
+ *  Created on: 06/02/2013
+ *      Author: Lean
+ */
+
+#ifndef TESTRUNNER_H_
+#define TESTRUNNER_H_
+
+#include<Math3d.h>
+#include<Logger.h>
+
+#include<map>
+
+#define defaultAssertMessage StringFormatter::format("Assertion Failed in [%s], at line [%d]", __FILE__, __LINE__)
+#define assertMessage(message) StringFormatter::format("Assertion Failed in [%s], at line [%d]", __FILE__, __LINE__).append(message)
+
+class TestsManager;
+
+class UnitTest {
+    std::map<String, void (UnitTest::*)()> tests;
+protected:
+    Logger *logger = LoggerFactory::getLogger("UnitTest");
+
+public:
+    UnitTest() {
+        logger->addAppender(LoggerFactory::getAppender("stdout"));
+    }
+
+    String toString() {
+        return logger->getBasename();
+    }
+
+    void addTest(String name, void (UnitTest::*testFunction)())
+    {
+        tests[name] = testFunction;
+    }
+
+    unsigned int getNumberOfTests() {
+        return this->tests.size();
+    }
+
+    std::vector<String> run() {
+        std::vector<String> failedTests;
+
+        logger->info("Running [%d] Tests...", getNumberOfTests());
+
+        for(auto iterator : tests)
+        {
+            try {
+                logger->info("- Running test [%s]...", iterator.first.c_str());
+                void (UnitTest::*currentTest)();
+                currentTest = iterator.second;
+
+                (this->*currentTest)();
+
+                //logger->info("Test [%s] passed.", iterator.first.c_str());
+            } catch (Exception &e) {
+                logger->error("TEST FAILED:[%s] FAILED: %s", iterator.first.c_str(), e.toString().c_str());
+                failedTests.push_back(iterator.first);
+            }
+
+        }
+
+        return failedTests;
+    }
+
+    virtual ~UnitTest() {
+
+    }
+
+    void assertTrue(bool condition)
+    {
+        assertTrue("", condition);
+    }
+    void assertTrue(const String &message, bool condition)
+    {
+        if(!condition) {
+            assertFail(message);
+        }
+    }
+
+    void assertEquals(const String &message, const String &expected, const String &actual)
+    {
+        assertTrue(message + ". Expected: [" + expected + "]. Actual: [" + actual + "]", expected == actual);
+    }
+
+    void assertEquals(const String &message, void *expected, void *actual)
+    {
+        assertTrue(message, expected == actual);
+    }
+
+    void assertEquals(const String &message, unsigned int expected, unsigned int actual)
+    {
+        assertTrue(StringFormatter::format("%s. Expected: [%d]. Actual: [%d]", message.c_str(), expected, actual), expected == actual);
+    }
+
+    void assertRealEquals(const String &message, real expected, real actual)
+    {
+        assertTrue(StringFormatter::format("%s. Expected: [%f]. Actual: [%f]", message.c_str(), expected, actual), equalsZero(expected - actual));
+    }
+
+    void assertFalse(const String &message, bool condition)
+    {
+        if(condition)
+        assertFail(message);
+    }
+    void assertFalse(bool condition)
+    {
+        assertFalse("", condition);
+    }
+
+    void assertFail(const String &message) {
+        throw Exception(message.c_str());
+    }
+
+    void assertEquals(const String &message, const vector &expected, const vector &actual)
+    {
+        String vectorMessage = StringFormatter::format("%s. Expected %s, got %s:",
+                message.c_str(),
+                expected.toString("%.2f").c_str(),
+                actual.toString("%.2f").c_str());
+        assertRealEquals(vectorMessage, expected.x, actual.x);
+        assertRealEquals(vectorMessage, expected.y, actual.y);
+        assertRealEquals(vectorMessage, expected.z, actual.z);
+    }
+
+    void assertEquals(const String &message, const matriz_mxn &expected, const matriz_mxn &actual)
+    {
+        String text = StringFormatter::format("%s. Expected dimensions: [%dx%d]. Actual: [%dx%d]", message.c_str(), expected.getNroFilas(), expected.getNroColumnas(), actual.getNroFilas(), actual.getNroColumnas());
+        assertTrue(text, expected.getNroFilas() == actual.getNroFilas() && expected.getNroColumnas() == expected.getNroColumnas());
+
+        for(unsigned int i = 0; i < expected.getNroFilas(); i++) {
+            for(unsigned int j = 0; j < expected.getNroColumnas(); j++) {
+                text = StringFormatter::format("%s. Element (%d, %d) - Expected: [%.3f]. Actual: [%.3f]", message.c_str(), i, j, expected(i, j), actual(i, j));
+                assertTrue(text, expected(i, j) == actual(i, j));
+            }
+        }
+    }
+private:
+    String getFailedTestsString(std::vector<String> &stringList)
+    {
+        String result(stringList.empty() ? "" :  ": ");
+
+        for(std::vector<String>::iterator iterator = stringList.begin(); iterator != stringList.end(); iterator++)
+        {
+            if(iterator != stringList.begin())
+                result.append(", ");
+
+            result.append(*iterator);
+        }
+
+        return result;
+    }
+
+};
+
+class TestsManager {
+	private:
+		Logger *logger = LoggerFactory::getLogger("TestsManager");
+		std::vector<UnitTest> unitTests;
+	public:
+		TestsManager()
+		{
+			logger->addAppender(LoggerFactory::getAppender("stdout"));
+		}
+
+		void addTest(UnitTest &unitTest)
+		{
+			unitTests.push_back(unitTest);
+		}
+
+		void doTests() {
+		    std::vector<String> allFailedTests;
+
+		    unsigned int totalTests = 0;
+		    for(auto unitTest : unitTests) {
+		        totalTests += unitTest.getNumberOfTests();
+		    }
+
+			logger->info("Running [%d] tests from [%d] test packs...", totalTests, unitTests.size());
+			for(auto unitTest : unitTests) {
+			    logger->info("Running tests pack [%s] ...", unitTest.toString().c_str());
+			    std::vector<String> failedTests = unitTest.run();
+
+			    allFailedTests.insert(std::begin(allFailedTests), std::begin(failedTests), std::end(failedTests));
+
+			    logger->info("\n");
+			    //logger->info("Done running [%s] test pack...", unitTest.toString().c_str());
+			}
+
+			logger->info("Results:");
+
+			if(!allFailedTests.empty()) {
+			    logger->info("  Tests in error:");
+
+			    for(auto failedTest : allFailedTests) {
+			        logger->info("  - %s", failedTest.c_str());
+			    }
+			}
+
+			logger->info("Tests run: [%d], Failures: [%d]", totalTests, allFailedTests.size());
+		}
+};
+
+
+#endif /* TESTRUNNER_H_ */

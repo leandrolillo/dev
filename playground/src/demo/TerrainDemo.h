@@ -21,6 +21,76 @@
 #include<renderers/SkyboxRenderer.h>
 
 
+class InputController {
+public:
+    virtual ~InputController() {
+
+    }
+
+    virtual void mouseButtonDown(unsigned char button, int x, int y)
+    {
+        if(button == SDL_BUTTON_LEFT) {
+
+        }
+    }
+
+    virtual void mouseButtonUp(unsigned char button, int x, int y)
+    {
+        if(button == SDL_BUTTON_LEFT) {
+
+        }
+    }
+
+    virtual void mouseMove(int x, int y, int dx, int dy) {
+    }
+
+
+    virtual void mouseWheel(int wheel) {
+    }
+
+    virtual void keyDown(unsigned int key, unsigned int keyModifier) {
+        switch (key) {
+
+            case 'w':
+            case 'W':
+                break;
+            case 's':
+            case 'S':
+                break;
+            case 'a':
+            case 'A':
+                break;
+            case 'd':
+            case 'D':
+                break;
+        }
+    }
+
+    virtual void keyUp(unsigned int key, unsigned int keyModifier) {
+        switch (key) {
+            case 'w':
+            case 'W':
+            case 's':
+            case 'S':
+                break;
+            case 'a':
+            case 'A':
+            case 'd':
+            case 'D':
+                break;
+            case SDLK_SPACE:
+                break;
+        }
+    }
+};
+
+class FPSInputController : public InputController {
+
+};
+
+class ThirdPersonController : public InputController {
+
+};
 
 class TerrainDemoRunner: public PlaygroundRunner {
 private:
