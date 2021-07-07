@@ -25,6 +25,8 @@ public:
     virtual bool intersects(const Geometry &op1, const Geometry & op2) const {
         return op1.intersects(this, op2);
     }
+
+    virtual bool intersectsVisit(const AABB &aabb, const Geometry &op2) const { return false; };
     virtual bool intersectsVisit(const Sphere &sphere, const Geometry &op2) const = 0;
     virtual bool intersectsVisit(const Plane &plane, const Geometry &op2) const = 0;
     virtual bool intersectsVisit(const Line &line, const Geometry &op2) const = 0;
@@ -34,9 +36,12 @@ public:
      * Visit methods for contacts
      */
 
+
     virtual std::vector<GeometryContact>  detectCollision(const Geometry &op1, const Geometry &op2) const {
         return op1.detectCollision(this, op2);
     }
+
+    virtual std::vector<GeometryContact>  detectCollisionVisit(const AABB &aabb, const Geometry &op2) const { return std::vector<GeometryContact>(); };
     virtual std::vector<GeometryContact>  detectCollisionVisit(const Sphere &sphere, const Geometry &op2) const = 0;
     virtual std::vector<GeometryContact>  detectCollisionVisit(const Plane &plane, const Geometry &op2) const = 0;
     virtual std::vector<GeometryContact>  detectCollisionVisit(const Line &line, const Geometry &op2) const = 0;
@@ -48,13 +53,15 @@ public:
 
     }
 
+    bool intersectsVisit(const AABB &aabb, const Geometry &sphere) const override;
     bool intersectsVisit(const Plane &plane, const Geometry &sphere) const override;
     bool intersectsVisit(const Line &line, const Geometry &sphere) const override;
     bool intersectsVisit(const Sphere &sphere, const Geometry &anotherSphere) const override;
 
-    std::vector<GeometryContact>  detectCollisionVisit(const Sphere &sphere, const Geometry &op2) const override;
-    std::vector<GeometryContact>  detectCollisionVisit(const Plane &plane, const Geometry &op2) const override;
-    std::vector<GeometryContact>  detectCollisionVisit(const Line &line, const Geometry &op2) const override;
+    std::vector<GeometryContact>  detectCollisionVisit(const AABB &aabb, const Geometry &sphere) const override;
+    std::vector<GeometryContact>  detectCollisionVisit(const Sphere &anotherSphere, const Geometry &sphere) const override;
+    std::vector<GeometryContact>  detectCollisionVisit(const Plane &plane, const Geometry &sphere) const override;
+    std::vector<GeometryContact>  detectCollisionVisit(const Line &line, const Geometry &sphere) const override;
 };
 
 class PlaneIntersectionTester : public IntersectionTesterBase {
@@ -62,36 +69,61 @@ public:
     PlaneIntersectionTester() {
 
         }
-    bool intersectsVisit(const Plane &plane, const Geometry &anotherPlane) const override;
+
+    bool intersectsVisit(const AABB &aabb, const Geometry &plane) const override;
+    bool intersectsVisit(const Plane &anotherPlane, const Geometry &plane) const override;
     bool intersectsVisit(const Line &line, const Geometry &plane) const override;
     bool intersectsVisit(const Sphere &sphere, const Geometry &plane) const override;
 
-    std::vector<GeometryContact>  detectCollisionVisit(const Sphere &sphere, const Geometry &op2) const override;
-    std::vector<GeometryContact>  detectCollisionVisit(const Plane &plane, const Geometry &op2) const override;
-    std::vector<GeometryContact>  detectCollisionVisit(const Line &line, const Geometry &op2) const override;
+    std::vector<GeometryContact>  detectCollisionVisit(const AABB &aabb, const Geometry &plane) const override;
+    std::vector<GeometryContact>  detectCollisionVisit(const Sphere &sphere, const Geometry &plane) const override;
+    std::vector<GeometryContact>  detectCollisionVisit(const Plane &anotherPlane, const Geometry &plane) const override;
+    std::vector<GeometryContact>  detectCollisionVisit(const Line &line, const Geometry &plane) const override;
 };
 
 class LineIntersectionTester : public IntersectionTesterBase{
 public:
-    LineIntersectionTester() {
+    LineIntersectionTester() {}
 
-        }
+    bool intersectsVisit(const AABB &aabb, const Geometry &line) const override;
     bool intersectsVisit(const Plane &plane, const Geometry &line) const override;
     bool intersectsVisit(const Line &anotherLine, const Geometry &line) const override;
     bool intersectsVisit(const Sphere &sphere, const Geometry &line) const override;
 
-    std::vector<GeometryContact>  detectCollisionVisit(const Sphere &sphere, const Geometry &op2) const override;
-    std::vector<GeometryContact>  detectCollisionVisit(const Plane &plane, const Geometry &op2) const override;
-    std::vector<GeometryContact>  detectCollisionVisit(const Line &line, const Geometry &op2) const override;
+    std::vector<GeometryContact>  detectCollisionVisit(const AABB &aabb, const Geometry &line) const override;
+    std::vector<GeometryContact>  detectCollisionVisit(const Sphere &sphere, const Geometry &line) const override;
+    std::vector<GeometryContact>  detectCollisionVisit(const Plane &plane, const Geometry &line) const override;
+    std::vector<GeometryContact>  detectCollisionVisit(const Line &anotherLine, const Geometry &line) const override;
 };
+
+class AABBIntersectionTester : public IntersectionTesterBase{
+public:
+    AABBIntersectionTester() {}
+
+    bool intersectsVisit(const AABB &anotherAabb, const Geometry &aabb) const override;
+    bool intersectsVisit(const Plane &plane, const Geometry &aabb) const override;
+    bool intersectsVisit(const Line &anotherLine, const Geometry &aabb) const override;
+    bool intersectsVisit(const Sphere &sphere, const Geometry &aabb) const override;
+
+    std::vector<GeometryContact>  detectCollisionVisit(const AABB &anotherAabb, const Geometry &aabb) const override;
+    std::vector<GeometryContact>  detectCollisionVisit(const Sphere &sphere, const Geometry &aabb) const override;
+    std::vector<GeometryContact>  detectCollisionVisit(const Plane &plane, const Geometry &aabb) const override;
+    std::vector<GeometryContact>  detectCollisionVisit(const Line &line, const Geometry &aabb) const override;
+};
+
 
 class IntersectionTester : public IntersectionTesterBase{
 protected:
     std::unique_ptr<IntersectionTesterBase> sphereIntersectionTester = std::make_unique<SphereIntersectionTester>();
     std::unique_ptr<IntersectionTesterBase> planeIntersectionTester = std::make_unique<PlaneIntersectionTester>();
     std::unique_ptr<IntersectionTesterBase> lineIntersectionTester = std::make_unique<LineIntersectionTester>();
+    std::unique_ptr<IntersectionTesterBase> aabbIntersectionTester = std::make_unique<AABBIntersectionTester>();
 
 public:
+
+    bool intersectsVisit(const AABB &aabb, const Geometry &op2) const override {
+        return op2.intersects(aabbIntersectionTester.get(), aabb);
+    }
     bool intersectsVisit(const Sphere &sphere, const Geometry &op2) const override{
         return op2.intersects(sphereIntersectionTester.get(), sphere);
     }
@@ -104,6 +136,9 @@ public:
         return op2.intersects(lineIntersectionTester.get(), line);
     }
 
+    std::vector<GeometryContact>  detectCollisionVisit(const AABB &aabb, const Geometry &op2) const override {
+        return op2.detectCollision(aabbIntersectionTester.get(), aabb);
+    }
     std::vector<GeometryContact>  detectCollisionVisit(const Sphere &sphere, const Geometry &op2) const override {
         return op2.detectCollision(sphereIntersectionTester.get(), sphere);
     }

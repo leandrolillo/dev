@@ -59,7 +59,7 @@ public:
     }
 
     String toString() const override {
-        return "Sphere(origin: " + this->getOrigin().toString("%.2f") + ", radius: " + std::to_string(this->radius) + ")";
+        return "Sphere(origin: " + this->getOrigin().toString() + ", radius: " + std::to_string(this->radius) + ")";
     }
 
     bool intersects(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const override;
@@ -97,11 +97,52 @@ public:
     }
 
     String toString() const override {
-        return "Line(origin: " + this->getOrigin().toString("%.2f") + ", dir: " + this->direction.toString("%.2f") + ")";
+        return "Line(origin: " + this->getOrigin().toString() + ", dir: " + this->direction.toString() + ")";
     }
 
     bool intersects(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const override;
     std::vector<GeometryContact>  detectCollision(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const override;
 };
+
+class AABB : public Geometry {
+    vector halfSizes;
+public:
+    AABB(const vector &origin, const vector &halfSizes) : Geometry(origin) {
+        this->halfSizes = halfSizes;
+    }
+
+    const vector &getHalfSizes() const {
+        return this->halfSizes;
+    }
+
+    String toString() const override {
+        return "AABB(origin: " + this->getOrigin().toString() + ", halfSizes: " + this->halfSizes.toString() + ")";
+    }
+
+    bool intersects(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const override;
+    std::vector<GeometryContact>  detectCollision(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const override;
+
+};
+
+//class HierarchicalGeometry : public Geometry {
+//    std::unique_ptr<Geometry> boundingGeometry;
+//    std::vector<const Geometry &> children;
+//
+//    const vector& getOrigin() const {
+//        return this->boundingGeometry->getOrigin();
+//    }
+//
+//    void setOrigin(const vector &origin) {
+//        this->boundingGeometry->setOrigin(origin);
+//    }
+//
+//    String toString() const override {
+//        return "HierarchicalGeometry(origin: " + this->getOrigin().toString() + ", children: " + this->children.size() + ")";
+//    }
+//
+//    bool intersects(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const override;
+//    std::vector<GeometryContact>  detectCollision(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const override;
+//
+//};
 
 #endif /* SRC_PHYSICS_GEOMETRY_GEOMETRY_H_ */

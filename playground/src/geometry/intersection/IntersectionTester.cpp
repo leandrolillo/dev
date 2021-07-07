@@ -12,6 +12,10 @@
 /**
  * Sphere
  */
+bool SphereIntersectionTester::intersectsVisit(const AABB &aabb, const Geometry &sphere) const {
+    return IntersectionHelper::sphereAabb((const Sphere&) sphere, aabb);
+}
+
 bool SphereIntersectionTester::intersectsVisit(const Plane &plane, const Geometry &sphere) const {
     return IntersectionHelper::planeSphere(plane, (const Sphere&) sphere);
 }
@@ -20,10 +24,13 @@ bool SphereIntersectionTester::intersectsVisit(const Line &line, const Geometry 
     return IntersectionHelper::lineSphere(line, (const Sphere&) sphere);
 }
 
-bool SphereIntersectionTester::intersectsVisit(const Sphere &sphere, const Geometry &anotherSphere) const {
-    return IntersectionHelper::sphereSphere(sphere, (Sphere&) anotherSphere);
+bool SphereIntersectionTester::intersectsVisit(const Sphere &anotherSphere, const Geometry &sphere) const {
+    return IntersectionHelper::sphereSphere(anotherSphere, (Sphere&) sphere);
 }
 
+std::vector<GeometryContact>  SphereIntersectionTester::detectCollisionVisit(const AABB &aabb, const Geometry &sphere) const {
+    return IntersectionHelper::sphereAabbContact((const Sphere &)sphere, aabb);
+}
 std::vector<GeometryContact>  SphereIntersectionTester::detectCollisionVisit(const Sphere &anotherSphere, const Geometry &sphere) const {
     return IntersectionHelper::sphereSphereContact(anotherSphere, (Sphere &)sphere);
 }
@@ -39,8 +46,12 @@ std::vector<GeometryContact>  SphereIntersectionTester::detectCollisionVisit(con
  * Plane
  */
 
-bool PlaneIntersectionTester::intersectsVisit(const Plane &plane, const Geometry &anotherPlane) const {
-    return IntersectionHelper::planePlane(plane, (const Plane&) anotherPlane);
+bool PlaneIntersectionTester::intersectsVisit(const AABB &aabb, const Geometry &plane) const {
+    return IntersectionHelper::planeAabb((const Plane&) plane, aabb);
+}
+
+bool PlaneIntersectionTester::intersectsVisit(const Plane &anotherPlane, const Geometry &plane) const {
+    return IntersectionHelper::planePlane(anotherPlane, (const Plane&) plane);
 }
 
 bool PlaneIntersectionTester::intersectsVisit(const Line &line, const Geometry &plane) const {
@@ -49,6 +60,10 @@ bool PlaneIntersectionTester::intersectsVisit(const Line &line, const Geometry &
 
 bool PlaneIntersectionTester::intersectsVisit(const Sphere &sphere, const Geometry &plane) const {
     return IntersectionHelper::planeSphere((const Plane&) plane, sphere);
+}
+
+std::vector<GeometryContact>  PlaneIntersectionTester::detectCollisionVisit(const AABB &aabb, const Geometry &plane) const {
+    return IntersectionHelper::planeAabbContact((const Plane&) plane, aabb);
 }
 
 std::vector<GeometryContact>  PlaneIntersectionTester::detectCollisionVisit(const Sphere &sphere, const Geometry &plane) const {
@@ -65,6 +80,10 @@ std::vector<GeometryContact>  PlaneIntersectionTester::detectCollisionVisit(cons
  * Line
  */
 
+bool LineIntersectionTester::intersectsVisit(const AABB &aabb, const Geometry &line) const {
+    return IntersectionHelper::lineAabb((const Line&) line, aabb);
+}
+
 bool LineIntersectionTester::intersectsVisit(const Plane &plane, const Geometry &line) const {
     return IntersectionHelper::linePlane((const Line&) line, plane);
 }
@@ -76,6 +95,11 @@ bool LineIntersectionTester::intersectsVisit(const Line &anotherLine, const Geom
 bool LineIntersectionTester::intersectsVisit(const Sphere &sphere, const Geometry &line) const {
     return IntersectionHelper::lineSphere((const Line&) line, sphere);
 }
+
+std::vector<GeometryContact>  LineIntersectionTester::detectCollisionVisit(const AABB &aabb, const Geometry &line) const {
+    return IntersectionHelper::lineAabbContact((const Line&) line, aabb);
+}
+
 std::vector<GeometryContact>  LineIntersectionTester::detectCollisionVisit(const Sphere &sphere, const Geometry &line) const {
     return IntersectionHelper::lineSphereContact((const Line&) line, sphere);
 }
@@ -86,3 +110,36 @@ std::vector<GeometryContact>  LineIntersectionTester::detectCollisionVisit(const
     return IntersectionHelper::lineLineContact((const Line&) line, anotherLine);
 }
 
+/**
+ * AABB
+ */
+
+bool AABBIntersectionTester::intersectsVisit(const AABB &anotherAabb, const Geometry &aabb) const {
+    return IntersectionHelper::aabbAabb(anotherAabb, (const AABB&) aabb);
+}
+
+bool AABBIntersectionTester::intersectsVisit(const Plane &plane, const Geometry &aabb) const {
+    return IntersectionHelper::planeAabb(plane, (const AABB&) aabb);
+}
+
+bool AABBIntersectionTester::intersectsVisit(const Line &line, const Geometry &aabb) const {
+    return IntersectionHelper::lineAabb(line, (const AABB&) aabb);
+}
+
+bool AABBIntersectionTester::intersectsVisit(const Sphere &sphere, const Geometry &aabb) const {
+    return IntersectionHelper::sphereAabb(sphere, (const AABB&) aabb);
+}
+
+std::vector<GeometryContact>  AABBIntersectionTester::detectCollisionVisit(const AABB &anotherAabb, const Geometry &aabb) const {
+    return IntersectionHelper::aabbAabbContact(anotherAabb, (const AABB&) aabb);
+}
+
+std::vector<GeometryContact>  AABBIntersectionTester::detectCollisionVisit(const Sphere &sphere, const Geometry &aabb) const {
+    return IntersectionHelper::sphereAabbContact(sphere, (const AABB&) aabb);
+}
+std::vector<GeometryContact>  AABBIntersectionTester::detectCollisionVisit(const Plane &plane, const Geometry &aabb) const {
+    return IntersectionHelper::planeAabbContact(plane, (const AABB&) aabb);
+}
+std::vector<GeometryContact>  AABBIntersectionTester::detectCollisionVisit(const Line &line, const Geometry &aabb) const {
+    return IntersectionHelper::lineAabbContact(line, (const AABB&) aabb);
+}

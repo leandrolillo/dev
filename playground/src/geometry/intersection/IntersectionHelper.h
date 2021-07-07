@@ -15,6 +15,11 @@
 
 class IntersectionHelper {
 public:
+    static bool pointSphere(const vector &point, const Sphere &sphere) {
+        vector delta = sphere.getOrigin() - point;
+        return delta * delta <= sphere.getRadius() * sphere.getRadius();
+    }
+
     static bool lineSphere(const Line &line, const Sphere &sphere) {
        real projection = (sphere.getOrigin() - line.getOrigin()) * line.getDirection();
        vector projectedSphereCenter = line.getOrigin() + line.getDirection() * projection;
@@ -31,11 +36,8 @@ public:
        return false;
     }
 
-    static bool sphereSphere(const Sphere &sphere, const Sphere &anotherSphere) {
-        vector delta = sphere.getOrigin() - anotherSphere.getOrigin();
-        real radiuses = sphere.getRadius() + anotherSphere.getRadius();
-
-        return (delta * delta <= radiuses * radiuses);
+    static bool lineAabb(const Line &line, const AABB &aabb) {
+           return false;
     }
 
     static bool planeSphere(const Plane &plane, const Sphere &sphere) {
@@ -47,8 +49,42 @@ public:
         return false;
     }
 
+    static bool planeAabb(const Plane &plane, const AABB &aabb) {
+            return false;
+    }
+
+    static bool sphereSphere(const Sphere &sphere, const Sphere &anotherSphere) {
+        vector delta = sphere.getOrigin() - anotherSphere.getOrigin();
+        real radiuses = sphere.getRadius() + anotherSphere.getRadius();
+
+        return (delta * delta <= radiuses * radiuses);
+    }
+
+    static bool sphereAabb(const Sphere &sphere, const AABB &aabb) {
+        printf("Checking intersection for %s and %s \n", sphere.toString().c_str(), aabb.toString().c_str());
+        vector mins = aabb.getOrigin() - aabb.getHalfSizes();
+        vector maxs = aabb.getOrigin() + aabb.getHalfSizes();
+
+        printf("mins: %s - maxs: %s\n", mins.toString().c_str(), maxs.toString().c_str());
+
+
+        vector aabbClosestPoint = vector(std::max(mins.x, std::min(sphere.getOrigin().x, maxs.x)),
+                std::max(mins.y, std::min(sphere.getOrigin().y, maxs.y)),
+                std::max(mins.z, std::min(sphere.getOrigin().z, maxs.z))
+                );
+
+        printf("closest point: %s\n", aabbClosestPoint.toString().c_str());
+
+        return pointSphere(aabbClosestPoint, sphere);
+    }
+
+    static bool aabbAabb(const AABB &aabb, const AABB &anotherAabb) {
+        return false;
+    }
+
+
     static std::vector<GeometryContact> lineSphereContact(const Line &line, const Sphere &sphere) {
-       return std::vector<GeometryContact>();
+        return std::vector<GeometryContact>();
     }
 
     static std::vector<GeometryContact> linePlaneContact(const Line &line, const Plane &plane) {
@@ -59,18 +95,7 @@ public:
         return std::vector<GeometryContact>();
     }
 
-    static std::vector<GeometryContact> sphereSphereContact(const Sphere &sphereA, const Sphere &sphereB) {
-        vector delta = sphereB.getOrigin() - sphereA.getOrigin();
-        real radiuses = sphereA.getRadius() + sphereB.getRadius();
-
-        if(delta * delta <= radiuses * radiuses) {
-            real distance = delta.modulo();
-            vector normal = delta * (1.0 / distance);
-            real penetration = radiuses - distance;
-            vector intersection = sphereA.getOrigin() + (normal * sphereA.getRadius());
-            return std::vector<GeometryContact> {GeometryContact(&sphereA, &sphereB, intersection, normal, 0.8f,  penetration) };
-        }
-
+    static std::vector<GeometryContact> lineAabbContact(const Line &line, const AABB &aabb) {
         return std::vector<GeometryContact>();
     }
 
@@ -91,6 +116,33 @@ public:
     }
 
     static std::vector<GeometryContact> planePlaneContact(const Plane &plane, const Plane &anotherPlane) {
+        return std::vector<GeometryContact>();
+    }
+
+    static std::vector<GeometryContact> planeAabbContact(const Plane &plane, const AABB &aabb) {
+        return std::vector<GeometryContact>();
+    }
+
+    static std::vector<GeometryContact> sphereSphereContact(const Sphere &sphereA, const Sphere &sphereB) {
+        vector delta = sphereB.getOrigin() - sphereA.getOrigin();
+        real radiuses = sphereA.getRadius() + sphereB.getRadius();
+
+        if(delta * delta <= radiuses * radiuses) {
+            real distance = delta.modulo();
+            vector normal = delta * (1.0 / distance);
+            real penetration = radiuses - distance;
+            vector intersection = sphereA.getOrigin() + (normal * sphereA.getRadius());
+            return std::vector<GeometryContact> {GeometryContact(&sphereA, &sphereB, intersection, normal, 0.8f,  penetration) };
+        }
+
+        return std::vector<GeometryContact>();
+    }
+
+    static std::vector<GeometryContact> sphereAabbContact(const Sphere &sphere, const AABB &aabb) {
+        return std::vector<GeometryContact>();
+    }
+
+    static std::vector<GeometryContact> aabbAabbContact(const AABB &aabb, const AABB &anotherAabb) {
         return std::vector<GeometryContact>();
     }
 };

@@ -9,6 +9,9 @@
 #include <Geometry.h>
 #include <IntersectionTester.h>
 
+/**
+ * Sphere
+ */
 bool Sphere::intersects(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const {
     return intersectionTester->intersectsVisit(*this, op2);
 }
@@ -16,6 +19,10 @@ bool Sphere::intersects(const IntersectionTesterBase *intersectionTester, const 
 std::vector<GeometryContact>  Sphere::detectCollision(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const {
     return intersectionTester->detectCollisionVisit(*this, op2);
 }
+
+/**
+ * Plane
+ */
 
 bool Plane::intersects(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const {
     return intersectionTester->intersectsVisit(*this, op2);
@@ -26,6 +33,10 @@ std::vector<GeometryContact>  Plane::detectCollision(const IntersectionTesterBas
 }
 
 
+/**
+ * Line
+ */
+
 bool Line::intersects(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const {
     return intersectionTester->intersectsVisit(*this, op2);
 }
@@ -34,5 +45,29 @@ std::vector<GeometryContact>  Line::detectCollision(const IntersectionTesterBase
     return intersectionTester->detectCollisionVisit(*this, op2);
 }
 
+/**
+ * AABB
+ */
+
+bool AABB::intersects(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const {
+    return intersectionTester->intersectsVisit(*this, op2);
+}
+
+std::vector<GeometryContact>  AABB::detectCollision(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const {
+    return intersectionTester->detectCollisionVisit(*this, op2);
+}
+
+
+/**
+ * HierarchicalGeometry
+ */
+
+//bool HierarchicalGeometry::intersects(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const {
+//    return false;
+//}
+//
+//std::vector<GeometryContact>  HierarchicalGeometry::detectCollision(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const {
+//    return std::vector<GeometryContact>();
+//}
 
 
