@@ -115,6 +115,10 @@ public:
         return this->halfSizes;
     }
 
+    void setHalfSizes(const vector &halfSizes) {
+        this->halfSizes = halfSizes;
+    }
+
     String toString() const override {
         return "AABB(origin: " + this->getOrigin().toString() + ", halfSizes: " + this->halfSizes.toString() + ")";
     }

@@ -35,7 +35,7 @@ private:
     PhysicsDemoRunner *runner = null;
 
 public:
-    BulletParticle() : Particle(std::unique_ptr<Geometry>(new Sphere(vector(0, 0, 0), 0.1))) {
+    BulletParticle() : Particle(new Sphere(vector(0, 0, 0), 0.1)) {
 
     }
     void setRunner(PhysicsDemoRunner *runner);
@@ -58,7 +58,8 @@ class PhysicsDemoRunner: public PlaygroundRunner {
 	Gravity gravity = Gravity(vector(0.0, -9.8, 0.0));
 	//Plane ground = Plane(vector(0, 0, 0), vector(0, 1, 0));
 	Particle ground;
-	Particle platform;
+	Particle spherePlatform;
+	Particle aabbPlatform;
 
 	unsigned long to = 0;
 	real invPerformanceFreq = 1.0f;
@@ -82,8 +83,9 @@ class PhysicsDemoRunner: public PlaygroundRunner {
 	LightResource light = LightResource(vector(0, 0, 3), vector(0.4f, 0.4f, 0.4f), vector(0.5f, 0.5f, 0.5f), vector(1, 1, 1), 1.0);
 	MaterialResource material = MaterialResource(vector(0.5, 0.5, 0.5), vector(0.7, 0.7, 0.7), vector(1, 1, 1), 32);
 public:
-	PhysicsDemoRunner() :   ground(std::unique_ptr<Geometry>(new Plane(vector(0, 0, 0), vector(0, 1, 0)))),
-	                        platform(std::unique_ptr<Geometry>(new Sphere(vector(0, 0, 0), 0.1))) {
+	PhysicsDemoRunner() :   ground(new Plane(vector(0, 0, 0), vector(0, 1, 0))),
+	                        spherePlatform(new Sphere(vector(0, 0, 0), 0.1)),
+	                        aabbPlatform(new AABB(vector(0, 1, 0), vector(0.5, 0.05, 0.05))) {
 	}
 
 	unsigned char getId() {
@@ -107,7 +109,7 @@ public:
 		video->setMousePosition(video->getScreenWidth() >> 1, video->getScreenHeight() >> 1);
 
         camera.setViewMatrix(matriz_4x4::matrizTraslacion(vector(0.0f, 0.0f, -5.0f)));
-        platform.setPosition(vector(0, 0.5, 0));
+        spherePlatform.setPosition(vector(0, 0.5, 0));
         elapsedTime = 0;
 	}
 
@@ -135,7 +137,8 @@ public:
 		video->enable(CULL_FACE, CULL_FACE_BACK);
 
 		ground.setInverseMass(0.0); // this is actually the default value
-		platform.setInverseMass(0.0);
+		spherePlatform.setInverseMass(0.0);
+		aabbPlatform.setInverseMass(0.0);
 
         //physics->getParticleManager()->getCollisionDetector().addScenery(&ground);
         for(int index = 0; index < numberOfParticles; index++) {
@@ -146,7 +149,8 @@ public:
             physics->getParticleManager()->addParticle(particles.back());
         }
 
-        physics->getParticleManager()->addParticle(&platform);
+        physics->getParticleManager()->addParticle(&spherePlatform);
+        physics->getParticleManager()->addParticle(&aabbPlatform);
         physics->getParticleManager()->addParticle(&ground);
 
 		physics->getParticleManager()->addForce(&this->gravity);
@@ -166,7 +170,11 @@ public:
         defaultRenderer.drawLine(matriz_4x4::identidad, vector(0, 0, -1), vector(0, 0, 1));
 
         defaultRenderer.setTexture(textureResource);
-        defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(platform.getPosition()), 0.1);
+        defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(spherePlatform.getPosition()), 0.1);
+        defaultRenderer.drawBox(matriz_4x4::matrizTraslacion(aabbPlatform.getPosition()),
+                2.0 * ((AABB *)aabbPlatform.getGeometry())->getHalfSizes().x,
+                2.0 * ((AABB *)aabbPlatform.getGeometry())->getHalfSizes().y,
+                2.0 * ((AABB *)aabbPlatform.getGeometry())->getHalfSizes().z);
         for(std::vector<BulletParticle *>::iterator particleIterator = particles.begin(); particleIterator != particles.end(); particleIterator++)
         {
             BulletParticle *particle = *particleIterator;
@@ -182,7 +190,8 @@ public:
 		skyboxRenderer.render(camera);
 		gridRenderer.render(camera);
 
-        platform.setVelocity(vector(sin(elapsedTime + M_PI_2), 0, 0));
+        spherePlatform.setVelocity(vector(sin(elapsedTime + M_PI_2), 0, 0));
+        aabbPlatform.setVelocity(vector(-sin(elapsedTime + M_PI_2), 0, 0));
 
 		return LoopResult::CONTINUE;
 	}
@@ -254,7 +263,7 @@ public:
 
 		float randomDx = ((real)rand()/(real)RAND_MAX * 0.1 - 0.05);
 		logger->info("RandomDx %f", randomDx);
-		fire(vector(1.0 + randomDx, 2.0, 0.0), true);
+		fire(vector(randomDx, 2.0, 0.0), true);
 	}
 
     virtual void keyDown(unsigned int key, unsigned int keyModifier) {

@@ -197,4 +197,14 @@ private:
         }
 };
 
+
+class Drawable {
+public:
+    virtual ~Drawable() {
+
+    }
+    virtual void draw(DefaultRenderer &renderer) const = 0;
+};
+
+
 #endif /* SRC_VIDEO_RENDERERS_DEFAULTRENDERER_H_ */

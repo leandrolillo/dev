@@ -61,11 +61,11 @@ public:
     }
 
     static bool sphereAabb(const Sphere &sphere, const AABB &aabb) {
-        printf("Checking intersection for %s and %s \n", sphere.toString().c_str(), aabb.toString().c_str());
+        //printf("Checking intersection for %s and %s \n", sphere.toString().c_str(), aabb.toString().c_str());
         vector mins = aabb.getOrigin() - aabb.getHalfSizes();
         vector maxs = aabb.getOrigin() + aabb.getHalfSizes();
 
-        printf("mins: %s - maxs: %s\n", mins.toString().c_str(), maxs.toString().c_str());
+        //printf("mins: %s - maxs: %s\n", mins.toString().c_str(), maxs.toString().c_str());
 
 
         vector aabbClosestPoint = vector(std::max(mins.x, std::min(sphere.getOrigin().x, maxs.x)),
@@ -73,7 +73,7 @@ public:
                 std::max(mins.z, std::min(sphere.getOrigin().z, maxs.z))
                 );
 
-        printf("closest point: %s\n", aabbClosestPoint.toString().c_str());
+        //printf("closest point: %s\n", aabbClosestPoint.toString().c_str());
 
         return pointSphere(aabbClosestPoint, sphere);
     }
@@ -139,6 +139,28 @@ public:
     }
 
     static std::vector<GeometryContact> sphereAabbContact(const Sphere &sphere, const AABB &aabb) {
+        //printf("Checking intersection for %s and %s \n", sphere.toString().c_str(), aabb.toString().c_str());
+        vector mins = aabb.getOrigin() - aabb.getHalfSizes();
+        vector maxs = aabb.getOrigin() + aabb.getHalfSizes();
+
+        //printf("mins: %s - maxs: %s\n", mins.toString().c_str(), maxs.toString().c_str());
+
+        vector aabbClosestPoint = vector(std::max(mins.x, std::min(sphere.getOrigin().x, maxs.x)),
+                std::max(mins.y, std::min(sphere.getOrigin().y, maxs.y)),
+                std::max(mins.z, std::min(sphere.getOrigin().z, maxs.z))
+                );
+
+        //printf("closest point: %s\n", aabbClosestPoint.toString().c_str());
+
+        if(pointSphere(aabbClosestPoint, sphere)) {
+            vector delta = sphere.getOrigin() - aabbClosestPoint;
+            real distance = delta.modulo();
+            vector normal = delta * (1.0 / distance);
+            real penetration = sphere.getRadius() - distance;
+
+            return std::vector<GeometryContact> {GeometryContact(&sphere, &aabb, aabbClosestPoint, normal, 0.8f,  penetration) };
+        }
+
         return std::vector<GeometryContact>();
     }
 
