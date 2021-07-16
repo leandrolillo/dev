@@ -25,6 +25,8 @@
 
 #include<Geometry.h>
 
+#include "heightMap/HeightMapGeometry.h"
+
 #define numberOfParticles 60
 
 class PhysicsDemoRunner;

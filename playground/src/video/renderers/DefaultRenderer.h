@@ -9,6 +9,7 @@
 #define SRC_VIDEO_RENDERERS_DEFAULTRENDERER_H_
 
 #include<Renderer.h>
+#include<Camera.h>
 #include<resources/MaterialResource.h>
 #include<resources/LightResource.h>
 #include<VideoRunner.h>

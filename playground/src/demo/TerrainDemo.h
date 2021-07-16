@@ -23,68 +23,150 @@
 
 class InputController {
 public:
-    virtual ~InputController() {
-
-    }
-
-    virtual void mouseButtonDown(unsigned char button, int x, int y)
-    {
-        if(button == SDL_BUTTON_LEFT) {
-
-        }
-    }
-
-    virtual void mouseButtonUp(unsigned char button, int x, int y)
-    {
-        if(button == SDL_BUTTON_LEFT) {
-
-        }
-    }
-
-    virtual void mouseMove(int x, int y, int dx, int dy) {
-    }
-
-
-    virtual void mouseWheel(int wheel) {
-    }
-
-    virtual void keyDown(unsigned int key, unsigned int keyModifier) {
-        switch (key) {
-
-            case 'w':
-            case 'W':
-                break;
-            case 's':
-            case 'S':
-                break;
-            case 'a':
-            case 'A':
-                break;
-            case 'd':
-            case 'D':
-                break;
-        }
-    }
-
-    virtual void keyUp(unsigned int key, unsigned int keyModifier) {
-        switch (key) {
-            case 'w':
-            case 'W':
-            case 's':
-            case 'S':
-                break;
-            case 'a':
-            case 'A':
-            case 'd':
-            case 'D':
-                break;
-            case SDLK_SPACE:
-                break;
-        }
-    }
+    virtual ~InputController() {}
+    virtual void update(real dt) {}
+    virtual void reset() {}
+    virtual void mouseButtonDown(unsigned char button, int x, int y) {}
+    virtual void mouseButtonUp(unsigned char button, int x, int y) {}
+    virtual void mouseMove(int x, int y, int dx, int dy) { }
+    virtual void mouseWheel(int wheel) {}
+    virtual void keyDown(unsigned int key, unsigned int keyModifier) {}
+    virtual void keyUp(unsigned int key, unsigned int keyModifier) {}
 };
 
 class FPSInputController : public InputController {
+    Camera &camera;
+    TerrainResource *terrain = null;
+    real pitch = 0;
+    real yaw = 0;
+    vector viewPosition;
+    matriz_3x3 viewMatrix;
+    vector viewVelocity;
+public:
+
+    FPSInputController(Camera &cameraReference) : camera(cameraReference) {
+        reset();
+    }
+
+    void setPitch(real pitch) {
+        this->pitch = pitch;
+        refreshViewMatrix();
+    }
+
+    real getPitch() const {
+        return this->pitch;
+    }
+
+    void setYaw(real yaw) {
+        this->yaw = yaw;
+        refreshViewMatrix();
+    }
+
+    real getYaw() const {
+        return this->yaw;
+    }
+
+    void setTerrain(TerrainResource *terrain) {
+        this->terrain = terrain;
+    }
+
+    void setPosition(const vector &viewPosition) {
+        this->viewPosition = viewPosition;
+    }
+
+    void setVelocity(const vector &viewVelocity) {
+        this->viewVelocity = viewVelocity;
+    }
+
+    void update(real dt) override {
+        viewPosition += viewMatrix.traspuesta() * viewVelocity;
+        viewPosition.y = terrain->getHeightMap()->heightAt(
+                viewPosition.x - floor(viewPosition.x / terrain->getHeightMap()->getWidth()) * terrain->getHeightMap()->getWidth(),
+                viewPosition.z - floor(viewPosition.z / terrain->getHeightMap()->getDepth()) * terrain->getHeightMap()->getDepth()
+                );
+
+        camera.setViewMatrix((matriz_4x4)viewMatrix * matriz_4x4::matrizTraslacion(-viewPosition - vector(0, 1, 0)));
+    }
+
+    void reset() override {
+        this->viewPosition = vector(0, 0, 0);
+        this->viewVelocity = vector(0, 0, 0);
+        this->setPitch(0);
+        this->setYaw(0);
+    }
+
+    void mouseButtonDown(unsigned char button, int x, int y) override
+    {
+//        logger->info("MouseButtonDown %d at <%d, %d>", button, x, y);
+//        if(button == SDL_BUTTON_LEFT) {
+//            arcball.startDrag(vector2(x, y), (matriz_3x3)camera.getViewMatrix(), video->getScreenWidth(), video->getScreenHeight());
+//        }
+    }
+
+    void mouseButtonUp(unsigned char button, int x, int y) override
+    {
+//        logger->info("MouseButtonUp %d at <%d, %d>", button, x, y);
+//
+//        if(button == SDL_BUTTON_LEFT) {
+//            camera.setViewMatrix(matriz_4x4::matrizBase(arcball.endDrag(vector2(x, y)), viewPosition));
+//            //logger->info("%s", openGl->getViewMatrix().toString().c_str());
+//        }
+    }
+
+    void mouseMove(int x, int y, int dx, int dy) override {
+        this->setPitch(this->getPitch() + dy);
+        this->setYaw(this->getYaw() + dx);
+    }
+
+
+    void mouseWheel(int wheel) override {
+//        logger->verbose("%s", viewPosition.toString().c_str());
+//        move(vector(0.0f, 0.0f, wheel));
+    }
+
+    void keyUp(unsigned int key, unsigned int keyModifier) override {
+        switch (key) {
+            case 'w':
+            case 'W':
+            case 's':
+            case 'S':
+                viewVelocity.z = 0;;
+                break;
+            case 'a':
+            case 'A':
+            case 'd':
+            case 'D':
+                viewVelocity.x = 0;
+                break;
+        }
+    }
+
+    void keyDown(unsigned int key, unsigned int keyModifier) override {
+        switch (key) {
+            case 'w':
+            case 'W':
+                viewVelocity.z = -0.1;
+                break;
+            case 's':
+            case 'S':
+                viewVelocity.z = 0.1;
+                break;
+            case 'a':
+            case 'A':
+                viewVelocity.x = -0.1;
+                break;
+            case 'd':
+            case 'D':
+                viewVelocity.x = 0.1;
+                break;
+        }
+    }
+
+private:
+    void refreshViewMatrix() {
+        viewMatrix = matriz_3x3::matrizRotacion(radian(pitch), vector(1, 0, 0)) * matriz_3x3::matrizRotacion(radian(yaw), vector(0, 1, 0));
+    }
+
 
 };
 
@@ -97,8 +179,6 @@ private:
 	Logger *logger = LoggerFactory::getLogger("TerrainDemoRunner");
 	VideoRunner *video = null;
 	AudioRunner *audio = null;
-	vector viewPosition;
-	vector viewVelocity = vector(0, 0, 0);
 	LightResource light;
 
 	Camera camera;
@@ -109,10 +189,14 @@ private:
 	ArcBall arcball;
 
 	TerrainResource *terrain = null;
+
+	FPSInputController fpsInputController;
+	ThirdPersonController thirdPersonController;
+	InputController &inputController = fpsInputController;
 public:
-	TerrainDemoRunner() : light(viewPosition,
+	TerrainDemoRunner() : light(vector(0, 0, 0),
 			vector(0.2f, 0.2f, 0.2f), vector(0.2f, 0.2f, 0.2f),
-			vector(0.1f, 0.1f, 0.1f), 1.0f){
+			vector(0.1f, 0.1f, 0.1f), 1.0f), fpsInputController(camera) {
 	}
 	virtual unsigned char getInterests() {
 		return KEY_DOWN | KEY_UP | MOUSE_MOVE | MOUSE_WHEEL | MOUSE_BUTTON_DOWN | MOUSE_BUTTON_UP | RESIZE;
@@ -127,10 +211,8 @@ public:
 	}
 
 	void reset() {
-		viewPosition = vector(0.0, -0.5f, -6.0f);
-		viewVelocity = vector(0, 0, 0);
-		light.setPosition(viewPosition);
-		camera.setViewMatrix(matriz_4x4::matrizTraslacion(viewPosition));
+		//light.setPosition(viewPosition);
+		inputController.reset();
 	}
 
 	virtual bool init() {
@@ -155,6 +237,9 @@ public:
 		terrainRenderer.setLight(&light);
 
 		terrain = (TerrainResource *)resourceManager->load("geometry/terrain/terrain.json", "video/terrain");
+
+		fpsInputController.setTerrain(terrain);
+
 		terrainRenderer.addTerrain(vector(0, 0, 0), terrain);
 		terrainRenderer.addTerrain(vector(-terrain->getHeightMap()->getWidth(), 0, 0), terrain);
 		terrainRenderer.addTerrain(vector(0, 0, -terrain->getHeightMap()->getDepth()), terrain);
@@ -178,91 +263,37 @@ public:
 		terrainRenderer.render(camera);
 		skyboxRenderer.render(camera);
 
-		move(viewVelocity);
+		inputController.update(0);
 
 		return LoopResult::CONTINUE;
 	}
 
 	void mouseButtonDown(unsigned char button, int x, int y)
 	{
-		logger->info("MouseButtonDown %d at <%d, %d>", button, x, y);
-		if(button == SDL_BUTTON_LEFT) {
-			arcball.startDrag(vector2(x, y), (matriz_3x3)camera.getViewMatrix(), video->getScreenWidth(), video->getScreenHeight());
-		}
+	    inputController.mouseButtonDown(button, x, y);
 	}
 
 	void mouseButtonUp(unsigned char button, int x, int y)
 	{
-		logger->info("MouseButtonUp %d at <%d, %d>", button, x, y);
-
-		if(button == SDL_BUTTON_LEFT) {
-			camera.setViewMatrix(matriz_4x4::matrizBase(arcball.endDrag(vector2(x, y)), viewPosition));
-			//logger->info("%s", openGl->getViewMatrix().toString().c_str());
-		}
-	}
-
-	void move(const vector &delta) {
-	    viewPosition += delta;
-        viewPosition.y = terrain->getHeightMap()->heightAt(
-                viewPosition.x - floor(viewPosition.x / terrain->getHeightMap()->getWidth()) * terrain->getHeightMap()->getWidth(),
-                viewPosition.z - floor(viewPosition.z / terrain->getHeightMap()->getDepth()) * terrain->getHeightMap()->getDepth()
-                );
-
-        camera.setViewMatrix(matriz_4x4::matrizBase((matriz_3x3)camera.getViewMatrix(), -viewPosition - vector(0, 1, 0)));
+	    inputController.mouseButtonUp(button, x, y);
 	}
 
     virtual void mouseMove(int x, int y, int dx, int dy) {
-        if(!arcball.isDragging()) {
-            move(vector(0.1f * dx, 0.1f * dy, 0));
-        } else {
-            camera.setViewMatrix(matriz_4x4::matrizBase(arcball.drag(vector2(dx, dy)), -viewPosition));
-        }
-
-        //logger->info("%s", openGl->getViewMatrix().toString().c_str());
+        inputController.mouseMove(x, y, dx, dy);
     }
 
 
 	void mouseWheel(int wheel) {
-		logger->verbose("%s", viewPosition.toString().c_str());
-		move(vector(0.0f, 0.0f, wheel));
+	    inputController.mouseWheel(wheel);
 	}
 
     virtual void keyDown(unsigned int key, unsigned int keyModifier) {
-        switch (key) {
-
-            case 'w':
-            case 'W':
-                viewVelocity.z = -0.1;
-                break;
-            case 's':
-            case 'S':
-                viewVelocity.z = 0.1;
-                break;
-            case 'a':
-            case 'A':
-                viewVelocity.x = -0.1;
-                break;
-            case 'd':
-            case 'D':
-                viewVelocity.x = 0.1;
-                break;
-        }
+        inputController.keyDown(key, keyModifier);
     }
 
     virtual void keyUp(unsigned int key, unsigned int keyModifier) {
+        inputController.keyUp(key, keyModifier);
         switch (key) {
-            case 'w':
-            case 'W':
-            case 's':
-            case 'S':
-                viewVelocity.z = 0;;
-                break;
-            case 'a':
-            case 'A':
-            case 'd':
-            case 'D':
-                viewVelocity.x = 0;
-                break;
             case SDLK_SPACE:
                 reset();
                 break;

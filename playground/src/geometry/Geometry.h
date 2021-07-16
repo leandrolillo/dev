@@ -128,25 +128,27 @@ public:
 
 };
 
-//class HierarchicalGeometry : public Geometry {
-//    std::unique_ptr<Geometry> boundingGeometry;
-//    std::vector<const Geometry &> children;
-//
-//    const vector& getOrigin() const {
-//        return this->boundingGeometry->getOrigin();
-//    }
-//
-//    void setOrigin(const vector &origin) {
-//        this->boundingGeometry->setOrigin(origin);
-//    }
-//
-//    String toString() const override {
-//        return "HierarchicalGeometry(origin: " + this->getOrigin().toString() + ", children: " + this->children.size() + ")";
-//    }
-//
-//    bool intersects(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const override;
-//    std::vector<GeometryContact>  detectCollision(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const override;
-//
-//};
+class HierarchicalGeometry : public Geometry {
+    std::unique_ptr<Geometry> boundingGeometry;
+    std::vector<std::unique_ptr<Geometry>> children;
+
+    const vector& getOrigin() const {
+        return this->boundingGeometry->getOrigin();
+    }
+
+    void setOrigin(const vector &origin) {
+        this->boundingGeometry->setOrigin(origin);
+    }
+
+    String toString() const override {
+        return "HierarchicalGeometry(origin: " + this->getOrigin().toString() + ", children: " + std::to_string(this->children.size()) + ")";
+    }
+
+    bool intersects(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const override;
+    std::vector<GeometryContact>  detectCollision(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const override;
+
+};
+
+
 
 #endif /* SRC_PHYSICS_GEOMETRY_GEOMETRY_H_ */
