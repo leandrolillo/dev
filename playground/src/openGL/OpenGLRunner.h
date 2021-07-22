@@ -26,6 +26,7 @@
 #define CULL_FACE GL_CULL_FACE
 #define CULL_FACE_BACK GL_BACK
 #define BLEND GL_BLEND
+#define RELATIVE_MOUSE_MODE 1111
 
 #define VERTEX_LOCATION 0
 #define INDEX_LOCATION 1
@@ -444,10 +445,13 @@ public:
                 glCullFace(param1);
                 glEnable(GL_CULL_FACE);
                 break;
-            case(BLEND): {
+            case(BLEND):
                 glBlendFunc(param1, param2);
                 glEnable(GL_BLEND);
-            }
+                break;
+            case(RELATIVE_MOUSE_MODE):
+                SDL_SetRelativeMouseMode(SDL_TRUE);
+                break;
         }
     }
 
@@ -459,9 +463,12 @@ public:
             case (CULL_FACE):
                 glDisable(GL_CULL_FACE);
                 break;
-            case(BLEND): {
+            case(BLEND):
                 glDisable(GL_BLEND);
-            }
+                break;
+            case(RELATIVE_MOUSE_MODE):
+                SDL_SetRelativeMouseMode(SDL_TRUE);
+                break;
         }
     }
 
