@@ -54,9 +54,7 @@ class PhysicsDemoRunner: public PlaygroundRunner {
 	Source *gunshotSource = null;
 	Source *bounceSource = null;
 
-	BulletParticle bulletParticles[numberOfParticles];
-
-	std::vector<BulletParticle *> particles;
+	std::vector<std::unique_ptr<BulletParticle>> particles;
 	Gravity gravity = Gravity(vector(0.0, -9.8, 0.0));
 	//Plane ground = Plane(vector(0, 0, 0), vector(0, 1, 0));
 	Particle ground;
@@ -103,10 +101,9 @@ public:
 	}
 
 	void reset() {
-	    for(std::vector<BulletParticle *>::iterator particleIterator = particles.begin(); particleIterator != particles.end(); particleIterator++)
-        {
-	        (*particleIterator)->setStatus(false);
-        }
+	    for(auto &particle : this->particles) {
+	        particle->setStatus(false);
+	    }
 
 		video->setMousePosition(video->getScreenWidth() >> 1, video->getScreenHeight() >> 1);
 
@@ -144,11 +141,12 @@ public:
 
         //physics->getParticleManager()->getCollisionDetector().addScenery(&ground);
         for(int index = 0; index < numberOfParticles; index++) {
-            bulletParticles[index].setStatus(false);
-            bulletParticles[index].setRunner(this);
-            particles.push_back(&bulletParticles[index]);
+            particles.push_back(std::unique_ptr<BulletParticle>(new BulletParticle()));
+            particles.back()->setStatus(false);
+            particles.back()->setRunner(this);
 
-            physics->getParticleManager()->addParticle(particles.back());
+
+            physics->getParticleManager()->addParticle(particles.back().get());
         }
 
         physics->getParticleManager()->addParticle(&spherePlatform);
@@ -177,10 +175,8 @@ public:
                 2.0 * ((AABB *)aabbPlatform.getGeometry())->getHalfSizes().x,
                 2.0 * ((AABB *)aabbPlatform.getGeometry())->getHalfSizes().y,
                 2.0 * ((AABB *)aabbPlatform.getGeometry())->getHalfSizes().z);
-        for(std::vector<BulletParticle *>::iterator particleIterator = particles.begin(); particleIterator != particles.end(); particleIterator++)
+        for(auto &particle : this->particles)
         {
-            BulletParticle *particle = *particleIterator;
-
             if(particle->getStatus() == true) {
                 //defaultRenderer.setMaterial(&materials[(particleIterator - particles.begin()) % 3]);
                 defaultRenderer.setMaterial(&material);
@@ -214,11 +210,10 @@ public:
 		BulletParticle *bullet = null;
 
 		logger->debug("Iterating particles");
-		for(std::vector<BulletParticle *>::iterator particleIterator = particles.begin(); particleIterator != particles.end(); particleIterator++)
+		for(auto &particle : particles)
         {
-            BulletParticle *particle = *particleIterator;
             if(!particle->getStatus()) {
-                bullet = particle;
+                bullet = particle.get();
                 break;
             }
         }

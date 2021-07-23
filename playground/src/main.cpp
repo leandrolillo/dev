@@ -23,11 +23,11 @@ int main(int, char**){
  //	PlaygroundGeneralDemo playground("/Users/leandro/huevadas/projects/dev/media/");
 //    playground.run();
 
-    PlaygroundTerrainDemo terrainPlayground("/Users/leandro/huevadas/projects/dev/media/");
-    terrainPlayground.run();
+//    PlaygroundTerrainDemo terrainPlayground("/Users/leandro/huevadas/projects/dev/media/");
+//    terrainPlayground.run();
 
-//    PhysicsPlayground physicsPlayground("/Users/leandro/huevadas/projects/dev/media/");
-//    physicsPlayground.run();
+    PhysicsPlayground physicsPlayground("/Users/leandro/huevadas/projects/dev/media/");
+    physicsPlayground.run();
 
 //    ObjDemoPlayground objPlayground("/Users/leandro/huevadas/projects/dev/media/");
 //    objPlayground.run();
