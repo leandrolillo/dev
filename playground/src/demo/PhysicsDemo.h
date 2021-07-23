@@ -46,11 +46,17 @@ public:
 };
 
 class PhysicsDemoRunner: public PlaygroundRunner {
+    /**
+     * Playground Stuff
+     */
 	Logger *logger = LoggerFactory::getLogger("PhysicsDemoRunner");
 	VideoRunner *video = null;
 	AudioRunner *audio = null;
 	PhysicsRunner *physics = null;
 
+    /**
+     * This demo stuff
+     */
 	Source *gunshotSource = null;
 	Source *bounceSource = null;
 
@@ -96,48 +102,32 @@ public:
 			return KEY_DOWN | KEY_UP | MOUSE_MOVE | MOUSE_WHEEL | MOUSE_BUTTON_DOWN | RESIZE;
 	}
 
-	void resize(unsigned int height, unsigned int width) {
-	    camera.setProjectionMatrix(Camera::perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 300.0));
-	}
+    bool init() {
+        video = (VideoRunner*) this->getContainer()->getRequiredRunner(VideoRunner::ID);
+        audio = (AudioRunner*) this->getContainer()->getRequiredRunner(AudioRunner::ID);
+        physics = (PhysicsRunner *)this->getContainer()->getRequiredRunner(PhysicsRunner::ID);
+        //physics->setPlaybackSpeed(0.3);
 
-	void reset() {
-	    for(auto &particle : this->particles) {
-	        particle->setStatus(false);
-	    }
+        gunshotSource = audio->createSource("audio/handgunfire.wav", vector(0, 0, 0), vector(0, 0, 0), false);
+        bounceSource = audio->createSource("audio/twang3.wav", vector(0, 0, 0), vector(0, 0, 0), false);
 
-		video->setMousePosition(video->getScreenWidth() >> 1, video->getScreenHeight() >> 1);
+        textureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("images/basketball.png", "video/texture");
 
-        camera.setViewMatrix(matriz_4x4::matrizTraslacion(vector(0.0f, 0.0f, -5.0f)));
-        spherePlatform.setPosition(vector(0, 0.5, 0));
-        elapsedTime = 0;
-	}
-
-	bool init() {
-		video = (VideoRunner*) this->getContainer()->getRequiredRunner(VideoRunner::ID);
-		audio = (AudioRunner*) this->getContainer()->getRequiredRunner(AudioRunner::ID);
-		physics = (PhysicsRunner *)this->getContainer()->getRequiredRunner(PhysicsRunner::ID);
-		//physics->setPlaybackSpeed(0.3);
-
-		gunshotSource = audio->createSource("audio/handgunfire.wav", vector(0, 0, 0), vector(0, 0, 0), false);
-		bounceSource = audio->createSource("audio/twang3.wav", vector(0, 0, 0), vector(0, 0, 0), false);
-
-		textureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("images/basketball.png", "video/texture");
-
-	    defaultRenderer.setVideoRunner(video);
-	    gridRenderer.setVideoRunner(video);
-	    skyboxRenderer.setVideoRunner(video);
-	    skyboxRenderer.setSize(200);
+        defaultRenderer.setVideoRunner(video);
+        gridRenderer.setVideoRunner(video);
+        skyboxRenderer.setVideoRunner(video);
+        skyboxRenderer.setSize(200);
 
         defaultRenderer.setLight(&light);
 
 
-		video->setClearColor(0.0, 0.5, 0.0, 0.0);
-		video->enable(DEPTH_TEST, true);
-		video->enable(CULL_FACE, CULL_FACE_BACK);
+        video->setClearColor(0.0, 0.5, 0.0, 0.0);
+        video->enable(DEPTH_TEST, true);
+        video->enable(CULL_FACE, CULL_FACE_BACK);
 
-		ground.setInverseMass(0.0); // this is actually the default value
-		spherePlatform.setInverseMass(0.0);
-		aabbPlatform.setInverseMass(0.0);
+        ground.setInverseMass(0.0); // this is actually the default value
+        spherePlatform.setInverseMass(0.0);
+        aabbPlatform.setInverseMass(0.0);
 
         //physics->getParticleManager()->getCollisionDetector().addScenery(&ground);
         for(int index = 0; index < numberOfParticles; index++) {
@@ -153,11 +143,27 @@ public:
         physics->getParticleManager()->addParticle(&aabbPlatform);
         physics->getParticleManager()->addParticle(&ground);
 
-		physics->getParticleManager()->addForce(&this->gravity);
+        physics->getParticleManager()->addForce(&this->gravity);
 
         reset();
 
-		return true;
+        return true;
+    }
+
+	void resize(unsigned int height, unsigned int width) {
+	    camera.setProjectionMatrix(Camera::perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 300.0));
+	}
+
+	void reset() {
+	    for(auto &particle : this->particles) {
+	        particle->setStatus(false);
+	    }
+
+		video->setMousePosition(video->getScreenWidth() >> 1, video->getScreenHeight() >> 1);
+
+        camera.setViewMatrix(matriz_4x4::matrizTraslacion(vector(0.0f, 0.0f, -5.0f)));
+        spherePlatform.setPosition(vector(0, 0.5, 0));
+        elapsedTime = 0;
 	}
 
 	LoopResult doLoop() {
