@@ -126,6 +126,33 @@ public:
         assertRealEquals(vectorMessage, expected.z, actual.z);
     }
 
+    void assertEquals(const String &message, const matriz &expected, const matriz &actual)
+        {
+            String vectorMessage = StringFormatter::format("%s. Expected:\n%s, got\n%s",
+                    message.c_str(),
+                    expected.toString("%.2f").c_str(),
+                    actual.toString("%.2f").c_str());
+            assertRealEquals(vectorMessage + "Element (0, 0): ", expected(0,0), actual(0,0));
+            assertRealEquals(vectorMessage + "Element (0, 1)", expected(0,1), actual(0,1));
+            assertRealEquals(vectorMessage + "Element (0, 2)", expected(0,2), actual(0,2));
+            assertRealEquals(vectorMessage + "Element (0, 3)", expected(0,3), actual(0,3));
+
+            assertRealEquals(vectorMessage + "Element (1, 0)", expected(1,0), actual(1,0));
+            assertRealEquals(vectorMessage + "Element (1, 1)", expected(1,1), actual(1,1));
+            assertRealEquals(vectorMessage + "Element (1, 2)", expected(1,2), actual(1,2));
+            assertRealEquals(vectorMessage + "Element (1, 3)", expected(1,3), actual(1,3));
+
+            assertRealEquals(vectorMessage + "Element (2, 0)", expected(2,0), actual(2,0));
+            assertRealEquals(vectorMessage + "Element (2, 1)", expected(2,1), actual(2,1));
+            assertRealEquals(vectorMessage + "Element (2, 2)", expected(2,2), actual(2,2));
+            assertRealEquals(vectorMessage + "Element (2, 3)", expected(2,3), actual(2,3));
+
+            assertRealEquals(vectorMessage + "Element (3, 0)", expected(3,0), actual(3,0));
+            assertRealEquals(vectorMessage + "Element (3, 1)", expected(3,1), actual(3,1));
+            assertRealEquals(vectorMessage + "Element (3, 2)", expected(3,2), actual(3,2));
+            assertRealEquals(vectorMessage + "Element (3, 3)", expected(3,3), actual(3,3));
+        }
+
     void assertEquals(const String &message, const matriz_mxn &expected, const matriz_mxn &actual)
     {
         String text = StringFormatter::format("%s. Expected dimensions: [%dx%d]. Actual: [%dx%d]", message.c_str(), expected.getNroFilas(), expected.getNroColumnas(), actual.getNroFilas(), actual.getNroColumnas());

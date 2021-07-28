@@ -279,6 +279,9 @@ void matriz_2x2::operator *=(const real &op1) {
 		this->_20 = 0.0; this->_21 = 0.0; this->_22 = 1.0;
 	}
 
+	const matriz_3x3 matriz_3x3::matrizRotacion(const vector &eulerAngles) {
+	    return matrizRotacion(eulerAngles.x, eulerAngles.y, eulerAngles.z);
+	}
 	const matriz_3x3 matriz_3x3::matrizRotacion(real x, real y, real z) {
 		real cx = (real)cos(x), sx = (real)sin(x);
 		real cy = (real)cos(y), sy = (real)sin(y);

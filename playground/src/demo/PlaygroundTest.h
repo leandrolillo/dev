@@ -9,12 +9,14 @@
 #include <resources/OggResource.h>
 #include <stdio.h>
 
-#include<GeometryTests.h>
+#include<tests/GeometryTests.h>
+#include<tests/Math3dTests.h>
 
 class PlaygroundTestsRunner: public PlaygroundRunner, UnitTest {
 		Logger *logger;
 		TestsManager testsManager;
 		GeometryTests geometryTests;
+		Math3dTests math3dTests;
 
 	public:
 		static const unsigned char ID = 100;
@@ -45,6 +47,7 @@ class PlaygroundTestsRunner: public PlaygroundRunner, UnitTest {
 
 		virtual bool init() {
             this->testsManager.addTest(geometryTests);
+            this->testsManager.addTest(math3dTests);
             this->testsManager.addTest(*this);
 
 
