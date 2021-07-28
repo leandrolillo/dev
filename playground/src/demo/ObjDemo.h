@@ -60,7 +60,7 @@ public:
 	void reset() {
 	    posicion = vector(0, 0, -5);
 	    light.setPosition(vector(0, 0, -5));
-        camera.setViewMatrix(matriz_4x4::matrizTraslacion(vector(0.0f, 0.0f, -5.0f)));
+        camera.setViewPosition(vector(0.0f, 0.0f, 5.0f));
 	}
 
 	bool init() {
@@ -108,7 +108,7 @@ public:
 	}
 
 	void mouseWheel(int wheel) {
-        camera.setViewMatrix(matriz_4x4::matrizTraslacion(camera.getViewPosition() + vector(0.0f, 0.0f, wheel)));
+        camera.setViewPosition(camera.getViewPosition() - vector(0.0f, 0.0f, wheel));
         posicion = posicion + vector(0.0f, 0.0f, wheel);
 
         light.setPosition(posicion);
@@ -119,9 +119,10 @@ public:
 	}
 
 	virtual void mouseMove(int x, int y, int dx, int dy) {
-        camera.setViewMatrix(matriz_4x4::matrizTraslacion(camera.getViewPosition() + vector(0.1f * dx, 0.1f * dy, 0)));
+        camera.setViewPosition(camera.getViewPosition() - vector(0.1f * dx, 0.1f * dy, 0));
         light.setPosition(camera.getViewPosition());
         posicion = posicion + vector(0.1f * dx, 0.1f * dy, 0);
+
         logger->info("viewMatrix:\n%s\nlight:%s\nposition:%s\n",
                 camera.getViewMatrix().toString("%.2f").c_str(),
                 light.getPosition().toString("%.2f").c_str(),
@@ -133,7 +134,7 @@ public:
 
     virtual void keyDown(unsigned int key, unsigned int keyModifier) {
         switch (key) {
-            case SDLK_ESCAPE:
+            case SDLK_SPACE:
                 reset();
                 break;
         }

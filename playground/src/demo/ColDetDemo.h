@@ -257,7 +257,7 @@ public:
     }
 
     virtual void mouseMove(int x, int y, int dx, int dy) {
-            Line line(camera.getViewPosition() * -1,
+            Line line(camera.getViewPosition(),
                     camera.getRayDirection((unsigned int) x, (unsigned int) y, video->getScreenWidth(), video->getScreenHeight()));
 
             if (!equalsZero(line.getDirection().z)) {
@@ -285,7 +285,7 @@ public:
         if (button == SDL_BUTTON_LEFT) {
             this->startPosition = vector2(x, y);
 
-            Line line(camera.getViewPosition() * -1,
+            Line line(camera.getViewPosition(),
                     camera.getRayDirection((unsigned int) x, (unsigned int) y, video->getScreenWidth(), video->getScreenHeight()));
 
             for(auto &particle : collidingParticles) {

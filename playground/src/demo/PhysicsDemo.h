@@ -161,7 +161,7 @@ public:
 
 		video->setMousePosition(video->getScreenWidth() >> 1, video->getScreenHeight() >> 1);
 
-        camera.setViewMatrix(matriz_4x4::matrizTraslacion(vector(0.0f, 0.0f, -5.0f)));
+        camera.setViewPosition(vector(1.0f, 0.0f, 5.0f));
         spherePlatform.setPosition(vector(0, 0.5, 0));
         elapsedTime = 0;
 	}
@@ -250,19 +250,19 @@ public:
 	}
 
 	void mouseWheel(int wheel) {
-        camera.setViewMatrix(matriz_4x4::matrizTraslacion(camera.getViewPosition() + vector(0.0f, 0.0f, wheel)));
-        audio->updateListener(camera.getViewPosition() * -1);
+        camera.setViewPosition(camera.getViewPosition() - vector(0.0f, 0.0f, wheel));
+        audio->updateListener(camera.getViewPosition());
         logger->debug("camera: %s", camera.getViewPosition().toString("%.2f").c_str());
 	}
 
 	void mouseMove(int x, int y, int dx, int dy) {
-        camera.setViewMatrix(matriz_4x4::matrizTraslacion(camera.getViewPosition() + vector(0.1f * dx, 0.1f * dy, 0)));
-        audio->updateListener(camera.getViewPosition() * -1);
+        camera.setViewPosition(camera.getViewPosition() - vector(0.1f * dx, 0.1f * dy, 0));
+        audio->updateListener(camera.getViewPosition());
         logger->debug("camera: %s", camera.getViewPosition().toString("%.2f").c_str());
 	}
 
 	void mouseButtonDown(unsigned char button, int x, int y) {
-		fire(camera.getViewPosition() * -1);
+		fire(camera.getViewPosition());
 
 		float randomDx = ((real)rand()/(real)RAND_MAX * 0.1 - 0.05);
 		logger->info("RandomDx %f", randomDx);

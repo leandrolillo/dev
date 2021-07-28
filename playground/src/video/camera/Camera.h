@@ -64,8 +64,17 @@ public:
         return this->viewMatrix;
     }
 
+
+    void setViewPosition(const vector &position) {
+        viewMatrix(0, 3) = -position.x;
+        viewMatrix(1, 3) = -position.y;
+        viewMatrix(2, 3) = -position.z;
+
+        this->projectionViewMatrix = this->projectionMatrix * this->viewMatrix;
+    }
+
     const vector getViewPosition() const {
-        return vector(viewMatrix (0, 3), viewMatrix(1, 3), viewMatrix(2, 3));
+        return vector(-viewMatrix (0, 3), -viewMatrix(1, 3), -viewMatrix(2, 3));
     }
 
     const matriz_4x4 &getProjectionViewMatrix() const {

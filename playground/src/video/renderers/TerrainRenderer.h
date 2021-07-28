@@ -73,7 +73,7 @@ public:
 //                videoRunner->sendMatrix("matrices.model", terrainTile.getModelMatrix());
                 videoRunner->sendMatrix("matrices.normal", matriz_3x3::identidad);
 
-                logger->info("Drawing terrain at\n%s", terrainTile.getModelMatrix().toString().c_str());
+                logger->debug("Drawing terrain at\n%s", terrainTile.getModelMatrix().toString().c_str());
                 videoRunner->drawVertexArray(terrainTile.getTerrain()->getModel());
             }
 
