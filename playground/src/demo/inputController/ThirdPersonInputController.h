@@ -60,7 +60,7 @@ protected:
         camera.setViewMatrix((matriz_4x4)viewMatrix * matriz_4x4::matrizTraslacion(-(position + vector(0, 1, 0)) - cameradelta ));
     }
     void refreshViewMatrix() override {
-        viewMatrix = matriz_3x3::matrizRotacion(radian(-getPitch()), vector(1, 0, 0)) * matriz_3x3::matrizRotacion(radian(-getYaw()), vector(0, 1, 0));
+        viewMatrix = matriz_3x3::matrizRotacion(radian(getPitch()), vector(1, 0, 0)) * matriz_3x3::matrizRotacion(radian(getYaw()), vector(0, 1, 0));
     }
 };
 
