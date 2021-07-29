@@ -99,7 +99,7 @@ public:
         if(videoRunner != null && shader != null) {
             videoRunner->useProgramResource(shader);
 
-            videoRunner->sendVector("viewPosition", camera.getViewPosition());
+            videoRunner->sendVector("viewPosition", camera.getPosition());
             this->sendLight(light);
 
             const MaterialResource *lastMaterial = null;

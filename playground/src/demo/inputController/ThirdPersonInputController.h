@@ -28,39 +28,24 @@ public:
 
     void setDistance(real distance) {
         this->distance = distance;
-        refreshViewMatrix();
+        refreshOrientation();
     }
 
-//    void update(real dt) override {
-//        position += viewMatrix.traspuesta() * velocity;
-//
-//        if(terrain != null) {
-//            position.y = terrain->getHeightMap()->heightAt(
-//                position.x - floor(position.x / terrain->getHeightMap()->getWidth()) * terrain->getHeightMap()->getWidth(),
-//                position.z - floor(position.z / terrain->getHeightMap()->getDepth()) * terrain->getHeightMap()->getDepth()
-//                );
-//        }
-//
-//        updatePlayerTransform();
-//        updateCamera();
-//    }
-
     void mouseWheel(int wheel) override {
-        this->distance = this->distance + (real)wheel;
-        this->distance = std::max((real)3, std::min((real)20, this->distance));
+        setDistance(std::max((real)3, std::min((real)20, this->distance + (real)wheel)));
     }
 
 
 protected:
-    virtual void updatePlayerTransform() override {
+    virtual void refreshPosition() override {
+        vector cameradelta = camera.getOrientation() * vector(0, 0, distance);
+        vector cameraPosition = position + vector(0, 1, 0) + cameradelta;
+        camera.setPosition(this->constrainPosition(cameraPosition));
+
         playerTransform = matriz_4x4::matrizTraslacion(position);
     }
-    virtual void updateCamera() override {
-        vector cameradelta = viewMatrix.traspuesta() * vector(0, 0, distance);
-        camera.setViewMatrix((matriz_4x4)viewMatrix * matriz_4x4::matrizTraslacion(-(position + vector(0, 1, 0)) - cameradelta ));
-    }
-    void refreshViewMatrix() override {
-        viewMatrix = matriz_3x3::matrizRotacion(radian(getPitch()), vector(1, 0, 0)) * matriz_3x3::matrizRotacion(radian(getYaw()), vector(0, 1, 0));
+    void refreshOrientation() override {
+        camera.setOrientation(matriz_3x3::matrizRotacion(radian(getPitch()), vector(1, 0, 0)) * matriz_3x3::matrizRotacion(radian(getYaw()), vector(0, 1, 0)));
     }
 };
 

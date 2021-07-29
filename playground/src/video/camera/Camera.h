@@ -18,6 +18,9 @@ protected:
     matriz_4x4 viewMatrix;
     matriz_4x4 projectionViewMatrix;
 
+    vector position;
+    matriz_3x3 orientation;
+
 
     //TODO: Review how to get these values from projection (if it applies)
     real zNear = (real)0.1;
@@ -55,8 +58,14 @@ public:
             this->projectionViewMatrix = this->projectionMatrix * this->viewMatrix;
         }
 
+    const matriz_4x4 &getProjectionViewMatrix() const {
+        return this->projectionViewMatrix;
+    }
+
     void setViewMatrix(const matriz_4x4 &viewMatrix) {
         this->viewMatrix = viewMatrix;
+        this->orientation = (matriz_3x3)viewMatrix;
+        this->position = (vector3)((matriz::matrizRotacion(orientation.traspuesta()) * this->viewMatrix).columna(3));
         this->projectionViewMatrix = this->projectionMatrix * this->viewMatrix;
     }
 
@@ -64,22 +73,28 @@ public:
         return this->viewMatrix;
     }
 
+    matriz_3x3 getOrientation() const {
+        return this->orientation.traspuesta();
+    }
 
-    void setViewPosition(const vector &position) {
-        viewMatrix(0, 3) = -position.x;
-        viewMatrix(1, 3) = -position.y;
-        viewMatrix(2, 3) = -position.z;
+    void setOrientation(const matriz_3x3 &orientation) {
+        this->orientation = orientation;
 
+        this->viewMatrix = matriz::matrizRotacion(orientation) * matriz::matrizTraslacion(-position);
         this->projectionViewMatrix = this->projectionMatrix * this->viewMatrix;
     }
 
-    const vector getViewPosition() const {
-        return vector(-viewMatrix (0, 3), -viewMatrix(1, 3), -viewMatrix(2, 3));
+    const vector getPosition() const {
+        return this->position;
     }
 
-    const matriz_4x4 &getProjectionViewMatrix() const {
-        return this->projectionViewMatrix;
+    void setPosition(const vector &position) {
+        this->position = position;
+
+        this->viewMatrix = matriz::matrizRotacion(orientation) * matriz::matrizTraslacion(-position);
+        this->projectionViewMatrix = this->projectionMatrix * this->viewMatrix;
     }
+
 
     real getZNear() const {
         return this->zNear;

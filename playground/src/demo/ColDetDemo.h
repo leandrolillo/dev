@@ -251,13 +251,13 @@ public:
     }
 
     void mouseWheel(int wheel) {
-//        camera.setViewMatrix(matriz_4x4::matrizTraslacion(camera.getViewPosition() + vector(0.0f, 0.0f, wheel)));
-//        audio->updateListener(camera.getViewPosition() * -1);
-        //logger->info("camera: %s", camera.getViewPosition().toString("%.2f").c_str());
+//        camera.setViewMatrix(matriz_4x4::matrizTraslacion(camera.getPosition() + vector(0.0f, 0.0f, wheel)));
+//        audio->updateListener(camera.getPosition() * -1);
+        //logger->info("camera: %s", camera.getPosition().toString("%.2f").c_str());
     }
 
     virtual void mouseMove(int x, int y, int dx, int dy) {
-            Line line(camera.getViewPosition(),
+            Line line(camera.getPosition(),
                     camera.getRayDirection((unsigned int) x, (unsigned int) y, video->getScreenWidth(), video->getScreenHeight()));
 
             if (!equalsZero(line.getDirection().z)) {
@@ -285,7 +285,7 @@ public:
         if (button == SDL_BUTTON_LEFT) {
             this->startPosition = vector2(x, y);
 
-            Line line(camera.getViewPosition(),
+            Line line(camera.getPosition(),
                     camera.getRayDirection((unsigned int) x, (unsigned int) y, video->getScreenWidth(), video->getScreenHeight()));
 
             for(auto &particle : collidingParticles) {

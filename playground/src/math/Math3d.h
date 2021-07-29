@@ -263,7 +263,7 @@ class matriz_3x3: public BaseMatrix {
 //		const matriz_3x3 inversa(void) const;
 //
 //		void star(const vector3 &op1);
-		real &operator()(int fila, int columna);
+		//real &operator()(int fila, int columna);
 };
 
 class matriz_4x4: public BaseMatrix {

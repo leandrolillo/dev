@@ -131,6 +131,12 @@ public:
         defaultTexture->setFileName("OpenGLRunner::defaultTextureResource");
         this->getContainer()->getResourceManager()->addResource(defaultTexture);
 
+
+        if (SDL_Init(SDL_INIT_GAMECONTROLLER) != 0) {
+            logger->error("SDL_Init Error: %s", SDL_GetError());
+            return false;
+        }
+
         return true;
     }
 

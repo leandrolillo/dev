@@ -69,9 +69,9 @@ public:
 	}
 
 	void reset() {
-		viewPosition = vector(0.0, 0.0f, -6.0);
+		viewPosition = vector(0.0, 0.0f, 6.0);
 		lightPosition = vector(0.0, 0.0, 0.0);
-        camera.setViewMatrix(matriz_4x4::matrizTraslacion(viewPosition));
+        camera.setPosition(viewPosition);
 	}
 
 	virtual bool init() {
@@ -133,6 +133,7 @@ public:
 //        light.setSpecular(color);
 //        light.setAmbient(color);
         light.setPosition(lightPosition);
+        camera.setPosition(viewPosition);
 
 
         /**
@@ -175,19 +176,11 @@ public:
 	void mouseWheel(int wheel) {
 		*currentPosition += vector(0.0f, 0.0f, wheel);
 		logger->verbose("%s", (*currentPosition).toString().c_str());
-
-		if(currentPosition == &viewPosition) {
-	        camera.setViewMatrix(matriz_4x4::matrizTraslacion(viewPosition));
-		}
 	}
 
 	virtual void mouseMove(int x, int y, int dx, int dy) {
 		*currentPosition += vector(0.1f * dx, 0.1f * dy, 0);
 		logger->verbose("%s", (*currentPosition).toString().c_str());
-
-		if(currentPosition == &viewPosition) {
-            camera.setViewMatrix(matriz_4x4::matrizTraslacion(viewPosition));
-        }
 	}
 	virtual void keyUp(unsigned int key, unsigned int keyModifier) {
 		switch (key) {
@@ -203,7 +196,7 @@ public:
             case SDLK_LCTRL:
                 currentPosition = &lightPosition;
                 break;
-            case SDLK_ESCAPE:
+            case SDLK_SPACE:
                 reset();
                 break;
         }

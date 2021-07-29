@@ -12,8 +12,6 @@
 #include<OpenGLRunner.h>
 #include<AudioRunner.h>
 
-#include<ArcBall.h>
-
 #include<vector>
 
 #include<renderers/DefaultRenderer.h>
@@ -37,14 +35,19 @@ public:
     }
 
 protected:
-    void constrainPosition() override {
+    vector constrainPosition(const vector &position) override {
+        vector result = position;
         if(terrain != null) {
-            position.y = terrain->getHeightMap()->heightAt(
-                position.x - floor(position.x / terrain->getHeightMap()->getWidth()) * terrain->getHeightMap()->getWidth(),
-                position.z - floor(position.z / terrain->getHeightMap()->getDepth()) * terrain->getHeightMap()->getDepth()
-                );
-        }
+            real altitude = terrain->getHeightMap()->heightAt(
+                    position.x - floor(position.x / terrain->getHeightMap()->getWidth()) * terrain->getHeightMap()->getWidth(),
+                    position.z - floor(position.z / terrain->getHeightMap()->getDepth()) * terrain->getHeightMap()->getDepth()
+                    );
 
+            if(result.y < altitude) {
+                result.y = altitude;
+            }
+        }
+        return result;
     }
 };
 
@@ -61,14 +64,19 @@ public:
     }
 
 protected:
-    void constrainPosition() override {
+    vector constrainPosition(const vector &position) override {
+        vector result = position;
         if(terrain != null) {
-            position.y = terrain->getHeightMap()->heightAt(
-                position.x - floor(position.x / terrain->getHeightMap()->getWidth()) * terrain->getHeightMap()->getWidth(),
-                position.z - floor(position.z / terrain->getHeightMap()->getDepth()) * terrain->getHeightMap()->getDepth()
-                );
-        }
+            real altitude = terrain->getHeightMap()->heightAt(
+                    position.x - floor(position.x / terrain->getHeightMap()->getWidth()) * terrain->getHeightMap()->getWidth(),
+                    position.z - floor(position.z / terrain->getHeightMap()->getDepth()) * terrain->getHeightMap()->getDepth()
+                    );
 
+            if(result.y < altitude) {
+                result.y = altitude;
+            }
+        }
+        return result;
     }
 };
 
@@ -84,25 +92,29 @@ private:
     PhysicsRunner *physics = null;
 
     /**
+     * Input controllers
+     */
+
+    TerrainFPSInputController fpsInputController;
+    TerrainThirdPersonInputController thirdPersonController;
+    InputController *inputController = &fpsInputController;
+
+    Camera camera;
+    matriz playerTransform;
+
+    /**
      * This demo stuff
      */
 
 	LightResource light;
 
-	Camera camera;
 	TerrainRenderer terrainRenderer;
 	SkyboxRenderer skyboxRenderer;
 	DefaultRenderer defaultRenderer;
 
-	ArcBall arcball;
-
 	TerrainResource *terrain = null;
 
-	TerrainFPSInputController fpsInputController;
-	TerrainThirdPersonInputController thirdPersonController;
-	InputController *inputController = &fpsInputController;
-
-	matriz playerTransform;
+	std::vector<std::unique_ptr<BulletParticle>> particles;
 public:
 	TerrainDemoRunner() : light(vector(0, 0, 0),
 			vector(0.2f, 0.2f, 0.2f), vector(0.2f, 0.2f, 0.2f),
@@ -128,22 +140,20 @@ public:
         }
 
         video->enable(RELATIVE_MOUSE_MODE, 0);
-
-        ResourceManager *resourceManager = this->getContainer()->getResourceManager();
         video->setClearColor(0.0, 0.5, 0.0, 0.0);
         video->enable(DEPTH_TEST, true);
         glPolygonMode( GL_BACK, GL_LINE );
+        //video->enable(CULL_FACE, CULL_FACE_BACK);
 
-        video->enable(CULL_FACE, CULL_FACE_BACK);
 
-        terrainRenderer.setVideoRunner(video);
-        terrainRenderer.setLight(&light);
-
+        ResourceManager *resourceManager = this->getContainer()->getResourceManager();
         terrain = (TerrainResource *)resourceManager->load("geometry/terrain/terrain.json", "video/terrain");
 
         fpsInputController.setTerrain(terrain);
         thirdPersonController.setTerrain(terrain);
 
+        terrainRenderer.setVideoRunner(video);
+        terrainRenderer.setLight(&light);
         terrainRenderer.addTerrain(vector(0, 0, 0), terrain);
         terrainRenderer.addTerrain(vector(-terrain->getHeightMap()->getWidth(), 0, 0), terrain);
         terrainRenderer.addTerrain(vector(0, 0, -terrain->getHeightMap()->getDepth()), terrain);
@@ -153,6 +163,18 @@ public:
         skyboxRenderer.setSize(700);
 
         defaultRenderer.setVideoRunner(video);
+
+        //physics->getParticleManager()
+
+        for(int index = 0; index < numberOfParticles; index++) {
+            particles.push_back(std::unique_ptr<BulletParticle>(new BulletParticle()));
+            particles.back()->setStatus(false);
+            //particles.back()->setRunner(this);
+
+
+            physics->getParticleManager()->addParticle(particles.back().get());
+        }
+
 
         reset();
 
@@ -167,12 +189,17 @@ public:
 	void reset() {
 		//light.setPosition(position);
 		inputController->reset();
+
+        for(auto &particle : this->particles) {
+            particle->setStatus(false);
+        }
+
 	}
 
 	virtual LoopResult doLoop() {
 	    defaultRenderer.clear();
 	    defaultRenderer.drawAxes(matriz_4x4::identidad);
-	    defaultRenderer.drawSphere(playerTransform, 0.5);
+	    //defaultRenderer.drawSphere(playerTransform, 0.5);
 	    defaultRenderer.render(camera);
 
 		terrainRenderer.render(camera);

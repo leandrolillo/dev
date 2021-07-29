@@ -94,16 +94,6 @@ public:
             return null;
         }
 
-        /**
-         * Indices need to be loaded after vertices
-         */
-        if (geometry->getIndices().size() != 0
-                && !addBuffer(INDEX_LOCATION, resource,
-                        GL_ELEMENT_ARRAY_BUFFER, geometry->getIndices())) {
-            dispose(resource);
-            return null;
-        }
-
         if (geometry->getNormals().size() != 0
                 && !addBuffer(NORMAL_LOCATION, resource, GL_ARRAY_BUFFER,
                         geometry->getNormals())) {
@@ -125,6 +115,17 @@ public:
             dispose(resource);
             return null;
         }
+
+        /**
+         * Indices need to be loaded after vertices
+         */
+        if (geometry->getIndices().size() != 0
+                && !addBuffer(INDEX_LOCATION, resource,
+                        GL_ELEMENT_ARRAY_BUFFER, geometry->getIndices())) {
+            dispose(resource);
+            return null;
+        }
+
 
         glBindVertexArray(0);
 

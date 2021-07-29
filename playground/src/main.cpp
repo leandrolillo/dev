@@ -20,7 +20,7 @@ int main(int, char**){
 //    CollisionDetectionPlayground colDetplayground("/Users/leandro/huevadas/projects/dev/media/");
 //    colDetplayground.run();
 
- //	PlaygroundGeneralDemo playground("/Users/leandro/huevadas/projects/dev/media/");
+// 	PlaygroundGeneralDemo playground("/Users/leandro/huevadas/projects/dev/media/");
 //    playground.run();
 
     PlaygroundTerrainDemo terrainPlayground("/Users/leandro/huevadas/projects/dev/media/");

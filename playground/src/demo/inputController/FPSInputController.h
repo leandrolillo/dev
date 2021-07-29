@@ -16,7 +16,6 @@ protected:
     real pitch;
     real yaw;
     vector position;
-    matriz_3x3 viewMatrix;
     vector velocity;
 
 public:
@@ -28,7 +27,7 @@ public:
 
     void setPitch(real pitch) {
         this->pitch = pitch;
-        refreshViewMatrix();
+        refreshOrientation();
     }
 
     real getPitch() const {
@@ -37,7 +36,7 @@ public:
 
     void setYaw(real yaw) {
         this->yaw = yaw;
-        refreshViewMatrix();
+        refreshOrientation();
     }
 
     real getYaw() const {
@@ -46,6 +45,7 @@ public:
 
     void setPosition(const vector &viewPosition) {
         this->position = viewPosition;
+        this->refreshPosition();
     }
 
     void setVelocity(const vector &viewVelocity) {
@@ -59,14 +59,6 @@ public:
         this->setYaw(0);
     }
 
-    virtual void update(real dt) override {
-        position += viewMatrix.traspuesta() * velocity;
-
-        this->constrainPosition();
-        this->updatePlayerTransform();
-        this->updateCamera();
-    }
-
     void mouseMove(int x, int y, int dx, int dy) override {
         this->setPitch(this->getPitch() + dy);
         this->setYaw(this->getYaw() + dx);
@@ -78,7 +70,7 @@ public:
             case 'W':
             case 's':
             case 'S':
-                velocity.z = 0;;
+                velocity.z = 0;
                 break;
             case 'a':
             case 'A':
@@ -110,20 +102,24 @@ public:
         }
     }
 
+    virtual void update(real dt) override {
+        this->setPosition(this->constrainPosition(this->position + camera.getOrientation() * velocity + vector(0.0, -1.0, 0.0)));
+    }
+
+
 protected:
-    virtual void constrainPosition() {
+    virtual vector constrainPosition(const vector &position) {
+        return position;
     }
 
-    virtual void updatePlayerTransform() {
-        playerTransform = (matriz_4x4)viewMatrix * matriz_4x4::matrizTraslacion(-position - vector(0, 1, 0));
+    virtual void refreshPosition() {
+        camera.setPosition(this->position + vector(0.0, 1.0, 0.0));
+        playerTransform = (matriz_4x4)camera.getOrientation() * matriz_4x4::matrizTraslacion(this->position);
 
     }
-    virtual void updateCamera() {
-        camera.setViewMatrix(playerTransform);
-    }
-
-    virtual void refreshViewMatrix() {
-        viewMatrix = matriz_3x3::matrizRotacion(radian(pitch), vector(1, 0, 0)) * matriz_3x3::matrizRotacion(radian(yaw), vector(0, 1, 0));
+    virtual void refreshOrientation() {
+        camera.setOrientation(matriz_3x3::matrizRotacion(radian(pitch), vector(1, 0, 0)) *
+                matriz_3x3::matrizRotacion(radian(yaw), vector(0, 1, 0)));
     }
 
 

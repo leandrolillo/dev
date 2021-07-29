@@ -60,7 +60,7 @@ public:
 	void reset() {
 	    posicion = vector(0, 0, -5);
 	    light.setPosition(vector(0, 0, -5));
-        camera.setViewPosition(vector(0.0f, 0.0f, 5.0f));
+        camera.setPosition(vector(0.0f, 0.0f, 5.0f));
 	}
 
 	bool init() {
@@ -108,7 +108,7 @@ public:
 	}
 
 	void mouseWheel(int wheel) {
-        camera.setViewPosition(camera.getViewPosition() - vector(0.0f, 0.0f, wheel));
+        camera.setPosition(camera.getPosition() - vector(0.0f, 0.0f, wheel));
         posicion = posicion + vector(0.0f, 0.0f, wheel);
 
         light.setPosition(posicion);
@@ -119,8 +119,8 @@ public:
 	}
 
 	virtual void mouseMove(int x, int y, int dx, int dy) {
-        camera.setViewPosition(camera.getViewPosition() - vector(0.1f * dx, 0.1f * dy, 0));
-        light.setPosition(camera.getViewPosition());
+        camera.setPosition(camera.getPosition() - vector(0.1f * dx, 0.1f * dy, 0));
+        light.setPosition(camera.getPosition());
         posicion = posicion + vector(0.1f * dx, 0.1f * dy, 0);
 
         logger->info("viewMatrix:\n%s\nlight:%s\nposition:%s\n",
