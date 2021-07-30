@@ -45,6 +45,10 @@ public:
 	    return this->collisionDetector;
 	}
 
+    void setIntersectionTester(IntersectionTester * intersectionTester) {
+        this->collisionDetector.setIntersectionTester(intersectionTester);
+    }
+
 	void clearAccumulators() const {
 		for(std::vector<Particle *>::const_iterator iterator = particles.begin(); iterator != particles.end(); iterator++) {
 			(*iterator)->clearForceAccumulator();

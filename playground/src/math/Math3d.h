@@ -191,33 +191,107 @@ class matriz_3x3: public BaseMatrix {
 		}
 
 		real operator()(unsigned int fila, unsigned int columna) const {
-					if (fila > 2 || columna > 2)
-						throw InvalidArgumentException("Index Out of Bounds - matriz_3x3::operator(i, j)");
+            if (fila > 2 || columna > 2)
+                throw InvalidArgumentException("Index Out of Bounds - matriz_3x3::operator(i, j)");
 
-					return m[fila * 3 + columna];
-				}
-		matriz_3x3(real d00, real d01, real d02, real d10, real d11, real d12, real d20, real d21, real d22);
-		matriz_3x3(const matriz_3x3 &op1);
-		matriz_3x3(void);
-		matriz_3x3(real x, real y, real z);
-		matriz_3x3(const vector3 &angulos);
-		matriz_3x3(const vector3 &vec0, const vector3 &vec1, const vector3 &vec2);
-		matriz_3x3(real angulo, real x, real y, real z);
-		matriz_3x3(real angulo, const vector3 &eje);
+            return m[fila * 3 + columna];
+        }
+
+        const vector fila(unsigned int fila) const;
+        const vector columna(unsigned int columna) const;
+
+
+		matriz_3x3(real d00, real d01, real d02, real d10, real d11, real d12, real d20, real d21, real d22) : BaseMatrix(3, 3) {
+	        this->_00 = d00; this->_01 = d01; this->_02 = d02;
+	        this->_10 = d10; this->_11 = d11; this->_12 = d12;
+	        this->_20 = d20; this->_21 = d21; this->_22 = d22;
+	    }
+
+		matriz_3x3(const matriz_3x3 &op1) : BaseMatrix(3, 3) { // Constructor de Copia
+	        memcpy(this->m, op1.m, sizeof(this->m));
+	    }
+		matriz_3x3(void) : BaseMatrix(3, 3) { // matriz Identidad
+	        this->_00 = 1.0; this->_01 = 0.0; this->_02 = 0.0;
+	        this->_10 = 0.0; this->_11 = 1.0; this->_12 = 0.0;
+	        this->_20 = 0.0; this->_21 = 0.0; this->_22 = 1.0;
+	    }
+
+		/**
+		 * Si no lo dejo, no funciona el operador (matriz_4x4)matriz_3x3. Da error de compilacion por ambiguedad en la línea que llama a la función.
+		 */
 		matriz_3x3(const matriz_4x4 &op1);
 
-		matriz_3x3 operator=(const matriz_3x3 &op1);
-		unsigned char operator==(const matriz_3x3 &op2) const;
-		unsigned char operator!=(const matriz_3x3 &op2) const;
-		const matriz_3x3 operator*(const matriz_3x3 &op2) const;
-		const matriz_3x3 operator*(real op2) const;
-		const matriz_3x3 operator+(const matriz_3x3 &op2) const;
-		const matriz_3x3 operator-(const matriz_3x3 &op2) const;
-		void operator*=(const matriz_3x3 &op2);
-		void operator*=(real op2);
-		void operator+=(const matriz_3x3 &op2);
-		void operator-=(const matriz_3x3 &op2);
-		operator real *() const;
+		matriz_3x3 operator=(const matriz_3x3 &op1) {
+	        memcpy(this->m, op1.m, sizeof(this->m));
+
+	        return(*this);
+	    }
+
+		unsigned char operator==(const matriz_3x3 &op2) const {
+	        return((_00 == op2._00 && _01 == op2._01 && _02 == op2._02 &&
+	            _10 == op2._10 && _11 == op2._11 && _12 == op2._12 &&
+	            _20 == op2._20 && _21 == op2._21 && _22 == op2._22));
+	    }
+
+		unsigned char operator!=(const matriz_3x3 &op2) const {
+	        return((_00 != op2._00 || _01 != op2._01 || _02 != op2._02 ||
+	            _10 != op2._10 || _11 != op2._11 || _12 != op2._12 ||
+	            _20 != op2._20 || _21 != op2._21 || _22 != op2._22));
+	    }
+
+		const matriz_3x3 operator*(const matriz_3x3 &op2) const {
+	        return(matriz_3x3(  (this->_00 * op2._00) + (this->_01 * op2._10) + (this->_02 * op2._20),
+	                (this->_00 * op2._01) + (this->_01 * op2._11) + (this->_02 * op2._21),
+	                (this->_00 * op2._02) + (this->_01 * op2._12) + (this->_02 * op2._22),
+
+	                (this->_10 * op2._00) + (this->_11 * op2._10) + (this->_12 * op2._20),
+	                (this->_10 * op2._01) + (this->_11 * op2._11) + (this->_12 * op2._21),
+	                (this->_10 * op2._02) + (this->_11 * op2._12) + (this->_12 * op2._22),
+
+	                (this->_20 * op2._00) + (this->_21 * op2._10) + (this->_22 * op2._20),
+	                (this->_20 * op2._01) + (this->_21 * op2._11) + (this->_22 * op2._21),
+	                (this->_20 * op2._02) + (this->_21 * op2._12) + (this->_22 * op2._22) ));
+	    }
+
+		const matriz_3x3 operator*(real op2) const {
+	        return(matriz_3x3(  _00 * op2, _01 * op2, _02 * op2,
+	                    _10 * op2, _11 * op2, _12 * op2,
+	                    _20 * op2, _21 * op2, _22 * op2));
+	    }
+
+		const matriz_3x3 operator+(const matriz_3x3 &op2) const {
+	        return(matriz_3x3(  _00 + op2._00, _01 + op2._01, _02 + op2._02,
+	                    _10 + op2._10, _11 + op2._11, _12 + op2._12,
+	                    _20 + op2._20, _21 + op2._21, _22 + op2._22));
+	    }
+
+		const matriz_3x3 operator-(const matriz_3x3 &op2) const {
+	        return(matriz_3x3(  _00 - op2._00, _01 - op2._01, _02 - op2._02,
+	                    _10 - op2._10, _11 - op2._11, _12 - op2._12,
+	                    _20 - op2._20, _21 - op2._21, _22 - op2._22));
+	    }
+
+
+		void operator*=(const matriz_3x3 &op2) {
+	        *this = *this * op2;
+	    }
+
+		void operator*=(real op2) {
+	        *this = *this * op2;
+	    }
+
+		void operator+=(const matriz_3x3 &op2) {
+	        *this = *this + op2;
+	    }
+
+		void operator-=(const matriz_3x3 &op2) {
+	        *this = *this - op2;
+	    }
+
+		operator real *() const {
+	        return((real *)m);
+	    }
+
 		operator matriz_4x4() const;
 
 		const matriz_3x3 traspuesta(void) const {
@@ -330,8 +404,8 @@ class matriz_4x4: public BaseMatrix {
 			return m[fila * 4 + columna];
 		}
 
-		const cuaternion fila(unsigned int fila) const;
-		const cuaternion columna(unsigned int columna) const;
+		const vector4 fila(unsigned int fila) const;
+		const vector4 columna(unsigned int columna) const;
 
 		matriz_4x4 operator=(const matriz_4x4 &op1) {
 			memcpy(this->m, op1.m, sizeof(this->m));

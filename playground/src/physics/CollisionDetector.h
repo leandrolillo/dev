@@ -20,9 +20,16 @@
 
 class CollisionDetector {
     std::vector <const Geometry *>scenery;
-    IntersectionTester intersectionTester;
+    std::unique_ptr<IntersectionTester> intersectionTester;
 public:
+    CollisionDetector() {
+        this->intersectionTester = std::unique_ptr<IntersectionTester>(new IntersectionTester());
+    }
     virtual ~CollisionDetector() {
+    }
+
+    void setIntersectionTester(IntersectionTester *intersectionTester) {
+        this->intersectionTester.reset(intersectionTester);
     }
 
     void addScenery(const Geometry *scenery) {
@@ -39,7 +46,7 @@ public:
                             sceneryIterator != scenery.end();
                             sceneryIterator ++)  {
 
-                        std::vector<GeometryContact> pairContacts = intersectionTester.detectCollision(*particleA->getGeometry(), **sceneryIterator);
+                        std::vector<GeometryContact> pairContacts = intersectionTester->detectCollision(*particleA->getGeometry(), **sceneryIterator);
                         if(!pairContacts.empty()) {
                             std::transform(pairContacts.begin(), pairContacts.end(), std::back_inserter(contacts),
                                     [&particleA](GeometryContact pairContact) -> ParticleContact {
@@ -58,7 +65,7 @@ public:
                     for(std::vector<Particle *>::const_iterator iteratorB = iteratorA+1; iteratorB != particles.end(); iteratorB++) {
                         Particle *particleB = *iteratorB;
                         if(particleB->getStatus() && particleB->getGeometry() != null) {
-                            std::vector<GeometryContact> pairContacts = intersectionTester.detectCollision(*particleA->getGeometry(), *particleB->getGeometry());
+                            std::vector<GeometryContact> pairContacts = intersectionTester->detectCollision(*particleA->getGeometry(), *particleB->getGeometry());
                             if(!pairContacts.empty()) {
                                 std::transform(pairContacts.begin(), pairContacts.end(), std::back_inserter(contacts),
                                         [&particleA, &particleB](GeometryContact pairContact) -> ParticleContact {

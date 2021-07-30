@@ -38,7 +38,7 @@ protected:
     vector constrainPosition(const vector &position) override {
         vector result = position;
         if(terrain != null) {
-            real altitude = terrain->getHeightMap()->heightAt(
+            real altitude = 0.1 + terrain->getHeightMap()->heightAt(
                     position.x - floor(position.x / terrain->getHeightMap()->getWidth()) * terrain->getHeightMap()->getWidth(),
                     position.z - floor(position.z / terrain->getHeightMap()->getDepth()) * terrain->getHeightMap()->getDepth()
                     );
@@ -67,7 +67,7 @@ protected:
     vector constrainPosition(const vector &position) override {
         vector result = position;
         if(terrain != null) {
-            real altitude = terrain->getHeightMap()->heightAt(
+            real altitude = 0.1 + terrain->getHeightMap()->heightAt(
                     position.x - floor(position.x / terrain->getHeightMap()->getWidth()) * terrain->getHeightMap()->getWidth(),
                     position.z - floor(position.z / terrain->getHeightMap()->getDepth()) * terrain->getHeightMap()->getDepth()
                     );
@@ -142,8 +142,8 @@ public:
         video->enable(RELATIVE_MOUSE_MODE, 0);
         video->setClearColor(0.0, 0.5, 0.0, 0.0);
         video->enable(DEPTH_TEST, true);
-        glPolygonMode( GL_BACK, GL_LINE );
-        //video->enable(CULL_FACE, CULL_FACE_BACK);
+        //glPolygonMode( GL_BACK, GL_LINE );
+        video->enable(CULL_FACE, CULL_FACE_BACK);
 
 
         ResourceManager *resourceManager = this->getContainer()->getResourceManager();
@@ -160,17 +160,16 @@ public:
         terrainRenderer.addTerrain(vector(-terrain->getHeightMap()->getWidth(), 0, -terrain->getHeightMap()->getDepth()), terrain);
 
         skyboxRenderer.setVideoRunner(video);
-        skyboxRenderer.setSize(700);
+        skyboxRenderer.setSize(500);
 
         defaultRenderer.setVideoRunner(video);
 
-        //physics->getParticleManager()
+        physics->getParticleManager()->setIntersectionTester(new HeightMapIntersectionTester());
 
         for(int index = 0; index < numberOfParticles; index++) {
             particles.push_back(std::unique_ptr<BulletParticle>(new BulletParticle()));
             particles.back()->setStatus(false);
             //particles.back()->setRunner(this);
-
 
             physics->getParticleManager()->addParticle(particles.back().get());
         }
@@ -199,7 +198,16 @@ public:
 	virtual LoopResult doLoop() {
 	    defaultRenderer.clear();
 	    defaultRenderer.drawAxes(matriz_4x4::identidad);
-	    //defaultRenderer.drawSphere(playerTransform, 0.5);
+	    defaultRenderer.drawSphere(playerTransform, 0.5);
+
+        for(auto &particle : this->particles)
+        {
+            if(particle->getStatus() == true) {
+//                defaultRenderer.setMaterial(&material);
+                defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(particle->getPosition()), 0.1);
+            }
+        }
+
 	    defaultRenderer.render(camera);
 
 		terrainRenderer.render(camera);
@@ -210,8 +218,42 @@ public:
 		return LoopResult::CONTINUE;
 	}
 
+    void fire(const vector &position, bool isStatic = false) {
+        BulletParticle *bullet = null;
+
+        logger->debug("Iterating particles");
+        for(auto &particle : particles)
+        {
+            if(!particle->getStatus()) {
+                bullet = particle.get();
+                break;
+            }
+        }
+
+        if(bullet != null) {
+            bullet->setPosition(position);
+            if(isStatic) {
+                bullet->setVelocity(vector(0, 0, 0));
+                bullet->setDamping(0.99f);
+            } else {
+                bullet->setVelocity(((vector)camera.getOrientation().columna(2)).normalizado() * -35);
+                bullet->setDamping(0.99f);
+            }
+            bullet->setAcceleration(vector(0, 0, 0));
+            bullet->setMass(0.1);
+
+            bullet->setStatus(true);
+
+            //logger->info("bullet at position: %s", bullet->getPosition().toString("%.2f").c_str());
+
+        } else {
+            logger->debug("no particle found");
+        }
+    }
+
 	void mouseButtonDown(unsigned char button, int x, int y)
 	{
+        fire(camera.getPosition());
 	    inputController->mouseButtonDown(button, x, y);
 	}
 

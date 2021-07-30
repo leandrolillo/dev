@@ -263,21 +263,6 @@ void matriz_2x2::operator *=(const real &op1) {
 // | |									Funciones de la MATRIZ_3X3
 // | | - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 //  \ \  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-	matriz_3x3::matriz_3x3(	real d00, real d01, real d02,
-			real d10, real d11, real d12, 
-			real d20, real d21, real d22) : BaseMatrix(3, 3) {
-		this->_00 = d00; this->_01 = d01; this->_02 = d02;
-		this->_10 = d10; this->_11 = d11; this->_12 = d12;
-		this->_20 = d20; this->_21 = d21; this->_22 = d22;
-	}
-	matriz_3x3::matriz_3x3(const matriz_3x3 &op1) : BaseMatrix(3, 3) { // Constructor de Copia
-		memcpy(this->m, op1.m, sizeof(this->m));
-	}
-	matriz_3x3::matriz_3x3(void ) : BaseMatrix(3, 3) { // matriz Identidad
-		this->_00 = 1.0; this->_01 = 0.0; this->_02 = 0.0;
-		this->_10 = 0.0; this->_11 = 1.0; this->_12 = 0.0;
-		this->_20 = 0.0; this->_21 = 0.0; this->_22 = 1.0;
-	}
 
 	const matriz_3x3 matriz_3x3::matrizRotacion(const vector &eulerAngles) {
 	    return matrizRotacion(eulerAngles.x, eulerAngles.y, eulerAngles.z);
@@ -337,80 +322,13 @@ void matriz_2x2::operator *=(const real &op1) {
 //		this->HacerRotacion(angulo, eje);
 //	}
 
-	matriz_3x3::matriz_3x3(const matriz_4x4 &op1) : BaseMatrix(3, 3) {		// si no lo dejo, no funciona el operador (matriz_4x4)matriz_3x3. Da error de compilaci�n por ambig�edad en la l�nea que llama a la funci�n.
+    /**
+     * Si no lo dejo, no funciona el operador (matriz_4x4)matriz_3x3. Da error de compilacion por ambiguedad en la línea que llama a la función.
+     */
+	matriz_3x3::matriz_3x3(const matriz_4x4 &op1) : BaseMatrix(3, 3) {
 		this->_00 = op1._00; this->_01 = op1._01; this->_02 = op1._02;
 		this->_10 = op1._10; this->_11 = op1._11; this->_12 = op1._12;
 		this->_20 = op1._20; this->_21 = op1._21; this->_22 = op1._22;
-	}
-
-	matriz_3x3 matriz_3x3::operator=(const matriz_3x3 &op1) {
-		memcpy(this->m, op1.m, sizeof(this->m));
-
-		return(*this);
-	}
-
-	unsigned char matriz_3x3::operator==(const matriz_3x3 &op2) const {
-		return((_00 == op2._00 && _01 == op2._01 && _02 == op2._02 &&
-			_10 == op2._10 && _11 == op2._11 && _12 == op2._12 &&
-			_20 == op2._20 && _21 == op2._21 && _22 == op2._22));
-	}
-
-	unsigned char matriz_3x3::operator!=(const matriz_3x3 &op2) const {
-		return((_00 != op2._00 || _01 != op2._01 || _02 != op2._02 ||
-			_10 != op2._10 || _11 != op2._11 || _12 != op2._12 ||
-			_20 != op2._20 || _21 != op2._21 || _22 != op2._22));
-	}
-	
-	const matriz_3x3 matriz_3x3::operator*(const matriz_3x3 &op2) const {
-		return(matriz_3x3(	(this->_00 * op2._00) + (this->_01 * op2._10) + (this->_02 * op2._20),
-				(this->_00 * op2._01) + (this->_01 * op2._11) + (this->_02 * op2._21),
-				(this->_00 * op2._02) + (this->_01 * op2._12) + (this->_02 * op2._22),
-
-				(this->_10 * op2._00) + (this->_11 * op2._10) + (this->_12 * op2._20),
-				(this->_10 * op2._01) + (this->_11 * op2._11) + (this->_12 * op2._21),
-				(this->_10 * op2._02) + (this->_11 * op2._12) + (this->_12 * op2._22),
-
-				(this->_20 * op2._00) + (this->_21 * op2._10) + (this->_22 * op2._20),
-				(this->_20 * op2._01) + (this->_21 * op2._11) + (this->_22 * op2._21),
-				(this->_20 * op2._02) + (this->_21 * op2._12) + (this->_22 * op2._22) ));
-	}
-
-	const matriz_3x3 matriz_3x3::operator*(real op2) const {
-		return(matriz_3x3(	_00 * op2, _01 * op2, _02 * op2,
-					_10 * op2, _11 * op2, _12 * op2,
-					_20 * op2, _21 * op2, _22 * op2));
-	}
-
-	const matriz_3x3 matriz_3x3::operator+(const matriz_3x3 &op2) const {
-		return(matriz_3x3(	_00 + op2._00, _01 + op2._01, _02 + op2._02,
-					_10 + op2._10, _11 + op2._11, _12 + op2._12,
-					_20 + op2._20, _21 + op2._21, _22 + op2._22));
-	}
-
-	const matriz_3x3 matriz_3x3::operator-(const matriz_3x3 &op2) const {
-		return(matriz_3x3(	_00 - op2._00, _01 - op2._01, _02 - op2._02,
-					_10 - op2._10, _11 - op2._11, _12 - op2._12,
-					_20 - op2._20, _21 - op2._21, _22 - op2._22));
-	}
-
-	void matriz_3x3::operator*= (const matriz_3x3 &op2) {
-		*this = *this * op2;
-	}
-
-	void matriz_3x3::operator*=(real op2) {
-		*this = *this * op2;
-	}
-
-	void matriz_3x3::operator+=(const matriz_3x3 &op2) {
-		*this = *this + op2;
-	}
-
-	void matriz_3x3::operator-=(const matriz_3x3 &op2) {
-		*this = *this - op2;
-	}
-
-	matriz_3x3::operator real *() const {
-		return((real *)m);
 	}
 
 	matriz_3x3::operator matriz_4x4 () const{
@@ -419,6 +337,21 @@ void matriz_2x2::operator *=(const real &op1) {
 							_20, _21, _22, 0.0,
 							0.0, 0.0, 0.0, 1.0));
 	}
+
+    const vector matriz_3x3::fila(unsigned int fila) const {
+        if (fila > 2)
+            throw InvalidArgumentException("Index Out of Bounds - matriz_3x3::fila(...)");
+
+        return vector(m[fila * 3], m[fila * 3 + 1], m[fila * 3 + 2]);
+    }
+
+    const vector matriz_3x3::columna(unsigned int columna) const {
+        if (columna > 2)
+            throw InvalidArgumentException("Index Out of Bounds - matriz_3x3::columna(...)");
+
+        return vector(m[0 * 3 + columna], m[1 * 3 + columna], m[2 * 3 + columna]);
+    }
+
 
 //	const matriz_3x3 matriz_3x3::HacerRotacion(real x, real y, real z) { //Construye una rotaci�n en �ngulos [radianes] de Euler
 //		real cx = (real)cos(x), sx = (real)sin(x);
