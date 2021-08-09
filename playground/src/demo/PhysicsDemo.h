@@ -230,7 +230,7 @@ public:
 			    bullet->setVelocity(vector(0, 0, 0));
 			    bullet->setDamping(0.99f);
 			} else {
-			    bullet->setVelocity(((vector)camera.getViewMatrix().columna(2)).normalizado() * -35);
+			    bullet->setVelocity(camera.getOrientation().columna(2).normalizado() * -35);
 			    bullet->setDamping(0.99f);
 			}
 			bullet->setAcceleration(vector(0, 0, 0));

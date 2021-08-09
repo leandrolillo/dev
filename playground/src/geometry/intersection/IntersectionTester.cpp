@@ -12,6 +12,11 @@
 /**
  * Sphere
  */
+
+bool SphereIntersectionTester::intersectsVisit(const HierarchicalGeometry &hierarchy, const Geometry &sphere) const {
+    return IntersectionHelper::sphereHierarchy((const Sphere&) sphere, hierarchy);
+}
+
 bool SphereIntersectionTester::intersectsVisit(const AABB &aabb, const Geometry &sphere) const {
     return IntersectionHelper::sphereAabb((const Sphere&) sphere, aabb);
 }
@@ -26,6 +31,11 @@ bool SphereIntersectionTester::intersectsVisit(const Line &line, const Geometry 
 
 bool SphereIntersectionTester::intersectsVisit(const Sphere &anotherSphere, const Geometry &sphere) const {
     return IntersectionHelper::sphereSphere(anotherSphere, (Sphere&) sphere);
+}
+
+
+std::vector<GeometryContact> SphereIntersectionTester::detectCollisionVisit(const HierarchicalGeometry &hierarchy, const Geometry &sphere) const {
+    return IntersectionHelper::sphereHierarchyContact((const Sphere&) sphere, hierarchy);
 }
 
 std::vector<GeometryContact>  SphereIntersectionTester::detectCollisionVisit(const AABB &aabb, const Geometry &sphere) const {
@@ -46,6 +56,10 @@ std::vector<GeometryContact>  SphereIntersectionTester::detectCollisionVisit(con
  * Plane
  */
 
+bool PlaneIntersectionTester::intersectsVisit(const HierarchicalGeometry &hierarchy, const Geometry &plane) const {
+    return IntersectionHelper::planeHierarchy((const Plane&) plane, hierarchy);
+}
+
 bool PlaneIntersectionTester::intersectsVisit(const AABB &aabb, const Geometry &plane) const {
     return IntersectionHelper::planeAabb((const Plane&) plane, aabb);
 }
@@ -60,6 +74,10 @@ bool PlaneIntersectionTester::intersectsVisit(const Line &line, const Geometry &
 
 bool PlaneIntersectionTester::intersectsVisit(const Sphere &sphere, const Geometry &plane) const {
     return IntersectionHelper::planeSphere((const Plane&) plane, sphere);
+}
+
+std::vector<GeometryContact> PlaneIntersectionTester::detectCollisionVisit(const HierarchicalGeometry &hierarchy, const Geometry &plane) const {
+    return IntersectionHelper::planeHierarchyContact((const Plane&) plane, hierarchy);
 }
 
 std::vector<GeometryContact>  PlaneIntersectionTester::detectCollisionVisit(const AABB &aabb, const Geometry &plane) const {
@@ -79,6 +97,9 @@ std::vector<GeometryContact>  PlaneIntersectionTester::detectCollisionVisit(cons
 /**
  * Line
  */
+bool LineIntersectionTester::intersectsVisit(const HierarchicalGeometry &hierarchy, const Geometry &line) const {
+    return IntersectionHelper::lineHierarchy((const Line&) line, hierarchy);
+}
 
 bool LineIntersectionTester::intersectsVisit(const AABB &aabb, const Geometry &line) const {
     return IntersectionHelper::lineAabb((const Line&) line, aabb);
@@ -94,6 +115,10 @@ bool LineIntersectionTester::intersectsVisit(const Line &anotherLine, const Geom
 
 bool LineIntersectionTester::intersectsVisit(const Sphere &sphere, const Geometry &line) const {
     return IntersectionHelper::lineSphere((const Line&) line, sphere);
+}
+
+std::vector<GeometryContact> LineIntersectionTester::detectCollisionVisit(const HierarchicalGeometry &hierarchy, const Geometry &line) const {
+    return IntersectionHelper::lineHierarchyContact((const Line&) line, hierarchy);
 }
 
 std::vector<GeometryContact>  LineIntersectionTester::detectCollisionVisit(const AABB &aabb, const Geometry &line) const {
@@ -114,6 +139,10 @@ std::vector<GeometryContact>  LineIntersectionTester::detectCollisionVisit(const
  * AABB
  */
 
+bool AABBIntersectionTester::intersectsVisit(const HierarchicalGeometry &hierarchy, const Geometry &aabb) const {
+    return IntersectionHelper::aabbHierarchy((const AABB&) aabb, hierarchy);
+}
+
 bool AABBIntersectionTester::intersectsVisit(const AABB &anotherAabb, const Geometry &aabb) const {
     return IntersectionHelper::aabbAabb(anotherAabb, (const AABB&) aabb);
 }
@@ -130,6 +159,10 @@ bool AABBIntersectionTester::intersectsVisit(const Sphere &sphere, const Geometr
     return IntersectionHelper::sphereAabb(sphere, (const AABB&) aabb);
 }
 
+std::vector<GeometryContact> AABBIntersectionTester::detectCollisionVisit(const HierarchicalGeometry &hierarchy, const Geometry &aabb) const {
+    return IntersectionHelper::aabbHierarchyContact((const AABB&) aabb, hierarchy);
+}
+
 std::vector<GeometryContact>  AABBIntersectionTester::detectCollisionVisit(const AABB &anotherAabb, const Geometry &aabb) const {
     return IntersectionHelper::aabbAabbContact(anotherAabb, (const AABB&) aabb);
 }
@@ -142,4 +175,46 @@ std::vector<GeometryContact>  AABBIntersectionTester::detectCollisionVisit(const
 }
 std::vector<GeometryContact>  AABBIntersectionTester::detectCollisionVisit(const Line &line, const Geometry &aabb) const {
     return IntersectionHelper::lineAabbContact(line, (const AABB&) aabb);
+}
+
+/**
+ * Hierarchical
+ */
+
+bool HierarchyIntersectionTester::intersectsVisit(const HierarchicalGeometry &anotherHierarchy, const Geometry &hierarchy) const {
+    return IntersectionHelper::hierarchyHierarchy(anotherHierarchy, (const HierarchicalGeometry&) hierarchy);
+}
+
+bool HierarchyIntersectionTester::intersectsVisit(const AABB &aabb, const Geometry &hierarchy) const {
+    return IntersectionHelper::aabbHierarchy(aabb, (const HierarchicalGeometry&) hierarchy);
+}
+
+bool HierarchyIntersectionTester::intersectsVisit(const Plane &plane, const Geometry &hierarchy) const {
+    return IntersectionHelper::planeHierarchy(plane, (const HierarchicalGeometry &) hierarchy);
+}
+
+bool HierarchyIntersectionTester::intersectsVisit(const Line &line, const Geometry &hierarchy) const {
+    return IntersectionHelper::lineHierarchy(line, (const HierarchicalGeometry&) hierarchy);
+}
+
+bool HierarchyIntersectionTester::intersectsVisit(const Sphere &sphere, const Geometry &hierarchy) const {
+    return IntersectionHelper::sphereHierarchy(sphere, (const HierarchicalGeometry&) hierarchy);
+}
+
+std::vector<GeometryContact> HierarchyIntersectionTester::detectCollisionVisit(const HierarchicalGeometry &anotherHierarchy, const Geometry &hierarchy) const {
+    return IntersectionHelper::hierarchyHierarchyContact(anotherHierarchy, (const HierarchicalGeometry &) hierarchy);
+}
+
+std::vector<GeometryContact>  HierarchyIntersectionTester::detectCollisionVisit(const AABB &aabb, const Geometry &hierarchy) const {
+    return IntersectionHelper::aabbHierarchyContact(aabb, (const HierarchicalGeometry&) hierarchy);
+}
+
+std::vector<GeometryContact>  HierarchyIntersectionTester::detectCollisionVisit(const Sphere &sphere, const Geometry &hierarchy) const {
+    return IntersectionHelper::sphereHierarchyContact(sphere, (const HierarchicalGeometry&) hierarchy);
+}
+std::vector<GeometryContact>  HierarchyIntersectionTester::detectCollisionVisit(const Plane &plane, const Geometry &hierarchy) const {
+    return IntersectionHelper::planeHierarchyContact(plane, (const HierarchicalGeometry&) hierarchy);
+}
+std::vector<GeometryContact>  HierarchyIntersectionTester::detectCollisionVisit(const Line &line, const Geometry &hierarchy) const {
+    return IntersectionHelper::lineHierarchyContact(line, (const HierarchicalGeometry&) hierarchy);
 }

@@ -131,7 +131,10 @@ public:
 class HierarchicalGeometry : public Geometry {
     std::unique_ptr<Geometry> boundingGeometry;
     std::vector<std::unique_ptr<Geometry>> children;
-
+public:
+    HierarchicalGeometry(Geometry *boundingGeometry) : Geometry(boundingGeometry->getOrigin()) {
+        this->boundingGeometry = std::unique_ptr<Geometry>(boundingGeometry);
+    }
     const vector& getOrigin() const {
         return this->boundingGeometry->getOrigin();
     }

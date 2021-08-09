@@ -22,6 +22,9 @@
 #include "inputController/FPSInputController.h"
 #include "inputController/ThirdPersonInputController.h"
 
+#include<PhysicsRunner.h>
+#include<forces/Gravity.h>
+
 class TerrainFPSInputController : public FPSInputController {
 protected:
     TerrainResource *terrain = null;
@@ -115,6 +118,7 @@ private:
 	TerrainResource *terrain = null;
 
 	std::vector<std::unique_ptr<BulletParticle>> particles;
+	Gravity gravity = Gravity(vector(0.0, -9.8, 0.0));
 public:
 	TerrainDemoRunner() : light(vector(0, 0, 0),
 			vector(0.2f, 0.2f, 0.2f), vector(0.2f, 0.2f, 0.2f),
@@ -159,12 +163,17 @@ public:
         terrainRenderer.addTerrain(vector(0, 0, -terrain->getHeightMap()->getDepth()), terrain);
         terrainRenderer.addTerrain(vector(-terrain->getHeightMap()->getWidth(), 0, -terrain->getHeightMap()->getDepth()), terrain);
 
+        HierarchicalGeometry hierarchicalGeometry(new AABB(vector(0, 0, 0), vector(2 * terrain->getHeightMap()->getWidth(),
+                terrain->getHeightMap()->getHeight(), 2 * terrain->getHeightMap()->getDepth())));
+
         skyboxRenderer.setVideoRunner(video);
         skyboxRenderer.setSize(500);
 
         defaultRenderer.setVideoRunner(video);
 
         physics->getParticleManager()->setIntersectionTester(new HeightMapIntersectionTester());
+        physics->getParticleManager()->addForce(&this->gravity);
+        physics->getParticleManager()->addScenery(&hierarchicalGeometry);
 
         for(int index = 0; index < numberOfParticles; index++) {
             particles.push_back(std::unique_ptr<BulletParticle>(new BulletParticle()));
@@ -236,7 +245,7 @@ public:
                 bullet->setVelocity(vector(0, 0, 0));
                 bullet->setDamping(0.99f);
             } else {
-                bullet->setVelocity(((vector)camera.getOrientation().columna(2)).normalizado() * -35);
+                bullet->setVelocity(camera.getOrientation().columna(2).normalizado() * -20);
                 bullet->setDamping(0.99f);
             }
             bullet->setAcceleration(vector(0, 0, 0));

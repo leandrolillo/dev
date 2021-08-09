@@ -36,6 +36,10 @@ public:
 		this->forces.push_back(force);
 	}
 
+	void addScenery(const Geometry *scenery) {
+	    this->collisionDetector.addScenery(scenery);
+	}
+
 	void removeParticle(const Particle *particle) {
 		//this->particles.erase(__position)
 		particles.erase(std::remove(particles.begin(), particles.end(), particle),  particles.end());
