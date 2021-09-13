@@ -115,9 +115,8 @@ public:
         cameraCoordinates.z = (real)-1;
         cameraCoordinates.w = (real)0;
 
-        vector3 worldCoordinates = ((vector3)(viewMatrix.inversa() * cameraCoordinates)).normalizado();
-
-        return worldCoordinates;
+        // vector3 worldCoordinates = ((vector3)(viewMatrix.inversa() * cameraCoordinates)).normalizado();
+        return ((vector3)(viewMatrix.inversa() * cameraCoordinates)).normalizado();
     }
 };
 
