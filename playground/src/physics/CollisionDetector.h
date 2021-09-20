@@ -15,20 +15,20 @@
 #include<Particle.h>
 
 #include <Geometry.h>
-#include <IntersectionTester.h>
+#include "../geometry/intersection/CollisionTester.h"
 
 
 class CollisionDetector {
     std::vector <const Geometry *>scenery;
-    std::unique_ptr<IntersectionTester> intersectionTester;
+    std::unique_ptr<CollisionTester> intersectionTester;
 public:
     CollisionDetector() {
-        this->intersectionTester = std::unique_ptr<IntersectionTester>(new IntersectionTester());
+        this->intersectionTester = std::unique_ptr<CollisionTester>(new CollisionTester());
     }
     virtual ~CollisionDetector() {
     }
 
-    void setIntersectionTester(IntersectionTester *intersectionTester) {
+    void setIntersectionTester(CollisionTester *intersectionTester) {
         this->intersectionTester.reset(intersectionTester);
     }
 

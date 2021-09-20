@@ -49,7 +49,7 @@ public:
 	    return this->collisionDetector;
 	}
 
-    void setIntersectionTester(IntersectionTester * intersectionTester) {
+    void setIntersectionTester(CollisionTester * intersectionTester) {
         this->collisionDetector.setIntersectionTester(intersectionTester);
     }
 

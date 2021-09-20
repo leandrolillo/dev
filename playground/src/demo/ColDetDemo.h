@@ -24,7 +24,7 @@
 #include<Geometry.h>
 #include<geometry/DrawableSphere.h>
 #include<geometry/DrawableAABB.h>
-#include<IntersectionTester.h>
+#include"../geometry/intersection/CollisionTester.h"
 
 #include<InvalidArgumentException.h>
 #include<Camera.h>
@@ -77,7 +77,7 @@ class CollisionDetectionDemoRunner: public PlaygroundRunner {
     AudioRunner *audio = null;
 
     CollisionDetector collisionDetector;
-    IntersectionTester intersectionTester;
+    CollisionTester intersectionTester;
     ContactResolver contactSolver;
     std::vector<Particle*> allParticles; // collect all particles for sending to collision detector.
     std::vector<std::unique_ptr<CollidingParticle>> collidingParticles;
@@ -92,9 +92,9 @@ class CollisionDetectionDemoRunner: public PlaygroundRunner {
     SkyboxRenderer skyboxRenderer;
     GridRenderer gridRenderer;
 
-    MaterialResource red = MaterialResource(vector(0.8, 0, 0), vector(1, 0, 0), vector(1, 0, 0), 1.0, 0.5);
-    MaterialResource green = MaterialResource(vector(0, 0.8, 0), vector(0, 1, 0), vector(0, 1, 0), 1.0);
-    MaterialResource blue = MaterialResource(vector(0, 0, 0.8), vector(0, 0, 1), vector(0, 0, 1), 1.0);
+    MaterialResource red = MaterialResource(vector(1, 0, 0), vector(1, 0, 0), vector(1, 0, 0), 1.0, 0.5);
+    MaterialResource green = MaterialResource(vector(0, 1, 0), vector(0, 1, 0), vector(0, 1, 0), 1.0);
+    MaterialResource blue = MaterialResource(vector(0, 0, 1), vector(0, 0, 1), vector(0, 0, 1), 1.0);
 
 public:
     CollisionDetectionDemoRunner() : ground(new Plane(vector(0, 0, 0), vector(0, 1, 0))){

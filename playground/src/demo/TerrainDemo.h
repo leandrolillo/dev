@@ -171,7 +171,7 @@ public:
 
         defaultRenderer.setVideoRunner(video);
 
-        physics->getParticleManager()->setIntersectionTester(new HeightMapIntersectionTester());
+        //physics->getParticleManager()->setIntersectionTester(new HeightMapIntersectionTester());
         physics->getParticleManager()->addForce(&this->gravity);
         physics->getParticleManager()->addScenery(&hierarchicalGeometry);
 
@@ -227,7 +227,7 @@ public:
 		return LoopResult::CONTINUE;
 	}
 
-    void fire(const vector &position, bool isStatic = false) {
+    void fire(const vector &position, bool booble = false) {
         BulletParticle *bullet = null;
 
         logger->debug("Iterating particles");
@@ -241,15 +241,18 @@ public:
 
         if(bullet != null) {
             bullet->setPosition(position);
-            if(isStatic) {
-                bullet->setVelocity(vector(0, 0, 0));
+
+            if(booble) {
+                bullet->setVelocity(camera.getOrientation().columna(2).normalizado() * -20);
+                bullet->setMass(0.1);
                 bullet->setDamping(0.99f);
             } else {
-                bullet->setVelocity(camera.getOrientation().columna(2).normalizado() * -20);
-                bullet->setDamping(0.99f);
+                bullet->setVelocity(camera.getOrientation().columna(2).normalizado() * -4);
+                bullet->setDamping(0.8f);
+                bullet->setMass(-0.001);
             }
+
             bullet->setAcceleration(vector(0, 0, 0));
-            bullet->setMass(0.1);
 
             bullet->setStatus(true);
 
@@ -262,7 +265,12 @@ public:
 
 	void mouseButtonDown(unsigned char button, int x, int y)
 	{
-        fire(camera.getPosition());
+	    if(button == SDL_BUTTON_LEFT) {
+	        fire(camera.getPosition(), true);
+	    } else {
+	        fire(camera.getPosition());
+	    }
+
 	    inputController->mouseButtonDown(button, x, y);
 	}
 

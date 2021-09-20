@@ -1,6 +1,6 @@
-add_library(geometry Geometry.cpp intersection/IntersectionTester.cpp)
+add_library(geometry INTERFACE)
 
-target_include_directories(geometry PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/intersection)
+target_include_directories(geometry INTERFACE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/intersection)
 
 # library link dependencies
-target_link_libraries(geometry PUBLIC math)
+target_link_libraries(geometry INTERFACE math)

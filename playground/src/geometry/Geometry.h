@@ -12,7 +12,16 @@
 #include<Math3d.h>
 #include<GeometryContact.h>
 
-class IntersectionTesterBase;
+
+enum class GeometryType {
+    SPHERE,
+    PLANE,
+    LINE,
+    AABB,
+    HIERARCHY,
+    HEIGHTMAP
+};
+
 
 class Geometry {
     vector origin;
@@ -35,12 +44,7 @@ public:
         return "Geometry(origin: " + origin.toString() + ")";
     }
 
-    /**
-     * Visitor pattern for intersection testing and contact determination
-     */
-    virtual bool intersects(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const = 0;
-    virtual std::vector<GeometryContact>  detectCollision(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const = 0;
-
+    virtual GeometryType getType() const = 0;
 };
 
 class Sphere: public Geometry {
@@ -62,8 +66,9 @@ public:
         return "Sphere(origin: " + this->getOrigin().toString() + ", radius: " + std::to_string(this->radius) + ")";
     }
 
-    bool intersects(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const override;
-    std::vector<GeometryContact> detectCollision(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const override;
+    GeometryType getType() const override {
+        return GeometryType::SPHERE;
+    }
 };
 
 class Plane: public Geometry {
@@ -81,8 +86,9 @@ public:
         return "Plane(origin: " + this->getOrigin().toString() + ", normal: " + this->normal.toString() + ")";
     }
 
-    bool intersects(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const override;
-    std::vector<GeometryContact> detectCollision(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const override;
+    GeometryType getType() const override {
+        return GeometryType::PLANE;
+    }
 };
 
 class Line: public Geometry {
@@ -100,8 +106,9 @@ public:
         return "Line(origin: " + this->getOrigin().toString() + ", dir: " + this->direction.toString() + ")";
     }
 
-    bool intersects(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const override;
-    std::vector<GeometryContact>  detectCollision(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const override;
+    GeometryType getType() const override {
+        return GeometryType::LINE;
+    }
 };
 
 class AABB : public Geometry {
@@ -123,35 +130,36 @@ public:
         return "AABB(origin: " + this->getOrigin().toString() + ", halfSizes: " + this->halfSizes.toString() + ")";
     }
 
-    bool intersects(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const override;
-    std::vector<GeometryContact>  detectCollision(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const override;
-
+    GeometryType getType() const override {
+        return GeometryType::AABB;
+    }
 };
 
 class HierarchicalGeometry : public Geometry {
-    std::unique_ptr<Geometry> boundingGeometry;
+    std::unique_ptr<Geometry> boundingVolume;
     std::vector<std::unique_ptr<Geometry>> children;
 public:
-    HierarchicalGeometry(Geometry *boundingGeometry) : Geometry(boundingGeometry->getOrigin()) {
-        this->boundingGeometry = std::unique_ptr<Geometry>(boundingGeometry);
+    HierarchicalGeometry(Geometry *boundingVolume) : Geometry(boundingVolume->getOrigin()) {
+        this->boundingVolume = std::unique_ptr<Geometry>(boundingVolume);
     }
     const vector& getOrigin() const {
-        return this->boundingGeometry->getOrigin();
+        return this->boundingVolume->getOrigin();
     }
 
     void setOrigin(const vector &origin) {
-        this->boundingGeometry->setOrigin(origin);
+        this->boundingVolume->setOrigin(origin);
+    }
+
+    void addChildren(Geometry *children) {
+
     }
 
     String toString() const override {
         return "HierarchicalGeometry(origin: " + this->getOrigin().toString() + ", children: " + std::to_string(this->children.size()) + ")";
     }
 
-    bool intersects(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const override;
-    std::vector<GeometryContact>  detectCollision(const IntersectionTesterBase *intersectionTester, const Geometry &op2) const override;
-
+    GeometryType getType() const override {
+        return GeometryType::HIERARCHY;
+    }
 };
-
-
-
 #endif /* SRC_PHYSICS_GEOMETRY_GEOMETRY_H_ */

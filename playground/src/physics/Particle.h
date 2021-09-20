@@ -62,7 +62,7 @@ public:
 
 	}
 
-	bool getStatus() {
+	bool getStatus() const {
 		return this->_status;
 	}
 

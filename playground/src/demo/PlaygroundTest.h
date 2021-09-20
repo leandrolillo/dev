@@ -9,14 +9,18 @@
 #include <resources/OggResource.h>
 #include <stdio.h>
 
-#include<tests/GeometryTests.h>
 #include<tests/Math3dTests.h>
+#include "../geometry/tests/CollisionTesterTests.h"
+#include "../physics/tests/CollisionDetectorTests.h"
+#include "../physics/tests/ContactResolverTests.h"
 
 class PlaygroundTestsRunner: public PlaygroundRunner, UnitTest {
 		Logger *logger;
 		TestsManager testsManager;
-		GeometryTests geometryTests;
-		Math3dTests math3dTests;
+        Math3dTests math3dTests;
+		CollisionTesterTests collisionTesterTests;
+		CollisionDetectorTests collisionDetectorTests;
+		ContactResolverTests collisionResolverTests;
 
 	public:
 		static const unsigned char ID = 100;
@@ -24,8 +28,6 @@ class PlaygroundTestsRunner: public PlaygroundRunner, UnitTest {
 	public:
 		PlaygroundTestsRunner() {
 		    logger = LoggerFactory::getLogger("PlaygroundTestsRunner");
-
-		    this->addTest("testMousePicking", static_cast<void (UnitTest::*)()>(&PlaygroundTestsRunner::testMousePicking));
 		}
 		unsigned char getId() {
 			return PlaygroundTestsRunner::ID;
@@ -46,8 +48,12 @@ class PlaygroundTestsRunner: public PlaygroundRunner, UnitTest {
         }
 
 		virtual bool init() {
-            this->testsManager.addTest(geometryTests);
+            this->addTest("testMousePicking", static_cast<void (UnitTest::*)()>(&PlaygroundTestsRunner::testMousePicking));
+
             this->testsManager.addTest(math3dTests);
+            this->testsManager.addTest(collisionTesterTests);
+            this->testsManager.addTest(collisionDetectorTests);
+            this->testsManager.addTest(collisionResolverTests);
             this->testsManager.addTest(*this);
 
 

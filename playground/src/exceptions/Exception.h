@@ -22,6 +22,10 @@ class Exception {
 			this->msg = StringFormatter::formatVarArgs(format, &args);
 			va_end(args);
 		}
+		Exception(String message) {
+		    this->msg = message;
+		}
+
 		std::string toString() {
 			return getMessage();
 		}

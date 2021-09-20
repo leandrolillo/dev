@@ -220,14 +220,14 @@ class TestsManager {
 			logger->info("Results:");
 
 			if(!allFailedTests.empty()) {
-			    logger->info("  Tests in error:");
+			    logger->error("  Tests in error:");
 
 			    for(auto failedTest : allFailedTests) {
-			        logger->info("  - %s", failedTest.c_str());
+			        logger->error("  - %s", failedTest.c_str());
 			    }
 			}
 
-			logger->info("Tests run: [%d], Failures: [%d]", totalTests, allFailedTests.size());
+			logger->error("Tests run: [%d], Failures: [%d]", totalTests, allFailedTests.size());
 		}
 };
 
