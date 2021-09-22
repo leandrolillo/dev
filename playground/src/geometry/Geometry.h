@@ -32,11 +32,11 @@ public:
 
     virtual ~Geometry() {}
 
-    const vector& getOrigin() const {
+    virtual const vector& getOrigin() const {
         return this->origin;
     }
 
-    void setOrigin(const vector &origin) {
+    virtual void setOrigin(const vector &origin) {
         this->origin = origin;
     }
 
@@ -142,15 +142,22 @@ public:
     HierarchicalGeometry(Geometry *boundingVolume) : Geometry(boundingVolume->getOrigin()) {
         this->boundingVolume = std::unique_ptr<Geometry>(boundingVolume);
     }
-    const vector& getOrigin() const {
+    const vector& getOrigin() const override {
         return this->boundingVolume->getOrigin();
     }
 
-    void setOrigin(const vector &origin) {
+    void setOrigin(const vector &origin) override {
+        vector delta = origin - this->getOrigin();
+
         this->boundingVolume->setOrigin(origin);
+
+        for(auto &child : children) {
+            child->setOrigin(child->getOrigin() + delta);
+        }
     }
 
     void addChildren(Geometry *children) {
+        this->children.push_back(std::unique_ptr<Geometry>(children));
 
     }
 
@@ -160,6 +167,14 @@ public:
 
     GeometryType getType() const override {
         return GeometryType::HIERARCHY;
+    }
+
+    const Geometry &getBoundingVolume() const {
+        return *this->boundingVolume.get();
+    }
+
+    const std::vector<std::unique_ptr<Geometry>> &getChildren() const {
+        return this->children;
     }
 };
 #endif /* SRC_PHYSICS_GEOMETRY_GEOMETRY_H_ */

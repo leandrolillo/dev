@@ -172,7 +172,7 @@ public:
 				currentResourceIterator != resourceCache.end();
 				currentResourceIterator++) {
 			if ((*currentResourceIterator).second != null) {
-				logger->verbose("Disposing of ['%s']", (*currentResourceIterator).second->toString().c_str());
+				//logger->verbose("Disposing of ['%s']", (*currentResourceIterator).second->toString().c_str());
 				dispose((*currentResourceIterator).second);
 				logger->verbose("Done disposing resource");
 			}

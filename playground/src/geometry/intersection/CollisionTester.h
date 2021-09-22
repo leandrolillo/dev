@@ -389,6 +389,18 @@ public:
         const Sphere &sphere = (const Sphere &)sphereGeometry;
         const HierarchicalGeometry &hierarchy = (const HierarchicalGeometry &)hierarchyGeometry;
 
+
+        if(this->intersects(sphereGeometry, hierarchy.getBoundingVolume())) {
+            std::vector<GeometryContact> response;
+
+            for(auto & currentChildren: hierarchy.getChildren()) {
+                std::vector<GeometryContact> currentChildrenContacts = this->detectCollision(sphereGeometry, *currentChildren.get());
+                response.insert( response.end(), currentChildrenContacts.begin(), currentChildrenContacts.end());
+            }
+
+            return response;
+        }
+
         return std::vector<GeometryContact>();
     }
 

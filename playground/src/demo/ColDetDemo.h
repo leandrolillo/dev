@@ -24,6 +24,7 @@
 #include<Geometry.h>
 #include<geometry/DrawableSphere.h>
 #include<geometry/DrawableAABB.h>
+#include<geometry/DrawableHierarchy.h>
 #include"../geometry/intersection/CollisionTester.h"
 
 #include<InvalidArgumentException.h>
@@ -142,6 +143,13 @@ public:
             collidingParticles[2]->setMaterial(green);
         }
 
+        if(collidingParticles.size() > 3) {
+            collidingParticles[3]->setPosition(vector(-2, 1, 0));
+            collidingParticles[3]->setMass(1);
+            collidingParticles[3]->setVelocity(vector(-1, -1, 0));
+            collidingParticles[3]->setMaterial(green);
+        }
+
         ground.setInverseMass((real)0);
     }
 
@@ -170,6 +178,14 @@ public:
         allParticles.push_back(collidingParticles.back().get());
 
         collidingParticles.push_back(std::unique_ptr<CollidingParticle>(new CollidingParticle(new DrawableAABB(vector(2, 2, 0), vector(0.5, 0.5, 0.5)))));
+        collidingParticles.back()->setRunner(this);
+        allParticles.push_back(collidingParticles.back().get());
+
+        HierarchicalGeometry *hierarchicalGeometry = new DrawableHierarchy(new AABB(vector(0, 0, 0), vector(1, 0.5, 0.5)));
+        hierarchicalGeometry->addChildren(new Sphere(vector(-0.5, 0, 0), 0.5));
+        hierarchicalGeometry->addChildren(new Sphere(vector(0.5, 0, 0), 0.5));
+
+        collidingParticles.push_back(std::unique_ptr<CollidingParticle>(new CollidingParticle(hierarchicalGeometry)));
         collidingParticles.back()->setRunner(this);
         allParticles.push_back(collidingParticles.back().get());
 

@@ -23,8 +23,8 @@ int main(int, char**){
 //    ObjDemoPlayground objPlayground("/Users/leandro/huevadas/projects/dev/media/");
 //    objPlayground.run();
 
-//    CollisionDetectionPlayground colDetplayground("/Users/leandro/huevadas/projects/dev/media/");
-//    colDetplayground.run();
+    CollisionDetectionPlayground colDetplayground("/Users/leandro/huevadas/projects/dev/media/");
+    colDetplayground.run();
 
 //    PlaygroundTerrainDemo terrainPlayground("/Users/leandro/huevadas/projects/dev/media/");
 //    terrainPlayground.run();
