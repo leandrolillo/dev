@@ -79,6 +79,10 @@ public:
         this->currentMaterial = (material == null ? &defaultMaterial : material);
     }
 
+    const MaterialResource *getCurrentMaterial() {
+        return this->currentMaterial;
+    }
+
     void setLight(const LightResource *light) {
         this->light = light;
     }
@@ -91,6 +95,8 @@ public:
         if(this->shader == null) {
             this->shader = (ShaderProgramResource*) this->resourceManager->load("core/simple.program.json", "video/shaderProgram");
         }
+
+        this->setMaterial(null);
 
         return true;
     }
