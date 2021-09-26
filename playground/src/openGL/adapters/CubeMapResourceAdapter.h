@@ -49,7 +49,8 @@ public:
 					glTexImage2D(getLocation(faceName), 0, GL_RGB, imageResource->getAncho(), imageResource->getAlto(), 0, GL_BGR, GL_UNSIGNED_BYTE, imageResource->getData());
 				}
 
-				this->getResourceManager()->dispose(imageResource);
+				//Disposing of this image during this adapter load method, seems to be causing an exception when leaving the program.
+				//this->getResourceManager()->dispose(imageResource);
 			}
 
 			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

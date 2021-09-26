@@ -116,6 +116,7 @@ private:
 	DefaultRenderer defaultRenderer;
 
 	TerrainResource *terrain = null;
+	std::unique_ptr<HierarchicalGeometry> terrainBoundingVolume;
 
 	std::vector<std::unique_ptr<BulletParticle>> particles;
 	Gravity gravity = Gravity(vector(0.0, -9.8, 0.0));
@@ -163,8 +164,29 @@ public:
         terrainRenderer.addTerrain(vector(0, 0, -terrain->getHeightMap()->getDepth()), terrain);
         terrainRenderer.addTerrain(vector(-terrain->getHeightMap()->getWidth(), 0, -terrain->getHeightMap()->getDepth()), terrain);
 
-        HierarchicalGeometry hierarchicalGeometry(new AABB(vector(0, 0, 0), vector(2 * terrain->getHeightMap()->getWidth(),
-                terrain->getHeightMap()->getHeight(), 2 * terrain->getHeightMap()->getDepth())));
+
+        terrainBoundingVolume = std::unique_ptr<HierarchicalGeometry>(new HierarchicalGeometry(new AABB(vector(0, 0, 0), vector(2 * terrain->getHeightMap()->getWidth(),
+                terrain->getHeightMap()->getHeight(), 2 * terrain->getHeightMap()->getDepth()))));
+
+        vector terrainHalfSizes = vector(terrain->getHeightMap()->getWidth() * 0.5,
+                terrain->getHeightMap()->getHeight() * 0.5,
+                terrain->getHeightMap()->getDepth() * 0.5);
+
+        terrainBoundingVolume->addChildren(new HierarchicalGeometry(
+                new AABB(vector(0, 0, 0) + terrainHalfSizes, terrainHalfSizes))
+        );
+
+        terrainBoundingVolume->addChildren(new HierarchicalGeometry(
+                new AABB(vector(-terrain->getHeightMap()->getWidth(), 0, 0) + terrainHalfSizes, terrainHalfSizes))
+        );
+
+        terrainBoundingVolume->addChildren(new HierarchicalGeometry(
+                new AABB(vector(0, 0, -terrain->getHeightMap()->getDepth()) + terrainHalfSizes, terrainHalfSizes))
+        );
+
+        terrainBoundingVolume->addChildren(new HierarchicalGeometry(
+                new AABB(vector(-terrain->getHeightMap()->getWidth(), 0, -terrain->getHeightMap()->getDepth()) + terrainHalfSizes, terrainHalfSizes))
+        );
 
         skyboxRenderer.setVideoRunner(video);
         skyboxRenderer.setSize(500);
@@ -173,7 +195,7 @@ public:
 
         //physics->getParticleManager()->setIntersectionTester(new HeightMapIntersectionTester());
         physics->getParticleManager()->addForce(&this->gravity);
-        physics->getParticleManager()->addScenery(&hierarchicalGeometry);
+        physics->getParticleManager()->addScenery(terrainBoundingVolume.get());
 
         for(int index = 0; index < numberOfParticles; index++) {
             particles.push_back(std::unique_ptr<BulletParticle>(new BulletParticle()));

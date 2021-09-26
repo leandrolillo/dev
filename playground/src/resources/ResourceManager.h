@@ -152,9 +152,9 @@ public:
 		    String resourceToString = resource->toString();
 		    logger->verbose("Disposing of [%s]", resourceToString.c_str());
 
-		    if(adapters[resource->getMimeType()] != null) {
+		    if(adapters.count(resource->getMimeType()) > 0) {
 		        logger->verbose("Disposing of %s with adapter %s", resourceToString.c_str() ,adapters[resource->getMimeType()]->toString().c_str());
-		        adapters[resource->getMimeType()]->dispose(resource);
+		        adapters.at(resource->getMimeType())->dispose(resource);
 		    }
 
 		    logger->verbose("deleting [%s]", resourceToString.c_str());
