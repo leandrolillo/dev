@@ -10,3 +10,12 @@ sample command line for rebuilding, running and tailing the log file:
 
 './cmake-clean.sh ; cmake . ; make ; ./target/playground &  tail -n200 -f ./playground.log'
 
+
+----
+----
+Dependencies:
+already installed: openAl, openGl
+
+brew install libjpeg
+brew install libpng
+brew install sdl2

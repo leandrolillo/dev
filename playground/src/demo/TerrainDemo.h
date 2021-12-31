@@ -123,7 +123,9 @@ private:
 public:
 	TerrainDemoRunner() : light(vector(0, 0, 0),
 			vector(0.2f, 0.2f, 0.2f), vector(0.2f, 0.2f, 0.2f),
-			vector(0.1f, 0.1f, 0.1f), 1.0f), fpsInputController(camera, playerTransform), thirdPersonController(camera, playerTransform) {
+			vector(0.1f, 0.1f, 0.1f), 1.0f),
+            fpsInputController(camera, playerTransform),
+            thirdPersonController(camera, playerTransform) {
 	}
 	virtual unsigned char getInterests() {
 		return KEY_DOWN | KEY_UP | MOUSE_MOVE | MOUSE_WHEEL | MOUSE_BUTTON_DOWN | MOUSE_BUTTON_UP | RESIZE;
@@ -302,8 +304,10 @@ public:
 	}
 
     virtual void mouseMove(int x, int y, int dx, int dy) {
-        inputController->mouseMove(x, y, dx, dy);
-        this->video->setMousePosition(video->getScreenWidth() >> 1, video->getScreenHeight() >> 1);
+        if(dx != 0 || dy != 0) {
+            inputController->mouseMove(x, y, dx, dy);
+            this->video->setMousePosition(video->getScreenWidth() >> 1, video->getScreenHeight() >> 1);
+        }
     }
 
 	void mouseWheel(int wheel) {
