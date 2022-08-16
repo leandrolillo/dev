@@ -13,6 +13,7 @@
 #include "../geometry/tests/CollisionTesterTests.h"
 #include "../physics/tests/CollisionDetectorTests.h"
 #include "../physics/tests/ContactResolverTests.h"
+#include "Paths.h"
 
 class PlaygroundTestsRunner: public PlaygroundRunner, UnitTest {
 		Logger *logger;

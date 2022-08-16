@@ -1,5 +1,5 @@
-add_library(resources INTERFACE)
+add_library(resources ResourceManager.cpp Resource.cpp FileParser.cpp)
 target_include_directories(resources INTERFACE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/resources ${CMAKE_CURRENT_SOURCE_DIR}/adapters)
 
 # library link dependencies
-target_link_libraries(resources INTERFACE javaLike log exceptions)
+target_link_libraries(resources PUBLIC javaLike log exceptions)

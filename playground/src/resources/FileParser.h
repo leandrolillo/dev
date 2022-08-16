@@ -19,9 +19,10 @@ public:
     static const String eof;
     static const String eol;
 
-    static const char charEof;
-    static const char charNewl;
-    static const char charEol;
+    static const char charEof = (char)-1;
+    static const char charNewl = '\n';
+    static const char charEol = '\0';
+
 private:
     String filename;
     FILE *fileStream;
@@ -277,13 +278,5 @@ public:
         return size;
     }
 };
-
-const String FileParser::eof = {-1};
-const String FileParser::eol = "\n";
-
-const char FileParser::charEof = (char)-1;
-const char FileParser::charNewl = '\n';
-const char FileParser::charEol = '\0';
-
 
 #endif /* FILEPARSER_H_ */

@@ -8,8 +8,8 @@
 #ifndef RESOURCEADAPTER_H_
 #define RESOURCEADAPTER_H_
 
-#include <Resource.h>
-#include <ResourceManager.h>
+#include "Resource.h"
+#include "ResourceManager.h"
 #include<vector>
 
 class ResourceManager;
@@ -22,6 +22,7 @@ protected:
 	Logger *logger = null;
 public:
 	virtual ~ResourceAdapter() {
+		logger->debug("Destroying resource adapter %s", this->toString().c_str());
 	}
 
 	ResourceManager* getResourceManager() {

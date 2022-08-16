@@ -8,23 +8,26 @@
 #ifndef RESOURCE_H_
 #define RESOURCE_H_
 
-#include "../javaLike/JavaLike.h"
+#include "JavaLike.h"
+#include "Logger.h"
 #include <string>
+
+class ResourceAdapter;
 
 class Resource {
 	private:
+		Logger *logger = LoggerFactory::getLogger("resources/Resource");
 		unsigned long id;
 		String fileName;
 		String mimeType;
+		ResourceAdapter *adapter = null;
 
 	public:
-		Resource(unsigned long id, const String &mimeType)
-		{
+		Resource(unsigned long id, const String &mimeType) {
 			setId(id);
 			setMimeType(mimeType);
 		}
-		virtual ~Resource() {
-		}
+		virtual ~Resource();
 
 		unsigned long getId() const {
 			return id;
@@ -34,28 +37,28 @@ class Resource {
 			this->id = id;
 		}
 
-		const String& getMimeType() const
-		{
+		const String& getMimeType() const {
 			return mimeType;
 		}
 
-		void setMimeType(const String & mimeType)
-		{
+		void setMimeType(const String & mimeType) {
 			this->mimeType = mimeType;
 		}
 
-		const String& getFileName() const
-		{
+		const String& getFileName() const {
 			return fileName;
 		}
 
-		void setFileName(const String & fileName)
-		{
+		void setFileName(const String & fileName) {
 			this->fileName = fileName;
 		}
 
+		void setAdapter(ResourceAdapter *adapter) {
+			this->adapter = adapter;
+		}
+
 		virtual String toString() const {
-			return ("Resource(id:" + std::to_string(this->getId()) + ") [" + this->getMimeType() + "] [" + this->fileName + "]");
+			return String("Resource(id:" + std::to_string(this->getId()) + ") [" + this->getMimeType() + "] [" + this->fileName + "]");
 		}
 
 	};
