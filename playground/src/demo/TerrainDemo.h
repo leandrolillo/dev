@@ -213,6 +213,10 @@ public:
         terrainRenderer.addTerrain(vector(0, 0, -terrain->getHeightMap()->getDepth()), terrain);
         terrainRenderer.addTerrain(vector(-terrain->getHeightMap()->getWidth(), 0, -terrain->getHeightMap()->getDepth()), terrain);
 
+
+        /**
+         * Setup terrain hierarchical bounding volume - aabbs per heightmap are actually unnecessary since its current intersection test does aabb check as well.
+         */
         terrainBoundingVolume = std::unique_ptr<HierarchicalGeometry>(new HierarchicalGeometry(
         		new AABB(vector(0, 0, 0),
         				vector(terrain->getHeightMap()->getWidth(),
@@ -224,22 +228,22 @@ public:
 
         terrainBoundingVolume->addChildren(new HierarchicalGeometry(
                 new AABB(vector(0, 0, 0) + terrainHalfSizes, terrainHalfSizes),
-				new HeightMapGeometry(vector(0, 0, 0) + terrainHalfSizes, terrain->getHeightMap()))
+				new HeightMapGeometry(vector(0, 0, 0), terrain->getHeightMap()))
         );
 
         terrainBoundingVolume->addChildren(new HierarchicalGeometry(
                 new AABB(vector(-terrain->getHeightMap()->getWidth(), 0, 0) + terrainHalfSizes, terrainHalfSizes),
-				new HeightMapGeometry(vector(-terrain->getHeightMap()->getWidth(), 0, 0) + terrainHalfSizes, terrain->getHeightMap()))
+				new HeightMapGeometry(vector(-terrain->getHeightMap()->getWidth(), 0, 0), terrain->getHeightMap()))
         );
 
         terrainBoundingVolume->addChildren(new HierarchicalGeometry(
                 new AABB(vector(0, 0, -terrain->getHeightMap()->getDepth()) + terrainHalfSizes, terrainHalfSizes),
-				new HeightMapGeometry(vector(0, 0, -terrain->getHeightMap()->getDepth()) + terrainHalfSizes, terrain->getHeightMap()))
+				new HeightMapGeometry(vector(0, 0, -terrain->getHeightMap()->getDepth()), terrain->getHeightMap()))
         );
 
         terrainBoundingVolume->addChildren(new HierarchicalGeometry(
                 new AABB(vector(-terrain->getHeightMap()->getWidth(), 0, -terrain->getHeightMap()->getDepth()) + terrainHalfSizes, terrainHalfSizes),
-				new HeightMapGeometry(vector(-terrain->getHeightMap()->getWidth(), 0, -terrain->getHeightMap()->getDepth()) + terrainHalfSizes, terrain->getHeightMap()))
+				new HeightMapGeometry(vector(-terrain->getHeightMap()->getWidth(), 0, -terrain->getHeightMap()->getDepth()), terrain->getHeightMap()))
         );
 
         skyboxRenderer.setVideoRunner(video);
