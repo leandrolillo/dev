@@ -1,5 +1,20 @@
+-------------
+Dependencies:
+-------------
+
+already installed: openAl, openGl
+
+brew install libjpeg
+brew install libpng
+brew install sdl2
+
+-------------
+Building:
+-------------
+
 'cmake-clean.sh' for cleaning cmake generated files
-'cmake .' for generating make file
+
+'cmake .' for generating make file - this does not build the executable, only puts toghether a makefile!
 	'cmake -DCMAKE_BUILD_TYPE=Debug .' for debug profile
 	'cmake -DCMAKE_BUILD_TYPE=Release .' for release profile
 	
@@ -7,15 +22,8 @@
 
 
 sample command line for rebuilding, running and tailing the log file:
+--------------------------------------------------------------------
 
-'./cmake-clean.sh ; cmake . ; make ; ./target/playground &  tail -n200 -f ./playground.log'
+release: './cmake-clean.sh && cmake . && make && (./target/playground &  tail -n200 -f ./playground.log)'
 
-
-----
-----
-Dependencies:
-already installed: openAl, openGl
-
-brew install libjpeg
-brew install libpng
-brew install sdl2
+debug: './cmake-clean.sh && cmake -DCMAKE_BUILD_TYPE=Debug . && make && lldb ./target/playground -S lldb.settings'
