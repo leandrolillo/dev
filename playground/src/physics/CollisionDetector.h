@@ -32,6 +32,10 @@ public:
         this->intersectionTester.reset(intersectionTester);
     }
 
+    CollisionTester *getIntersectionTester() {
+    	return this->intersectionTester.get();
+    }
+
     void addScenery(const Geometry *scenery) {
         if(scenery) {
             this->scenery.push_back(scenery);

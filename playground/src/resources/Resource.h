@@ -17,7 +17,7 @@ class ResourceAdapter;
 class Resource {
 	private:
 		Logger *logger = LoggerFactory::getLogger("resources/Resource");
-		unsigned long id;
+		unsigned long id; // id makes sense to business only - thus can be repeated. It is not a sequential primary key for all resources
 		String fileName;
 		String mimeType;
 		ResourceAdapter *adapter = null;

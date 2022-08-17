@@ -12,42 +12,20 @@
 #include<HeightMapResource.h>
 #include "../../geometry/intersection/CollisionTester.h"
 
-class HeightMapGeometry : public Geometry {
+class HeightMapGeometry : public AABB {
     const HeightMapResource *heightMap;
 public:
-    HeightMapGeometry(const vector &position, const HeightMapResource *heightMap) : Geometry(position){
+    HeightMapGeometry(const vector &position, const HeightMapResource *heightMap) : AABB(position + vector(heightMap->getGridWidth() * 0.5, heightMap->getGridHeight() * 0.5, heightMap->getDepth() * 0.5), vector(heightMap->getGridWidth() * 0.5, heightMap->getGridHeight() * 0.5, heightMap->getDepth() * 0.5)){
         this->heightMap = heightMap;
     }
+
+    const HeightMapResource *getHeightMap() const {
+    	return this->heightMap;
+    }
+
+    GeometryType getType() const override {
+        return GeometryType::HEIGHTMAP;
+    }
 };
-
-//class HeightMapIntersectionTester : public IntersectionTester {
-//public:
-//    bool intersectsVisit(const AABB &anotherAabb, const Geometry &heightMapGeometry) const override {
-//        return false;
-//    }
-//    bool intersectsVisit(const Plane &plane, const Geometry &heightMapGeometry) const override {
-//        return false;
-//    }
-//    bool intersectsVisit(const Line &anotherLine, const Geometry &heightMapGeometry) const override {
-//        return false;
-//    }
-//    bool intersectsVisit(const Sphere &sphere, const Geometry &heightMapGeometry) const override {
-//        return false;
-//    }
-//
-//    std::vector<GeometryContact>  detectCollisionVisit(const AABB &anotherAabb, const Geometry &heightMapGeometry) const override {
-//        return std::vector<GeometryContact>();
-//    }
-//    std::vector<GeometryContact>  detectCollisionVisit(const Sphere &sphere, const Geometry &heightMapGeometry) const override {
-//        return std::vector<GeometryContact>();
-//    }
-//    std::vector<GeometryContact>  detectCollisionVisit(const Plane &plane, const Geometry &heightMapGeometry) const override {
-//        return std::vector<GeometryContact>();
-//    }
-//    std::vector<GeometryContact>  detectCollisionVisit(const Line &line, const Geometry &heightMapGeometry) const override {
-//        return std::vector<GeometryContact>();
-//    }
-//};
-
 
 #endif /* SRC_DEMO_HEIGHTMAP_HEIGHTMAPGEOMETRY_H_ */

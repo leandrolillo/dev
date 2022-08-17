@@ -24,7 +24,7 @@ enum class GeometryType {
 
 
 class Geometry {
-    vector origin;
+    vector origin; //keep this property private and use getOrigin instead.
 public:
     Geometry(const vector &origin) {
         this->origin = origin;
@@ -126,6 +126,13 @@ public:
         this->halfSizes = halfSizes;
     }
 
+    /**
+     * Returns the bottom left position of the aabb. On the other hand, Origin is the center.
+     */
+    vector getPosition() const {
+    	return this->getOrigin()- halfSizes;
+    }
+
     String toString() const override {
         return "AABB(origin: " + this->getOrigin().toString() + ", halfSizes: " + this->halfSizes.toString() + ")";
     }
@@ -142,6 +149,9 @@ public:
     HierarchicalGeometry(Geometry *boundingVolume) : Geometry(boundingVolume->getOrigin()) {
         this->boundingVolume = std::unique_ptr<Geometry>(boundingVolume);
     }
+    HierarchicalGeometry(Geometry *boundingVolume, Geometry *child) :  HierarchicalGeometry(boundingVolume) {
+		this->addChildren(child);
+	}
     const vector& getOrigin() const override {
         return this->boundingVolume->getOrigin();
     }

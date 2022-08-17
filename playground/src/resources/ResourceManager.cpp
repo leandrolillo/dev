@@ -81,38 +81,12 @@ Resource* ResourceManager::load(FileParser &fileParser, const String &mimeType) 
 
 ResourceManager::~ResourceManager() {
     logger->debug("Shutting down resource manager");
-//	for (std::map<String, Resource*>::iterator currentResourceIterator = resourceCache.begin();
-//			currentResourceIterator != resourceCache.end();
-//			currentResourceIterator++) {
-//		if ((*currentResourceIterator).second != null) {
-//			delete (*currentResourceIterator).second;
-//			logger->verbose("Done disposing resource");
-//		}
-//	}
-
 	logger->debug("Disposing of %d resources", resourceCache.size());
-	//resourceCache.clear();
+	//resourceCache.clear(); // No longer required since using unique_ptr - destroyer gets called automatically
 
-	logger->debug("Disposing of %d resource adapters", adaptersCache.size());
-//	std::set<ResourceAdapter*> resourceAdaptersSet;
-//	for (std::map<String, ResourceAdapter*>::iterator currentAdapterIterator =
-//			adapters.begin(); currentAdapterIterator != adapters.end();
-//			currentAdapterIterator++) {
-//	    logger->verbose("Scheduling for removal [%s]", currentAdapterIterator->second->toString().c_str());
-//		resourceAdaptersSet.insert(currentAdapterIterator->second);
-//	}
-//
-//	for (std::set<ResourceAdapter*>::iterator currentAdapterIterator =
-//			resourceAdaptersSet.begin();
-//			currentAdapterIterator != resourceAdaptersSet.end();
-//			currentAdapterIterator++) {
-//	    logger->verbose("Deleting adapter [%s]", (*currentAdapterIterator)->toString().c_str());
-//		delete (*currentAdapterIterator);
-//	}
-//
-	logger->debug("Disposing of resource adapters");
-
-	//adapters.clear();
+	logger->debug("Disposing of %d resource adapters", resourceAdapters.size());
+	//resourceAdapters.clear(); // No longer required since using unique_ptr - destroyer gets called automatically
+	adaptersCache.clear();
 
 	logger->info("Resource manager shutdown complete");
 }
