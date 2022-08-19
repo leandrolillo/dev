@@ -110,7 +110,7 @@ public:
                 std::max(mins.z, std::min(sphere.getOrigin().z, maxs.z))
                 );
 
-        aabbClosestPoint.y = heightmap.getHeightMap()->heightAt(heightmap.getPosition().x - aabbClosestPoint.x, heightmap.getPosition().z - aabbClosestPoint.z);
+        aabbClosestPoint.y = heightmap.getHeightMap()->heightAt(aabbClosestPoint.x - heightmap.getPosition().x, aabbClosestPoint.z - aabbClosestPoint.z);
         //printf("closest point: %s\n", aabbClosestPoint.toString().c_str());
 
         vector delta = sphere.getOrigin() - aabbClosestPoint;
@@ -226,25 +226,10 @@ public:
                 terrain->getHeightMap()->getHeight() * 0.5,
                 terrain->getHeightMap()->getDepth() * 0.5);
 
-        terrainBoundingVolume->addChildren(new HierarchicalGeometry(
-                new AABB(vector(0, 0, 0) + terrainHalfSizes, terrainHalfSizes),
-				new HeightMapGeometry(vector(0, 0, 0), terrain->getHeightMap()))
-        );
-
-        terrainBoundingVolume->addChildren(new HierarchicalGeometry(
-                new AABB(vector(-terrain->getHeightMap()->getWidth(), 0, 0) + terrainHalfSizes, terrainHalfSizes),
-				new HeightMapGeometry(vector(-terrain->getHeightMap()->getWidth(), 0, 0), terrain->getHeightMap()))
-        );
-
-        terrainBoundingVolume->addChildren(new HierarchicalGeometry(
-                new AABB(vector(0, 0, -terrain->getHeightMap()->getDepth()) + terrainHalfSizes, terrainHalfSizes),
-				new HeightMapGeometry(vector(0, 0, -terrain->getHeightMap()->getDepth()), terrain->getHeightMap()))
-        );
-
-        terrainBoundingVolume->addChildren(new HierarchicalGeometry(
-                new AABB(vector(-terrain->getHeightMap()->getWidth(), 0, -terrain->getHeightMap()->getDepth()) + terrainHalfSizes, terrainHalfSizes),
-				new HeightMapGeometry(vector(-terrain->getHeightMap()->getWidth(), 0, -terrain->getHeightMap()->getDepth()), terrain->getHeightMap()))
-        );
+        terrainBoundingVolume->addChildren(new HeightMapGeometry(vector(0, 0, 0), terrain->getHeightMap()));
+        terrainBoundingVolume->addChildren(new HeightMapGeometry(vector(-terrain->getHeightMap()->getWidth(), 0, 0), terrain->getHeightMap()));
+        terrainBoundingVolume->addChildren(new HeightMapGeometry(vector(0, 0, -terrain->getHeightMap()->getDepth()), terrain->getHeightMap()));
+        terrainBoundingVolume->addChildren(new HeightMapGeometry(vector(-terrain->getHeightMap()->getWidth(), 0, -terrain->getHeightMap()->getDepth()), terrain->getHeightMap()));
 
         skyboxRenderer.setVideoRunner(video);
         skyboxRenderer.setSize(500);
@@ -314,17 +299,18 @@ public:
 /**
  * manually render heightmap hierarchical bounding box (2 levels)
  */
+	    video->enable(CULL_FACE, CULL_FACE_NONE);
 		for(auto &particle : this->particles) {
 				if(particle->getStatus()) {
 				Sphere &sphere = *((Sphere *)particle->getGeometry());
 
 				for(int index = 0; index < terrainBoundingVolume->getChildren().size(); index++)
 				{
-					const AABB &childBB = ((const AABB &)((HierarchicalGeometry *)terrainBoundingVolume->getChildren()[index].get())->getBoundingVolume());
-					if(physics->getParticleManager()->getCollisionDetector().getIntersectionTester()->sphereAabb(sphere, childBB)) {
-						vector halfSizes = childBB.getHalfSizes();
+					const HeightMapGeometry *child = (const HeightMapGeometry *)terrainBoundingVolume->getChildren()[index].get();
+					if(physics->getParticleManager()->getCollisionDetector().getIntersectionTester()->sphereAabb(sphere, *child)) {
+						vector halfSizes = child->getHalfSizes();
 						defaultRenderer.setMaterial(&materials[index % 3]);
-						defaultRenderer.drawBox(matriz::matrizTraslacion(childBB.getOrigin()),
+						defaultRenderer.drawBox(matriz::matrizTraslacion(child->getOrigin()),
 										(real)1.99 * halfSizes.x,
 										(real)1.99 * halfSizes.y,
 										(real)1.99 * halfSizes.z);
@@ -333,7 +319,7 @@ public:
 				}
 
 				defaultRenderer.setMaterial(&materials[0]);
-				if(physics->getParticleManager()->getCollisionDetector().getIntersectionTester()->sphereAabb(sphere, ((AABB &)terrainBoundingVolume->getBoundingVolume()))) {
+				if(physics->getParticleManager()->getCollisionDetector().getIntersectionTester()->sphereAabb(sphere, (AABB &)terrainBoundingVolume->getBoundingVolume())) {
 					vector halfSizes = ((AABB &)terrainBoundingVolume->getBoundingVolume()).getHalfSizes();
 					defaultRenderer.drawBox(matriz::matrizTraslacion(terrainBoundingVolume->getOrigin()),
 									(real)2 * halfSizes.x,
@@ -345,6 +331,7 @@ public:
 			}
 		}
 		defaultRenderer.setMaterial(null);
+		video->enable(CULL_FACE, CULL_FACE_BACK);
 
 
 		terrainRenderer.render(camera);

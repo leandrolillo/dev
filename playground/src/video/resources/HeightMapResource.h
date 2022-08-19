@@ -62,18 +62,17 @@ public:
         i = std::min(i, this->getGridWidth());
         j = std::min(j, this->getGridHeight());
 
-        return vector((real) i * voxelSize.x, heightAtGrid(i, j), (real) j * voxelSize.z);
+        return vector((real) i * voxelSize.x, heightAtGrid(i, j) * voxelSize.y, (real) j * voxelSize.z);
     }
 
     vector normalAtGrid(unsigned int i, unsigned int j) const {
         i = std::min(i, this->getGridWidth());
         j = std::min(j, this->getGridHeight());
 
-        //return vector(0, 1, 0);
-        real hL = heightAtGrid(i - 1, j);
-        real hR = heightAtGrid(i + 1, j);
-        real hD = heightAtGrid(i, j + 1);
-        real hU = heightAtGrid(i, j - 1);
+        real hL = heightAtGrid(i - 1, j) * voxelSize.y;
+        real hR = heightAtGrid(i + 1, j) * voxelSize.y;
+        real hD = heightAtGrid(i, j + 1) * voxelSize.y;
+        real hU = heightAtGrid(i, j - 1) * voxelSize.y;
 
         return vector(hL - hR, 2.0, hD - hU).normalizado();
     }
@@ -89,7 +88,7 @@ public:
     }
 
     /**
-     * Returns (3D) height for the given 2D (i, j) coordinates. i and j are unsigned thus in the range [0, 2D grid width] and [0, 2D grid height] respectivelly
+     * Returns (2D) height for the given 2D (i, j) coordinates. i and j are unsigned thus in the range [0, 2D grid width] and [0, 2D grid height] respectivelly
      */
     real heightAtGrid(unsigned int i, unsigned int j) const {
         i = std::min(i, this->getGridWidth());
@@ -99,7 +98,7 @@ public:
 
         //logger->info("<%u, %u) = <%.0f, %.0f, %.0f>", i, j, pixel.x, pixel.y, pixel.z);
 
-        return (pixel.x * pixel.y * pixel.z * one_over_max_color_over_two) * voxelSize.y;
+        return (pixel.x * pixel.y * pixel.z * one_over_max_color_over_two);
     }
 
     /*
@@ -114,16 +113,16 @@ public:
 
         if (di <= ((real) 1 - dj)) {
             return barycentric(
-                    vector(0, heightAtGrid(i, j), 0),
-                    vector(1, heightAtGrid(i + 1, j), 0),
-                    vector(0, heightAtGrid(i, j + 1), 1),
+                    vector(0, heightAtGrid(i, j) * voxelSize.y, 0),
+                    vector(1, heightAtGrid(i + 1, j) * voxelSize.y, 0),
+                    vector(0, heightAtGrid(i, j + 1) * voxelSize.y, 1),
                     vector2(di, dj));
 
         } else {
             return barycentric(
-                    vector(1, heightAtGrid(i + 1, j), 0),
-                    vector(1, heightAtGrid(i + 1, j + 1), 1),
-                    vector(0, heightAtGrid(i, j + 1), 1),
+                    vector(1, heightAtGrid(i + 1, j) * voxelSize.y, 0),
+                    vector(1, heightAtGrid(i + 1, j + 1) * voxelSize.y, 1),
+                    vector(0, heightAtGrid(i, j + 1) * voxelSize.y, 1),
                     vector2(di, dj));
         }
     }
@@ -140,7 +139,7 @@ private:
     	real maxHeight = -1;
     	for(unsigned int i = 0; i < this->getGridWidth(); i++) {
     		for(unsigned j = 0; j < this->getGridHeight(); j++) {
-    			maxHeight = std::max(abs(maxHeight), abs(heightAtGrid(i, j)));
+    			maxHeight = std::max(abs(maxHeight), abs(heightAtGrid(i, j) * voxelSize.y));
     		}
     	}
 
