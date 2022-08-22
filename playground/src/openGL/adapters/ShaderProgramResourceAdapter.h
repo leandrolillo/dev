@@ -23,6 +23,7 @@
 #include <map>
 #include <string>
 
+
 class ShaderProgramResourceAdapter: public OpenGLResourceAdapter {
 	private:
 		std::map<std::string, std::string> shadersMimeTypes;
@@ -53,7 +54,6 @@ class ShaderProgramResourceAdapter: public OpenGLResourceAdapter {
 			shadersMimeTypes["tesellationShaders"] = "video/tesellationShader";
 		}
 
-		#define BUFFER_SIZE 256
 		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
 			GLenum glError = glGetError();
 

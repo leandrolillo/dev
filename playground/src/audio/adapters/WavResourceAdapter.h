@@ -10,6 +10,9 @@
 
 #include <ResourceAdapter.h>
 
+constexpr unsigned int WAV_BUFFER_SIZE = 4096 * 4;
+
+
 class WavResourceAdapter: public ResourceAdapter {
 public:
 	WavResourceAdapter() {
@@ -39,7 +42,6 @@ public:
 		return result;
 	}
 
-#define WAV_BUFFER_SIZE 4096 * 4
 	virtual Resource* load(FileParser &fileParser, const String &mimeType) {
 		AudioResource *audioResource = null;
 

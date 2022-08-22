@@ -14,8 +14,6 @@
 #include "../resources/HeightMapResource.h"
 
 class HeightMapResourceAdapter : public ResourceAdapter {
-private:
-    real boxSize = 1.0;
 public:
     HeightMapResourceAdapter() {
         logger = LoggerFactory::getLogger("video/HeightMapResourceAdapter");
@@ -24,7 +22,7 @@ public:
 
     virtual Resource* load(FileParser &fileParser, const String &mimeType) {
         ImageResource *image = (ImageResource *)this->getResourceManager()->load(fileParser);
-        HeightMapResource *resource = new HeightMapResource(image, vector(2, 40, 2));
+        HeightMapResource *resource = new HeightMapResource(image, vector(2, 80, 2));
         return resource;
     }
 private:

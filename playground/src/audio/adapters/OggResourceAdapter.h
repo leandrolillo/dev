@@ -5,7 +5,7 @@
  *      Author: Lean
  */
 
-#ifdef OGGRESOURCEADAPTER_H_
+#ifdef OGGRESOURCEADAPTER_H_ //disabled momentarily. Please try again later.
 #define OGGRESOURCEADAPTER_H_
 
 #include <ogg\ogg.h>
@@ -32,7 +32,7 @@ class OggResourceAdapter : public ResourceAdapter {
 		String toString() const {
 			return logger->getBasename();
 		}
-		#define OGG_BUFFER_SIZE 4096 * 4
+		constexpr unsigned int OGG_BUFFER_SIZE = 4096 * 4;
 		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
 			OggVorbis_File oggStream;
 			vorbis_info *vorbisInfo;

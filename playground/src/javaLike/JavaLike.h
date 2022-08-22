@@ -10,7 +10,7 @@
 
 #include<string>
 
-#define String std::string
+typedef std::string String;
 
 #define null nullptr
 

@@ -22,26 +22,20 @@
 #include <adapters/CubeMapResourceAdapter.h>
 #include <adapters/HeightMapResourceAdapter.h>
 
-#define DEPTH_TEST GL_DEPTH_TEST
-#define CULL_FACE GL_CULL_FACE
-#define CULL_FACE_BACK GL_BACK
-#define CULL_FACE_FRONT GL_FRONT
-#define CULL_FACE_NONE GL_NONE
-#define BLEND GL_BLEND
-#define RELATIVE_MOUSE_MODE 1111
-
-#define VERTEX_LOCATION 0
-#define INDEX_LOCATION 1
-#define NORMAL_LOCATION 2
-#define TEXTURE_COORDINATE_LOCATION 3
-#define COLOR_LOCATION 4
+constexpr unsigned int DEPTH_TEST=GL_DEPTH_TEST;
+constexpr unsigned int CULL_FACE=GL_CULL_FACE;
+constexpr unsigned int CULL_FACE_BACK=GL_BACK;
+constexpr unsigned int CULL_FACE_FRONT=GL_FRONT;
+constexpr unsigned int CULL_FACE_NONE=GL_NONE;
+constexpr unsigned int BLEND=GL_BLEND;
+constexpr unsigned int RELATIVE_MOUSE_MODE=1111;
 
 #ifndef GL_MAJOR_VERSION
-#define GL_MAJOR_VERSION 0x821B
+	#define GL_MAJOR_VERSION 0x821B
 #endif
 
 #ifndef GL_MINOR_VERSION
-#define GL_MINOR_VERSION 0x821C
+	#define GL_MINOR_VERSION 0x821C
 #endif
 
 int playgroundEventFilter(void *context, SDL_Event *event);

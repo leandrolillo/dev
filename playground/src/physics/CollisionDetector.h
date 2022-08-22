@@ -8,7 +8,7 @@
 #ifndef SRC_PHYSICS_COLLISIONDETECTOR_H_
 #define SRC_PHYSICS_COLLISIONDETECTOR_H_
 
-#define sphere_radius 0.1
+constexpr real sphere_radius=0.1;
 
 #include<vector>
 #include<ParticleContact.h>

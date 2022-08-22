@@ -18,9 +18,6 @@
 #include <string.h>
 #include <errno.h>
 
-#define DEFAULT_LOG_LEVEL LogLevel::INFO
-//#define DEFAULT_LOG_LEVEL LogLevel::DEBUG
-
 enum class LogLevel {
     ERROR=0,
     WARN,
@@ -28,6 +25,9 @@ enum class LogLevel {
     DEBUG,
     VERBOSE
 };
+
+constexpr LogLevel DEFAULT_LOG_LEVEL = LogLevel::INFO;
+//constexpr LogLevel DEFAULT_LOG_LEVEL = LogLevel::DEBUG;
 
 class Appender {
 protected:

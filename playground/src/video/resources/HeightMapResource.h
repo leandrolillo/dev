@@ -13,7 +13,7 @@
 #include<Logger.h>
 #include<ImageResource.h>
 
-#define one_over_max_color 0.000000059604645 // 1.0 / (256.0 * 256.0 * 256.0)
+constexpr real one_over_max_color = 0.000000059604645; // 1.0 / (256.0 * 256.0 * 256.0)
 
 class HeightMapResource: public Resource {
 private:
@@ -46,6 +46,10 @@ public:
     // returns 3D generated depth
     real getDepth() const {
         return (real) (this->heightMap->getAlto() - 1) * voxelSize.z;
+    }
+
+    const vector &getVoxelSize() {
+    	return this->voxelSize;
     }
 
     // returns 2D grid width
@@ -127,6 +131,32 @@ public:
         }
     }
 
+    /**
+     * Returns the normal at a  given 3D (x, z)
+     */
+    vector normalAt(real x, real z) const {
+        unsigned int i = std::max(0, std::min((int)floor(x / voxelSize.x), (int)this->getGridWidth()));
+        unsigned int j = std::max(0, std::min((int)floor(z / voxelSize.z), (int)this->getGridHeight()));
+
+        real di = (x - (real) i * voxelSize.x) / voxelSize.x;
+        real dj = (z - (real) j * voxelSize.z) / voxelSize.z;
+
+        if (di <= ((real) 1 - dj)) {
+			vector A = vector(i * voxelSize.x, heightAtGrid(i, j) * voxelSize.y, j * voxelSize.y);
+			vector B = vector((i + 1) * voxelSize.x, heightAtGrid(i + 1, j) * voxelSize.y, j * voxelSize.y);
+			vector C = vector(i * voxelSize.x, heightAtGrid(i, j + 1) * voxelSize.y, (j + 1) * voxelSize.y);
+
+			return ((B-A) ^ (C-A)).normalizado();
+        } else {
+            vector A = vector((i + 1) * voxelSize.x, heightAtGrid(i + 1, j) * voxelSize.y, j * voxelSize.y);
+			vector B = vector((i + 1) * voxelSize.x, heightAtGrid(i + 1, j + 1) * voxelSize.y, (j + 1) * voxelSize.y);
+            vector C = vector(i * voxelSize.x, heightAtGrid(i, j + 1) * voxelSize.y, (j + 1) * voxelSize.y);
+			return ((B-A) ^ (C-A)).normalizado();
+        }
+
+    }
+
+private:
     real barycentric(const vector &p1, const vector &p2, const vector &p3, const vector2 &pos) const {
         float det = (p2.z - p3.z) * (p1.x - p3.x) + (p3.x - p2.x) * (p1.z - p3.z);
         float l1 = ((p2.z - p3.z) * (pos.x - p3.x) + (p3.x - p2.x) * (pos.y - p3.z)) / det;
@@ -134,8 +164,8 @@ public:
         float l3 = 1.0f - l1 - l2;
         return l1 * p1.y + l2 * p2.y + l3 * p3.y;
     }
-private:
-    real calculateHeight() {
+
+    real calculateHeight() const {
     	real maxHeight = -1;
     	for(unsigned int i = 0; i < this->getGridWidth(); i++) {
     		for(unsigned j = 0; j < this->getGridHeight(); j++) {

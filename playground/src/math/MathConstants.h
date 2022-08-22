@@ -18,12 +18,12 @@
 	
 	typedef float real;
 
-#ifndef _REAL_POW
-#define _REAL_POW
-#define powr powf
-#endif
+	#ifndef _REAL_POW
+		#define _REAL_POW
+		#define powr powf
+	#endif
 
-	#define DELTA 0.005
+	constexpr real DELTA = 0.005;
 
 	#ifndef M_PI	// algunos math.h no lo definen, como el de visual studio.
 		#define M_PI 3.14159265358979323846264338327950288419716939937510f
@@ -36,18 +36,12 @@
 	#endif
 
 	#ifndef radian
-		#define radian(angulo) (angulo * M_PI  / 180.0f) //TODO: precalculate pi/180 or move to constant
-		#define grado(angulo) (angulo * 180.0f / M_PI) //TODO: precalculate 180/pi or move to constant
+		constexpr real pi_over_180 = M_PI  / 180.0;
+		constexpr real one_over_pi_over_180 = 180.0 / M_PI;
+		#define radian(angulo) (angulo * pi_over_180)
+		#define grado(angulo) (angulo * one_over_pi_over_180)
 	#endif
 
 	#define THRESHOLD 0.00000000000000000000000009
 	#define equalsZero(r) (-(real)THRESHOLD <= r && r <= (real)THRESHOLD)
-
-	#ifndef String
-		#define String std::string
-	#endif
-
-	#ifndef null
-		#define null 0
-	#endif
 #endif /* MATHCONSTANTS_H_ */

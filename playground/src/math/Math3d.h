@@ -19,7 +19,7 @@ typedef vector2 texel;
 typedef cuaternion vector4;
 
 //#define defaultNumberFormat "%.3e"
-#define defaultNumberFormat "%.2f"
+constexpr char const *defaultNumberFormat ="%.2f";
 
 class BaseMatrix {
 	protected:

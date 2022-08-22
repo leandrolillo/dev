@@ -32,7 +32,6 @@ class ShaderResourceAdapter: public OpenGLResourceAdapter {
 			this->addSupportedMimeType("video/fragmentShader");
 		}
 
-		#define BUFFER_SIZE 256
 		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
 			ShaderResource *resource = null;
 
