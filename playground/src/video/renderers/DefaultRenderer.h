@@ -110,30 +110,28 @@ public:
 
             const MaterialResource *lastMaterial = null;
 
-            for(std::map<const TextureResource *, std::vector<const WorldObject>>::iterator textureIterator = this->objectsByTexture.begin();
-                    textureIterator != this->objectsByTexture.end(); textureIterator++)
+            for(auto &textureIterator : this->objectsByTexture)
             {
-                if((*textureIterator).first != null) {
-                    videoRunner->setTexture(0, "textureUnit", (*textureIterator).first);
-                } else {
-                    videoRunner->setTexture(0, "textureUnit", videoRunner->getDefaultTexture());
-                }
+            	if(textureIterator.second.size() > 0) {
+					if(textureIterator.first != null) {
+						videoRunner->setTexture(0, "textureUnit", textureIterator.first);
+					} else {
+						videoRunner->setTexture(0, "textureUnit", videoRunner->getDefaultTexture());
+					}
 
-                for (std::vector<const WorldObject>::const_iterator iterator = (*textureIterator).second.begin();
-                        iterator != (*textureIterator).second.end(); iterator++) {
-                    const WorldObject &object = *iterator;
-
-                    if(lastMaterial != object.getMaterial()) {
-                        lastMaterial = object.getMaterial();
-                        if(lastMaterial != null) {
-                            this->sendMaterial(lastMaterial);
-                        }
-                    }
-                    videoRunner->sendMatrix("matrices.model", object.getModelMatrix());
-                    videoRunner->sendMatrix("matrices.pvm", camera.getProjectionViewMatrix() * object.getModelMatrix());
-                    videoRunner->sendMatrix("matrices.normal", object.getNormalMatrix());
-                    videoRunner->drawVertexArray(object.getVertexArray());
-                }
+					for (auto &object : textureIterator.second) {
+						if(lastMaterial != object.getMaterial()) {
+							lastMaterial = object.getMaterial();
+							if(lastMaterial != null) {
+								this->sendMaterial(lastMaterial);
+							}
+						}
+						videoRunner->sendMatrix("matrices.model", object.getModelMatrix());
+						videoRunner->sendMatrix("matrices.pvm", camera.getProjectionViewMatrix() * object.getModelMatrix());
+						videoRunner->sendMatrix("matrices.normal", object.getNormalMatrix());
+						videoRunner->drawVertexArray(object.getVertexArray());
+					}
+            	}
             }
 
             videoRunner->setTexture(0, null);

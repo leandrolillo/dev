@@ -13,7 +13,7 @@
 #include<Logger.h>
 #include<ImageResource.h>
 
-#define one_over_max_color_over_two 0.000000059604645 // 1.0 / (256.0 * 256.0 * 256.0) / 2
+#define one_over_max_color 0.000000059604645 // 1.0 / (256.0 * 256.0 * 256.0)
 
 class HeightMapResource: public Resource {
 private:
@@ -98,7 +98,7 @@ public:
 
         //logger->info("<%u, %u) = <%.0f, %.0f, %.0f>", i, j, pixel.x, pixel.y, pixel.z);
 
-        return (pixel.x * pixel.y * pixel.z * one_over_max_color_over_two);
+        return (pixel.x * pixel.y * pixel.z * one_over_max_color);
     }
 
     /*

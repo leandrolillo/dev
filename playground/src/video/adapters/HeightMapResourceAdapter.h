@@ -24,7 +24,7 @@ public:
 
     virtual Resource* load(FileParser &fileParser, const String &mimeType) {
         ImageResource *image = (ImageResource *)this->getResourceManager()->load(fileParser);
-        HeightMapResource *resource = new HeightMapResource(image, vector(1, 20, 1));
+        HeightMapResource *resource = new HeightMapResource(image, vector(2, 40, 2));
         return resource;
     }
 private:

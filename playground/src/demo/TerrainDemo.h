@@ -110,7 +110,7 @@ public:
                 std::max(mins.z, std::min(sphere.getOrigin().z, maxs.z))
                 );
 
-        aabbClosestPoint.y = heightmap.getHeightMap()->heightAt(aabbClosestPoint.x - heightmap.getPosition().x, aabbClosestPoint.z - aabbClosestPoint.z);
+        aabbClosestPoint.y = heightmap.getHeightMap()->heightAt(aabbClosestPoint.x - heightmap.getPosition().x, aabbClosestPoint.z - heightmap.getPosition().z);
         //printf("closest point: %s\n", aabbClosestPoint.toString().c_str());
 
         vector delta = sphere.getOrigin() - aabbClosestPoint;
@@ -296,10 +296,10 @@ public:
 	    };
 
 
-/**
- * manually render heightmap hierarchical bounding box (2 levels)
- */
-	    video->enable(CULL_FACE, CULL_FACE_NONE);
+		/**
+		 * manually render heightmap hierarchical bounding box (2 levels)
+		 */
+	    //video->disable(CULL_FACE);
 		for(auto &particle : this->particles) {
 				if(particle->getStatus()) {
 				Sphere &sphere = *((Sphere *)particle->getGeometry());
@@ -331,8 +331,24 @@ public:
 			}
 		}
 		defaultRenderer.setMaterial(null);
-		video->enable(CULL_FACE, CULL_FACE_BACK);
+		//video->enable(CULL_FACE, CULL_FACE_BACK);
 
+		/**
+		 * render normals - this kills the cpu
+		 */
+
+//		for(int index = 0; index < terrainBoundingVolume->getChildren().size(); index++)
+//		{
+//			const HeightMapGeometry *child = (const HeightMapGeometry *)terrainBoundingVolume->getChildren()[index].get();
+//			const HeightMapResource *heightMap = child->getHeightMap();
+//
+//			for(unsigned int i = 0; i < heightMap->getGridWidth(); i++) {
+//				for(unsigned int j = 0; j < child->getHeightMap()->getGridHeight(); j++) {
+//					defaultRenderer.drawLine(matriz_4x4::matrizTraslacion(child->getPosition()), heightMap->positionAtGrid(i, j), heightMap->positionAtGrid(i, j) + heightMap->normalAtGrid(i, j));
+//					//defaultRenderer.drawBox(matriz_4x4::matrizTraslacion(child->getPosition() + heightMap->positionAtGrid(i, j)), 0.5f, 0.5f, 0.5f);
+//				}
+//			}
+//		}
 
 		terrainRenderer.render(camera);
 		skyboxRenderer.render(camera);
