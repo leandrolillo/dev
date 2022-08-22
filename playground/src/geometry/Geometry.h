@@ -140,6 +140,17 @@ public:
     GeometryType getType() const override {
         return GeometryType::AABB;
     }
+
+    vector closestPoint(const vector &target) const {
+        vector mins = this->getOrigin() - this->getHalfSizes();
+        vector maxs = this->getOrigin() + this->getHalfSizes();
+
+
+        return vector(std::max(mins.x, std::min(target.x, maxs.x)),
+                std::max(mins.y, std::min(target.y, maxs.y)),
+                std::max(mins.z, std::min(target.z, maxs.z))
+                );
+    }
 };
 
 class HierarchicalGeometry : public Geometry {
@@ -187,4 +198,23 @@ public:
         return this->children;
     }
 };
+
+class HeightMapGeometry : public AABB {
+    const HeightMapResource *heightMap;
+public:
+    HeightMapGeometry(const vector &position, const HeightMapResource *heightMap) :
+    	AABB(position + vector(heightMap->getWidth() * 0.5, heightMap->getHeight() * 0.5, heightMap->getDepth() * 0.5),
+    		vector(heightMap->getWidth() * 0.5, heightMap->getHeight() * 0.5, heightMap->getDepth() * 0.5)){
+        this->heightMap = heightMap;
+    }
+
+    const HeightMapResource *getHeightMap() const {
+    	return this->heightMap;
+    }
+
+    GeometryType getType() const override {
+        return GeometryType::HEIGHTMAP;
+    }
+};
+
 #endif /* SRC_PHYSICS_GEOMETRY_GEOMETRY_H_ */

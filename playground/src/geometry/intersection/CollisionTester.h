@@ -43,6 +43,7 @@ public:
         this->addIntersectionTest(GeometryType::SPHERE, GeometryType::SPHERE, &CollisionTester::sphereSphere);
         this->addIntersectionTest(GeometryType::SPHERE, GeometryType::AABB, &CollisionTester::sphereAabb);
         this->addIntersectionTest(GeometryType::SPHERE, GeometryType::HIERARCHY, &CollisionTester::sphereHierarchy);
+        this->addIntersectionTest(GeometryType::SPHERE, GeometryType::HEIGHTMAP, &CollisionTester::sphereHeightmap);
 
         this->addIntersectionTest(GeometryType::AABB, GeometryType::AABB, &CollisionTester::aabbAabb);
         this->addIntersectionTest(GeometryType::AABB, GeometryType::HIERARCHY, &CollisionTester::aabbHierarchy);
@@ -64,6 +65,7 @@ public:
         this->addContactTest(GeometryType::SPHERE, GeometryType::SPHERE, &CollisionTester::sphereSphereContact);
         this->addContactTest(GeometryType::SPHERE, GeometryType::AABB, &CollisionTester::sphereAabbContact);
         this->addContactTest(GeometryType::SPHERE, GeometryType::HIERARCHY, &CollisionTester::sphereHierarchyContact);
+        this->addContactTest(GeometryType::SPHERE, GeometryType::HEIGHTMAP, &CollisionTester::sphereHeightmapContact);
 
         this->addContactTest(GeometryType::AABB, GeometryType::AABB, &CollisionTester::aabbAabbContact);
         this->addContactTest(GeometryType::AABB, GeometryType::HIERARCHY, &CollisionTester::aabbHierarchyContact);
@@ -204,26 +206,23 @@ public:
     bool sphereAabb(const Geometry &sphereGeometry, const Geometry &aabbGeometry) const {
         const Sphere &sphere = (const Sphere &)sphereGeometry;
         const AABB &aabb = (const AABB &)aabbGeometry;
-        //printf("Checking intersection for %s and %s \n", sphere.toString().c_str(), aabb.toString().c_str());
-        vector mins = aabb.getOrigin() - aabb.getHalfSizes();
-        vector maxs = aabb.getOrigin() + aabb.getHalfSizes();
 
-        //printf("mins: %s - maxs: %s\n", mins.toString().c_str(), maxs.toString().c_str());
-
-
-        vector aabbClosestPoint = vector(std::max(mins.x, std::min(sphere.getOrigin().x, maxs.x)),
-                std::max(mins.y, std::min(sphere.getOrigin().y, maxs.y)),
-                std::max(mins.z, std::min(sphere.getOrigin().z, maxs.z))
-                );
-
-        //printf("closest point: %s\n", aabbClosestPoint.toString().c_str());
-
-        return pointSphere(aabbClosestPoint, sphere);
+        return pointSphere(aabb.closestPoint(sphere.getOrigin()), sphere);
     }
 
     bool sphereHierarchy(const Geometry &sphere, const Geometry &hierarchy) const {
            return false;
     }
+
+    bool sphereHeightmap(const Geometry &sphereGeometry, const Geometry &heightMapGeometry) const {
+   		const Sphere &sphere = (const Sphere &)sphereGeometry;
+   		const HeightMapGeometry &heightmap = (const HeightMapGeometry &)heightMapGeometry;
+
+	   vector aabbClosestPoint = heightmap.closestPoint(sphere.getOrigin());
+	   aabbClosestPoint.y = heightmap.getHeightMap()->heightAt(aabbClosestPoint.x - heightmap.getPosition().x, aabbClosestPoint.z - heightmap.getPosition().z);
+
+	   return pointSphere(aabbClosestPoint, sphere);
+   	}
 
 
     /**
@@ -360,18 +359,7 @@ public:
         const Sphere &sphere = (const Sphere &)sphereGeometry;
         const AABB &aabb = (const AABB &)aabbGeometry;
 
-        //printf("Checking intersection for %s and %s \n", sphere.toString().c_str(), aabb.toString().c_str());
-        vector mins = aabb.getOrigin() - aabb.getHalfSizes();
-        vector maxs = aabb.getOrigin() + aabb.getHalfSizes();
-
-        //printf("mins: %s - maxs: %s\n", mins.toString().c_str(), maxs.toString().c_str());
-
-        vector aabbClosestPoint = vector(std::max(mins.x, std::min(sphere.getOrigin().x, maxs.x)),
-                std::max(mins.y, std::min(sphere.getOrigin().y, maxs.y)),
-                std::max(mins.z, std::min(sphere.getOrigin().z, maxs.z))
-                );
-
-        //printf("closest point: %s\n", aabbClosestPoint.toString().c_str());
+        vector aabbClosestPoint = aabb.closestPoint(sphere.getOrigin());
 
         if(pointSphere(aabbClosestPoint, sphere)) {
             vector delta = sphere.getOrigin() - aabbClosestPoint;
@@ -403,6 +391,28 @@ public:
 
         return std::vector<GeometryContact>();
     }
+
+    std::vector<GeometryContact> sphereHeightmapContact(const Geometry &sphereGeometry, const Geometry &heightMapGeometry) const {
+		const Sphere &sphere = (const Sphere &)sphereGeometry;
+		const HeightMapGeometry &heightmap = (const HeightMapGeometry &)heightMapGeometry;
+
+        vector aabbClosestPoint = heightmap.closestPoint(sphere.getOrigin());
+        aabbClosestPoint.y = heightmap.getHeightMap()->heightAt(aabbClosestPoint.x - heightmap.getPosition().x, aabbClosestPoint.z - heightmap.getPosition().z);
+
+        if(pointSphere(aabbClosestPoint, sphere)) {
+            vector delta = sphere.getOrigin() - aabbClosestPoint;
+			real distance = delta.modulo();
+			//vector normal = delta * (1.0 / distance); // method 1 - upwards pointing normal
+			vector normal = heightmap.getHeightMap()->normalAt(aabbClosestPoint.x, aabbClosestPoint.y); // method 2 - triangle normal
+
+			real penetration = sphere.getRadius() - distance;
+
+			return std::vector<GeometryContact> {GeometryContact(&sphere, &heightMapGeometry, aabbClosestPoint, normal, 0.8f,  penetration) };
+        }
+
+
+		return std::vector<GeometryContact>();
+	}
 
 
 

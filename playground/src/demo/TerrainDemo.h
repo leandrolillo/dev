@@ -83,51 +83,6 @@ protected:
     }
 };
 
-class TerrainCollisionTester : public CollisionTester
-{
-public:
-    Logger *logger = LoggerFactory::getLogger("TerrainCollisionTester");
-
-    bool sphereHeightmap(const Geometry &sphereGeometry, const Geometry &heightMapGeometry) const {
-		const Sphere &sphere = (const Sphere &)sphereGeometry;
-		const HeightMapGeometry &heightMap = (const HeightMapGeometry &)heightMapGeometry;
-
-		return false;
-	}
-
-    std::vector<GeometryContact> sphereHeightmapContact(const Geometry &sphereGeometry, const Geometry &heightMapGeometry) const {
-		const Sphere &sphere = (const Sphere &)sphereGeometry;
-		const HeightMapGeometry &heightmap = (const HeightMapGeometry &)heightMapGeometry;
-
-        //printf("Checking intersection for %s and %s \n", sphere.toString().c_str(), aabb.toString().c_str());
-        vector mins = heightmap.getOrigin() - heightmap.getHalfSizes();
-        vector maxs = heightmap.getOrigin() + heightmap.getHalfSizes();
-
-        //printf("mins: %s - maxs: %s\n", mins.toString().c_str(), maxs.toString().c_str());
-
-        vector aabbClosestPoint = vector(std::max(mins.x, std::min(sphere.getOrigin().x, maxs.x)),
-                0,
-                std::max(mins.z, std::min(sphere.getOrigin().z, maxs.z))
-                );
-
-        aabbClosestPoint.y = heightmap.getHeightMap()->heightAt(aabbClosestPoint.x - heightmap.getPosition().x, aabbClosestPoint.z - heightmap.getPosition().z);
-        //printf("closest point: %s\n", aabbClosestPoint.toString().c_str());
-
-        vector delta = sphere.getOrigin() - aabbClosestPoint;
-        if(delta * delta <= sphere.getRadius() * sphere.getRadius()) {
-			delta = sphere.getOrigin() - aabbClosestPoint;
-			real distance = delta.modulo();
-			vector normal = delta * (1.0 / distance);
-			real penetration = sphere.getRadius() - distance;
-
-			return std::vector<GeometryContact> {GeometryContact(&sphere, &heightMapGeometry, aabbClosestPoint, normal, 0.8f,  penetration) };
-        }
-
-
-		return std::vector<GeometryContact>();
-	}
-
-};
 
 class TerrainDemoRunner: public PlaygroundRunner {
 private:
@@ -235,9 +190,6 @@ public:
         skyboxRenderer.setSize(500);
 
         defaultRenderer.setVideoRunner(video);
-
-        physics->getParticleManager()->getCollisionDetector().getIntersectionTester()->addIntersectionTest(GeometryType::SPHERE, GeometryType::HEIGHTMAP, static_cast<bool (CollisionTester::*)(const Geometry &, const Geometry &) const> (&TerrainCollisionTester::sphereHeightmap));
-        physics->getParticleManager()->getCollisionDetector().getIntersectionTester()->addContactTest(GeometryType::SPHERE, GeometryType::HEIGHTMAP, static_cast<std::vector<GeometryContact> (CollisionTester::*)(const Geometry &, const Geometry &) const> (&TerrainCollisionTester::sphereHeightmapContact));
 
         physics->getParticleManager()->addForce(&this->gravity);
         physics->getParticleManager()->addScenery(terrainBoundingVolume.get());

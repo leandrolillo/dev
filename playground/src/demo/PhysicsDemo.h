@@ -25,8 +25,6 @@
 
 #include<Geometry.h>
 
-#include "heightMap/HeightMapGeometry.h"
-
 constexpr unsigned int numberOfParticles = 60;
 
 class PhysicsDemoRunner;
