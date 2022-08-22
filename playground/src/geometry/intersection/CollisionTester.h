@@ -392,19 +392,21 @@ public:
         return std::vector<GeometryContact>();
     }
 
+    /**
+     * Non-accurate heightmap test. Returns data of the point directly below the sphere
+     */
     std::vector<GeometryContact> sphereHeightmapContact(const Geometry &sphereGeometry, const Geometry &heightMapGeometry) const {
 		const Sphere &sphere = (const Sphere &)sphereGeometry;
 		const HeightMapGeometry &heightmap = (const HeightMapGeometry &)heightMapGeometry;
 
         vector aabbClosestPoint = heightmap.closestPoint(sphere.getOrigin());
-        aabbClosestPoint.y = heightmap.getHeightMap()->heightAt(aabbClosestPoint.x - heightmap.getPosition().x, aabbClosestPoint.z - heightmap.getPosition().z);
+        aabbClosestPoint.y = heightmap.heightAt(aabbClosestPoint.x, aabbClosestPoint.z);
 
         if(pointSphere(aabbClosestPoint, sphere)) {
             vector delta = sphere.getOrigin() - aabbClosestPoint;
 			real distance = delta.modulo();
 			//vector normal = delta * (1.0 / distance); // method 1 - upwards pointing normal
-			vector normal = heightmap.getHeightMap()->normalAt(aabbClosestPoint.x, aabbClosestPoint.y); // method 2 - triangle normal
-
+			vector normal = heightmap.normalAt(aabbClosestPoint.x, aabbClosestPoint.y); // method 2 - triangle normal
 			real penetration = sphere.getRadius() - distance;
 
 			return std::vector<GeometryContact> {GeometryContact(&sphere, &heightMapGeometry, aabbClosestPoint, normal, 0.8f,  penetration) };

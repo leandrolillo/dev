@@ -215,6 +215,15 @@ public:
     GeometryType getType() const override {
         return GeometryType::HEIGHTMAP;
     }
+
+
+    real heightAt(real x, real z) const {
+    	return this->getHeightMap()->heightAt(x - this->getPosition().x, z - this->getPosition().z);
+    }
+
+    vector normalAt(real x, real z) const {
+    	return this->heightMap->normalAt(x - this->getPosition().x, z - this->getPosition().z);
+    }
 };
 
 #endif /* SRC_PHYSICS_GEOMETRY_GEOMETRY_H_ */
