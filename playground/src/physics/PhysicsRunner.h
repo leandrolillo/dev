@@ -53,14 +53,32 @@ public:
 	bool init() {
 		videoRunner = (VideoRunner*) this->getContainer()->getRequiredRunner(VideoRunner::ID);
 
-		to = videoRunner->getPerformanceCounter();
 		invPerformanceFreq = (real)1 / (real)videoRunner->getPerformanceFreq();
+		this->start();
 
 		return true;
 	}
 
 	void beforeLoop() {
 		this->particleManager.clearAccumulators();
+	}
+
+	void start() {
+		logger->info("starting physics runner");
+		if(!this->getEnabled()) {
+			to = videoRunner->getPerformanceCounter();
+		}
+		this->setEnabled(true);
+
+	}
+
+	void stop() {
+		logger->info("Starting physics runner");
+		this->setEnabled(false);
+	}
+
+	void step(real dt) {
+		this->particleManager.step(dt);
 	}
 
 	LoopResult doLoop() {
