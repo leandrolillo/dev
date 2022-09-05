@@ -8,6 +8,8 @@
 #ifndef OPENGLVIDEORUNNER_H_
 #define OPENGLVIDEORUNNER_H_
 
+#include <unistd.h>
+
 #include <SDL2/SDL.h>
 #include <OpenGL/OpenGL.h>
 #include <OpenGL/gl3.h>
@@ -29,6 +31,7 @@ constexpr unsigned int CULL_FACE_FRONT=GL_FRONT;
 constexpr unsigned int CULL_FACE_NONE=GL_NONE;
 constexpr unsigned int BLEND=GL_BLEND;
 constexpr unsigned int RELATIVE_MOUSE_MODE=1111;
+constexpr unsigned int LINE_WIDTH=GL_LINE_WIDTH;
 
 #ifndef GL_MAJOR_VERSION
 	#define GL_MAJOR_VERSION 0x821B
@@ -132,6 +135,8 @@ public:
             logger->error("SDL_Init Error: %s", SDL_GetError());
             return false;
         }
+
+        sleep(1);
 
         return true;
     }
@@ -434,7 +439,7 @@ public:
         glClearColor(r, g, b, a);
     }
 
-    void enable(unsigned int attributeCode, unsigned int param1, unsigned int param2 = 0) const {
+    void enable(unsigned int attributeCode, unsigned int param1, unsigned int param2 = 0) {
         switch (attributeCode) {
             case (DEPTH_TEST):
                 if ((bool) param1) {
@@ -457,7 +462,7 @@ public:
         }
     }
 
-    void disable(unsigned int attributeCode) const {
+    void disable(unsigned int attributeCode) {
         switch (attributeCode) {
             case (DEPTH_TEST):
                 glDisable(GL_DEPTH_TEST);
@@ -473,6 +478,14 @@ public:
                 break;
         }
     }
+
+    void setOption(unsigned int attributeCode, real value) {
+    	switch (attributeCode) {
+    		case GL_LINE_WIDTH:
+    			glLineWidth(value);
+    		break;
+    	}
+    };
 
     /**
      * Expects [number of index] elements in every vertex array attribute. E.g. You can't have three vertices, six indices and six texture coordinates. See http://www.opengl.org/wiki/Vertex_Buffer_Object#Vertex_Stream

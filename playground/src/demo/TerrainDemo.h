@@ -239,7 +239,6 @@ public:
             }
         }
 
-
 	    // draw terrain bounding boxes.
 	    static MaterialResource materials[] = {
 	    		MaterialResource(vector(1, 0, 0), vector(1, 0, 0), vector(1, 0, 0), 1.0, 0.2),
@@ -248,42 +247,49 @@ public:
 	    };
 
 
+	    video->setOption(LINE_WIDTH, 3.0f);
+	    for(auto &contact : physics->getParticleManager()->getContacts()) {
+        	defaultRenderer.setMaterial(&materials[0]);
+        	defaultRenderer.drawLine(matriz_4x4::matrizTraslacion(contact.getIntersection()), vector(0, 0, 0), 2.0 * contact.getNormal());
+        	defaultRenderer.setMaterial(&materials[1]);
+        }
+
+
+
 		/**
 		 * manually render heightmap hierarchical bounding box (2 levels)
 		 */
-	    //video->disable(CULL_FACE);
-		for(auto &particle : this->particles) {
-				if(particle->getStatus()) {
-				Sphere &sphere = *((Sphere *)particle->getGeometry());
-
-				for(int index = 0; index < terrainBoundingVolume->getChildren().size(); index++)
-				{
-					const HeightMapGeometry *child = (const HeightMapGeometry *)terrainBoundingVolume->getChildren()[index].get();
-					if(physics->getParticleManager()->getCollisionDetector().getIntersectionTester()->sphereAabb(sphere, *child)) {
-						vector halfSizes = child->getHalfSizes();
-						defaultRenderer.setMaterial(&materials[index % 3]);
-						defaultRenderer.drawBox(matriz::matrizTraslacion(child->getOrigin()),
-										(real)1.99 * halfSizes.x,
-										(real)1.99 * halfSizes.y,
-										(real)1.99 * halfSizes.z);
-					}
-
-				}
-
-				defaultRenderer.setMaterial(&materials[0]);
-				if(physics->getParticleManager()->getCollisionDetector().getIntersectionTester()->sphereAabb(sphere, (AABB &)terrainBoundingVolume->getBoundingVolume())) {
-					vector halfSizes = ((AABB &)terrainBoundingVolume->getBoundingVolume()).getHalfSizes();
-					defaultRenderer.drawBox(matriz::matrizTraslacion(terrainBoundingVolume->getOrigin()),
-									(real)2 * halfSizes.x,
-									(real)2 * halfSizes.y,
-									(real)2 * halfSizes.z);
-
-				}
-
-			}
-		}
-		defaultRenderer.setMaterial(null);
-		//video->enable(CULL_FACE, CULL_FACE_BACK);
+//		for(auto &particle : this->particles) {
+//				if(particle->getStatus()) {
+//				Sphere &sphere = *((Sphere *)particle->getGeometry());
+//
+//				for(int index = 0; index < terrainBoundingVolume->getChildren().size(); index++)
+//				{
+//					const HeightMapGeometry *child = (const HeightMapGeometry *)terrainBoundingVolume->getChildren()[index].get();
+//					if(physics->getParticleManager()->getCollisionDetector().getIntersectionTester()->sphereAabb(sphere, *child)) {
+//						vector halfSizes = child->getHalfSizes();
+//						defaultRenderer.setMaterial(&materials[index % 3]);
+//						defaultRenderer.drawBox(matriz::matrizTraslacion(child->getOrigin()),
+//										(real)1.99 * halfSizes.x,
+//										(real)1.99 * halfSizes.y,
+//										(real)1.99 * halfSizes.z);
+//					}
+//
+//				}
+//
+//				defaultRenderer.setMaterial(&materials[0]);
+//				if(physics->getParticleManager()->getCollisionDetector().getIntersectionTester()->sphereAabb(sphere, (AABB &)terrainBoundingVolume->getBoundingVolume())) {
+//					vector halfSizes = ((AABB &)terrainBoundingVolume->getBoundingVolume()).getHalfSizes();
+//					defaultRenderer.drawBox(matriz::matrizTraslacion(terrainBoundingVolume->getOrigin()),
+//									(real)2 * halfSizes.x,
+//									(real)2 * halfSizes.y,
+//									(real)2 * halfSizes.z);
+//
+//				}
+//
+//			}
+//		}
+//		defaultRenderer.setMaterial(null);
 
 		/**
 		 * render normals - this kills the cpu
@@ -390,6 +396,19 @@ public:
             case SDLK_SPACE:
                 reset();
                 break;
+            case SDLK_BACKSPACE:
+            	if(physics->getEnabled()) {
+            		physics->stop();
+            	} else {
+            		physics->start();
+            	}
+            	break;
+            case SDLK_RIGHT:
+            	physics->step(0.01f);
+            	break;
+            case SDLK_LEFT:
+				physics->step(-0.01f);
+				break;
         }
     }
 };

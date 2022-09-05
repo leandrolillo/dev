@@ -26,10 +26,15 @@ class ParticleManager {
 	ParticleIntegrator particleIntegrator;
 	ContactResolver contactResolver;
 	CollisionDetector collisionDetector;
+	std::vector<ParticleContact> contacts;
 
 public:
 	void addParticle(Particle *particle) {
 		this->particles.push_back(particle);
+	}
+
+	const std::vector<Particle *> &getParticles() {
+		return this->particles;
 	}
 
 	void addForce(Force *force) {
@@ -59,7 +64,11 @@ public:
 		}
 	}
 
-	void step(real dt) const {
+	const std::vector<ParticleContact> &getContacts() {
+		return this->contacts;
+	}
+
+	void step(real dt) {
 		applyForces(dt);
 
 		integrate(dt);
@@ -67,7 +76,7 @@ public:
 		/**
 		 * generate contacts (collision and contact generators)
 		 */
-		std::vector<ParticleContact> contacts = collisionDetector.detectCollisions(this->particles);
+		contacts = collisionDetector.detectCollisions(this->particles);
 		contactResolver.resolve(contacts, dt);
 
 	}

@@ -78,7 +78,10 @@ public:
 	}
 
 	void step(real dt) {
-		this->particleManager.step(dt);
+		if(!this->getEnabled()) {
+			this->beforeLoop();
+			this->particleManager.step(dt);
+		}
 	}
 
 	LoopResult doLoop() {
