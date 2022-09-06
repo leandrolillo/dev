@@ -136,6 +136,7 @@ public:
             return false;
         }
 
+        //TODO: Remove sleep after figuring why we have random crashes at startup - may be related to opengl initialization and syncs.
         sleep(1);
 
         return true;
@@ -482,6 +483,7 @@ public:
     void setOption(unsigned int attributeCode, real value) {
     	switch (attributeCode) {
     		case GL_LINE_WIDTH:
+    			logger->info("Setting line width to %.2f", value);
     			glLineWidth(value);
     		break;
     	}

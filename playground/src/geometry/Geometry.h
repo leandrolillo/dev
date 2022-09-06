@@ -201,6 +201,7 @@ public:
 
 class HeightMapGeometry : public AABB {
     const HeightMapResource *heightMap;
+    Logger *logger = LoggerFactory::getLogger("geometry/HeightMapGeometry");
 public:
     HeightMapGeometry(const vector &position, const HeightMapResource *heightMap) :
     	AABB(position + vector(heightMap->getWidth() * 0.5, heightMap->getHeight() * 0.5, heightMap->getDepth() * 0.5),

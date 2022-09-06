@@ -48,7 +48,7 @@ public:
         return (real) (this->heightMap->getAlto() - 1) * voxelSize.z;
     }
 
-    const vector &getVoxelSize() {
+    const vector &getVoxelSize() const {
     	return this->voxelSize;
     }
 
@@ -60,6 +60,14 @@ public:
     // returns 2D grid height
     unsigned int getGridHeight() const {
         return this->heightMap->getAlto();
+    }
+
+    unsigned int getI(real x) const {
+    	return std::max(0, std::min((int)floor(x / voxelSize.x), (int)this->getGridWidth()));
+    }
+
+    unsigned int getJ(real z) const {
+        return std::max(0, std::min((int)floor(z / voxelSize.z), (int)this->getGridHeight()));
     }
 
     vector positionAtGrid(unsigned int i, unsigned int j) const {
@@ -109,8 +117,8 @@ public:
      * Returns (3d) height for the given 3D (x, z), thus forming an implicit 3D point at <x, height, z>. Coordinates x and z are in the range [0, 3D width] and [0, 3D depth] respectively
      * */
     real heightAt(real x, real z) const {
-        unsigned int i = std::max(0, std::min((int)floor(x / voxelSize.x), (int)this->getGridWidth()));
-        unsigned int j = std::max(0, std::min((int)floor(z / voxelSize.z), (int)this->getGridHeight()));
+        unsigned int i = getI(x);
+        unsigned int j = getJ(z);
 
         real di = (x - (real) i * voxelSize.x) / voxelSize.x;
         real dj = (z - (real) j * voxelSize.z) / voxelSize.z;
@@ -135,25 +143,24 @@ public:
      * Returns the normal at a  given 3D (x, z)
      */
     vector normalAt(real x, real z) const {
-        unsigned int i = std::max(0, std::min((int)floor(x / voxelSize.x), (int)this->getGridWidth()));
-        unsigned int j = std::max(0, std::min((int)floor(z / voxelSize.z), (int)this->getGridHeight()));
+        unsigned int i = getI(x);
+        unsigned int j = getJ(z);
 
         real di = (x - (real) i * voxelSize.x) / voxelSize.x;
         real dj = (z - (real) j * voxelSize.z) / voxelSize.z;
 
         if (di <= ((real) 1 - dj)) {
-			vector A = vector(i * voxelSize.x, heightAtGrid(i, j) * voxelSize.y, j * voxelSize.y);
-			vector B = vector((i + 1) * voxelSize.x, heightAtGrid(i + 1, j) * voxelSize.y, j * voxelSize.y);
-			vector C = vector(i * voxelSize.x, heightAtGrid(i, j + 1) * voxelSize.y, (j + 1) * voxelSize.y);
+			vector A = positionAtGrid(i, j);
+			vector B = positionAtGrid(i + 1, j);
+			vector C = positionAtGrid(i, j+1);
 
 			return ((B-A) ^ (C-A)).normalizado();
         } else {
-            vector A = vector((i + 1) * voxelSize.x, heightAtGrid(i + 1, j) * voxelSize.y, j * voxelSize.y);
-			vector B = vector((i + 1) * voxelSize.x, heightAtGrid(i + 1, j + 1) * voxelSize.y, (j + 1) * voxelSize.y);
-            vector C = vector(i * voxelSize.x, heightAtGrid(i, j + 1) * voxelSize.y, (j + 1) * voxelSize.y);
+            vector A = positionAtGrid(i + 1, j);
+			vector B = positionAtGrid(i + 1, j + 1);
+            vector C = positionAtGrid(i, j + 1);
 			return ((B-A) ^ (C-A)).normalizado();
         }
-
     }
 
 private:

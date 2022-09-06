@@ -406,7 +406,7 @@ public:
             vector delta = sphere.getOrigin() - aabbClosestPoint;
 			real distance = delta.modulo();
 			//vector normal = delta * (1.0 / distance); // method 1 - upwards pointing normal
-			vector normal = heightmap.normalAt(aabbClosestPoint.x, aabbClosestPoint.y); // method 2 - triangle normal
+			vector normal = heightmap.normalAt(aabbClosestPoint.x, aabbClosestPoint.z); // method 2 - triangle normal
 			real penetration = sphere.getRadius() - distance;
 
 			return std::vector<GeometryContact> {GeometryContact(&sphere, &heightMapGeometry, aabbClosestPoint, normal, 0.8f,  penetration) };

@@ -120,6 +120,13 @@ private:
 
 	std::vector<std::unique_ptr<BulletParticle>> particles;
 	Gravity gravity = Gravity(vector(0.0, -9.8, 0.0));
+
+    MaterialResource black {vector(0, 0, 0), vector(0, 0, 0), vector(0, 0, 0), 1.0, 0.2 };
+    MaterialResource white {vector(1, 1, 1), vector(1, 1, 1), vector(1, 1, 1), 1.0, 0.2 };
+	MaterialResource red {vector(1, 0, 0), vector(1, 0, 0), vector(1, 0, 0), 1.0, 0.2 };
+	MaterialResource green {vector(0, 1, 0), vector(0, 1, 0), vector(0, 1, 0), 1.0, 0.2 };
+	MaterialResource blue {vector(0, 0, 1), vector(0, 0, 1), vector(0, 0, 1), 1.0, 0.2 };
+
 public:
 	TerrainDemoRunner() : light(vector(0, 0, 0),
 			vector(0.2f, 0.2f, 0.2f), vector(0.2f, 0.2f, 0.2f),
@@ -223,6 +230,90 @@ public:
 
 	}
 
+
+//    vector normalAt(real x, real z) const {
+//        unsigned int i = std::max(0, std::min((int)floor(x / voxelSize.x), (int)this->getGridWidth()));
+//        unsigned int j = std::max(0, std::min((int)floor(z / voxelSize.z), (int)this->getGridHeight()));
+//
+//        real di = (x - (real) i * voxelSize.x) / voxelSize.x;
+//        real dj = (z - (real) j * voxelSize.z) / voxelSize.z;
+//
+//        if (di <= ((real) 1 - dj)) {
+//			vector A = positionAtGrid(i, j);
+//			vector B = positionAtGrid(i + 1, j);
+//			vector C = positionAtGrid(i, j+1);
+//
+//			return ((A-B) ^ (A-C)).normalizado();
+//        } else {
+//            vector A = positionAtGrid(i + 1, j);
+//			vector B = positionAtGrid(i + 1, j + 1);
+//            vector C = positionAtGrid(i, j + 1);
+//			return ((A-B) ^ (A-C)).normalizado();
+//        }
+//    }
+
+	void renderContact(const ParticleContact &contact) {
+	    //video->setOption(LINE_WIDTH, 10.0f); // not working
+    	defaultRenderer.setMaterial(&black);
+    	defaultRenderer.drawLine(matriz_4x4::matrizTraslacion(contact.getIntersection()), vector(0, 0, 0), contact.getNormal());
+
+    	const HeightMapResource *heightmap = this->terrain->getHeightMap();
+    	vector position = contact.getIntersection();
+    	vector heightmapOrigin = vector(floor(position.x / heightmap->getWidth()), 0, floor(position.z / heightmap->getDepth()));
+    	vector relativePosition = position - heightmapOrigin;
+    	vector voxelSize = heightmap->getVoxelSize();
+
+		unsigned int i = heightmap->getI(relativePosition.x);
+		unsigned int j = heightmap->getJ(relativePosition.z);
+
+		real di = (relativePosition.x - (real) i * voxelSize.x) / voxelSize.x;
+		real dj = (relativePosition.z - (real) j * voxelSize.z) / voxelSize.z;
+
+		if (di <= ((real) 1 - dj)) {
+			vector A = heightmap->positionAtGrid(i, j);
+			vector B = heightmap->positionAtGrid(i + 1, j);
+			vector C = heightmap->positionAtGrid(i, j+1);
+			vector normal = ((B-A) ^ (C-A)).normalizado();
+			vector heightmapNormal = heightmap->normalAt(relativePosition.x, relativePosition.z);
+
+			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(heightmapOrigin + A), vector(0, 0.01, 0), B-A + vector(0, 0.01, 0));
+			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(heightmapOrigin + A), vector(0, 0.012, 0), B-A + vector(0, 0.012, 0));
+			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(heightmapOrigin + A), vector(0, 0.013, 0), B-A + vector(0, 0.013, 0));
+
+			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(heightmapOrigin + A), vector(0, 0.01, 0), C-A + vector(0, 0.01, 0));
+			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(heightmapOrigin + A), vector(0, 0.012, 0), C-A + vector(0, 0.012, 0));
+			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(heightmapOrigin + A), vector(0, 0.013, 0), C-A + vector(0, 0.013, 0));
+
+			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(heightmapOrigin + A), vector(0, 0, 0), normal);
+			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(position), vector(0, 0, 0), heightmapNormal);
+
+
+		} else {
+			vector A = heightmap->positionAtGrid(i + 1, j);
+			vector B = heightmap->positionAtGrid(i + 1, j + 1);
+			vector C = heightmap->positionAtGrid(i, j + 1);
+			vector normal = ((B-A) ^ (C-A)).normalizado();
+			vector heightmapNormal = heightmap->normalAt(relativePosition.x, relativePosition.z);
+
+			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(heightmapOrigin + A), vector(0, 0.001, 0), B-A + vector(0, 0.001, 0));
+			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(heightmapOrigin + A), vector(0, 0.0012, 0), B-A + vector(0, 0.002, 0));
+			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(heightmapOrigin + A), vector(0, 0.0013, 0), B-A + vector(0, 0.003, 0));
+
+			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(heightmapOrigin + A), vector(0, 0.001, 0), C-A + vector(0, 0.001, 0));
+			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(heightmapOrigin + A), vector(0, 0.0012, 0), C-A + vector(0, 0.0012, 0));
+			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(heightmapOrigin + A), vector(0, 0.0013, 0), C-A + vector(0, 0.0013, 0));
+
+			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(heightmapOrigin + A), vector(0, 0, 0), normal);
+			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(position), vector(0, 0, 0), heightmapNormal);
+		}
+
+
+
+
+	    //video->setOption(LINE_WIDTH, 1.0f); // not working
+
+	}
+
 	virtual LoopResult doLoop() {
 	    defaultRenderer.clear();
 	    defaultRenderer.drawAxes(matriz_4x4::identidad);
@@ -239,20 +330,13 @@ public:
             }
         }
 
-	    // draw terrain bounding boxes.
-	    static MaterialResource materials[] = {
-	    		MaterialResource(vector(1, 0, 0), vector(1, 0, 0), vector(1, 0, 0), 1.0, 0.2),
-				MaterialResource(vector(0, 1, 0), vector(0, 1, 0), vector(0, 1, 0), 1.0, 0.2),
-				MaterialResource(vector(0, 0, 1), vector(0, 0, 1), vector(0, 0, 1), 1.0, 0.2)
-	    };
 
-
-	    video->setOption(LINE_WIDTH, 3.0f);
-	    for(auto &contact : physics->getParticleManager()->getContacts()) {
-        	defaultRenderer.setMaterial(&materials[0]);
-        	defaultRenderer.drawLine(matriz_4x4::matrizTraslacion(contact.getIntersection()), vector(0, 0, 0), 2.0 * contact.getNormal());
-        	defaultRenderer.setMaterial(&materials[1]);
-        }
+        /**
+         * Manually render contacts (for troubleshooting normal)
+         */
+//	    for(auto &contact : physics->getParticleManager()->getContacts()) {
+//	    	renderContact(contact);
+//        }
 
 
 
