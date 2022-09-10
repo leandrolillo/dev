@@ -354,20 +354,20 @@ class matriz_4x4: public BaseMatrix {
 		};
 	public:
 				// Factory Methods
-		static const matriz_4x4 matrizTraslacion(const vector3 &desplazamiento);
-		static const matriz_4x4 matrizTraslacion(real x, real y, real z);
+		static const matriz_4x4 traslacion(const vector3 &desplazamiento);
+		static const matriz_4x4 traslacion(real x, real y, real z);
 
-		static const matriz_4x4 matrizRotacion(real x, real y, real z);
-		static const matriz_4x4 matrizRotacion(const vector3 &angulos);
-		static const matriz_4x4 matrizRotacion(real angulo, const vector3 &eje);
-		static const matriz_4x4 matrizRotacion(real angulo, real x, real y, real z);
-		static const matriz_4x4 matrizRotacion(const matriz_3x3 &orientacion);
-		static const matriz_4x4 matrizRotacion(const cuaternion &rotacion);
+		static const matriz_4x4 rotacion(real x, real y, real z);
+		static const matriz_4x4 rotacion(const vector3 &angulos);
+		static const matriz_4x4 rotacion(real angulo, const vector3 &eje);
+		static const matriz_4x4 rotacion(real angulo, real x, real y, real z);
+		static const matriz_4x4 rotacion(const matriz_3x3 &orientacion);
+		static const matriz_4x4 rotacion(const cuaternion &rotacion);
 
-		static const matriz_4x4 matrizZoom(real x, real y, real z);
-		static const matriz_4x4 matrizZoom(const vector3 &zoom);
+		static const matriz_4x4 zoom(real x, real y, real z);
+		static const matriz_4x4 zoom(const vector3 &zoom);
 
-		static const matriz_4x4 matrizBase(const matriz_3x3 &orientacion, const vector3 &posicion);
+		static const matriz_4x4 base(const matriz_3x3 &orientacion, const vector3 &posicion);
 
 	public:
 		static matriz_4x4 identidad;

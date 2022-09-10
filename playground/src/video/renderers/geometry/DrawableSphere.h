@@ -17,7 +17,7 @@ public:
     }
 
     void draw(DefaultRenderer &renderer) const override {
-        renderer.drawSphere(matriz::matrizTraslacion(this->getOrigin()), this->getRadius());
+        renderer.drawSphere(matriz::traslacion(this->getOrigin()), this->getRadius());
     }
 };
 

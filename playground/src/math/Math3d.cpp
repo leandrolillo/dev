@@ -546,17 +546,17 @@ void matriz_2x2::operator *=(const real &op1) {
 	}
 
 
-	const matriz_4x4 matriz_4x4::matrizTraslacion(const vector3 &desplazamiento) {
-		return matriz_4x4::matrizTraslacion(desplazamiento.x, desplazamiento.y, desplazamiento.z);
+	const matriz_4x4 matriz_4x4::traslacion(const vector3 &desplazamiento) {
+		return matriz_4x4::traslacion(desplazamiento.x, desplazamiento.y, desplazamiento.z);
 	}
-	const matriz_4x4 matriz_4x4::matrizTraslacion(real x, real y, real z) {
+	const matriz_4x4 matriz_4x4::traslacion(real x, real y, real z) {
 		return matriz_4x4(	1.0f, 0.0f, 0.0f, x,
 							0.0f, 1.0f, 0.0f, y,
 							0.0f, 0.0f, 1.0f, z,
 							0.0f, 0.0f, 0.0f, 1.0f);
 	}
 
-	const matriz_4x4 matriz_4x4::matrizRotacion(real x, real y, real z) {
+	const matriz_4x4 matriz_4x4::rotacion(real x, real y, real z) {
 		real cx = (real)cos(x), sx = (real)sin(x);
 		real cy = (real)cos(y), sy = (real)sin(y);
 		real cz = (real)cos(z), sz = (real)sin(z);
@@ -568,14 +568,14 @@ void matriz_2x2::operator *=(const real &op1) {
 			0.0f, 		0.0f, 						0.0f, 						1.0f);
 
 	}
-	const matriz_4x4 matriz_4x4::matrizRotacion(const vector3 &angulos) {
-		return matrizRotacion(angulos.x, angulos.y, angulos.z);
+	const matriz_4x4 matriz_4x4::rotacion(const vector3 &angulos) {
+		return rotacion(angulos.x, angulos.y, angulos.z);
 	}
 
-	const matriz_4x4 matriz_4x4::matrizRotacion(real angulo, const vector3 &eje) {
-		return matrizRotacion(angulo, eje.x, eje.y, eje.z);
+	const matriz_4x4 matriz_4x4::rotacion(real angulo, const vector3 &eje) {
+		return rotacion(angulo, eje.x, eje.y, eje.z);
 	}
-	const matriz_4x4 matriz_4x4::matrizRotacion(real angulo, real x, real y, real z) {
+	const matriz_4x4 matriz_4x4::rotacion(real angulo, real x, real y, real z) {
 		real c, s, umc, nxny1cos, nxnz1cos, nynz1cos;
 		c = (real)cos(angulo);
 		s = (real)sin(angulo);
@@ -592,13 +592,13 @@ void matriz_2x2::operator *=(const real &op1) {
 			0.0f,				0.0f, 				0.0f,				1.0f);
 
 	}
-	const matriz_4x4 matriz_4x4::matrizRotacion(const matriz_3x3 &orientacion) {
+	const matriz_4x4 matriz_4x4::rotacion(const matriz_3x3 &orientacion) {
 		return matriz_4x4(	orientacion._00, 	orientacion._01, 	orientacion._02, 	0.0f,
 							orientacion._10, 	orientacion._11, 	orientacion._12, 	0.0f,
 							orientacion._20, 	orientacion._21, 	orientacion._22, 	0.0f,
 							0.0f, 				0.0f, 				0.0f, 				1.0f);
 	}
-	const matriz_4x4 matriz_4x4::matrizRotacion(const cuaternion &rotacion) {
+	const matriz_4x4 matriz_4x4::rotacion(const cuaternion &rotacion) {
 		real y2 = rotacion.y * rotacion.y;
 		real x2 = rotacion.x * rotacion.x;
 		real z2 = rotacion.z * rotacion.z;
@@ -616,18 +616,18 @@ void matriz_2x2::operator *=(const real &op1) {
 				0.0f,				      	0.0f,				    	0.0f,			         	1.0f));
 	}
 
-	const matriz_4x4 matriz_4x4::matrizZoom(real x, real y, real z) {
+	const matriz_4x4 matriz_4x4::zoom(real x, real y, real z) {
 		return matriz_4x4(	x,		0.0f, 	0.0f, 	0.0f,
 							0.0f, 	y, 		0.0f, 	0.0f,
 							0.0f, 	0.0f, 	z, 		0.0f,
 							0.0f, 	0.0f, 	0.0f, 	1.0f);
 	}
 
-	const matriz_4x4 matriz_4x4::matrizZoom(const vector3 &zoom) {
-		return matrizZoom(zoom.x, zoom.y, zoom.z);
+	const matriz_4x4 matriz_4x4::zoom(const vector3 &factor) {
+		return zoom(factor.x, factor.y, factor.z);
 	}
 
-	const matriz_4x4 matriz_4x4::matrizBase(const matriz_3x3 &orientacion, const vector3 &posicion) {
+	const matriz_4x4 matriz_4x4::base(const matriz_3x3 &orientacion, const vector3 &posicion) {
 		return matriz_4x4(	orientacion._00, 	orientacion._01, 	orientacion._02, 	posicion.x,
 							orientacion._10, 	orientacion._11, 	orientacion._12, 	posicion.y,
 							orientacion._20, 	orientacion._21, 	orientacion._22, 	posicion.z,

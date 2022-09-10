@@ -140,9 +140,9 @@ public:
          * Render toon objects
          */
         toonRenderer.clear();
-	    toonRenderer.drawObject(matriz_4x4::matrizBase(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), vector3(2.0, 1.0, 0.0)),
+	    toonRenderer.drawObject(matriz_4x4::base(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), vector3(2.0, 1.0, 0.0)),
 	            triangleVertexArray);
-	    toonRenderer.drawObject(matriz_4x4::matrizBase(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), vector3(-2.0, 1.0, 0.0)),
+	    toonRenderer.drawObject(matriz_4x4::base(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), vector3(-2.0, 1.0, 0.0)),
 	            sphereVertexArray
 	    );
 
@@ -159,14 +159,14 @@ public:
         defaultRenderer.drawAxes(matriz_4x4::identidad);
 
         //draw Light as a sphere
-        defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(lightPosition), 0.1f);
+        defaultRenderer.drawSphere(matriz_4x4::traslacion(lightPosition), 0.1f);
 
         defaultRenderer.setTexture(pngTexture);
-        defaultRenderer.drawObject(matriz_4x4::matrizBase(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), vector3(2.0, -1.0, 0.0)),
+        defaultRenderer.drawObject(matriz_4x4::base(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), vector3(2.0, -1.0, 0.0)),
                 triangleVertexArray);
-        defaultRenderer.drawSphere(matriz_4x4::matrizBase(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), vector3(4.0, -1.0, 0.0)));
+        defaultRenderer.drawSphere(matriz_4x4::base(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), vector3(4.0, -1.0, 0.0)));
         defaultRenderer.setTexture(pngTexture2);
-        defaultRenderer.drawBox(matriz_4x4::matrizBase(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), vector3(-2.0, -1.0, 0.0)));
+        defaultRenderer.drawBox(matriz_4x4::base(matriz_3x3::matrizRotacion(0.0f, radian(rotation), 0.0f), vector3(-2.0, -1.0, 0.0)));
 	    defaultRenderer.render(camera);
 
 		rotation += 1;

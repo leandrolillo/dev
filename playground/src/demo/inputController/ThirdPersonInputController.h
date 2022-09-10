@@ -42,7 +42,7 @@ protected:
         vector cameraPosition = position + vector(0, 1, 0) + cameradelta;
         camera.setPosition(this->constrainPosition(cameraPosition));
 
-        playerTransform = matriz_4x4::matrizTraslacion(position);
+        playerTransform = matriz_4x4::traslacion(position);
     }
     void refreshOrientation() override {
         camera.setOrientation(matriz_3x3::matrizRotacion(radian(getPitch()), vector(1, 0, 0)) * matriz_3x3::matrizRotacion(radian(getYaw()), vector(0, 1, 0)));

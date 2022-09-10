@@ -23,11 +23,11 @@ public:
         const MaterialResource *material = renderer.getCurrentMaterial();
 
         for(auto &child : this->getChildren()) {
-            renderer.drawSphere(matriz::matrizTraslacion(child->getOrigin()), ((Sphere &)*child.get()).getRadius());
+            renderer.drawSphere(matriz::traslacion(child->getOrigin()), ((Sphere &)*child.get()).getRadius());
         }
 
         renderer.setMaterial(&defaultMaterial);
-        renderer.drawBox(matriz::matrizTraslacion(this->getOrigin()),
+        renderer.drawBox(matriz::traslacion(this->getOrigin()),
                 (real)2 * halfSizes.x,
                 (real)2 * halfSizes.y,
                 (real)2 * halfSizes.z);

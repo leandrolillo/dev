@@ -1,0 +1,11 @@
+- review design of particle manager/collision detector / geometry vs particles / etc. Too much vector passing and copying. Review polymorfism / std::vector<unique_ptr> usage.
+
+- add 'override' to overridden virtual methods (forces compiler to check everything is ok)
+
+- review RAII of resources
+
+- review 5 of 5 principle (move semantics)
+
+- Review collision action design: use lambdas instead of template pattern for collision response actions. Review design of BulletParticle used for playing sounds on balls bouncing.
+
+- Review collision detection / response: there is no way to configure restitution factor - should be based on the two objects colliding and/or configurable.

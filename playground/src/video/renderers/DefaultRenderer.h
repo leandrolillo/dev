@@ -146,19 +146,19 @@ public:
     }
 
     void drawAxes(const matriz_4x4 &modelMatrix, real length = 1.0f) {
-        this->drawObject(modelMatrix * matriz_4x4::matrizZoom(length, length, length), getAxes());
+        this->drawObject(modelMatrix * matriz_4x4::zoom(length, length, length), getAxes());
     }
 
     void drawSphere(const matriz_4x4 &modelMatrix, real radius = 1.0f) {
-        this->drawObject(modelMatrix * matriz_4x4::matrizZoom(radius, radius, radius), getSphere());
+        this->drawObject(modelMatrix * matriz_4x4::zoom(radius, radius, radius), getSphere());
     }
 
     void drawBox(const matriz_4x4 &modelMatrix, real height = 1.0f, real width = 1.0f, real depth = 1.0f) {
-        this->drawObject(modelMatrix * matriz_4x4::matrizZoom(height, width, depth), getBox());
+        this->drawObject(modelMatrix * matriz_4x4::zoom(height, width, depth), getBox());
     }
     void drawLine(const matriz_4x4 &modelMatrix, const vector &start, const vector &end) {
-        matriz_4x4 traslacion = matriz_4x4::matrizTraslacion(start);
-        matriz_4x4 zoom = matriz_4x4::matrizZoom(end - start);
+        matriz_4x4 traslacion = matriz_4x4::traslacion(start);
+        matriz_4x4 zoom = matriz_4x4::zoom(end - start);
         matriz_4x4 lineMatrix = modelMatrix * traslacion * zoom;
         this->drawObject(lineMatrix, getLine());
     }

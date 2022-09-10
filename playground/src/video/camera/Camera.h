@@ -65,7 +65,7 @@ public:
     void setViewMatrix(const matriz_4x4 &viewMatrix) {
         this->viewMatrix = viewMatrix;
         this->orientation = (matriz_3x3)viewMatrix;
-        this->position = (vector3)((matriz::matrizRotacion(orientation.traspuesta()) * this->viewMatrix).columna(3));
+        this->position = (vector3)((matriz::rotacion(orientation.traspuesta()) * this->viewMatrix).columna(3));
         this->projectionViewMatrix = this->projectionMatrix * this->viewMatrix;
     }
 
@@ -80,7 +80,7 @@ public:
     void setOrientation(const matriz_3x3 &orientation) {
         this->orientation = orientation;
 
-        this->viewMatrix = matriz::matrizRotacion(orientation) * matriz::matrizTraslacion(-position);
+        this->viewMatrix = matriz::rotacion(orientation) * matriz::traslacion(-position);
         this->projectionViewMatrix = this->projectionMatrix * this->viewMatrix;
     }
 
@@ -91,7 +91,7 @@ public:
     void setPosition(const vector &position) {
         this->position = position;
 
-        this->viewMatrix = matriz::matrizRotacion(orientation) * matriz::matrizTraslacion(-position);
+        this->viewMatrix = matriz::rotacion(orientation) * matriz::traslacion(-position);
         this->projectionViewMatrix = this->projectionMatrix * this->viewMatrix;
     }
 

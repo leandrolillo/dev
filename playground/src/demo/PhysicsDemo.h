@@ -174,8 +174,8 @@ public:
         defaultRenderer.drawLine(matriz_4x4::identidad, vector(0, 0, -1), vector(0, 0, 1));
 
         defaultRenderer.setTexture(textureResource);
-        defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(spherePlatform.getPosition()), 0.1);
-        defaultRenderer.drawBox(matriz_4x4::matrizTraslacion(aabbPlatform.getPosition()),
+        defaultRenderer.drawSphere(matriz_4x4::traslacion(spherePlatform.getPosition()), 0.1);
+        defaultRenderer.drawBox(matriz_4x4::traslacion(aabbPlatform.getPosition()),
                 2.0 * ((AABB *)aabbPlatform.getGeometry())->getHalfSizes().x,
                 2.0 * ((AABB *)aabbPlatform.getGeometry())->getHalfSizes().y,
                 2.0 * ((AABB *)aabbPlatform.getGeometry())->getHalfSizes().z);
@@ -184,7 +184,7 @@ public:
             if(particle->getStatus() == true) {
                 //defaultRenderer.setMaterial(&materials[(particleIterator - particles.begin()) % 3]);
                 defaultRenderer.setMaterial(&material);
-                defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(particle->getPosition()), 0.1);
+                defaultRenderer.drawSphere(matriz_4x4::traslacion(particle->getPosition()), 0.1);
             }
         }
 

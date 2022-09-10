@@ -17,7 +17,7 @@ public:
     }
 
     void draw(DefaultRenderer &renderer) const override {
-        renderer.drawBox(matriz::matrizTraslacion(this->getOrigin()),
+        renderer.drawBox(matriz::traslacion(this->getOrigin()),
                 (real)2 * this->getHalfSizes().x,
                 (real)2 * this->getHalfSizes().y,
                 (real)2 * this->getHalfSizes().z);

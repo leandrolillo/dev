@@ -29,8 +29,8 @@ public:
         matriz_3x3 orientation = matriz_3x3::matrizRotacion(angles);
 
 
-        matriz expected = matriz::matrizBase(orientation, position);
-        matriz actual = matriz::matrizRotacion(angles) * matriz::matrizTraslacion(position);
+        matriz expected = matriz::base(orientation, position);
+        matriz actual = matriz::rotacion(angles) * matriz::traslacion(position);
 
         assertEquals("Expected and actual do not match", expected, actual);
     }

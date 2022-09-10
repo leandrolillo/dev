@@ -114,7 +114,7 @@ protected:
 
     virtual void refreshPosition() {
         camera.setPosition(this->position + vector(0.0, 1.0, 0.0));
-        playerTransform = matriz_4x4::matrizTraslacion(this->position) * (matriz_4x4)camera.getOrientation();
+        playerTransform = matriz_4x4::traslacion(this->position) * (matriz_4x4)camera.getOrientation();
 
     }
     virtual void refreshOrientation() {

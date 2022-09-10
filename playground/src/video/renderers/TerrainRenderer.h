@@ -20,7 +20,7 @@ protected:
 public:
     TerrainTile(const vector &posicion, const TerrainResource *terrain) {
         this->terrain = terrain;
-        this->position = matriz_4x4::matrizTraslacion(posicion);
+        this->position = matriz_4x4::traslacion(posicion);
     }
 
     const matriz_4x4 &getModelMatrix() const {

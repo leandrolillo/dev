@@ -255,7 +255,7 @@ public:
 	void renderContact(const ParticleContact &contact) {
 	    //video->setOption(LINE_WIDTH, 10.0f); // not working
     	defaultRenderer.setMaterial(&black);
-    	defaultRenderer.drawLine(matriz_4x4::matrizTraslacion(contact.getIntersection()), vector(0, 0, 0), contact.getNormal());
+    	defaultRenderer.drawLine(matriz_4x4::traslacion(contact.getIntersection()), vector(0, 0, 0), contact.getNormal());
 
     	const HeightMapResource *heightmap = this->terrain->getHeightMap();
     	vector position = contact.getIntersection();
@@ -276,16 +276,16 @@ public:
 			vector normal = ((B-A) ^ (C-A)).normalizado();
 			vector heightmapNormal = heightmap->normalAt(relativePosition.x, relativePosition.z);
 
-			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(heightmapOrigin + A), vector(0, 0.01, 0), B-A + vector(0, 0.01, 0));
-			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(heightmapOrigin + A), vector(0, 0.012, 0), B-A + vector(0, 0.012, 0));
-			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(heightmapOrigin + A), vector(0, 0.013, 0), B-A + vector(0, 0.013, 0));
+			defaultRenderer.drawLine(matrix_4x4::traslacion(heightmapOrigin + A), vector(0, 0.01, 0), B-A + vector(0, 0.01, 0));
+			defaultRenderer.drawLine(matrix_4x4::traslacion(heightmapOrigin + A), vector(0, 0.012, 0), B-A + vector(0, 0.012, 0));
+			defaultRenderer.drawLine(matrix_4x4::traslacion(heightmapOrigin + A), vector(0, 0.013, 0), B-A + vector(0, 0.013, 0));
 
-			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(heightmapOrigin + A), vector(0, 0.01, 0), C-A + vector(0, 0.01, 0));
-			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(heightmapOrigin + A), vector(0, 0.012, 0), C-A + vector(0, 0.012, 0));
-			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(heightmapOrigin + A), vector(0, 0.013, 0), C-A + vector(0, 0.013, 0));
+			defaultRenderer.drawLine(matrix_4x4::traslacion(heightmapOrigin + A), vector(0, 0.01, 0), C-A + vector(0, 0.01, 0));
+			defaultRenderer.drawLine(matrix_4x4::traslacion(heightmapOrigin + A), vector(0, 0.012, 0), C-A + vector(0, 0.012, 0));
+			defaultRenderer.drawLine(matrix_4x4::traslacion(heightmapOrigin + A), vector(0, 0.013, 0), C-A + vector(0, 0.013, 0));
 
-			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(heightmapOrigin + A), vector(0, 0, 0), normal);
-			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(position), vector(0, 0, 0), heightmapNormal);
+			defaultRenderer.drawLine(matrix_4x4::traslacion(heightmapOrigin + A), vector(0, 0, 0), normal);
+			defaultRenderer.drawLine(matrix_4x4::traslacion(position), vector(0, 0, 0), heightmapNormal);
 
 
 		} else {
@@ -295,16 +295,16 @@ public:
 			vector normal = ((B-A) ^ (C-A)).normalizado();
 			vector heightmapNormal = heightmap->normalAt(relativePosition.x, relativePosition.z);
 
-			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(heightmapOrigin + A), vector(0, 0.001, 0), B-A + vector(0, 0.001, 0));
-			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(heightmapOrigin + A), vector(0, 0.0012, 0), B-A + vector(0, 0.002, 0));
-			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(heightmapOrigin + A), vector(0, 0.0013, 0), B-A + vector(0, 0.003, 0));
+			defaultRenderer.drawLine(matrix_4x4::traslacion(heightmapOrigin + A), vector(0, 0.001, 0), B-A + vector(0, 0.001, 0));
+			defaultRenderer.drawLine(matrix_4x4::traslacion(heightmapOrigin + A), vector(0, 0.0012, 0), B-A + vector(0, 0.002, 0));
+			defaultRenderer.drawLine(matrix_4x4::traslacion(heightmapOrigin + A), vector(0, 0.0013, 0), B-A + vector(0, 0.003, 0));
 
-			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(heightmapOrigin + A), vector(0, 0.001, 0), C-A + vector(0, 0.001, 0));
-			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(heightmapOrigin + A), vector(0, 0.0012, 0), C-A + vector(0, 0.0012, 0));
-			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(heightmapOrigin + A), vector(0, 0.0013, 0), C-A + vector(0, 0.0013, 0));
+			defaultRenderer.drawLine(matrix_4x4::traslacion(heightmapOrigin + A), vector(0, 0.001, 0), C-A + vector(0, 0.001, 0));
+			defaultRenderer.drawLine(matrix_4x4::traslacion(heightmapOrigin + A), vector(0, 0.0012, 0), C-A + vector(0, 0.0012, 0));
+			defaultRenderer.drawLine(matrix_4x4::traslacion(heightmapOrigin + A), vector(0, 0.0013, 0), C-A + vector(0, 0.0013, 0));
 
-			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(heightmapOrigin + A), vector(0, 0, 0), normal);
-			defaultRenderer.drawLine(matrix_4x4::matrizTraslacion(position), vector(0, 0, 0), heightmapNormal);
+			defaultRenderer.drawLine(matrix_4x4::traslacion(heightmapOrigin + A), vector(0, 0, 0), normal);
+			defaultRenderer.drawLine(matrix_4x4::traslacion(position), vector(0, 0, 0), heightmapNormal);
 		}
 
 
@@ -326,7 +326,7 @@ public:
         {
             if(particle->getStatus() == true) {
 //                defaultRenderer.setMaterial(&material);
-                defaultRenderer.drawSphere(matriz_4x4::matrizTraslacion(particle->getPosition()), 0.1);
+                defaultRenderer.drawSphere(matriz_4x4::traslacion(particle->getPosition()), 0.1);
             }
         }
 

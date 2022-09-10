@@ -116,7 +116,7 @@ public:
 
     void reset() {
 //		video->setMousePosition(video->getScreenWidth() >> 1, video->getScreenHeight() >> 1);
-        camera.setViewMatrix(matriz_4x4::matrizTraslacion(vector(0.0f, -0.5f, -5.0f)));
+        camera.setViewMatrix(matriz_4x4::traslacion(vector(0.0f, -0.5f, -5.0f)));
 
         real radius = (real) 0.5;
         if(collidingParticles.size() > 0) {
