@@ -21,6 +21,8 @@ typedef cuaternion vector4;
 //#define defaultNumberFormat "%.3e"
 constexpr char const *defaultNumberFormat ="%.2f";
 
+real rrand();
+
 class BaseMatrix {
 	protected:
 		unsigned int nroFilas, nroColumnas;

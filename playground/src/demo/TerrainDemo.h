@@ -90,9 +90,9 @@ private:
      * Playground Stuff
      */
 	Logger *logger = LoggerFactory::getLogger("TerrainDemoRunner");
-	VideoRunner *video = null;
-	AudioRunner *audio = null;
-    PhysicsRunner *physics = null;
+	VideoRunner *video = nullptr;
+	AudioRunner *audio = nullptr;
+    PhysicsRunner *physics = nullptr;
 
     /**
      * Input controllers
@@ -115,7 +115,11 @@ private:
 	SkyboxRenderer skyboxRenderer;
 	DefaultRenderer defaultRenderer;
 
-	TerrainResource *terrain = null;
+	VertexArrayResource *tree = nullptr;
+	TextureResource *treeTexture = nullptr;
+	std::vector<matriz_4x4> treePositions;
+
+	TerrainResource *terrain = nullptr;
 	std::unique_ptr<HierarchicalGeometry> terrainBoundingVolume;
 
 	std::vector<std::unique_ptr<BulletParticle>> particles;
@@ -159,6 +163,9 @@ public:
         //glPolygonMode( GL_BACK, GL_LINE );
         video->enable(CULL_FACE, CULL_FACE_BACK);
         video->enable(BLEND, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+        treeTexture = (TextureResource *)this->getContainer()->getResourceManager()->load("images/lowPolyTree.png", "video/texture");
+        tree = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/lowPolyTree.obj", "video/vertexArray");
 
 
 
@@ -207,6 +214,11 @@ public:
             //particles.back()->setRunner(this);
 
             physics->getParticleManager()->addParticle(particles.back().get());
+        }
+
+        for(int index = 0; index < 20; index++) {
+        	this->treePositions.push_back(
+        			matriz_4x4::traslacion(terrain->getHeightMap()->positionAt(rrand() * terrain->getHeightMap()->getWidth(), rrand() * terrain->getHeightMap()->getDepth())) * matriz_4x4::rotacion(0, radian(rrand() * 360.0), 0));
         }
 
 
@@ -328,6 +340,11 @@ public:
 //                defaultRenderer.setMaterial(&material);
                 defaultRenderer.drawSphere(matriz_4x4::traslacion(particle->getPosition()), 0.1);
             }
+        }
+
+        defaultRenderer.setTexture(treeTexture);
+        for(auto &position : this->treePositions) {
+        	defaultRenderer.drawObject(position, tree);
         }
 
 

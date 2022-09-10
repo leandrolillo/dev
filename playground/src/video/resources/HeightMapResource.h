@@ -163,6 +163,10 @@ public:
         }
     }
 
+    vector positionAt(real x, real z) const {
+    	return vector(x, heightAt(x, z), z);
+    }
+
 private:
     real barycentric(const vector &p1, const vector &p2, const vector &p3, const vector2 &pos) const {
         float det = (p2.z - p3.z) * (p1.x - p3.x) + (p3.x - p2.x) * (p1.z - p3.z);

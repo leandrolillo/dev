@@ -1,6 +1,10 @@
 #include <string.h>
 #include "Math3d.h"
 
+real rrand() {
+	return ((real) rand() * one_over_rand_max);
+}
+
 //  / / - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 // | |  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // | |									Atributos de Clase publicos
@@ -556,6 +560,9 @@ void matriz_2x2::operator *=(const real &op1) {
 							0.0f, 0.0f, 0.0f, 1.0f);
 	}
 
+	/**
+	 * x, y & z in radians
+	 */
 	const matriz_4x4 matriz_4x4::rotacion(real x, real y, real z) {
 		real cx = (real)cos(x), sx = (real)sin(x);
 		real cy = (real)cos(y), sy = (real)sin(y);
@@ -568,13 +575,25 @@ void matriz_2x2::operator *=(const real &op1) {
 			0.0f, 		0.0f, 						0.0f, 						1.0f);
 
 	}
+
+	/**
+	 * x, y & z in radians
+	 */
 	const matriz_4x4 matriz_4x4::rotacion(const vector3 &angulos) {
 		return rotacion(angulos.x, angulos.y, angulos.z);
 	}
 
+	/**
+	 * angulo in radians
+	 */
+
 	const matriz_4x4 matriz_4x4::rotacion(real angulo, const vector3 &eje) {
 		return rotacion(angulo, eje.x, eje.y, eje.z);
 	}
+
+	/**
+	 * angulo radians
+	 */
 	const matriz_4x4 matriz_4x4::rotacion(real angulo, real x, real y, real z) {
 		real c, s, umc, nxny1cos, nxnz1cos, nynz1cos;
 		c = (real)cos(angulo);

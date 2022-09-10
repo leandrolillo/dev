@@ -9,3 +9,8 @@
 - Review collision action design: use lambdas instead of template pattern for collision response actions. Review design of BulletParticle used for playing sounds on balls bouncing.
 
 - Review collision detection / response: there is no way to configure restitution factor - should be based on the two objects colliding and/or configurable.
+
+
+----------------
+
+Terrain: Add class to compose several terrain patches and make calculations to determine which patch. Add some class to generate bounding geometry from this.
