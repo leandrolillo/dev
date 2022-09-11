@@ -156,6 +156,11 @@ public:
     void drawBox(const matriz_4x4 &modelMatrix, real height = 1.0f, real width = 1.0f, real depth = 1.0f) {
         this->drawObject(modelMatrix * matriz_4x4::zoom(height, width, depth), getBox());
     }
+
+    void drawBox(const matriz_4x4 &modelMatrix, const vector &sizes) {
+        this->drawBox(modelMatrix, sizes.x, sizes.y, sizes.z);
+    }
+
     void drawLine(const matriz_4x4 &modelMatrix, const vector &start, const vector &end) {
         matriz_4x4 traslacion = matriz_4x4::traslacion(start);
         matriz_4x4 zoom = matriz_4x4::zoom(end - start);

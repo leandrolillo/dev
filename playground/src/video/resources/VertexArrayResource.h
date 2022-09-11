@@ -73,6 +73,7 @@ class VertexArrayResource : public Resource
 	private:
 		std::map<unsigned int, const VertexAttribPointer *> attributes;
 		unsigned int primitiveType;
+		vector size;
 	public:
 		VertexArrayResource(unsigned int id) : Resource(id, "video/vertexArray")
 		{
@@ -118,6 +119,14 @@ class VertexArrayResource : public Resource
 
 		void setPrimitiveType(unsigned int primitiveType) {
 			this->primitiveType = primitiveType;
+		}
+
+		void setSize(const vector &size) {
+			this->size = size;
+		}
+
+		vector getSize() const {
+			return this->size;
 		}
 
 		String toString() const {

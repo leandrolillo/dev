@@ -14,12 +14,16 @@
 
 class GeometryResource: public Resource {
 private:
+	Logger *logger = LoggerFactory::getLogger("video/GeometryResource");
+
 	std::vector<vector3> vertices;
 	std::vector<unsigned int> indices;
 	std::vector<vector3> normals;
 	std::vector<vector2> textureCoordinates;
 	std::vector<vector3> colors;
 	String type;
+
+	vector size {0.0, 0.0, 0.0 };
 public:
 	GeometryResource(unsigned int id) :
 			Resource(id, "video/geometry") {
@@ -72,6 +76,21 @@ public:
 
 	void setType(String type) {
 		this->type = type;
+	}
+
+	vector getSize() {
+		if(size == vector(0, 0, 0)) {
+			vector max(REAL_MIN, REAL_MIN, REAL_MIN);
+			vector min(REAL_MAX, REAL_MAX, REAL_MAX);
+			for(auto &vertice : vertices) {
+				max = vector(std::max(max.x, vertice.x), std::max(max.y, vertice.y), std::max(max.z, vertice.z));
+				min = vector(std::min(min.x, vertice.x), std::min(min.y, vertice.y), std::min(min.z, vertice.z));
+			}
+			this->size = max - min;
+			logger->info("Size is: %s", size.toString().c_str());
+		}
+
+		return size;
 	}
 };
 

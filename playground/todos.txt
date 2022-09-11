@@ -13,4 +13,14 @@
 
 ----------------
 
-Terrain: Add class to compose several terrain patches and make calculations to determine which patch. Add some class to generate bounding geometry from this.
+Terrain: 
+	- Add class to compose several terrain patches and make calculations to determine which patch. 
+	- Add some class to generate bounding geometry from this.
+	- Some other tree model
+	- Add grass / ferns with transparency
+
+Battle city:
+Battle road:
+tanques vs naves
+defend the tower
+scenery (with train or racing cars - lightning mcqueen and cruz)

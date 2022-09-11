@@ -94,6 +94,8 @@ private:
 	AudioRunner *audio = nullptr;
     PhysicsRunner *physics = nullptr;
 
+    bool debug = false;
+
     /**
      * Input controllers
      */
@@ -118,6 +120,7 @@ private:
 	VertexArrayResource *tree = nullptr;
 	TextureResource *treeTexture = nullptr;
 	std::vector<matriz_4x4> treePositions;
+	std::vector<std::unique_ptr<AABB>> treeBoundingVolumes;
 
 	TerrainResource *terrain = nullptr;
 	std::unique_ptr<HierarchicalGeometry> terrainBoundingVolume;
@@ -130,6 +133,8 @@ private:
 	MaterialResource red {vector(1, 0, 0), vector(1, 0, 0), vector(1, 0, 0), 1.0, 0.2 };
 	MaterialResource green {vector(0, 1, 0), vector(0, 1, 0), vector(0, 1, 0), 1.0, 0.2 };
 	MaterialResource blue {vector(0, 0, 1), vector(0, 0, 1), vector(0, 0, 1), 1.0, 0.2 };
+
+	MaterialResource *materials[3] = { &red, &green, &blue};
 
 public:
 	TerrainDemoRunner() : light(vector(0, 0, 0),
@@ -217,8 +222,12 @@ public:
         }
 
         for(int index = 0; index < 20; index++) {
-        	this->treePositions.push_back(
-        			matriz_4x4::traslacion(terrain->getHeightMap()->positionAt(rrand() * terrain->getHeightMap()->getWidth(), rrand() * terrain->getHeightMap()->getDepth())) * matriz_4x4::rotacion(0, radian(rrand() * 360.0), 0));
+        	vector position(terrain->getHeightMap()->positionAt(rrand() * terrain->getHeightMap()->getWidth(), rrand() * terrain->getHeightMap()->getDepth()));
+        	this->treePositions.push_back(matriz_4x4::traslacion(position) * matriz_4x4::rotacion(0, radian(rrand() * 360.0), 0));
+
+        	vector halfsizes(tree->getSize() * 0.5);
+        	this->treeBoundingVolumes.push_back(std::unique_ptr<AABB>(new AABB(position + vector(0, halfsizes.y, 0), vector(halfsizes.x * 0.15, halfsizes.y, halfsizes.z * 0.15))));
+        	physics->getParticleManager()->addScenery(treeBoundingVolumes.back().get());
         }
 
 
@@ -348,66 +357,74 @@ public:
         }
 
 
-        /**
-         * Manually render contacts (for troubleshooting normal)
-         */
-//	    for(auto &contact : physics->getParticleManager()->getContacts()) {
-//	    	renderContact(contact);
-//        }
+        if(debug){
+        	defaultRenderer.setTexture(null);
+			/**
+			 * Manually render contacts (for troubleshooting normal)
+			 */
+			for(auto &contact : physics->getParticleManager()->getContacts()) {
+				renderContact(contact);
+			}
+
+			defaultRenderer.setMaterial(&white);
+			for(auto &treeBV : this->treeBoundingVolumes) {
+				defaultRenderer.drawBox(matriz::traslacion(treeBV->getOrigin()), treeBV->getHalfSizes() * 2);
+			}
 
 
 
-		/**
-		 * manually render heightmap hierarchical bounding box (2 levels)
-		 */
-//		for(auto &particle : this->particles) {
-//				if(particle->getStatus()) {
-//				Sphere &sphere = *((Sphere *)particle->getGeometry());
-//
-//				for(int index = 0; index < terrainBoundingVolume->getChildren().size(); index++)
-//				{
-//					const HeightMapGeometry *child = (const HeightMapGeometry *)terrainBoundingVolume->getChildren()[index].get();
-//					if(physics->getParticleManager()->getCollisionDetector().getIntersectionTester()->sphereAabb(sphere, *child)) {
-//						vector halfSizes = child->getHalfSizes();
-//						defaultRenderer.setMaterial(&materials[index % 3]);
-//						defaultRenderer.drawBox(matriz::matrizTraslacion(child->getOrigin()),
-//										(real)1.99 * halfSizes.x,
-//										(real)1.99 * halfSizes.y,
-//										(real)1.99 * halfSizes.z);
-//					}
-//
-//				}
-//
-//				defaultRenderer.setMaterial(&materials[0]);
-//				if(physics->getParticleManager()->getCollisionDetector().getIntersectionTester()->sphereAabb(sphere, (AABB &)terrainBoundingVolume->getBoundingVolume())) {
-//					vector halfSizes = ((AABB &)terrainBoundingVolume->getBoundingVolume()).getHalfSizes();
-//					defaultRenderer.drawBox(matriz::matrizTraslacion(terrainBoundingVolume->getOrigin()),
-//									(real)2 * halfSizes.x,
-//									(real)2 * halfSizes.y,
-//									(real)2 * halfSizes.z);
-//
-//				}
-//
-//			}
-//		}
-//		defaultRenderer.setMaterial(null);
+			/**
+			 * manually render heightmap hierarchical bounding box (2 levels)
+			 */
+			for(auto &particle : this->particles) {
+					if(particle->getStatus()) {
+					Sphere &sphere = *((Sphere *)particle->getGeometry());
 
-		/**
-		 * render normals - this kills the cpu
-		 */
+					for(int index = 0; index < terrainBoundingVolume->getChildren().size(); index++)
+					{
+						const HeightMapGeometry *child = (const HeightMapGeometry *)terrainBoundingVolume->getChildren()[index].get();
+						if(physics->getParticleManager()->getCollisionDetector().getIntersectionTester()->sphereAabb(sphere, *child)) {
+							vector halfSizes = child->getHalfSizes();
+							defaultRenderer.setMaterial(materials[index % 3]);
+							defaultRenderer.drawBox(matriz::traslacion(child->getOrigin()),
+											(real)1.99 * halfSizes.x,
+											(real)1.99 * halfSizes.y,
+											(real)1.99 * halfSizes.z);
+						}
 
-//		for(int index = 0; index < terrainBoundingVolume->getChildren().size(); index++)
-//		{
-//			const HeightMapGeometry *child = (const HeightMapGeometry *)terrainBoundingVolume->getChildren()[index].get();
-//			const HeightMapResource *heightMap = child->getHeightMap();
-//
-//			for(unsigned int i = 0; i < heightMap->getGridWidth(); i++) {
-//				for(unsigned int j = 0; j < child->getHeightMap()->getGridHeight(); j++) {
-//					defaultRenderer.drawLine(matriz_4x4::matrizTraslacion(child->getPosition()), heightMap->positionAtGrid(i, j), heightMap->positionAtGrid(i, j) + heightMap->normalAtGrid(i, j));
-//					//defaultRenderer.drawBox(matriz_4x4::matrizTraslacion(child->getPosition() + heightMap->positionAtGrid(i, j)), 0.5f, 0.5f, 0.5f);
-//				}
-//			}
-//		}
+					}
+
+					defaultRenderer.setMaterial(materials[0]);
+					if(physics->getParticleManager()->getCollisionDetector().getIntersectionTester()->sphereAabb(sphere, (AABB &)terrainBoundingVolume->getBoundingVolume())) {
+						vector halfSizes = ((AABB &)terrainBoundingVolume->getBoundingVolume()).getHalfSizes();
+						defaultRenderer.drawBox(matriz::traslacion(terrainBoundingVolume->getOrigin()),
+										(real)2 * halfSizes.x,
+										(real)2 * halfSizes.y,
+										(real)2 * halfSizes.z);
+
+					}
+
+				}
+			}
+			defaultRenderer.setMaterial(null);
+
+			/**
+			 * render normals - this kills the cpu
+			 */
+
+	//		for(int index = 0; index < terrainBoundingVolume->getChildren().size(); index++)
+	//		{
+	//			const HeightMapGeometry *child = (const HeightMapGeometry *)terrainBoundingVolume->getChildren()[index].get();
+	//			const HeightMapResource *heightMap = child->getHeightMap();
+	//
+	//			for(unsigned int i = 0; i < heightMap->getGridWidth(); i++) {
+	//				for(unsigned int j = 0; j < child->getHeightMap()->getGridHeight(); j++) {
+	//					defaultRenderer.drawLine(matriz_4x4::matrizTraslacion(child->getPosition()), heightMap->positionAtGrid(i, j), heightMap->positionAtGrid(i, j) + heightMap->normalAtGrid(i, j));
+	//					//defaultRenderer.drawBox(matriz_4x4::matrizTraslacion(child->getPosition() + heightMap->positionAtGrid(i, j)), 0.5f, 0.5f, 0.5f);
+	//				}
+	//			}
+	//		}
+        }
 
 		terrainRenderer.render(camera);
 		skyboxRenderer.render(camera);
@@ -488,6 +505,9 @@ public:
     virtual void keyUp(unsigned int key, unsigned int keyModifier) {
         inputController->keyUp(key, keyModifier);
         switch (key) {
+        	case SDLK_F1:
+        		this->debug = !this->debug;
+        		break;
             case '1':
                 this->inputController = &fpsInputController;
                 break;
