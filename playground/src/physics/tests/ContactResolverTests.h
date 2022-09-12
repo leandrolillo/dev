@@ -78,7 +78,7 @@ public:
         contactResolver.resolve(contacts, 0.1f);
 
         vector delta =  sphereParticle.getPosition() - planeParticle.getPosition();
-        vector normal = -((Plane *)planeParticle.getGeometry())->getNormal();
+        vector normal = -((Plane *)planeParticle.getBoundingVolume())->getNormal();
         real actualPenetration = delta * normal;
         real deltaVelocity = (sphereParticle.getVelocity() - planeParticle.getVelocity()) * normal;
 

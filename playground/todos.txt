@@ -10,6 +10,8 @@
 
 - Review collision detection / response: there is no way to configure restitution factor - should be based on the two objects colliding and/or configurable.
 
+- improve box rendering (normals)
+
 
 ----------------
 

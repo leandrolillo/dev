@@ -17,6 +17,7 @@
 #include<renderers/DefaultRenderer.h>
 #include<renderers/TerrainRenderer.h>
 #include<renderers/SkyboxRenderer.h>
+#include<renderers/geometry/GeometryRenderer.h>
 
 
 #include "inputController/FPSInputController.h"
@@ -116,6 +117,7 @@ private:
 	TerrainRenderer terrainRenderer;
 	SkyboxRenderer skyboxRenderer;
 	DefaultRenderer defaultRenderer;
+	GeometryRenderer geometryRenderer;
 
 	VertexArrayResource *tree = nullptr;
 	TextureResource *treeTexture = nullptr;
@@ -141,7 +143,8 @@ public:
 			vector(0.2f, 0.2f, 0.2f), vector(0.2f, 0.2f, 0.2f),
 			vector(0.1f, 0.1f, 0.1f), 1.0f),
             fpsInputController(camera, playerTransform),
-            thirdPersonController(camera, playerTransform) {
+            thirdPersonController(camera, playerTransform),
+			geometryRenderer(defaultRenderer) {
 	}
 	virtual unsigned char getInterests() {
 		return KEY_DOWN | KEY_UP | MOUSE_MOVE | MOUSE_WHEEL | MOUSE_BUTTON_DOWN | MOUSE_BUTTON_UP | RESIZE;
@@ -359,54 +362,54 @@ public:
 
         if(debug){
         	defaultRenderer.setTexture(null);
-			/**
-			 * Manually render contacts (for troubleshooting normal)
-			 */
-			for(auto &contact : physics->getParticleManager()->getContacts()) {
-				renderContact(contact);
-			}
+        	geometryRenderer.render(physics->getParticleManager());
 
-			defaultRenderer.setMaterial(&white);
-			for(auto &treeBV : this->treeBoundingVolumes) {
-				defaultRenderer.drawBox(matriz::traslacion(treeBV->getOrigin()), treeBV->getHalfSizes() * 2);
-			}
-
-
-
-			/**
-			 * manually render heightmap hierarchical bounding box (2 levels)
-			 */
-			for(auto &particle : this->particles) {
-					if(particle->getStatus()) {
-					Sphere &sphere = *((Sphere *)particle->getGeometry());
-
-					for(int index = 0; index < terrainBoundingVolume->getChildren().size(); index++)
-					{
-						const HeightMapGeometry *child = (const HeightMapGeometry *)terrainBoundingVolume->getChildren()[index].get();
-						if(physics->getParticleManager()->getCollisionDetector().getIntersectionTester()->sphereAabb(sphere, *child)) {
-							vector halfSizes = child->getHalfSizes();
-							defaultRenderer.setMaterial(materials[index % 3]);
-							defaultRenderer.drawBox(matriz::traslacion(child->getOrigin()),
-											(real)1.99 * halfSizes.x,
-											(real)1.99 * halfSizes.y,
-											(real)1.99 * halfSizes.z);
-						}
-
-					}
-
-					defaultRenderer.setMaterial(materials[0]);
-					if(physics->getParticleManager()->getCollisionDetector().getIntersectionTester()->sphereAabb(sphere, (AABB &)terrainBoundingVolume->getBoundingVolume())) {
-						vector halfSizes = ((AABB &)terrainBoundingVolume->getBoundingVolume()).getHalfSizes();
-						defaultRenderer.drawBox(matriz::traslacion(terrainBoundingVolume->getOrigin()),
-										(real)2 * halfSizes.x,
-										(real)2 * halfSizes.y,
-										(real)2 * halfSizes.z);
-
-					}
-
-				}
-			}
-			defaultRenderer.setMaterial(null);
+//			/**
+//			 * Manually render contacts (for troubleshooting normal)
+//			 */
+//			for(auto &contact : physics->getParticleManager()->getContacts()) {
+//				renderContact(contact);
+//			}
+//
+//			defaultRenderer.setMaterial(&white);
+//			for(auto &treeBV : this->treeBoundingVolumes) {
+//				geometryRenderer.render(treeBV.get());
+//			}
+//
+//
+//
+//			/**
+//			 * manually render heightmap hierarchical bounding box (2 levels)
+//			 */
+//			for(auto &particle : this->particles) {
+//					if(particle->getStatus()) {
+//					Sphere &sphere = *((Sphere *)particle->getBoundingVolume());
+//
+//					for(int index = 0; index < terrainBoundingVolume->getChildren().size(); index++)
+//					{
+//						const HeightMapGeometry *child = (const HeightMapGeometry *)terrainBoundingVolume->getChildren()[index].get();
+//						if(physics->getParticleManager()->getCollisionDetector().getIntersectionTester()->sphereAabb(sphere, *child)) {
+//							vector halfSizes = child->getHalfSizes();
+//							defaultRenderer.setMaterial(materials[index % 3]);
+//							defaultRenderer.drawBox(matriz::traslacion(child->getOrigin()),
+//											(real)1.99 * halfSizes.x,
+//											(real)1.99 * halfSizes.y,
+//											(real)1.99 * halfSizes.z);
+//						}
+//					}
+//
+//					defaultRenderer.setMaterial(materials[0]);
+//					if(physics->getParticleManager()->getCollisionDetector().getIntersectionTester()->sphereAabb(sphere, (AABB &)terrainBoundingVolume->getBoundingVolume())) {
+//						vector halfSizes = ((AABB &)terrainBoundingVolume->getBoundingVolume()).getHalfSizes();
+//						defaultRenderer.drawBox(matriz::traslacion(terrainBoundingVolume->getOrigin()),
+//										(real)2 * halfSizes.x,
+//										(real)2 * halfSizes.y,
+//										(real)2 * halfSizes.z);
+//					}
+//
+//				}
+//			}
+//			defaultRenderer.setMaterial(null);
 
 			/**
 			 * render normals - this kills the cpu

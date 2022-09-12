@@ -176,9 +176,9 @@ public:
         defaultRenderer.setTexture(textureResource);
         defaultRenderer.drawSphere(matriz_4x4::traslacion(spherePlatform.getPosition()), 0.1);
         defaultRenderer.drawBox(matriz_4x4::traslacion(aabbPlatform.getPosition()),
-                2.0 * ((AABB *)aabbPlatform.getGeometry())->getHalfSizes().x,
-                2.0 * ((AABB *)aabbPlatform.getGeometry())->getHalfSizes().y,
-                2.0 * ((AABB *)aabbPlatform.getGeometry())->getHalfSizes().z);
+                2.0 * ((AABB *)aabbPlatform.getBoundingVolume())->getHalfSizes().x,
+                2.0 * ((AABB *)aabbPlatform.getBoundingVolume())->getHalfSizes().y,
+                2.0 * ((AABB *)aabbPlatform.getBoundingVolume())->getHalfSizes().z);
         for(auto &particle : this->particles)
         {
             if(particle->getStatus() == true) {

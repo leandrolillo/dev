@@ -33,7 +33,7 @@ public:
 		this->particles.push_back(particle);
 	}
 
-	const std::vector<Particle *> &getParticles() {
+	const std::vector<Particle *> &getParticles() const {
 		return this->particles;
 	}
 
@@ -44,6 +44,12 @@ public:
 	void addScenery(const Geometry *scenery) {
 	    this->collisionDetector.addScenery(scenery);
 	}
+
+	const std::vector<const Geometry *> & getScenery() const {
+		return this->collisionDetector.getScenery();
+	}
+
+
 
 	void removeParticle(const Particle *particle) {
 		//this->particles.erase(__position)
@@ -64,7 +70,7 @@ public:
 		}
 	}
 
-	const std::vector<ParticleContact> &getContacts() {
+	const std::vector<ParticleContact> &getContacts() const {
 		return this->contacts;
 	}
 

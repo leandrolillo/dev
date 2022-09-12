@@ -121,7 +121,7 @@ public:
         real radius = (real) 0.5;
         if(collidingParticles.size() > 0) {
             collidingParticles[0]->setPosition(vector(-1, 0, 0));
-            ((Sphere*) collidingParticles[0]->getGeometry())->setRadius(radius);
+            ((Sphere*) collidingParticles[0]->getBoundingVolume())->setRadius(radius);
             collidingParticles[0]->setMass(M_PI * radius * radius);
             collidingParticles[0]->setVelocity(vector(1, 1, 0));
             collidingParticles[0]->setMaterial(blue);
@@ -129,7 +129,7 @@ public:
 
         if(collidingParticles.size() > 1) {
             collidingParticles[1]->setPosition(vector(1, 0, 0));
-            ((Sphere*) collidingParticles[1]->getGeometry())->setRadius(radius);
+            ((Sphere*) collidingParticles[1]->getBoundingVolume())->setRadius(radius);
             collidingParticles[1]->setMass(M_PI * radius * radius);
             collidingParticles[1]->setVelocity(vector(-1, -1, 0));
             collidingParticles[1]->setMaterial(green);
@@ -137,7 +137,7 @@ public:
 
         if(collidingParticles.size() > 2) {
             collidingParticles[2]->setPosition(vector(1, 0, 0));
-            ((AABB*) collidingParticles[2]->getGeometry())->setHalfSizes(vector(0.5, 0.5, 0.5));
+            ((AABB*) collidingParticles[2]->getBoundingVolume())->setHalfSizes(vector(0.5, 0.5, 0.5));
             collidingParticles[2]->setMass(1);
             collidingParticles[2]->setVelocity(vector(-1, -1, 0));
             collidingParticles[2]->setMaterial(green);
@@ -234,7 +234,7 @@ public:
         for (auto &particle : collidingParticles) {
             defaultRenderer.setMaterial(particle->isColliding() ? &red : &particle->getMaterial());
 
-            const Drawable* drawableGeometry = dynamic_cast<const Drawable*>(particle->getGeometry());
+            const Drawable* drawableGeometry = dynamic_cast<const Drawable*>(particle->getBoundingVolume());
             drawableGeometry->draw(defaultRenderer);
 
             defaultRenderer.setMaterial(&blue);
@@ -280,7 +280,7 @@ public:
                 for(auto &particle : collidingParticles) {
 
                 if (particle->isSelected()) {
-                    vector origin = particle->getGeometry()->getOrigin();
+                    vector origin = particle->getBoundingVolume()->getOrigin();
 
                     real t = (origin.z - line.getOrigin().z) / line.getDirection().z;
                     particle->setPosition(line.getOrigin() + t * line.getDirection());
@@ -305,7 +305,7 @@ public:
                     camera.getRayDirection((unsigned int) x, (unsigned int) y, video->getScreenWidth(), video->getScreenHeight()));
 
             for(auto &particle : collidingParticles) {
-                if (intersectionTester.intersects(*particle->getGeometry(), (Geometry &)line)) {
+                if (intersectionTester.intersects(*particle->getBoundingVolume(), (Geometry &)line)) {
                     particle->setSelected(true);
                 }
             }
