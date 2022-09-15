@@ -13,17 +13,38 @@
 #include <Geometry.h>
 
 class GeometryRenderer {
-	DefaultRenderer &renderer;
-
-    MaterialResource red = MaterialResource(vector(1, 0, 0), vector(1, 0, 0), vector(1, 0, 0), 1.0, 0.5);
-    MaterialResource green = MaterialResource(vector(0, 1, 0), vector(0, 1, 0), vector(0, 1, 0), 1.0);
-    MaterialResource blue = MaterialResource(vector(0, 0, 1), vector(0, 0, 1), vector(0, 0, 1), 1.0);
-    MaterialResource black {vector(0, 0, 0), vector(0, 0, 0), vector(0, 0, 0), 1.0, 0.2 };
-    MaterialResource white {vector(1, 1, 1), vector(1, 1, 1), vector(1, 1, 1), 1.0, 0.2 };
+public:
+    const MaterialResource red = MaterialResource(vector(1, 0, 0), vector(1, 0, 0), vector(1, 0, 0), 1.0, 0.5);
+    const MaterialResource green = MaterialResource(vector(0, 1, 0), vector(0, 1, 0), vector(0, 1, 0), 0.5);
+    const MaterialResource blue = MaterialResource(vector(0, 0, 1), vector(0, 0, 1), vector(0, 0, 1), 0.5);
+    const MaterialResource black {vector(0, 0, 0), vector(0, 0, 0), vector(0, 0, 0), 1.0, 0.2 };
+    const MaterialResource white {vector(1, 1, 1), vector(1, 1, 1), vector(1, 1, 1), 1.0, 0.2 };
+private:
+    DefaultRenderer &renderer;
+    MaterialResource const *particleMaterial=&black;
+    MaterialResource const *collidingParticleMaterial=&red;
+    MaterialResource const *sceneryMaterial=&red;
+    MaterialResource const *contactMaterial=&green;
 
 
 public:
 	GeometryRenderer(DefaultRenderer &renderer) : renderer(renderer) {		}
+
+	void setParticleMaterial(MaterialResource *material) {
+		this->particleMaterial = material;
+	}
+
+	void setCollidingParticleMaterial(MaterialResource *material) {
+		this->collidingParticleMaterial = material;
+	}
+
+	void setSceneryMaterial(MaterialResource *material) {
+		this->sceneryMaterial = material;
+	}
+
+	void setContactMaterial(MaterialResource *material) {
+		this->contactMaterial = material;
+	}
 
 	void render(const ParticleManager *particleManager) const {
 
@@ -37,18 +58,18 @@ public:
 					}
 				}
 
-				renderer.setMaterial(isColliding ? &red : &black);
+				renderer.setMaterial(isColliding ? collidingParticleMaterial : particleMaterial);
 				this->render(particle->getBoundingVolume());
 			}
 		}
 
-		renderer.setMaterial(&white);
+		renderer.setMaterial(sceneryMaterial);
 		for(auto scenery : particleManager->getScenery()) {
 			this->render(scenery);
 		}
 
 
-        renderer.setMaterial(&green);
+        renderer.setMaterial(contactMaterial);
 		for(auto &contact : particleManager->getContacts()) {
 			this->renderContact(contact);
 		}

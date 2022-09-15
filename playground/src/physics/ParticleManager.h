@@ -74,6 +74,14 @@ public:
 		return this->contacts;
 	}
 
+	void detectCollisions() {
+		contacts = collisionDetector.detectCollisions(this->particles);
+	}
+
+	void resolveContacts(real dt) {
+		contactResolver.resolve(contacts, dt);
+	}
+
 	void step(real dt) {
 		applyForces(dt);
 

@@ -15,14 +15,22 @@
 
 ----------------
 
-Terrain: 
+Add menu for selecting demo.
+
+TerrainDemo: 
 	- Add class to compose several terrain patches and make calculations to determine which patch. 
+	- mod infinite terrain? render those inside camera frustrum
 	- Add some class to generate bounding geometry from this.
 	- Some other tree model
 	- Add grass / ferns with transparency
+	- use own particle class or review design (lambdas maybe?)
 
 Battle city:
 Battle road:
 tanques vs naves
 defend the tower
-scenery (with train or racing cars - lightning mcqueen and cruz)
+scenery (with train or racing cars - lightning mcqueen and cruz, wind/rain, vegetation and animals, water, day/night transition, sun and moon, etc.)
+
+
+ColDetDemo:
+ - use particleManager and geometry renderer to detect/resolve collisions and draw stuff onscreen.

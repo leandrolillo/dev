@@ -17,6 +17,7 @@
 #include<renderers/DefaultRenderer.h>
 #include<renderers/SkyboxRenderer.h>
 #include<renderers/GridRenderer.h>
+#include<renderers/geometry/GeometryRenderer.h>
 
 #include<Math3d.h>
 #include<forces/Gravity.h>
@@ -35,7 +36,6 @@ class CollisionDetectionDemoRunner;
 class CollidingParticle: public Particle {
 private:
     CollisionDetectionDemoRunner *runner = null;
-    bool _isColliding = false;
     bool _isSelected = false;
     MaterialResource material;
 
@@ -49,14 +49,6 @@ public:
 
     void setMaterial(const MaterialResource &material) {
         this->material = material;
-    }
-
-    void setIsColliding(bool isColliding) {
-        this->_isColliding = isColliding;
-    }
-
-    bool isColliding() const {
-        return this->_isColliding;
     }
 
     bool isSelected() const {
@@ -77,13 +69,11 @@ class CollisionDetectionDemoRunner: public PlaygroundRunner {
     VideoRunner *video = null;
     AudioRunner *audio = null;
 
-    CollisionDetector collisionDetector;
-    CollisionTester intersectionTester;
-    ContactResolver contactSolver;
-    std::vector<Particle*> allParticles; // collect all particles for sending to collision detector.
+    ParticleManager particleManager;
+    const CollisionTester &intersectionTester = *(particleManager.getCollisionDetector().getIntersectionTester());
+
     std::vector<std::unique_ptr<CollidingParticle>> collidingParticles;
     Particle ground;
-    //Plane plane = Plane(vector(0, 0, 0), vector(0, 1, 0));
 
     vector2 startPosition;
     vector2 endPosition;
@@ -92,13 +82,14 @@ class CollisionDetectionDemoRunner: public PlaygroundRunner {
     DefaultRenderer defaultRenderer;
     SkyboxRenderer skyboxRenderer;
     GridRenderer gridRenderer;
+    GeometryRenderer geometryRenderer;
 
     MaterialResource red = MaterialResource(vector(1, 0, 0), vector(1, 0, 0), vector(1, 0, 0), 1.0, 0.5);
     MaterialResource green = MaterialResource(vector(0, 1, 0), vector(0, 1, 0), vector(0, 1, 0), 1.0);
     MaterialResource blue = MaterialResource(vector(0, 0, 1), vector(0, 0, 1), vector(0, 0, 1), 1.0);
 
 public:
-    CollisionDetectionDemoRunner() : ground(new Plane(vector(0, 0, 0), vector(0, 1, 0))){
+    CollisionDetectionDemoRunner() : ground(new Plane(vector(0, 0, 0), vector(0, 1, 0))), geometryRenderer(defaultRenderer) {
         logger->addAppender(LoggerFactory::getAppender("stdout"));
     }
 
@@ -171,15 +162,15 @@ public:
 
         collidingParticles.push_back(std::unique_ptr<CollidingParticle>(new CollidingParticle(new DrawableSphere(vector(0, 0, 0), (real) 0.5))));
         collidingParticles.back()->setRunner(this);
-        allParticles.push_back(collidingParticles.back().get());
+        particleManager.addParticle(collidingParticles.back().get());
 
         collidingParticles.push_back(std::unique_ptr<CollidingParticle>(new CollidingParticle(new DrawableSphere(vector(0, 0, 0), (real) 0.5))));
         collidingParticles.back()->setRunner(this);
-        allParticles.push_back(collidingParticles.back().get());
+        particleManager.addParticle(collidingParticles.back().get());
 
         collidingParticles.push_back(std::unique_ptr<CollidingParticle>(new CollidingParticle(new DrawableAABB(vector(2, 2, 0), vector(0.5, 0.5, 0.5)))));
         collidingParticles.back()->setRunner(this);
-        allParticles.push_back(collidingParticles.back().get());
+        particleManager.addParticle(collidingParticles.back().get());
 
         HierarchicalGeometry *hierarchicalGeometry = new DrawableHierarchy(new AABB(vector(0, 0, 0), vector(1, 0.5, 0.5)));
         hierarchicalGeometry->addChildren(new Sphere(vector(-0.5, 0, 0), 0.5));
@@ -187,10 +178,10 @@ public:
 
         collidingParticles.push_back(std::unique_ptr<CollidingParticle>(new CollidingParticle(hierarchicalGeometry)));
         collidingParticles.back()->setRunner(this);
-        allParticles.push_back(collidingParticles.back().get());
+        particleManager.addParticle(collidingParticles.back().get());
 
-        //collisionDetector.addScenery(&plane);
-        allParticles.push_back(&ground);
+        particleManager.addParticle(&ground);
+
 
         reset();
 
@@ -198,21 +189,6 @@ public:
         return true;
     }
 
-    void drawContact(ParticleContact &contact) {
-        vector start = contact.getIntersection(); //contact.getParticleA()->getPosition();
-        vector end = start + contact.getNormal() * contact.getPenetration();
-
-        defaultRenderer.setMaterial(&green);
-        defaultRenderer.drawLine(matriz_4x4::identidad, start, end);
-
-//        if (contact.getParticleB() != null) {
-//            start = contact.getIntersection();
-//            end = start - contact.getNormal() * contact.getPenetration();
-//
-//            defaultRenderer.setMaterial(&green);
-//            defaultRenderer.drawLine(matriz_4x4::identidad, start, end);
-//        }
-    }
 
     LoopResult doLoop() {
         defaultRenderer.clear();
@@ -221,31 +197,10 @@ public:
         defaultRenderer.drawLine(matriz_4x4::identidad, vector(0, -1, 0), vector(0, 1, 0));
         defaultRenderer.drawLine(matriz_4x4::identidad, vector(0, 0, -1), vector(0, 0, 1));
 
-        std::vector<ParticleContact> contacts = collisionDetector.detectCollisions(allParticles);
+        particleManager.detectCollisions();
+        std::vector<ParticleContact> contacts = particleManager.getContacts();
 
-        //defaultRenderer.setMaterial(&blue);
-        for (auto contact : contacts) {
-            drawContact(contact);
-            //Draw contacts
-        }
-
-        //logger->info("Found %d contacts.", contacts.size());
-
-        for (auto &particle : collidingParticles) {
-            defaultRenderer.setMaterial(particle->isColliding() ? &red : &particle->getMaterial());
-
-            const Drawable* drawableGeometry = dynamic_cast<const Drawable*>(particle->getBoundingVolume());
-            drawableGeometry->draw(defaultRenderer);
-
-            defaultRenderer.setMaterial(&blue);
-            defaultRenderer.drawLine(matriz_4x4::identidad, particle->getPosition(), particle->getPosition() + particle->getVelocity());
-
-//	        defaultRenderer.setMaterial(&blue);
-//          defaultRenderer.drawLine(matriz_4x4::identidad, vector(0, 0, 0), sphereParticle->getPosition());
-//	        defaultRenderer.drawLine(matriz_4x4::identidad, vector(0, 0, 0), sphereParticle->getPosition() + vector(0, 0, sphere->getRadius()));
-
-            particle->setIsColliding(false);
-        }
+        geometryRenderer.render(&particleManager);
 
         defaultRenderer.render(camera);
         //skyboxRenderer.render(camera);
@@ -255,21 +210,13 @@ public:
     }
 
     void onCollision(CollidingParticle *sphereParticle) {
-        sphereParticle->setIsColliding(true);
+        //sphereParticle->setIsColliding(true);
     }
 
     void afterIntegrate(CollidingParticle *particle) {
         if (particle->getPosition().modulo() > 100) {
             particle->setStatus(false);
         }
-
-        particle->setIsColliding(false);
-    }
-
-    void mouseWheel(int wheel) {
-//        camera.setViewMatrix(matriz_4x4::matrizTraslacion(camera.getPosition() + vector(0.0f, 0.0f, wheel)));
-//        audio->updateListener(camera.getPosition() * -1);
-        //logger->info("camera: %s", camera.getPosition().toString("%.2f").c_str());
     }
 
     virtual void mouseMove(int x, int y, int dx, int dy) {
@@ -318,7 +265,9 @@ public:
                 reset();
                 break;
             case SDLK_SPACE:
-                contactSolver.resolve(collisionDetector.detectCollisions(allParticles), 0.1);
+            	particleManager.resolveContacts(0.1);
+                //contactSolver.resolve(collisionDetector.detectCollisions(allParticles), 0.1);
+                //particleManager.step(0.1);
                 break;
         }
     }
