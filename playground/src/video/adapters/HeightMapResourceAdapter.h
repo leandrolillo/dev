@@ -20,7 +20,7 @@ public:
         this->addSupportedMimeType("video/heightmap");
     }
 
-    virtual Resource* load(FileParser &fileParser, const String &mimeType) {
+    virtual Resource *load(FileParser &fileParser, const String &mimeType) const override {
         ImageResource *image = (ImageResource *)this->getResourceManager()->load(fileParser);
         HeightMapResource *resource = new HeightMapResource(image, vector(2, 80, 2));
         return resource;

@@ -20,7 +20,7 @@ class PngResourceAdapter : public ResourceAdapter {
 			this->addSupportedMimeType("image/png");
 		}
 
-		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
+		virtual Resource *load(FileParser &fileParser, const String &mimeType) const override {
 			unsigned char *pBitmap;
 			unsigned int width, height;
 			int  bit_depth;
@@ -146,7 +146,7 @@ class PngResourceAdapter : public ResourceAdapter {
 			return resource;
 		}
 
-		virtual void dispose(Resource *resource) {
+		virtual void dispose(Resource *resource) const override {
 			if(resource->getMimeType() == "image/png") {
 			ImageResource *pngResource = (ImageResource *)resource;
 

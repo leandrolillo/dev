@@ -20,7 +20,7 @@ public:
 		this->addSupportedMimeType("video/terrain");
 	}
 
-	Resource* load(FileParser &fileParser, const String &mimeType) {
+	Resource *load(FileParser &fileParser, const String &mimeType) const override {
 		JsonParser *jsonParser = new JsonParser(fileParser);
 		TerrainResource *resource = new TerrainResource();
 
@@ -59,7 +59,7 @@ public:
 	}
 
 protected:
-	VertexArrayResource *buildModel(const HeightMapResource *heightMap) {
+	VertexArrayResource *buildModel(const HeightMapResource *heightMap) const {
 	    VertexArrayResource *model = null;
         if(heightMap != null) {
             GeometryResource heightMapGeometry(0);

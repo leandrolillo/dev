@@ -18,7 +18,7 @@ public:
 		this->acceleration = acceleration;
 	}
 
-	void apply(real dt, const std::vector<Particle *> &particles) const {
+	void apply(real dt, const std::vector<Particle *> &particles) const override {
 		for(std::vector<Particle *>::const_iterator iterator = particles.begin(); iterator != particles.end(); iterator++) {
 			Particle *particle = *iterator;
 			if(particle->getStatus()) {

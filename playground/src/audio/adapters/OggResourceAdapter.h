@@ -33,7 +33,7 @@ class OggResourceAdapter : public ResourceAdapter {
 			return logger->getBasename();
 		}
 		constexpr unsigned int OGG_BUFFER_SIZE = 4096 * 4;
-		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
+		virtual Resource *load(FileParser &fileParser, const String &mimeType) const override {
 			OggVorbis_File oggStream;
 			vorbis_info *vorbisInfo;
 			vorbis_comment *vorbisComment;
@@ -80,7 +80,7 @@ class OggResourceAdapter : public ResourceAdapter {
 			resource->setSize(bufferData->size());
 			return(resource);
 		}
-		virtual void dispose(Resource *resource) {
+		virtual void dispose(Resource *resource) const override {
 			OggResource *oggResource = (OggResource *)resource;
 
 			((std::vector <char> *)oggResource->getData())->clear();

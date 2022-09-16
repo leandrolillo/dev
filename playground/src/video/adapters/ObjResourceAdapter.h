@@ -17,7 +17,7 @@ public:
         this->addSupportedMimeType("video/obj");
     }
 
-    virtual Resource* load(FileParser &fileParser, const String &mimeType) {
+    virtual Resource *load(FileParser &fileParser, const String &mimeType) const override {
         GeometryResource *geometry = new GeometryResource(0);
         geometry->setType("triangles");
         TextParser textParser(fileParser);
@@ -90,7 +90,7 @@ public:
         return geometry;
     }
 private:
-    void printLogInfo(GeometryResource *geometry) {
+    void printLogInfo(GeometryResource *geometry) const {
         logger->info("%d vertices", geometry->getVertices().size());
         logger->info("%d textCoords", geometry->getTextureCoordinates().size());
         logger->info("%d normals", geometry->getNormals().size());
@@ -103,19 +103,19 @@ private:
                     geometry->getNormals().at(*indexIterator).toString("%.6f").c_str());
         }
     }
-    void ensureTextureCoordinates(GeometryResource *geometry) {
+    void ensureTextureCoordinates(GeometryResource *geometry) const {
         for (unsigned int index = geometry->getTextureCoordinates().size(); index < geometry->getVertices().size(); index++) {
             geometry->getTextureCoordinates().push_back(vector2(0, 0));
 
         }
     }
 
-    void ensureNormals(GeometryResource *geometry) {
+    void ensureNormals(GeometryResource *geometry) const {
         for (unsigned int index = geometry->getNormals().size(); index < geometry->getVertices().size(); index++) {
             geometry->getNormals().push_back(vector3(0, 0, 0));
         }
     }
-    vector readIndicesRow(TextParser &textParser) {
+    vector readIndicesRow(TextParser &textParser) const {
 
         int vertexIndex = textParser.readInteger();
         int normalIndex = 0;

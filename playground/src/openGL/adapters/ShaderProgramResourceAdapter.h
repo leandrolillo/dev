@@ -27,21 +27,6 @@
 class ShaderProgramResourceAdapter: public OpenGLResourceAdapter {
 	private:
 		std::map<std::string, std::string> shadersMimeTypes;
-
-	private:
-		String getInfoLog(GLuint object)
-		{
-			GLint log_length = 0;
-			char *log;
-
-			glGetProgramiv(object, GL_INFO_LOG_LENGTH, &log_length);
-			log = new char[log_length];
-			glGetProgramInfoLog(object, log_length, null, log);
-			String response(log);
-			delete log;
-
-			return response;
-		}
 	public:
 
 		ShaderProgramResourceAdapter() {
@@ -54,7 +39,7 @@ class ShaderProgramResourceAdapter: public OpenGLResourceAdapter {
 			shadersMimeTypes["tesellationShaders"] = "video/tesellationShader";
 		}
 
-		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
+		virtual Resource *load(FileParser &fileParser, const String &mimeType) const override {
 			GLenum glError = glGetError();
 
 			JsonParser *parser = new JsonParser(fileParser);
@@ -73,7 +58,7 @@ class ShaderProgramResourceAdapter: public OpenGLResourceAdapter {
 					std::vector<String> vertexShadersFiles = parser->readStringArray();
 
 					for(std::vector<String>::iterator stringIterator = vertexShadersFiles.begin(); stringIterator != vertexShadersFiles.end(); stringIterator++) {
-						ShaderResource *shader = (ShaderResource *)getResourceManager()->load(fileParser.getFilename(), *stringIterator, shadersMimeTypes[token]);
+						ShaderResource *shader = (ShaderResource *)getResourceManager()->load(fileParser.getFilename(), *stringIterator, shadersMimeTypes.at(token));
 						if(shader != null)
 							resource->getShaders().push_back(shader);
 						else
@@ -144,7 +129,7 @@ class ShaderProgramResourceAdapter: public OpenGLResourceAdapter {
 			return resource;
 		}
 
-		virtual void dispose(Resource *resource) {
+		virtual void dispose(Resource *resource) const override {
 			ShaderProgramResource *shaderProgramResource = (ShaderProgramResource *)resource;
 			if(shaderProgramResource->getId() != 0) {
 				glDeleteProgram(shaderProgramResource->getId());

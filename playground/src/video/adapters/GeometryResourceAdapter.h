@@ -21,7 +21,7 @@ public:
 		this->addSupportedMimeType("video/geometry");
 	}
 
-	virtual Resource* load(FileParser &fileParser, const String &mimeType) {
+	virtual Resource *load(FileParser &fileParser, const String &mimeType) const override {
 		JsonParser *parser = new JsonParser(fileParser);
 		GeometryResource *resource = new GeometryResource(0);
 
@@ -83,7 +83,7 @@ public:
 		return resource;
 	}
 
-	virtual void dispose(Resource *resource) {
+	virtual void dispose(Resource *resource) const override {
 	    logger->info("Adapter Disposing of %s", resource->toString().c_str());
 
 		GeometryResource *geometryResource = (GeometryResource*) resource;
@@ -97,7 +97,7 @@ public:
 
 private:
 	//TODO: Review vertex normals generation. Review amount of needed vertex normals (according to number of indexes or unique vertices?). May need to build adapters and factories based on primitive type.
-	void ensureNormals(GeometryResource *resource) {
+	void ensureNormals(GeometryResource *resource) const {
 		if (resource->getNormals().size() == 0) {
 			NormalGenerator *generator = NormalGeneratorFactory::getGenerator(
 					resource->getType());
@@ -107,7 +107,7 @@ private:
 		}
 	}
 
-	void buildIndicesArray(GeometryResource *resource) {
+	void buildIndicesArray(GeometryResource *resource) const {
 		//create one to one index array.
 		unsigned int currentIndex = 0;
 
@@ -118,7 +118,7 @@ private:
 		}
 	}
 
-	void ensureColors(GeometryResource *resource) {
+	void ensureColors(GeometryResource *resource) const {
 		unsigned int numberOfColors = (resource->getVertices().size()
 				- resource->getColors().size());
 		for (unsigned int currentIndex = 0; currentIndex < numberOfColors;
@@ -127,7 +127,7 @@ private:
 	}
 
 	void buildVerticesArray(GeometryResource *resource,
-			std::vector<vector3> &vertices) {
+			std::vector<vector3> &vertices) const {
 		if (resource != null && vertices.size() > 0) {
 			for (std::vector<vector3>::iterator source = vertices.begin();
 					source != vertices.end(); source++) {
@@ -153,7 +153,7 @@ private:
 		}
 	}
 
-	void log(String prefix, std::vector<vector2> array) {
+	void log(String prefix, std::vector<vector2> array) const {
 		char vectorBuffer[256];
 
 		sprintf(vectorBuffer, "[%lu] ", array.size());
@@ -171,7 +171,7 @@ private:
 
 	}
 
-	void log(String prefix, std::vector<unsigned int> array) {
+	void log(String prefix, std::vector<unsigned int> array) const {
 		char vectorBuffer[256];
 
 		sprintf(vectorBuffer, "[%lu] ", array.size());
@@ -189,7 +189,7 @@ private:
 
 	}
 
-	void log(String prefix, std::vector<vector3> array) {
+	void log(String prefix, std::vector<vector3> array) const {
 		char vectorBuffer[256];
 
 		sprintf(vectorBuffer, "[%lu] ", array.size());

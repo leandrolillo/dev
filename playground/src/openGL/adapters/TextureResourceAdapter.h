@@ -19,7 +19,7 @@ class TextureResourceAdapter: public OpenGLResourceAdapter {
 			this->addSupportedMimeType("video/texture");
 		}
 
-		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
+		virtual Resource *load(FileParser &fileParser, const String &mimeType) const override {
 			ImageResource *imageResource = (ImageResource *)this->getResourceManager()->load(fileParser);
 			TextureResource *resource = null;
 
@@ -52,7 +52,7 @@ class TextureResourceAdapter: public OpenGLResourceAdapter {
 
 			return resource;
 		}
-		virtual void dispose(Resource *resource) {
+		virtual void dispose(Resource *resource) const override {
             logger->info("Disposing of Texture Resource  %s", resource->toString().c_str());
 
 			TextureResource *textureResource = (TextureResource *)resource;

@@ -14,7 +14,7 @@
 
 class TgaResourceAdapter: public ResourceAdapter {
 private:
-	short le_short(unsigned char *bytes) {
+	short le_short(unsigned char *bytes) const {
 		return bytes[0] | ((char) bytes[1] << 8);
 	}
 public:
@@ -23,7 +23,7 @@ public:
 		this->addSupportedMimeType("image/tga");
 	}
 
-	virtual Resource* load(FileParser &fileParser, const String &mimeType) {
+	virtual Resource *load(FileParser &fileParser, const String &mimeType) const override {
 		ImageResource *resource = new ImageResource(0, "image/tga");
 
 		struct tgaHeader {
@@ -90,7 +90,7 @@ public:
 
 		return (resource);
 	}
-	virtual void dispose(Resource *resource) {
+	virtual void dispose(Resource *resource) const override {
 		if (resource->getMimeType() == "image/tga") {
 			ImageResource *tgaResource = (ImageResource*) resource;
 

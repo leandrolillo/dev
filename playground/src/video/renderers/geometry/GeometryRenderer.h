@@ -23,7 +23,7 @@ private:
     DefaultRenderer &renderer;
     MaterialResource const *particleMaterial=&black;
     MaterialResource const *collidingParticleMaterial=&red;
-    MaterialResource const *sceneryMaterial=&red;
+    MaterialResource const *sceneryMaterial=&white;
     MaterialResource const *contactMaterial=&green;
 
 
@@ -59,7 +59,7 @@ public:
 				}
 
 				renderer.setMaterial(isColliding ? collidingParticleMaterial : particleMaterial);
-				this->render(particle->getBoundingVolume());
+				this->render(particle->getBoundingVolume(), isColliding);
 			}
 		}
 
@@ -75,7 +75,7 @@ public:
 		}
 	}
 
-	void render(const Geometry *geometry) const {
+	void render(const Geometry *geometry, bool isColliding = false) const {
 		if(geometry != null) {
 			switch(geometry->getType()) {
 				case GeometryType::SPHERE:
@@ -88,7 +88,7 @@ public:
 					render((const Plane *)geometry);
 				break;
 				case GeometryType::HIERARCHY:
-					render((const HierarchicalGeometry *)geometry);
+					render((const HierarchicalGeometry *)geometry, isColliding);
 				break;
 				case GeometryType::HEIGHTMAP:
 					render((const HeightMapGeometry *)geometry);
@@ -112,6 +112,7 @@ public:
 	}
 
 	void render(const Plane *plane) const {
+		renderer.drawBox(matriz_4x4::base(matriz_3x3::matrizRotacion(0, plane->getNormal()), plane->getOrigin()) , 10, 0.01, 10);
 	}
 
 	void render(const Line *line) const {
@@ -122,12 +123,14 @@ public:
 
 	}
 
-	void render(const HierarchicalGeometry *hierarchy) const {
-
-		this->render(&hierarchy->getBoundingVolume());
-        for(auto &child : hierarchy->getChildren()) {
-            this->render(child.get());
-        }
+	void render(const HierarchicalGeometry *hierarchy, bool isColliding) const {
+		if(isColliding) {
+			for(auto &child : hierarchy->getChildren()) {
+				this->render(child.get());
+			}
+		} else {
+			this->render(&hierarchy->getBoundingVolume());
+		}
 	}
 
 

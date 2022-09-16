@@ -25,7 +25,7 @@ public:
 		logger->debug("Destroying resource adapter %s", this->toString().c_str());
 	}
 
-	ResourceManager* getResourceManager() {
+	ResourceManager* getResourceManager() const {
 		return resourceManager;
 	}
 
@@ -45,7 +45,7 @@ public:
 		return supportedMimeTypes;
 	}
 
-	virtual Resource* load(FileParser &fileParser, const String &mimeType) = 0;
+	virtual Resource* load(FileParser &fileParser, const String &mimeType) const = 0;
 	virtual void dispose(Resource *resource) const {};
 
 	virtual String toString() const {

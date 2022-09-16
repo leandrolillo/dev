@@ -49,7 +49,7 @@ public:
 	    this->light = light;
 	}
 
-    bool init() {
+    bool init() override {
         if(this->shader == null) {
             this->shader = (ShaderProgramResource *)resourceManager->load("shaders/terrain/terrain.program.json", "video/shaderProgram");
         }
@@ -57,7 +57,7 @@ public:
         return true;
     }
 
-	void render(const Camera &camera) {
+	void render(const Camera &camera) override {
 	    if(videoRunner != null && shader != null && !terrainTiles.empty()) {
             videoRunner->useProgramResource(shader);
 

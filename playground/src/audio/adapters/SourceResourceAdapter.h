@@ -20,7 +20,7 @@ class SourceResourceAdapter: public ResourceAdapter {
 			this->addSupportedMimeType("audio/source");
 		}
 
-		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
+		virtual Resource *load(FileParser &fileParser, const String &mimeType) const override {
 			ALenum error = 0;
 
 			logger->debug("loading audio/source from [%s]", fileParser.getFilename().c_str());
@@ -46,7 +46,7 @@ class SourceResourceAdapter: public ResourceAdapter {
 
 			return(new Source(sourceId));
 		}
-		virtual void dispose(Resource *resource) {
+		virtual void dispose(Resource *resource) const override {
 			logger->debug("Deleting source [%ld]", resource->getId());
 
 			unsigned int sourceId = resource->getId();

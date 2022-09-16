@@ -21,7 +21,7 @@ public:
 		this->addSupportedMimeType("image/jpg");
 	}
 
-	virtual Resource* load(FileParser &fileParser, const String &mimeType) {
+	virtual Resource *load(FileParser &fileParser, const String &mimeType) const override {
 		struct jpeg_decompress_struct cinfo;
 		struct jpeg_error_mgr jerr;
 
@@ -62,7 +62,7 @@ public:
 		return (resource);
 	}
 
-	virtual void dispose(Resource *resource) {
+	virtual void dispose(Resource *resource) const override {
 		ImageResource *jpegResource = (ImageResource*) resource;
 
 		if (jpegResource->getData() != null)

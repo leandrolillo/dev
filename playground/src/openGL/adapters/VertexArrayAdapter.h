@@ -18,7 +18,7 @@ public:
 		this->addSupportedMimeType("video/vertexArray");
 	}
 
-	virtual Resource* load(FileParser &fileParser, const String &mimeType) {
+	virtual Resource *load(FileParser &fileParser, const String &mimeType) const override {
 	    String geometryMimeType;
 
         geometryMimeType = this->getResourceManager()->guessMimeType(fileParser.getFilename());
@@ -33,7 +33,7 @@ public:
 
 		return null;
 	}
-	virtual void dispose(Resource *resource) {
+	virtual void dispose(Resource *resource) const override {
 	    logger->debug("Deleting [%s]", resource->toString().c_str());
 		VertexArrayResource *vertexArrayResource = (VertexArrayResource*) resource;
 
@@ -67,7 +67,7 @@ public:
 		}
 	}
 
-    VertexArrayResource *generateVertexBuffer(GeometryResource *geometry) {
+    VertexArrayResource *generateVertexBuffer(GeometryResource *geometry) const {
         VertexArrayResource *resource = null;
 
         glGetError();
@@ -139,7 +139,7 @@ public:
 protected:
 	bool addBuffer(ShaderAttributeLocation attributeLocation,
 			VertexArrayResource *resource, GLenum bufferDestination,
-			const std::vector<vector2> &data) {
+			const std::vector<vector2> &data) const {
 		if (data.size() > 0) {
 			logger->verbose("Creating [%d] vector2 buffer for attribute [%d]",
 					data.size(), attributeLocation);
@@ -180,7 +180,7 @@ protected:
 
 	bool addBuffer(ShaderAttributeLocation attributeLocation,
 			VertexArrayResource *resource, GLenum bufferDestination,
-			const std::vector<vector3> &data) {
+			const std::vector<vector3> &data) const {
 		logger->verbose("Creating [%d] vector3 buffer for attribute [%d]",
 				data.size(), attributeLocation);
 
@@ -217,7 +217,7 @@ protected:
 	}
 	bool addBuffer(ShaderAttributeLocation attributeLocation,
 			VertexArrayResource *resource, GLenum bufferDestination,
-			const std::vector<unsigned int> &data) {
+			const std::vector<unsigned int> &data) const {
 		logger->verbose("Creating [%d] unsigned int buffer for attribute [%d]",
 				data.size(), attributeLocation);
 

@@ -30,7 +30,7 @@ protected:
 	unsigned int height;
 	unsigned int width;
 public:
-	virtual unsigned char getId() {
+	virtual unsigned char getId() override {
 		return ID;
 	}
 
@@ -46,7 +46,7 @@ public:
 		return this->fullScreen;
 	}
 
-	virtual void resize(unsigned int height, unsigned int width) {
+	virtual void resize(unsigned int height, unsigned int width) override {
 		this->height = height;
 		this->width = width;
 	}
@@ -63,7 +63,7 @@ public:
 
 	virtual void setMousePosition(unsigned int x, unsigned int y) = 0;
 
-	virtual bool init() {
+	virtual bool init() override {
 			this->getContainer()->getResourceManager()->addAdapter(new PngResourceAdapter());
 			this->getContainer()->getResourceManager()->addAdapter(new JpegResourceAdapter());
 			this->getContainer()->getResourceManager()->addAdapter(new TgaResourceAdapter());

@@ -30,11 +30,11 @@ class PlaygroundTestsRunner: public PlaygroundRunner, UnitTest {
 		PlaygroundTestsRunner() {
 		    logger = LoggerFactory::getLogger("PlaygroundTestsRunner");
 		}
-		unsigned char getId() {
+		unsigned char getId() override {
 			return PlaygroundTestsRunner::ID;
 		}
 
-        virtual bool afterInit()    {
+        virtual bool afterInit() override {
             //before();
             //tests
             testsManager.doTests();
@@ -44,11 +44,11 @@ class PlaygroundTestsRunner: public PlaygroundRunner, UnitTest {
             return true;
         }
 
-        virtual LoopResult doLoop() {
+        virtual LoopResult doLoop() override {
             return LoopResult::FINISHED;
         }
 
-		virtual bool init() {
+		virtual bool init() override {
             this->addTest("testMousePicking", static_cast<void (UnitTest::*)()>(&PlaygroundTestsRunner::testMousePicking));
 
             this->testsManager.addTest(math3dTests);

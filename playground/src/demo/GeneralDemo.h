@@ -56,15 +56,15 @@ public:
 		currentPosition = &viewPosition;
 	}
 
-	virtual unsigned char getInterests() {
+	virtual unsigned char getInterests() override {
 		return KEY_DOWN | KEY_UP | MOUSE_MOVE | MOUSE_WHEEL | RESIZE;
 	}
 
-	virtual unsigned char getId() {
+	virtual unsigned char getId() override {
 		return 200;
 	}
 
-	void resize(unsigned int height, unsigned int width) {
+	void resize(unsigned int height, unsigned int width) override {
 	    camera.setProjectionMatrix(Camera::perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 100.0));
 	}
 
@@ -74,7 +74,7 @@ public:
         camera.setPosition(viewPosition);
 	}
 
-	virtual bool init() {
+	virtual bool init() override {
 		video = (VideoRunner*) this->getContainer()->getRequiredRunner(VideoRunner::ID);
 		audio = (AudioRunner*) this->getContainer()->getRequiredRunner(AudioRunner::ID);
 
@@ -116,7 +116,7 @@ public:
 		return true;
 	}
 
-	virtual LoopResult doLoop() {
+	virtual LoopResult doLoop() override {
 
 	    /**
 	     * Update audio
@@ -173,16 +173,16 @@ public:
 
 		return LoopResult::CONTINUE;
 	}
-	void mouseWheel(int wheel) {
+	void mouseWheel(int wheel) override {
 		*currentPosition += vector(0.0f, 0.0f, wheel);
 		logger->verbose("%s", (*currentPosition).toString().c_str());
 	}
 
-	virtual void mouseMove(int x, int y, int dx, int dy) {
+	virtual void mouseMove(int x, int y, int dx, int dy) override {
 		*currentPosition += vector(0.1f * dx, 0.1f * dy, 0);
 		logger->verbose("%s", (*currentPosition).toString().c_str());
 	}
-	virtual void keyUp(unsigned int key, unsigned int keyModifier) {
+	virtual void keyUp(unsigned int key, unsigned int keyModifier) override {
 		switch (key) {
 		case SDLK_RCTRL:
 		case SDLK_LCTRL:
@@ -190,7 +190,7 @@ public:
 			break;
 		}
 	}
-    virtual void keyDown(unsigned int key, unsigned int keyModifier) {
+    virtual void keyDown(unsigned int key, unsigned int keyModifier) override {
         switch (key) {
             case SDLK_RCTRL:
             case SDLK_LCTRL:
@@ -208,7 +208,7 @@ public:
 	PlaygroundGeneralDemo(const String &resourcesBasePath) :
 			Playground(resourcesBasePath) {
 	}
-	void init() {
+	void init() override {
 		Playground::init();
 		this->addRunner(new GeneralDemoRunner());
 		this->addRunner(new OpenGLRunner());

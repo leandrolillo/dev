@@ -91,7 +91,7 @@ public:
         this->currentTexture = texture;
     }
 
-    bool init() {
+    bool init() override {
         if(this->shader == null) {
             this->shader = (ShaderProgramResource*) this->resourceManager->load("core/simple.program.json", "video/shaderProgram");
         }
@@ -101,7 +101,7 @@ public:
         return true;
     }
 
-    void render(const Camera &camera) {
+    void render(const Camera &camera) override {
         if(videoRunner != null && shader != null) {
             videoRunner->useProgramResource(shader);
 

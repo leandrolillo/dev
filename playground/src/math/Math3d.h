@@ -111,14 +111,14 @@ class matriz_2x2: public BaseMatrix {
 		matriz_2x2(real _00, real _01, real _10, real _11);
 		matriz_2x2(const matriz_2x2 &op1);
 
-		real &operator()(unsigned int fila, unsigned int columna) {
+		real &operator()(unsigned int fila, unsigned int columna) override {
 			if (fila > 1 || columna > 1)
 				throw InvalidArgumentException("Index Out of Bounds - matriz_2x2::operator(i, j)");
 
 			return m[fila * 2 + columna];
 		}
 
-		real operator()(unsigned int fila, unsigned int columna) const {
+		real operator()(unsigned int fila, unsigned int columna) const override {
 			if (fila > 1 || columna > 1)
 				throw InvalidArgumentException("Index Out of Bounds - matriz_2x2::operator(i, j)");
 
@@ -185,14 +185,14 @@ class matriz_3x3: public BaseMatrix {
 	public:
 		static matriz_3x3 identidad;
 
-		real &operator()(unsigned int fila, unsigned int columna) {
+		real &operator()(unsigned int fila, unsigned int columna) override {
 			if (fila > 2 || columna > 2)
 				throw InvalidArgumentException("Index Out of Bounds - matriz_3x3::operator(i, j)");
 
 			return m[fila * 3 + columna];
 		}
 
-		real operator()(unsigned int fila, unsigned int columna) const {
+		real operator()(unsigned int fila, unsigned int columna) const override {
             if (fila > 2 || columna > 2)
                 throw InvalidArgumentException("Index Out of Bounds - matriz_3x3::operator(i, j)");
 
@@ -394,12 +394,12 @@ class matriz_4x4: public BaseMatrix {
 			memcpy(this->m, op1.m, sizeof(this->m));
 		}
 
-		real &operator()(unsigned int fila, unsigned int columna) {
+		real &operator()(unsigned int fila, unsigned int columna) override {
 			if (fila > 3 || columna > 3)
 				throw InvalidArgumentException("Index Out of Bounds - matriz_4x4::operator(i, j)");
 			return m[fila * 4 + columna];
 		}
-		real operator()(unsigned int fila, unsigned int columna) const {
+		real operator()(unsigned int fila, unsigned int columna) const override {
 			if (fila > 3 || columna > 3)
 				throw InvalidArgumentException("Index Out of Bounds - matriz_4x4::operator(i, j)");
 
@@ -559,7 +559,7 @@ class matriz_mxn: public BaseMatrix {
 	public:
 
 		// TODO: Warning: this matrix was initially implemented with indexes 1..height instead of 0..height-1
-		real &operator()(unsigned int fila, unsigned int columna) {
+		real &operator()(unsigned int fila, unsigned int columna) override {
 			if (0 <= fila && fila < this->getNroFilas())
 				if (0 <= columna && columna < this->getNroColumnas())
 					return this->elementos[fila * this->getNroColumnas() + columna];
@@ -567,7 +567,7 @@ class matriz_mxn: public BaseMatrix {
 			throw InvalidArgumentException("Index Out of Bounds - matriz_mxn::operator()");
 		}
 
-		real operator()(unsigned int fila, unsigned int columna) const {
+		real operator()(unsigned int fila, unsigned int columna) const override {
 			if (0 <= fila && fila < this->getNroFilas())
 				if (0 <= columna && columna < this->getNroColumnas())
 					return this->elementos[fila * this->getNroColumnas() + columna];

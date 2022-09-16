@@ -21,7 +21,7 @@ public:
 		this->addSupportedMimeType("video/cubemap");
 	}
 
-	Resource *load(FileParser &fileParser, const String &mimeType) {
+	Resource *load(FileParser &fileParser, const String &mimeType) const override {
 		JsonParser *jsonParser = new JsonParser(fileParser);
 
 		unsigned int textureHandler = 0;
@@ -76,6 +76,11 @@ public:
 
 		return resource;
 	}
+
+	//TODO: review if this needs to implement dispose
+//	void dispose(Resource *resource) const override {
+//
+//	}
 };
 
 

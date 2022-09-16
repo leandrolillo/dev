@@ -20,7 +20,7 @@ public:
 		this->addSupportedMimeType("audio/wav");
 	}
 
-	uint32_t asDword(char *string) {
+	uint32_t asDword(char *string) const {
 		uint32_t result = 0;
 
 		char *current = string;
@@ -32,7 +32,7 @@ public:
 		return result;
 	}
 
-	String asString(uint32_t dword) {
+	String asString(uint32_t dword) const {
 		String result;
 		while (dword > 0) {
 			result += (char) (dword - ((dword >> 8) << 8));
@@ -42,7 +42,7 @@ public:
 		return result;
 	}
 
-	virtual Resource* load(FileParser &fileParser, const String &mimeType) {
+	virtual Resource* load(FileParser &fileParser, const String &mimeType) const override {
 		AudioResource *audioResource = null;
 
 		struct ChunkHeader {
@@ -164,7 +164,7 @@ public:
 
 		return audioResource;
 	}
-	virtual void dispose(Resource *resource) {
+	virtual void dispose(Resource *resource) const override {
 		AudioResource *audioResource = (AudioResource*) resource;
 
 		if (!audioResource->getData().empty()) {

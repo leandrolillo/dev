@@ -33,7 +33,7 @@ public:
         this->size = size;
     }
 
-    bool init() {
+    bool init() override {
         if (this->shader == null) {
             this->shader = (ShaderProgramResource*) this->resourceManager->load("shaders/skybox/skybox.program.json",
                     "video/shaderProgram");
@@ -50,7 +50,7 @@ public:
         return true;
     }
 
-    void render(const Camera &camera) {
+    void render(const Camera &camera) override {
         if (videoRunner != null && this->shader != null && this->box != null && this->cubeMap != null) {
             videoRunner->useProgramResource(shader);
             videoRunner->setTexture(0, "textureUnit", cubeMap, GL_TEXTURE_CUBE_MAP);

@@ -145,7 +145,7 @@ public:
 
 	}
 
-	PlaygroundStatus getStatus() {
+	PlaygroundStatus getStatus() const {
 		return status;
 	}
 
@@ -153,17 +153,16 @@ public:
 		this->status = status;
 	}
 
-	PlaygroundRunner *getRequiredRunner(const unsigned char id) {
-	    if(runners_by_id[id] == null) {
+	PlaygroundRunner *getRequiredRunner(const unsigned char id) const {
+	    if(runners_by_id.at(id) == null) {
 	        throw InvalidArgumentException("Could not find required playground runner");
 	    }
 
-	    return runners_by_id[id];
+	    return runners_by_id.at(id);
 	}
 
-	PlaygroundRunner *getRunner(const unsigned char id) {
-	    logger->debug("Finding runner by id %d -> %d", id, runners_by_id[id]);
-		return runners_by_id[id];
+	PlaygroundRunner *getRunner(const unsigned char id) const {
+		return runners_by_id.at(id);
 	}
 
 	void addRunner(PlaygroundRunner *runner) {

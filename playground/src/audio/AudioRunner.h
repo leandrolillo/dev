@@ -33,11 +33,11 @@ class AudioRunner: public PlaygroundRunner {
 			context = null;
 			logger = LoggerFactory::getLogger("audio/AudioRunner.h");
 		}
-		virtual unsigned char getId() {
+		virtual unsigned char getId() override {
 			return ID;
 		}
 
-		virtual bool init() {
+		virtual bool init() override {
 			this->getContainer()->getResourceManager()->addAdapter(new SourceResourceAdapter);
 			this->getContainer()->getResourceManager()->addAdapter(new BufferResourceAdapter);
 //			this->getContainer()->getResourceManager()->addAdapter(new OggResourceAdapter);

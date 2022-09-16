@@ -67,11 +67,11 @@ public:
         }
     }
 
-    void append(const char *message) {
+    void append(const char *message) override {
         fprintf(getFileHandler(), "%s", message); // use ("%s", message) instead of directly message to get rid of warnings.
     }
 
-    void flush() {
+    void flush() override {
         FILE *fileHandler = getFileHandler();
         fflush(fileHandler);
     }
@@ -153,11 +153,11 @@ public:
 
     }
 
-    void append(const char *message) {
+    void append(const char *message) override {
         printf("%s", message); // use ("%s", message) instead of directly message to get rid of warnings.
     }
 
-    void flush() {
+    void flush() override {
     }
 };
 

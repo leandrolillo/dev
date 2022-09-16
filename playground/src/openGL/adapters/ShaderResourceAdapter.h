@@ -12,7 +12,7 @@
 
 class ShaderResourceAdapter: public OpenGLResourceAdapter {
 	private:
-		String getInfoLog(GLuint object)
+		String getInfoLog(GLuint object) const
 		{
 			GLint log_length;
 			char *log;
@@ -32,7 +32,7 @@ class ShaderResourceAdapter: public OpenGLResourceAdapter {
 			this->addSupportedMimeType("video/fragmentShader");
 		}
 
-		virtual Resource *load(FileParser &fileParser, const String &mimeType) {
+		virtual Resource *load(FileParser &fileParser, const String &mimeType) const override {
 			ShaderResource *resource = null;
 
 			int shaderSize = fileParser.size();
@@ -68,7 +68,7 @@ class ShaderResourceAdapter: public OpenGLResourceAdapter {
 			return resource;
 		}
 
-		virtual void dispose(Resource *resource) {
+		virtual void dispose(Resource *resource) const override {
 			ShaderResource *shaderResource = (ShaderResource *)resource;
 			if(shaderResource != null && shaderResource->getId() != 0) {
 				glDeleteShader(shaderResource->getId());

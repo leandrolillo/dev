@@ -37,18 +37,9 @@ class CollidingParticle: public Particle {
 private:
     CollisionDetectionDemoRunner *runner = null;
     bool _isSelected = false;
-    MaterialResource material;
 
 public:
-    CollidingParticle(Geometry * geometry) : Particle(geometry), material(vector(0, 0, 0), vector(0, 0, 0), vector(0, 0, 0), 2.0) {
-    }
-
-    const MaterialResource &getMaterial() const {
-        return this->material;
-    }
-
-    void setMaterial(const MaterialResource &material) {
-        this->material = material;
+    CollidingParticle(Geometry * geometry) : Particle(geometry) {
     }
 
     bool isSelected() const {
@@ -93,15 +84,15 @@ public:
         logger->addAppender(LoggerFactory::getAppender("stdout"));
     }
 
-    unsigned char getId() {
+    unsigned char getId() override {
         return 200;
     }
 
-    virtual unsigned char getInterests() {
+    virtual unsigned char getInterests() override {
         return KEY_DOWN | KEY_UP | MOUSE_MOVE | MOUSE_WHEEL | MOUSE_BUTTON_DOWN | MOUSE_BUTTON_UP | RESIZE;
     }
 
-    void resize(unsigned int height, unsigned int width) {
+    void resize(unsigned int height, unsigned int width) override {
         camera.setProjectionMatrix(Camera::perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 300.0));
     }
 
@@ -115,7 +106,6 @@ public:
             ((Sphere*) collidingParticles[0]->getBoundingVolume())->setRadius(radius);
             collidingParticles[0]->setMass(M_PI * radius * radius);
             collidingParticles[0]->setVelocity(vector(1, 1, 0));
-            collidingParticles[0]->setMaterial(blue);
         }
 
         if(collidingParticles.size() > 1) {
@@ -123,7 +113,6 @@ public:
             ((Sphere*) collidingParticles[1]->getBoundingVolume())->setRadius(radius);
             collidingParticles[1]->setMass(M_PI * radius * radius);
             collidingParticles[1]->setVelocity(vector(-1, -1, 0));
-            collidingParticles[1]->setMaterial(green);
         }
 
         if(collidingParticles.size() > 2) {
@@ -131,20 +120,25 @@ public:
             ((AABB*) collidingParticles[2]->getBoundingVolume())->setHalfSizes(vector(0.5, 0.5, 0.5));
             collidingParticles[2]->setMass(1);
             collidingParticles[2]->setVelocity(vector(-1, -1, 0));
-            collidingParticles[2]->setMaterial(green);
         }
 
         if(collidingParticles.size() > 3) {
-            collidingParticles[3]->setPosition(vector(-2, 1, 0));
+            collidingParticles[3]->setPosition(vector(1, 2, 0));
+            ((AABB*) collidingParticles[3]->getBoundingVolume())->setHalfSizes(vector(1, 1, 1));
             collidingParticles[3]->setMass(1);
-            collidingParticles[3]->setVelocity(vector(-1, -1, 0));
-            collidingParticles[3]->setMaterial(green);
+            collidingParticles[3]->setVelocity(vector(0, 0, 0));
+        }
+
+        if(collidingParticles.size() > 4) {
+            collidingParticles[4]->setPosition(vector(-2, 1, 0));
+            collidingParticles[4]->setMass(1);
+            collidingParticles[4]->setVelocity(vector(0, 0, 0));
         }
 
         ground.setInverseMass((real)0);
     }
 
-    bool init() {
+    bool init() override {
         video = (VideoRunner*) this->getContainer()->getRequiredRunner(VideoRunner::ID);
         audio = (AudioRunner*) this->getContainer()->getRequiredRunner(AudioRunner::ID);
 
@@ -160,19 +154,24 @@ public:
         video->enable(CULL_FACE, CULL_FACE_BACK);
         video->enable(BLEND, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        collidingParticles.push_back(std::unique_ptr<CollidingParticle>(new CollidingParticle(new DrawableSphere(vector(0, 0, 0), (real) 0.5))));
+        collidingParticles.push_back(std::unique_ptr<CollidingParticle>(new CollidingParticle(new Sphere(vector(0, 0, 0), (real) 0.5))));
         collidingParticles.back()->setRunner(this);
         particleManager.addParticle(collidingParticles.back().get());
 
-        collidingParticles.push_back(std::unique_ptr<CollidingParticle>(new CollidingParticle(new DrawableSphere(vector(0, 0, 0), (real) 0.5))));
+        collidingParticles.push_back(std::unique_ptr<CollidingParticle>(new CollidingParticle(new Sphere(vector(0, 0, 0), (real) 0.5))));
         collidingParticles.back()->setRunner(this);
         particleManager.addParticle(collidingParticles.back().get());
 
-        collidingParticles.push_back(std::unique_ptr<CollidingParticle>(new CollidingParticle(new DrawableAABB(vector(2, 2, 0), vector(0.5, 0.5, 0.5)))));
+        collidingParticles.push_back(std::unique_ptr<CollidingParticle>(new CollidingParticle(new AABB(vector(0, 0, 0), vector(0.5, 0.5, 0.5)))));
         collidingParticles.back()->setRunner(this);
         particleManager.addParticle(collidingParticles.back().get());
 
-        HierarchicalGeometry *hierarchicalGeometry = new DrawableHierarchy(new AABB(vector(0, 0, 0), vector(1, 0.5, 0.5)));
+        collidingParticles.push_back(std::unique_ptr<CollidingParticle>(new CollidingParticle(new AABB(vector(0, 0, 0), vector(1, 1, 1)))));
+        collidingParticles.back()->setRunner(this);
+        particleManager.addParticle(collidingParticles.back().get());
+
+
+        HierarchicalGeometry *hierarchicalGeometry = new HierarchicalGeometry(new AABB(vector(0, 0, 0), vector(1, 0.5, 0.5)));
         hierarchicalGeometry->addChildren(new Sphere(vector(-0.5, 0, 0), 0.5));
         hierarchicalGeometry->addChildren(new Sphere(vector(0.5, 0, 0), 0.5));
 
@@ -190,7 +189,7 @@ public:
     }
 
 
-    LoopResult doLoop() {
+    LoopResult doLoop() override {
         defaultRenderer.clear();
         defaultRenderer.drawAxes(matriz_4x4::identidad);
         defaultRenderer.drawLine(matriz_4x4::identidad, vector(-1, 0, 0), vector(1, 0, 0));
@@ -219,7 +218,7 @@ public:
         }
     }
 
-    virtual void mouseMove(int x, int y, int dx, int dy) {
+    void mouseMove(int x, int y, int dx, int dy) override {
             Line line(-camera.getPosition(),
                     camera.getRayDirection((unsigned int) x, (unsigned int) y, video->getScreenWidth(), video->getScreenHeight()));
 
@@ -236,7 +235,7 @@ public:
         }
     }
 
-    void mouseButtonUp(unsigned char button, int x, int y) {
+    void mouseButtonUp(unsigned char button, int x, int y) override {
         if (button == SDL_BUTTON_LEFT) {
             for (auto &particle : collidingParticles) {
                 particle->setSelected(false);
@@ -244,7 +243,14 @@ public:
         }
     }
 
-    void mouseButtonDown(unsigned char button, int x, int y) {
+	void mouseWheel(int wheel) override {
+		logger->info("Mouse wheel %d", wheel);
+	    camera.setPosition(camera.getPosition() - vector(0.0, 0.0, std::min(1.0, 0.1 * wheel)));
+	    logger->info("Camera position: %s", camera.getPosition().toString().c_str());
+	}
+
+
+    void mouseButtonDown(unsigned char button, int x, int y) override {
         if (button == SDL_BUTTON_LEFT) {
             this->startPosition = vector2(x, y);
 
@@ -259,15 +265,21 @@ public:
         }
     }
 
-    virtual void keyDown(unsigned int key, unsigned int keyModifier) {
+    void keyDown(unsigned int key, unsigned int keyModifier) override {
         switch (key) {
+        	case SDLK_UP:
+        		camera.setPosition(camera.getPosition() + vector(0.0, 0.0, 0.1));
+        		logger->info("Camera position: %s", camera.getPosition().toString().c_str());
+        	break;
+        	case SDLK_DOWN:
+        		camera.setPosition(camera.getPosition() - vector(0.0, 0.0, 0.1));
+        		logger->info("Camera position: %s", camera.getPosition().toString().c_str());
+        		break;
             case SDLK_BACKSPACE:
                 reset();
                 break;
             case SDLK_SPACE:
             	particleManager.resolveContacts(0.1);
-                //contactSolver.resolve(collisionDetector.detectCollisions(allParticles), 0.1);
-                //particleManager.step(0.1);
                 break;
         }
     }
@@ -295,7 +307,7 @@ class CollisionDetectionPlayground: public Playground {
 public:
     CollisionDetectionPlayground(const String &resourcesBasePath) : Playground(resourcesBasePath) {
     }
-    void init() {
+    void init() override {
         Playground::init();
         this->addRunner(new OpenGLRunner());
         this->addRunner(new AudioRunner());

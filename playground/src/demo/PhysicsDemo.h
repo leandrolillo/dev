@@ -92,15 +92,15 @@ public:
 	                        aabbPlatform(new AABB(vector(0, 1, 0), vector(0.5, 0.05, 0.05))) {
 	}
 
-	unsigned char getId() {
+	unsigned char getId() override {
 		return 200;
 	}
 
-	virtual unsigned char getInterests() {
+	virtual unsigned char getInterests() override {
 			return KEY_DOWN | KEY_UP | MOUSE_MOVE | MOUSE_WHEEL | MOUSE_BUTTON_DOWN | RESIZE;
 	}
 
-    bool init() {
+    bool init() override {
         video = (VideoRunner*) this->getContainer()->getRequiredRunner(VideoRunner::ID);
         audio = (AudioRunner*) this->getContainer()->getRequiredRunner(AudioRunner::ID);
         physics = (PhysicsRunner *)this->getContainer()->getRequiredRunner(PhysicsRunner::ID);
@@ -148,7 +148,7 @@ public:
         return true;
     }
 
-	void resize(unsigned int height, unsigned int width) {
+	void resize(unsigned int height, unsigned int width) override {
 	    camera.setProjectionMatrix(Camera::perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 300.0));
 	}
 
@@ -164,7 +164,7 @@ public:
         elapsedTime = 0;
 	}
 
-	LoopResult doLoop() {
+	LoopResult doLoop() override {
 	    elapsedTime += 0.01;
 
 	    defaultRenderer.clear();
@@ -247,19 +247,19 @@ public:
 		}
 	}
 
-	void mouseWheel(int wheel) {
+	void mouseWheel(int wheel) override {
         camera.setPosition(camera.getPosition() - vector(0.0f, 0.0f, wheel));
         audio->updateListener(camera.getPosition());
         logger->debug("camera: %s", camera.getPosition().toString("%.2f").c_str());
 	}
 
-	void mouseMove(int x, int y, int dx, int dy) {
+	void mouseMove(int x, int y, int dx, int dy) override {
         camera.setPosition(camera.getPosition() - vector(0.1f * dx, 0.1f * dy, 0));
         audio->updateListener(camera.getPosition());
         logger->debug("camera: %s", camera.getPosition().toString("%.2f").c_str());
 	}
 
-	void mouseButtonDown(unsigned char button, int x, int y) {
+	void mouseButtonDown(unsigned char button, int x, int y) override {
 		fire(camera.getPosition());
 
 		float randomDx = ((real)rand()/(real)RAND_MAX * 0.1 - 0.05);
@@ -267,7 +267,7 @@ public:
 		fire(vector(randomDx, 2.0, 0.0), true);
 	}
 
-    virtual void keyDown(unsigned int key, unsigned int keyModifier) {
+    virtual void keyDown(unsigned int key, unsigned int keyModifier) override {
         switch (key) {
             case SDLK_SPACE:
                 reset();
@@ -281,7 +281,7 @@ public:
 	PhysicsPlayground(const String &resourcesBasePath) :
 			Playground(resourcesBasePath) {
 	}
-	void init() {
+	void init() override {
 		Playground::init();
 		this->addRunner(new OpenGLRunner());
 		this->addRunner(new AudioRunner());

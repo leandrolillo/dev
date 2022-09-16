@@ -20,7 +20,7 @@ public:
 		this->addSupportedMimeType("audio/buffer");
 	}
 
-	ALenum asOpenALFormat(AudioFormat format) {
+	ALenum asOpenALFormat(AudioFormat format) const {
 		switch (format) {
 		case MONO8:
 			return AL_FORMAT_MONO8;
@@ -34,7 +34,7 @@ public:
 
 		return AL_FORMAT_STEREO16;
 	}
-	virtual Resource* load(FileParser &fileParser, const String &mimeType) {
+	virtual Resource* load(FileParser &fileParser, const String &mimeType) const override {
 		ALenum error = 0;
 
 		AudioResource *audioResource =
@@ -67,7 +67,7 @@ public:
 		return new BufferResource(ALbuffer);
 
 	}
-	virtual void dispose(Resource *resource) {
+	virtual void dispose(Resource *resource) const override {
 		logger->debug("Deleting buffer [%ld]", resource->getId());
 		unsigned int bufferId = resource->getId();
 

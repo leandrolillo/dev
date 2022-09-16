@@ -45,15 +45,15 @@ public:
 	    reset();
 	}
 
-	unsigned char getId() {
+	unsigned char getId() override {
 		return 200;
 	}
 
-	virtual unsigned char getInterests() {
+	virtual unsigned char getInterests() override {
 			return KEY_DOWN | KEY_UP | MOUSE_MOVE | MOUSE_WHEEL | MOUSE_BUTTON_DOWN | RESIZE;
 	}
 
-	void resize(unsigned int height, unsigned int width) {
+	void resize(unsigned int height, unsigned int width) override {
 	    camera.setProjectionMatrix(Camera::perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 300.0));
 	}
 
@@ -63,7 +63,7 @@ public:
         camera.setPosition(vector(0.0f, 0.0f, 5.0f));
 	}
 
-	bool init() {
+	bool init() override {
 		video = (VideoRunner*) this->getContainer()->getRequiredRunner(VideoRunner::ID);
 		audio = (AudioRunner*) this->getContainer()->getRequiredRunner(AudioRunner::ID);
 
@@ -92,7 +92,7 @@ public:
 		return true;
 	}
 
-	LoopResult doLoop() {
+	LoopResult doLoop() override {
 	    gridRenderer.render(camera);
 
 		defaultRenderer.clear();
@@ -107,7 +107,7 @@ public:
 		return LoopResult::CONTINUE;
 	}
 
-	void mouseWheel(int wheel) {
+	void mouseWheel(int wheel) override {
         camera.setPosition(camera.getPosition() - vector(0.0f, 0.0f, wheel));
         posicion = posicion + vector(0.0f, 0.0f, wheel);
 
@@ -118,7 +118,7 @@ public:
                 posicion.toString("%.2f").c_str());
 	}
 
-	virtual void mouseMove(int x, int y, int dx, int dy) {
+	virtual void mouseMove(int x, int y, int dx, int dy) override {
         camera.setPosition(camera.getPosition() - vector(0.1f * dx, 0.1f * dy, 0));
         light.setPosition(camera.getPosition());
         posicion = posicion + vector(0.1f * dx, 0.1f * dy, 0);
@@ -129,10 +129,10 @@ public:
                 posicion.toString("%.2f").c_str());
 	}
 
-	void mouseButtonDown(unsigned char button, int x, int y) {
+	void mouseButtonDown(unsigned char button, int x, int y) override {
 	}
 
-    virtual void keyDown(unsigned int key, unsigned int keyModifier) {
+    virtual void keyDown(unsigned int key, unsigned int keyModifier) override {
         switch (key) {
             case SDLK_SPACE:
                 reset();
@@ -146,7 +146,7 @@ public:
     ObjDemoPlayground(const String &resourcesBasePath) :
 			Playground(resourcesBasePath) {
 	}
-	void init() {
+	void init() override {
 		Playground::init();
 		this->addRunner(new OpenGLRunner());
 		this->addRunner(new AudioRunner());

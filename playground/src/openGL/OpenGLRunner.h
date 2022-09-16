@@ -57,7 +57,7 @@ private:
     std::map<unsigned int, unsigned int> boundTextures;
 public:
 
-    virtual unsigned char getInterests() {
+    virtual unsigned char getInterests() override {
         return RESIZE | KEY_DOWN;
     }
 
@@ -74,7 +74,7 @@ public:
         logger->debug("SDL shutdown");
     }
 
-    virtual bool init() {
+    virtual bool init() override {
         //logger->setLogLevel(LogLevel::DEBUG);
         VideoRunner::init();
         this->getContainer()->getResourceManager()->addAdapter(new TextureResourceAdapter());
@@ -142,7 +142,7 @@ public:
         return true;
     }
 
-    virtual bool afterInit() {
+    virtual bool afterInit() override {
         int height = 0;
         int width = 0;
         SDL_GetWindowSize(window, &width, &height);
@@ -154,11 +154,11 @@ public:
         return true;
     }
 
-    virtual void beforeLoop() {
+    virtual void beforeLoop() override {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     }
 
-    LoopResult doLoop() {
+    LoopResult doLoop() override {
         SDL_Event windowEvent;
 
         while (SDL_PollEvent(&windowEvent)) {
@@ -171,7 +171,7 @@ public:
         return LoopResult::CONTINUE;
     }
 
-    virtual void afterLoop() {
+    virtual void afterLoop() override {
         SDL_GL_SwapWindow(window);
     }
 
@@ -221,20 +221,20 @@ public:
         return 1;
     }
 
-    unsigned long getPerformanceCounter() const {
+    unsigned long getPerformanceCounter() const override {
         return SDL_GetPerformanceCounter();
     }
 
-    unsigned long getPerformanceFreq() const {
+    unsigned long getPerformanceFreq() const override {
         return SDL_GetPerformanceFrequency();
     }
 
-    void resize(unsigned int height, unsigned int width) {
+    virtual void resize(unsigned int height, unsigned int width) override {
         VideoRunner::resize(height, width);
         glViewport(0, 0, (GLsizei) width, (GLsizei) height);
     }
 
-    virtual void keyDown(unsigned int key, unsigned int keyModifier) {
+    virtual void keyDown(unsigned int key, unsigned int keyModifier) override {
         //                    logger->info("KMOD_ALT: %d", keyModifier & KMOD_ALT);
         //                    logger->info("KMOD_CTRL: %d", keyModifier & KMOD_CTRL);
         //                    logger->info("KMOD_SHIFT: %d", keyModifier & KMOD_SHIFT);
@@ -266,7 +266,7 @@ public:
         }
     }
 
-    bool setFullscreen(bool fullScreen) {
+    bool setFullscreen(bool fullScreen) override {
         if (VideoRunner::setFullscreen(fullScreen)) {
             SDL_SetWindowFullscreen(this->window, SDL_WINDOW_FULLSCREEN_DESKTOP);
         } else {
@@ -282,7 +282,7 @@ public:
         return this->getFullscreen();
     }
 
-    void setMousePosition(unsigned int x, unsigned int y) {
+    void setMousePosition(unsigned int x, unsigned int y) override {
         SDL_WarpMouseInWindow(this->window, x, y);
     }
 
@@ -294,7 +294,7 @@ public:
         return minorVersion;
     }
 
-    void useProgramResource(const ShaderProgramResource *program) {
+    void useProgramResource(const ShaderProgramResource *program) override {
         if (program != null) {
             if (currentShaderProgram == null || currentShaderProgram->getId() != program->getId()) {
                 glUseProgram(program->getId());
@@ -342,7 +342,7 @@ public:
         }
     }
 
-    bool sendUnsignedInt(const String &name, unsigned int value) const {
+    bool sendUnsignedInt(const String &name, unsigned int value) const override {
         if (currentShaderProgram != null) {
             String errorMessage;
             glProgramUniform1i(currentShaderProgram->getId(), glGetUniformLocation(currentShaderProgram->getId(), name.c_str()), value);
@@ -354,7 +354,7 @@ public:
         return true;
     }
 
-    bool sendMatrix(const String &name, const matriz_4x4 &value) const {
+    bool sendMatrix(const String &name, const matriz_4x4 &value) const override {
         if (currentShaderProgram != null) {
             String errorMessage;
             glUniformMatrix4fv(glGetUniformLocation(currentShaderProgram->getId(), name.c_str()), 1, GL_TRUE, (real*) value);
@@ -366,7 +366,7 @@ public:
         return true;
     }
 
-    bool sendMatrix(const String &name, const matriz_3x3 &value) const {
+    bool sendMatrix(const String &name, const matriz_3x3 &value) const override {
         if (currentShaderProgram != null) {
             String errorMessage;
             glUniformMatrix3fv(glGetUniformLocation(currentShaderProgram->getId(), name.c_str()), 1, GL_TRUE, (real*) value);
@@ -378,7 +378,7 @@ public:
         return true;
     }
 
-    bool sendVector(const String &name, const vector &value) const {
+    bool sendVector(const String &name, const vector &value) const override {
         if (currentShaderProgram != null) {
             String errorMessage;
             glUniform3fv(glGetUniformLocation(currentShaderProgram->getId(), name.c_str()), 1, (real*) value);
@@ -390,7 +390,7 @@ public:
         return true;
     }
 
-    bool sendVector4(const String &name, const vector4 &value) const {
+    bool sendVector4(const String &name, const vector4 &value) const override {
         if (currentShaderProgram != null) {
             String errorMessage;
             glUniform4fv(glGetUniformLocation(currentShaderProgram->getId(), name.c_str()), 1, (real*) value);
@@ -402,7 +402,7 @@ public:
         return true;
     }
 
-    bool sendReal(const String &name, const real &value) const {
+    bool sendReal(const String &name, const real &value) const override {
         if (currentShaderProgram != null) {
             String errorMessage;
             glUniform1fv(glGetUniformLocation(currentShaderProgram->getId(), name.c_str()), 1, &value);
@@ -414,7 +414,7 @@ public:
         return true;
     }
 
-    void setTexture(unsigned int location, const TextureResource *texture, unsigned int type = GL_TEXTURE_2D) {
+    void setTexture(unsigned int location, const TextureResource *texture, unsigned int type = GL_TEXTURE_2D) override {
         glActiveTexture(GL_TEXTURE0 + location);
         if (texture != null) {
             if(boundTextures.count(GL_TEXTURE0 + location) == 0 || boundTextures.at(GL_TEXTURE0 + location) != texture->getId()) {
@@ -431,16 +431,16 @@ public:
             glBindTexture(type, 0);
         }
     }
-    void setTexture(unsigned int location, const String &samplerName, const TextureResource *texture, unsigned int type = GL_TEXTURE_2D) {
+    void setTexture(unsigned int location, const String &samplerName, const TextureResource *texture, unsigned int type = GL_TEXTURE_2D) override {
         setTexture(location, texture, type);
         sendUnsignedInt(samplerName, location);
     }
 
-    void setClearColor(real r, real g, real b, real a) const {
+    void setClearColor(real r, real g, real b, real a) const override {
         glClearColor(r, g, b, a);
     }
 
-    void enable(unsigned int attributeCode, unsigned int param1, unsigned int param2 = 0) {
+    void enable(unsigned int attributeCode, unsigned int param1, unsigned int param2 = 0) override {
         switch (attributeCode) {
             case (DEPTH_TEST):
                 if ((bool) param1) {
@@ -463,7 +463,7 @@ public:
         }
     }
 
-    void disable(unsigned int attributeCode) {
+    void disable(unsigned int attributeCode) override {
         switch (attributeCode) {
             case (DEPTH_TEST):
                 glDisable(GL_DEPTH_TEST);
@@ -480,7 +480,7 @@ public:
         }
     }
 
-    void setOption(unsigned int attributeCode, real value) {
+    void setOption(unsigned int attributeCode, real value) override {
     	switch (attributeCode) {
     		case GL_LINE_WIDTH:
     			logger->info("Setting line width to %.2f", value);
@@ -492,7 +492,7 @@ public:
     /**
      * Expects [number of index] elements in every vertex array attribute. E.g. You can't have three vertices, six indices and six texture coordinates. See http://www.opengl.org/wiki/Vertex_Buffer_Object#Vertex_Stream
      */
-    void drawVertexArray(const VertexArrayResource *vertexArrayResource) const {
+    void drawVertexArray(const VertexArrayResource *vertexArrayResource) const override {
         String errorMessage;
 
         if (vertexArrayResource != null && vertexArrayResource->getId() > 0 /*&& vertexArrayResource->getMimeType() == "video/vertexArray"*/) {
@@ -522,7 +522,7 @@ public:
         }
     }
 
-    TextureResource *getDefaultTexture() const {
+    TextureResource *getDefaultTexture() const override {
         return this->defaultTexture;
     }
 
@@ -584,7 +584,7 @@ protected:
 
         return errorMessage;
     }
-    unsigned int asGlPrimitive(const String &typeString) {
+    unsigned int asGlPrimitive(const String &typeString) const {
         if (typeString == "points")
             return GL_POINTS;
         else if (typeString == "points")

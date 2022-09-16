@@ -71,7 +71,7 @@ protected:
                     typeString.c_str());
     }
 
-    GLenum getLocation(const String &faceName) {
+    GLenum getLocation(const String &faceName) const {
         if(faceName == "top") {
             return GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
         } else if(faceName == "bottom") {
@@ -89,6 +89,19 @@ protected:
         }
     }
 
+	String getInfoLog(GLuint object) const
+	{
+		GLint log_length = 0;
+		char *log;
+
+		glGetProgramiv(object, GL_INFO_LOG_LENGTH, &log_length);
+		log = new char[log_length];
+		glGetProgramInfoLog(object, log_length, null, log);
+		String response(log);
+		delete log;
+
+		return response;
+	}
 };
 
 
