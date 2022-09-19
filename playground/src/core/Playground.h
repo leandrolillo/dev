@@ -115,7 +115,7 @@ private:
 	Logger *logger = LoggerFactory::getLogger("core/Playground.h");
 	ResourceManager *resourceManager = null;
 	String resourcesRootFolder;
-	std::vector<PlaygroundRunner *> runners;
+	std::vector<std::unique_ptr<PlaygroundRunner>> runners;
 	std::map<unsigned char, PlaygroundRunner *> runners_by_id;
 	PlaygroundStatus status = PlaygroundStatus::CREATED;
 	std::vector<PlaygroundRunner *> resizeObservers;
@@ -171,10 +171,8 @@ public:
 		/**
 		 * Check for duplicates
 		 */
-		for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator = runners.begin();
-				currentRunnerIterator != runners.end();
-				currentRunnerIterator++) {
-			if ((*currentRunnerIterator)->getId() == runner->getId()) {
+		for (auto &currentRunner : runners) {
+			if (currentRunner->getId() == runner->getId()) {
 				logger->error("Runner with id [%d] already added - skipping", runner->getId());
 				return;
 			} else {
@@ -185,13 +183,13 @@ public:
 		/**
 		 * Insert ordered by id
 		 */
-		std::vector<PlaygroundRunner *>::iterator currentRunnerIterator = runners.begin();
+		std::vector<std::unique_ptr<PlaygroundRunner>>::iterator currentRunnerIterator = runners.begin();
 		while(currentRunnerIterator != runners.end() && (*currentRunnerIterator)->getId() < runner->getId()) {
 			currentRunnerIterator++;
 		}
 
 		runner->setContainer(this);
-		runners.insert(currentRunnerIterator, runner);
+		runners.insert(currentRunnerIterator, std::unique_ptr<PlaygroundRunner>(runner));
 		runners_by_id[runner->getId()] = runner;
 	}
 
@@ -203,59 +201,55 @@ public:
 	virtual bool initRunners() {
 		logger->debug("initializing runners:");
 
-		for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
-				runners.begin(); currentRunnerIterator != runners.end();
-				currentRunnerIterator++) {
-			logger->debug("Initializing runner [%d]", (*currentRunnerIterator)->getId());
+		for (auto &currentRunner : runners) {
+			logger->debug("Initializing runner [%d]", currentRunner->getId());
 
 			try {
-                if (!(*currentRunnerIterator)->init()) {
-                    logger->error("Failed to initialize runner [%d]", (*currentRunnerIterator)->getId());
+                if (!currentRunner->init()) {
+                    logger->error("Failed to initialize runner [%d]", currentRunner->getId());
                     return false;
                 }
 			} catch(Exception &exception) {
-			    logger->error("Failed to initialize runner [%d]: [%s]", (*currentRunnerIterator)->getId(), exception.toString().c_str());
+			    logger->error("Failed to initialize runner [%d]: [%s]", currentRunner->getId(), exception.toString().c_str());
 			    return false;
 			} catch(...) {
-                logger->error("Failed to initialize runner [%d]", (*currentRunnerIterator)->getId());
+                logger->error("Failed to initialize runner [%d]", currentRunner->getId());
                 return false;
 			}
 
-			unsigned char interests = (*currentRunnerIterator)->getInterests();
+			unsigned char interests = currentRunner->getInterests();
 
 			if (interests & RESIZE)
-				this->resizeObservers.push_back(*currentRunnerIterator);
+				this->resizeObservers.push_back(currentRunner.get());
 			if (interests & MOVE)
-				this->moveObservers.push_back(*currentRunnerIterator);
+				this->moveObservers.push_back(currentRunner.get());
 			if (interests & KEY_DOWN)
-				this->keyDownObservers.push_back(*currentRunnerIterator);
+				this->keyDownObservers.push_back(currentRunner.get());
 			if (interests & KEY_UP)
-				this->keyUpObservers.push_back(*currentRunnerIterator);
+				this->keyUpObservers.push_back(currentRunner.get());
 			if (interests & MOUSE_MOVE)
-				this->mouseMoveObservers.push_back(*currentRunnerIterator);
+				this->mouseMoveObservers.push_back(currentRunner.get());
 			if (interests & MOUSE_BUTTON_UP)
-				this->mouseButtonUpObservers.push_back(*currentRunnerIterator);
+				this->mouseButtonUpObservers.push_back(currentRunner.get());
 			if (interests & MOUSE_BUTTON_DOWN)
-				this->mouseButtonDownObservers.push_back(*currentRunnerIterator);
+				this->mouseButtonDownObservers.push_back(currentRunner.get());
 			if (interests & MOUSE_WHEEL)
-				this->mouseWheelObservers.push_back(*currentRunnerIterator);
+				this->mouseWheelObservers.push_back(currentRunner.get());
 		}
 
-		for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
-				runners.begin(); currentRunnerIterator != runners.end();
-				currentRunnerIterator++) {
+		for (auto &currentRunner : runners) {
 		    try {
-                if (!(*currentRunnerIterator)->afterInit()) {
-                    logger->error("Failed to after initialize runner [%d]", (*currentRunnerIterator)->getId());
+                if (!currentRunner->afterInit()) {
+                    logger->error("Failed to after initialize runner [%d]", currentRunner->getId());
                     return false;
                 } else {
-                    logger->debug("Successful initialization of runner [%d]", (*currentRunnerIterator)->getId());
+                    logger->debug("Successful initialization of runner [%d]", currentRunner->getId());
                 }
 		    } catch(Exception &exception) {
-                logger->error("Failed to initialize runner [%d]: [%s]", (*currentRunnerIterator)->getId(), exception.toString().c_str());
+                logger->error("Failed to initialize runner [%d]: [%s]", currentRunner->getId(), exception.toString().c_str());
                 return false;
             } catch(...) {
-                logger->error("Failed to after initialize runner [%d]", (*currentRunnerIterator)->getId());
+                logger->error("Failed to after initialize runner [%d]", currentRunner->getId());
                 return false;
 		    }
 		}
@@ -300,21 +294,19 @@ public:
 	virtual void loop() {
 		try {
 			logger->verbose("Calling enabled runners beforeLoop");
-			for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator = runners.begin();
-					currentRunnerIterator != runners.end();
-					currentRunnerIterator++) {
-				if ((*currentRunnerIterator)->getEnabled()) {
-					(*currentRunnerIterator)->beforeLoop();
+			for (auto &currentRunner : runners) {
+				if (currentRunner->getEnabled()) {
+					currentRunner->beforeLoop();
 				}
 			}
 
 			logger->verbose("Calling enabled runners doLoop");
 			unsigned int activeRunners = 0;
-			for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
+			for (std::vector<std::unique_ptr<PlaygroundRunner>>::iterator currentRunnerIterator =
 					runners.begin(); currentRunnerIterator != runners.end();
 					currentRunnerIterator++) {
 				if ((*currentRunnerIterator)->getEnabled()) {
-				    logger->verbose("Running Loop of %d", (*currentRunnerIterator)->getId());
+					logger->verbose("Running Loop of %d", (*currentRunnerIterator)->getId());
 					LoopResult result = (*currentRunnerIterator)->doLoop();
 
 					if (result != LoopResult::CONTINUE) {
@@ -322,7 +314,6 @@ public:
 							this->status = PlaygroundStatus::STOPPED;
 						} else if (result == LoopResult::FINISHED) {
 							runners.erase(currentRunnerIterator);
-							delete *currentRunnerIterator;
 						} else // result == SKIP
 							activeRunners++;
 
@@ -333,11 +324,11 @@ public:
 			}
 
 			logger->verbose("Calling enabled runners afterLoop");
-			for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
-					runners.begin(); currentRunnerIterator != runners.end();
-					currentRunnerIterator++)
-				if ((*currentRunnerIterator)->getEnabled())
-					(*currentRunnerIterator)->afterLoop();
+			for (auto &currentRunner : runners) {
+				if (currentRunner->getEnabled()) {
+					currentRunner->afterLoop();
+				}
+			}
 
 			if (activeRunners == 0) {
 				this->status = PlaygroundStatus::STOPPED;
@@ -351,62 +342,49 @@ public:
 	}
 
 	void onResize(unsigned int height, unsigned width) {
-		for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
-				resizeObservers.begin();
-				currentRunnerIterator != resizeObservers.end();
-				currentRunnerIterator++)
-			(*currentRunnerIterator)->onResize(height, width);
+		for (auto currentRunner : resizeObservers) {
+			currentRunner->onResize(height, width);
+		}
 	}
 
 	void onKeyDown(unsigned int key, unsigned int keyModifier) {
-		for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
-				keyDownObservers.begin();
-				currentRunnerIterator != keyDownObservers.end();
-				currentRunnerIterator++)
-			(*currentRunnerIterator)->onKeyDown(key, keyModifier);
+		for (auto currentRunner : keyDownObservers) {
+			currentRunner->onKeyDown(key, keyModifier);
+		}
 	}
 
 	void onKeyUp(unsigned int key, unsigned int keyModifier) {
-		for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
-				keyUpObservers.begin();
-				currentRunnerIterator != keyUpObservers.end();
-				currentRunnerIterator++)
-			(*currentRunnerIterator)->onKeyUp(key, keyModifier);
+		for (auto currentRunner : keyUpObservers) {
+			currentRunner->onKeyUp(key, keyModifier);
+		}
 	}
 
 	void onMouseMove(int x, int y, int dx, int dy) {
-		for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
-				mouseMoveObservers.begin();
-				currentRunnerIterator != mouseMoveObservers.end();
-				currentRunnerIterator++)
-			(*currentRunnerIterator)->onMouseMove(x, y, dx, dy);
+		for (auto currentRunner : mouseMoveObservers) {
+			currentRunner->onMouseMove(x, y, dx, dy);
+		}
 	}
 
 	void onMouseButtonDown(unsigned char button, int x, int y) {
-		for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
-				mouseButtonDownObservers.begin();
-				currentRunnerIterator != mouseButtonDownObservers.end();
-				currentRunnerIterator++)
-			(*currentRunnerIterator)->onMouseButtonDown(button, x, y);
+		for (auto currentRunner : mouseButtonDownObservers) {
+			currentRunner->onMouseButtonDown(button, x, y);
+		}
 	}
 
 	void onMouseButtonUp(unsigned char button, int x, int y) {
-			for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
-					mouseButtonUpObservers.begin();
-					currentRunnerIterator != mouseButtonUpObservers.end();
-					currentRunnerIterator++)
-				(*currentRunnerIterator)->onMouseButtonUp(button, x, y);
+		for (auto currentRunner : mouseButtonUpObservers) {
+			currentRunner->onMouseButtonUp(button, x, y);
+		}
 	}
 
 	void onMouseWheel(int wheel) {
-				for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
-						mouseWheelObservers.begin();
-						currentRunnerIterator != mouseWheelObservers.end();
-						currentRunnerIterator++)
-					(*currentRunnerIterator)->onMouseWheel(wheel);
+		for (auto currentRunner : mouseWheelObservers) {
+			currentRunner->onMouseWheel(wheel);
+		}
 	}
 
 	virtual void shutdown() {
+		//Clearing vectors is not really necessary.
         this->keyDownObservers.clear();
         this->keyUpObservers.clear();
         this->resizeObservers.clear();
@@ -415,11 +393,12 @@ public:
         this->mouseButtonDownObservers.clear();
         this->mouseButtonUpObservers.clear();
 
-        for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
-                runners.begin(); currentRunnerIterator != runners.end();
-                currentRunnerIterator++) {
-            delete (*currentRunnerIterator);
-        }
+        //No longer necessary if using unique_ptr
+//        for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
+//                runners.begin(); currentRunnerIterator != runners.end();
+//                currentRunnerIterator++) {
+//            delete (*currentRunnerIterator);
+//        }
 
         delete resourceManager;
 
