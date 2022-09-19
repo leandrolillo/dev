@@ -12,11 +12,9 @@
 
 - improve box rendering (normals)
 
-- rename events to onEvent (resize -> onResize) since this collides with imperative methods meaning there's no good method name to trigger window resize).
-
 ----------------
 
-Add menu for selecting demo.
+Add menu for selecting demo. At least add cli parameters to allow selecting demo
 
 TerrainDemo: 
 	- Add class to compose several terrain patches and make calculations to determine which patch. 

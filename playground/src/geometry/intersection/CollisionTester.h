@@ -364,7 +364,8 @@ public:
         if(pointInSphere(aabbClosestPoint, sphere)) {
             vector delta = sphere.getOrigin() - aabbClosestPoint;
             if(equalsZero(delta * delta)) {
-            	delta = sphere.getOrigin() - aabb.closestSurfacePoint(sphere.getOrigin());
+            	aabbClosestPoint = aabb.closestSurfacePoint(sphere.getOrigin());
+            	delta = aabbClosestPoint - sphere.getOrigin();
             }
             real distance = delta.modulo();
             vector normal = delta * (1.0 / distance);
