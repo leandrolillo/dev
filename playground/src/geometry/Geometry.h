@@ -112,6 +112,7 @@ public:
 };
 
 class AABB : public Geometry {
+	Logger *logger = LoggerFactory::getLogger("geometry/AABB");
     vector halfSizes;
 public:
     AABB(const vector &origin, const vector &halfSizes) : Geometry(origin) {
@@ -151,6 +152,56 @@ public:
                 std::max(mins.z, std::min(target.z, maxs.z))
                 );
     }
+
+    vector closestSurfacePoint(const vector &target) const {
+    	vector surfacePoint;
+    	real minDistance = REAL_MAX;
+
+    	real faceCoord = this->getOrigin().y + this->halfSizes.y;
+    	real faceDistanceSq = (faceCoord - target.y) * (faceCoord - target.y);
+    	if(faceDistanceSq < minDistance) {
+    		minDistance = faceDistanceSq;
+    		surfacePoint = vector(target.x, faceCoord, target.z);
+    	}
+
+    	faceCoord = this->getOrigin().y - this->halfSizes.y;
+    	faceDistanceSq = (faceCoord - target.y) * (faceCoord - target.y);
+    	if(faceDistanceSq < minDistance) {
+    		minDistance = faceDistanceSq;
+    		surfacePoint = vector(target.x, faceCoord, target.z);
+    	}
+
+    	faceCoord = this->getOrigin().x - this->halfSizes.x;
+    	faceDistanceSq = (faceCoord - target.x) * (faceCoord - target.x);
+    	if(faceDistanceSq < minDistance) {
+    		minDistance = faceDistanceSq;
+    		surfacePoint = vector(faceCoord, target.y, target.z);
+    	}
+
+    	faceCoord = this->getOrigin().x + this->halfSizes.x;
+    	faceDistanceSq = (faceCoord - target.x) * (faceCoord - target.x);
+    	if(faceDistanceSq < minDistance) {
+    		minDistance = faceDistanceSq;
+    		surfacePoint = vector(faceCoord, target.y, target.z);
+    	}
+
+    	faceCoord = this->getOrigin().z - this->halfSizes.z;
+    	faceDistanceSq = (faceCoord - target.z) * (faceCoord - target.z);
+    	if(faceDistanceSq < minDistance) {
+    		minDistance = faceDistanceSq;
+    		surfacePoint = vector(target.x, target.y, faceCoord);
+    	}
+
+    	faceCoord = this->getOrigin().z + this->halfSizes.z;
+    	faceDistanceSq = (faceCoord - target.z) * (faceCoord - target.z);
+    	if(faceDistanceSq < minDistance) {
+    		minDistance = faceDistanceSq;
+    		surfacePoint = vector(target.x, target.y, faceCoord);
+    	}
+
+
+		return surfacePoint;
+	}
 };
 
 class HierarchicalGeometry : public Geometry {

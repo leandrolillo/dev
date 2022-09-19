@@ -51,7 +51,7 @@ class PerVertexGLTrianglesNormalGenerator : public NormalGenerator
 		{
 			logger = LoggerFactory::getLogger("video/normalGenerator/PerVertexGLTrianglesNormalGenerator.h");
 		}
-		const void generateNormals(GeometryResource *resource)
+		const void generateNormals(GeometryResource *resource) override
 		{
 			if(!resource->getVertices().empty())
 			{

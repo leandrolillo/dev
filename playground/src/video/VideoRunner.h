@@ -30,23 +30,23 @@ protected:
 	unsigned int height;
 	unsigned int width;
 public:
-	virtual unsigned char getId() override {
+	virtual unsigned char getId() const override {
 		return ID;
 	}
 
-	unsigned int getScreenHeight() {
+	unsigned int getScreenHeight() const {
 		return height;
 	}
 
-	unsigned int getScreenWidth() {
+	unsigned int getScreenWidth() const {
 		return width;
 	}
 
-	bool getFullscreen() {
+	bool getFullscreen() const {
 		return this->fullScreen;
 	}
 
-	virtual void resize(unsigned int height, unsigned int width) override {
+	virtual void onResize(unsigned int height, unsigned int width) override {
 		this->height = height;
 		this->width = width;
 	}
@@ -60,6 +60,11 @@ public:
 
 		return this->fullScreen;
 	}
+
+	virtual void resize(unsigned int height, unsigned int width) {
+
+	}
+
 
 	virtual void setMousePosition(unsigned int x, unsigned int y) = 0;
 

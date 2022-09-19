@@ -33,7 +33,7 @@ class AudioRunner: public PlaygroundRunner {
 			context = null;
 			logger = LoggerFactory::getLogger("audio/AudioRunner.h");
 		}
-		virtual unsigned char getId() override {
+		virtual unsigned char getId() const override {
 			return ID;
 		}
 

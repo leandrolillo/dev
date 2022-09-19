@@ -30,7 +30,7 @@ class PlaygroundTestsRunner: public PlaygroundRunner, UnitTest {
 		PlaygroundTestsRunner() {
 		    logger = LoggerFactory::getLogger("PlaygroundTestsRunner");
 		}
-		unsigned char getId() override {
+		unsigned char getId() const override {
 			return PlaygroundTestsRunner::ID;
 		}
 

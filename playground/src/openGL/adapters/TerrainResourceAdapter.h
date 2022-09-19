@@ -21,37 +21,37 @@ public:
 	}
 
 	Resource *load(FileParser &fileParser, const String &mimeType) const override {
-		JsonParser *jsonParser = new JsonParser(fileParser);
+		JsonParser jsonParser(fileParser);
 		TerrainResource *resource = new TerrainResource();
 
-		jsonParser->readStartObject();
+		jsonParser.readStartObject();
 
 		String token;
-		while ((token = jsonParser->readToken()) != END_OBJECT && token != FileParser::eof) {
-            jsonParser->readValueSeparator();
+		while ((token = jsonParser.readToken()) != END_OBJECT && token != FileParser::eof) {
+            jsonParser.readValueSeparator();
 
 			if (token == "r") {
-				resource->setR((TextureResource *)this->getResourceManager()->load(fileParser.getFilename(), jsonParser->readString(), "video/texture"));
+				resource->setR((TextureResource *)this->getResourceManager()->load(fileParser.getFilename(), jsonParser.readString(), "video/texture"));
 			} else if (token == "g") {
-				resource->setG((TextureResource *)this->getResourceManager()->load(fileParser.getFilename(), jsonParser->readString(), "video/texture"));
+				resource->setG((TextureResource *)this->getResourceManager()->load(fileParser.getFilename(), jsonParser.readString(), "video/texture"));
 			} else if (token == "b") {
-				resource->setB((TextureResource *)this->getResourceManager()->load(fileParser.getFilename(), jsonParser->readString(), "video/texture"));
+				resource->setB((TextureResource *)this->getResourceManager()->load(fileParser.getFilename(), jsonParser.readString(), "video/texture"));
 			} else if (token == "a") {
-				resource->setA((TextureResource *)this->getResourceManager()->load(fileParser.getFilename(), jsonParser->readString(), "video/texture"));
+				resource->setA((TextureResource *)this->getResourceManager()->load(fileParser.getFilename(), jsonParser.readString(), "video/texture"));
 			} else if (token == "map") {
-				resource->setMap((TextureResource *)this->getResourceManager()->load(fileParser.getFilename(), jsonParser->readString(), "video/texture"));
+				resource->setMap((TextureResource *)this->getResourceManager()->load(fileParser.getFilename(), jsonParser.readString(), "video/texture"));
 			} else if (token == "model") {
-				resource->setModel((VertexArrayResource *)this->getResourceManager()->load(fileParser.getFilename(), jsonParser->readString(), "video/vertexArray"));
+				resource->setModel((VertexArrayResource *)this->getResourceManager()->load(fileParser.getFilename(), jsonParser.readString(), "video/vertexArray"));
 			} else if (token == "heightmap") {
-			    resource->setHeightmap((HeightMapResource *)this->getResourceManager()->load(fileParser.getFilename(), jsonParser->readString(), "video/heightmap"));
+			    resource->setHeightmap((HeightMapResource *)this->getResourceManager()->load(fileParser.getFilename(), jsonParser.readString(), "video/heightmap"));
 			    resource->setModel(buildModel(resource->getHeightMap()));
 			} else {
 				logger->error("Unexpected token: [%s] at (%d, %d)",
-						token.c_str(), jsonParser->getLine(), jsonParser->getColumn());
+						token.c_str(), jsonParser.getLine(), jsonParser.getColumn());
 			}
 
-			if (jsonParser->peekToken() == ",") {
-				jsonParser->readToken();
+			if (jsonParser.peekToken() == ",") {
+				jsonParser.readToken();
 			}
 		}
 

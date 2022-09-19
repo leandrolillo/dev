@@ -150,7 +150,7 @@ public:
 		return KEY_DOWN | KEY_UP | MOUSE_MOVE | MOUSE_WHEEL | MOUSE_BUTTON_DOWN | MOUSE_BUTTON_UP | RESIZE;
 	}
 
-	virtual unsigned char getId() override {
+	virtual unsigned char getId() const override {
 		return 200;
 	}
 
@@ -240,7 +240,7 @@ public:
         return true;
     }
 
-	void resize(unsigned int height, unsigned int width) override {
+	void onResize(unsigned int height, unsigned int width) override {
 		camera.setProjectionMatrix(Camera::perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 1000.0));
 	}
 
@@ -328,7 +328,7 @@ public:
         }
     }
 
-	void mouseButtonDown(unsigned char button, int x, int y) override
+	void onMouseButtonDown(unsigned char button, int x, int y) override
 	{
 	    if(button == SDL_BUTTON_LEFT) {
 	        fire(camera.getPosition(), true);
@@ -339,27 +339,27 @@ public:
 	    inputController->mouseButtonDown(button, x, y);
 	}
 
-	void mouseButtonUp(unsigned char button, int x, int y) override
+	void onMouseButtonUp(unsigned char button, int x, int y) override
 	{
 	    inputController->mouseButtonUp(button, x, y);
 	}
 
-    virtual void mouseMove(int x, int y, int dx, int dy) override {
+    virtual void onMouseMove(int x, int y, int dx, int dy) override {
         if(dx != 0 || dy != 0) {
             inputController->mouseMove(x, y, dx, dy);
             this->video->setMousePosition(video->getScreenWidth() >> 1, video->getScreenHeight() >> 1);
         }
     }
 
-	void mouseWheel(int wheel) override {
+	void onMouseWheel(int wheel) override {
 	    inputController->mouseWheel(wheel);
 	}
 
-    virtual void keyDown(unsigned int key, unsigned int keyModifier) override {
+    virtual void onKeyDown(unsigned int key, unsigned int keyModifier) override {
         inputController->keyDown(key, keyModifier);
     }
 
-    virtual void keyUp(unsigned int key, unsigned int keyModifier) override {
+    virtual void onKeyUp(unsigned int key, unsigned int keyModifier) override {
         inputController->keyUp(key, keyModifier);
         switch (key) {
         	case SDLK_F1:

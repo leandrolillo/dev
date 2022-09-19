@@ -22,7 +22,8 @@ public:
 private:
     DefaultRenderer &renderer;
     MaterialResource const *particleMaterial=&black;
-    MaterialResource const *collidingParticleMaterial=&red;
+    MaterialResource const *collidingParticleAMaterial=&red;
+    MaterialResource const *collidingParticleBMaterial=&red;
     MaterialResource const *sceneryMaterial=&white;
     MaterialResource const *contactMaterial=&green;
 
@@ -35,7 +36,16 @@ public:
 	}
 
 	void setCollidingParticleMaterial(MaterialResource *material) {
-		this->collidingParticleMaterial = material;
+		this->collidingParticleAMaterial = material;
+		this->collidingParticleBMaterial = material;
+	}
+
+	void setCollidingParticleAMaterial(MaterialResource *material) {
+		this->collidingParticleAMaterial = material;
+	}
+
+	void setCollidingParticleBMaterial(MaterialResource *material) {
+		this->collidingParticleBMaterial = material;
 	}
 
 	void setSceneryMaterial(MaterialResource *material) {
@@ -47,20 +57,9 @@ public:
 	}
 
 	void render(const ParticleManager *particleManager) const {
-
-		for(auto &particle : particleManager->getParticles()) {
-			if(particle->getStatus()) {
-				bool isColliding = false;
-				for(auto &contact : particleManager->getContacts()) {
-					if(contact.getParticleA() == particle || contact.getParticleB() ==  particle) {
-						isColliding = true;
-						break;
-					}
-				}
-
-				renderer.setMaterial(isColliding ? collidingParticleMaterial : particleMaterial);
-				this->render(particle->getBoundingVolume(), isColliding);
-			}
+        renderer.setMaterial(contactMaterial);
+		for(auto &contact : particleManager->getContacts()) {
+			this->renderContact(contact);
 		}
 
 		renderer.setMaterial(sceneryMaterial);
@@ -68,10 +67,24 @@ public:
 			this->render(scenery);
 		}
 
+		for(auto particle : particleManager->getParticles()) {
+			if(particle->getStatus()) {
+				renderer.setMaterial(particleMaterial);
+				bool isColliding = false;
+				for(auto &contact : particleManager->getContacts()) {
+					if(contact.getParticleA() == particle) {
+						renderer.setMaterial(collidingParticleAMaterial);
+						break;
 
-        renderer.setMaterial(contactMaterial);
-		for(auto &contact : particleManager->getContacts()) {
-			this->renderContact(contact);
+					} else if (contact.getParticleB() ==  particle) {
+						renderer.setMaterial(collidingParticleBMaterial);
+						break;
+					}
+				}
+
+
+				this->render(particle->getBoundingVolume(), isColliding);
+			}
 		}
 	}
 

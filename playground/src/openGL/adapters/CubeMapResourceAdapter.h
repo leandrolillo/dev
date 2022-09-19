@@ -22,7 +22,7 @@ public:
 	}
 
 	Resource *load(FileParser &fileParser, const String &mimeType) const override {
-		JsonParser *jsonParser = new JsonParser(fileParser);
+		JsonParser jsonParser(fileParser);
 
 		unsigned int textureHandler = 0;
 		getGlError();
@@ -32,13 +32,13 @@ public:
 		glBindTexture(GL_TEXTURE_CUBE_MAP, textureHandler);
 
 
-		jsonParser->readStartObject();
+		jsonParser.readStartObject();
 
 		String token;
-		while ((token = jsonParser->readToken()) != END_OBJECT && token != FileParser::eof) {
+		while ((token = jsonParser.readToken()) != END_OBJECT && token != FileParser::eof) {
 			String faceName = token;
-			jsonParser->readValueSeparator();
-			String faceFileName = jsonParser->readString();
+			jsonParser.readValueSeparator();
+			String faceFileName = jsonParser.readString();
 			ImageResource *imageResource = (ImageResource *)this->getResourceManager()->load(faceFileName);
 
 			if(imageResource != null) {
@@ -67,8 +67,8 @@ public:
                 return null;
             }
 
-			if (jsonParser->peekToken() == ",") {
-				jsonParser->readToken();
+			if (jsonParser.peekToken() == ",") {
+				jsonParser.readToken();
 			}
 		}
 

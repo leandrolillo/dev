@@ -12,6 +12,7 @@
 
 - improve box rendering (normals)
 
+- rename events to onEvent (resize -> onResize) since this collides with imperative methods meaning there's no good method name to trigger window resize).
 
 ----------------
 

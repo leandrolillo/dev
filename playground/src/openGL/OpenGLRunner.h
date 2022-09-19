@@ -99,7 +99,6 @@ public:
 //        SDL_PumpEvents();
 //        SDL_SetRelativeMouseMode(SDL_TRUE);
         SDL_AddEventWatch(playgroundEventFilter, this);
-        SDL_SetWindowGrab(this->window, SDL_TRUE);
 
         logger->debug("SDL event watch registered");
 
@@ -147,7 +146,7 @@ public:
         int width = 0;
         SDL_GetWindowSize(window, &width, &height);
 
-        this->getContainer()->resize(height, width);
+        this->getContainer()->onResize(height, width);
 
         SDL_WarpMouseInWindow(window, width >> 1, height >> 1);
 
@@ -181,40 +180,42 @@ public:
                 switch (event->window.event) {
                     case SDL_WINDOWEVENT_RESIZED:
                     case SDL_WINDOWEVENT_SIZE_CHANGED:
+                    	SDL_SetWindowGrab(this->window, SDL_FALSE);
                         logger->debug("WINDOW RESIZED to [%d, %d]", event->window.data2, event->window.data1);
-                        this->getContainer()->resize(event->window.data2, event->window.data1);
+                        this->getContainer()->onResize(event->window.data2, event->window.data1);
+                        SDL_SetWindowGrab(this->window, SDL_TRUE);
                         return 0;
                 }
                 break;
             case SDL_KEYDOWN:
                 //SDL_Log("SDL_KEYDOWN %d", event->key.keysym.sym);
                 logger->verbose("KEYDOWN: %d, %d", event->key.keysym.sym, event->key.keysym.mod);
-                this->getContainer()->keyDown(event->key.keysym.sym, event->key.keysym.mod);
+                this->getContainer()->onKeyDown(event->key.keysym.sym, event->key.keysym.mod);
                 return 0;
             case SDL_KEYUP:
                 //SDL_Log("SDL_KEYUP %d", event->key.keysym.sym);
                 logger->verbose("KEYUP: %d, %d", event->key.keysym.sym, event->key.keysym.mod);
-                this->getContainer()->keyUp(event->key.keysym.sym, event->key.keysym.mod);
+                this->getContainer()->onKeyUp(event->key.keysym.sym, event->key.keysym.mod);
                 return 0;
             case SDL_MOUSEMOTION:
                 //SDL_Log("SDL_MOUSEMOTION (%d,%d) delta=(%d,%d)", event->motion.x, event->motion.y, event->motion.xrel, event->motion.yrel);
-                this->getContainer()->mouseMove(event->motion.x, event->motion.y, event->motion.xrel, event->motion.yrel);
+                this->getContainer()->onMouseMove(event->motion.x, event->motion.y, event->motion.xrel, event->motion.yrel);
                 logger->verbose("MOUSEMOVE: (%d, %d)", event->motion.xrel, event->motion.yrel);
                 return 0;
             case SDL_MOUSEBUTTONDOWN:
                 //SDL_Log("SDL_MOUSEBUTTONDOWN %d", event->button.button);
                 logger->verbose("MOUSEBUTTONDOWN: %d at <%d, %d>", event->button.button, event->button.x, event->button.y);
-                this->getContainer()->mouseButtonDown(event->button.button, event->button.x, event->button.y);
+                this->getContainer()->onMouseButtonDown(event->button.button, event->button.x, event->button.y);
                 return 0;
             case SDL_MOUSEBUTTONUP:
                 //SDL_Log("SDL_MOUSEBUTTONUP %d", event->button.button);
                 logger->verbose("MOUSEBUTTONUP: %d at <%d, %d>", event->button.button, event->button.x, event->button.y);
-                this->getContainer()->mouseButtonUp(event->button.button, event->button.x, event->button.y);
+                this->getContainer()->onMouseButtonUp(event->button.button, event->button.x, event->button.y);
                 return 0;
             case SDL_MOUSEWHEEL:
                 //SDL_Log("SDL_MOUSEWHEEL %d %d", event->wheel.direction, event->wheel.y);
                 logger->verbose("MOUSEWHEEL: %d", event->wheel.y);
-                this->getContainer()->mouseWheel(event->wheel.y);
+                this->getContainer()->onMouseWheel(event->wheel.y);
                 return 0;
         }
 
@@ -229,12 +230,12 @@ public:
         return SDL_GetPerformanceFrequency();
     }
 
-    virtual void resize(unsigned int height, unsigned int width) override {
-        VideoRunner::resize(height, width);
+    virtual void onResize(unsigned int height, unsigned int width) override {
+        VideoRunner::onResize(height, width);
         glViewport(0, 0, (GLsizei) width, (GLsizei) height);
     }
 
-    virtual void keyDown(unsigned int key, unsigned int keyModifier) override {
+    virtual void onKeyDown(unsigned int key, unsigned int keyModifier) override {
         //                    logger->info("KMOD_ALT: %d", keyModifier & KMOD_ALT);
         //                    logger->info("KMOD_CTRL: %d", keyModifier & KMOD_CTRL);
         //                    logger->info("KMOD_SHIFT: %d", keyModifier & KMOD_SHIFT);
@@ -277,9 +278,13 @@ public:
         int width = 0;
         SDL_GetWindowSize(window, &width, &height);
 
-        this->getContainer()->resize(height, width);
+        this->getContainer()->onResize(height, width);
 
         return this->getFullscreen();
+    }
+
+    virtual void resize(unsigned int height, unsigned int width) override {
+    	SDL_SetWindowSize(window, height, width);
     }
 
     void setMousePosition(unsigned int x, unsigned int y) override {

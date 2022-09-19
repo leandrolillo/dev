@@ -60,11 +60,11 @@ public:
 		return KEY_DOWN | KEY_UP | MOUSE_MOVE | MOUSE_WHEEL | RESIZE;
 	}
 
-	virtual unsigned char getId() override {
+	virtual unsigned char getId() const override {
 		return 200;
 	}
 
-	void resize(unsigned int height, unsigned int width) override {
+	void onResize(unsigned int height, unsigned int width) override {
 	    camera.setProjectionMatrix(Camera::perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 100.0));
 	}
 
@@ -173,16 +173,16 @@ public:
 
 		return LoopResult::CONTINUE;
 	}
-	void mouseWheel(int wheel) override {
+	void onMouseWheel(int wheel) override {
 		*currentPosition += vector(0.0f, 0.0f, wheel);
 		logger->verbose("%s", (*currentPosition).toString().c_str());
 	}
 
-	virtual void mouseMove(int x, int y, int dx, int dy) override {
+	virtual void onMouseMove(int x, int y, int dx, int dy) override {
 		*currentPosition += vector(0.1f * dx, 0.1f * dy, 0);
 		logger->verbose("%s", (*currentPosition).toString().c_str());
 	}
-	virtual void keyUp(unsigned int key, unsigned int keyModifier) override {
+	virtual void onKeyUp(unsigned int key, unsigned int keyModifier) override {
 		switch (key) {
 		case SDLK_RCTRL:
 		case SDLK_LCTRL:
@@ -190,7 +190,7 @@ public:
 			break;
 		}
 	}
-    virtual void keyDown(unsigned int key, unsigned int keyModifier) override {
+    virtual void onKeyDown(unsigned int key, unsigned int keyModifier) override {
         switch (key) {
             case SDLK_RCTRL:
             case SDLK_LCTRL:

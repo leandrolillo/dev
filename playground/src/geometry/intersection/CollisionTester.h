@@ -133,7 +133,7 @@ public:
      * point sphere test
      */
 
-    bool pointSphere(const vector &point, const Sphere &sphere) const {
+    bool pointInSphere(const vector &point, const Sphere &sphere) const {
         vector delta = sphere.getOrigin() - point;
         return delta * delta <= sphere.getRadius() * sphere.getRadius();
     }
@@ -207,7 +207,7 @@ public:
         const Sphere &sphere = (const Sphere &)sphereGeometry;
         const AABB &aabb = (const AABB &)aabbGeometry;
 
-        return pointSphere(aabb.closestPoint(sphere.getOrigin()), sphere);
+        return pointInSphere(aabb.closestPoint(sphere.getOrigin()), sphere);
     }
 
     bool sphereHierarchy(const Geometry &sphere, const Geometry &hierarchy) const {
@@ -221,7 +221,7 @@ public:
 	   vector aabbClosestPoint = heightmap.closestPoint(sphere.getOrigin());
 	   aabbClosestPoint.y = heightmap.getHeightMap()->heightAt(aabbClosestPoint.x - heightmap.getPosition().x, aabbClosestPoint.z - heightmap.getPosition().z);
 
-	   return pointSphere(aabbClosestPoint, sphere);
+	   return pointInSphere(aabbClosestPoint, sphere);
    	}
 
 
@@ -361,8 +361,11 @@ public:
 
         vector aabbClosestPoint = aabb.closestPoint(sphere.getOrigin());
 
-        if(pointSphere(aabbClosestPoint, sphere)) {
+        if(pointInSphere(aabbClosestPoint, sphere)) {
             vector delta = sphere.getOrigin() - aabbClosestPoint;
+            if(equalsZero(delta * delta)) {
+            	delta = sphere.getOrigin() - aabb.closestSurfacePoint(sphere.getOrigin());
+            }
             real distance = delta.modulo();
             vector normal = delta * (1.0 / distance);
             real penetration = sphere.getRadius() - distance;
@@ -402,7 +405,7 @@ public:
         vector aabbClosestPoint = heightmap.closestPoint(sphere.getOrigin());
         aabbClosestPoint.y = heightmap.heightAt(aabbClosestPoint.x, aabbClosestPoint.z);
 
-        if(pointSphere(aabbClosestPoint, sphere)) {
+        if(pointInSphere(aabbClosestPoint, sphere)) {
             vector delta = sphere.getOrigin() - aabbClosestPoint;
 			real distance = delta.modulo();
 			//vector normal = delta * (1.0 / distance); // method 1 - upwards pointing normal

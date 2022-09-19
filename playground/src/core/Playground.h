@@ -74,31 +74,31 @@ public:
 		return this->container;
 	}
 
-	virtual unsigned char getId() = 0;
+	virtual unsigned char getId() const = 0;
 
 	virtual unsigned char getInterests() {
 		return 0;
 	}
 
-	virtual void resize(unsigned int height, unsigned width) {
+	virtual void onResize(unsigned int height, unsigned width) {
 	}
 
-	virtual void keyDown(unsigned int key, unsigned int keyModifier) {
+	virtual void onKeyDown(unsigned int key, unsigned int keyModifier) {
 	}
 
-	virtual void keyUp(unsigned int key, unsigned int keyModifier) {
+	virtual void onKeyUp(unsigned int key, unsigned int keyModifier) {
 	}
 
-	virtual void mouseMove(int x, int y, int dx, int dy) {
+	virtual void onMouseMove(int x, int y, int dx, int dy) {
 	}
 
-	virtual void mouseButtonDown(unsigned char button, int x, int y) {
+	virtual void onMouseButtonDown(unsigned char button, int x, int y) {
 	}
 
-	virtual void mouseButtonUp(unsigned char button, int x, int y) {
+	virtual void onMouseButtonUp(unsigned char button, int x, int y) {
 	}
 
-	virtual void mouseWheel(int wheel) {
+	virtual void onMouseWheel(int wheel) {
 	}
 
 	unsigned char getEnabled() const {
@@ -195,7 +195,7 @@ public:
 		runners_by_id[runner->getId()] = runner;
 	}
 
-	// creacion de los hilos
+	// "thread" creation
 	virtual void init() {
 		logger->debug("framework initialized");
 	}
@@ -350,60 +350,60 @@ public:
 		}
 	}
 
-	void resize(unsigned int height, unsigned width) {
+	void onResize(unsigned int height, unsigned width) {
 		for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
 				resizeObservers.begin();
 				currentRunnerIterator != resizeObservers.end();
 				currentRunnerIterator++)
-			(*currentRunnerIterator)->resize(height, width);
+			(*currentRunnerIterator)->onResize(height, width);
 	}
 
-	void keyDown(unsigned int key, unsigned int keyModifier) {
+	void onKeyDown(unsigned int key, unsigned int keyModifier) {
 		for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
 				keyDownObservers.begin();
 				currentRunnerIterator != keyDownObservers.end();
 				currentRunnerIterator++)
-			(*currentRunnerIterator)->keyDown(key, keyModifier);
+			(*currentRunnerIterator)->onKeyDown(key, keyModifier);
 	}
 
-	void keyUp(unsigned int key, unsigned int keyModifier) {
+	void onKeyUp(unsigned int key, unsigned int keyModifier) {
 		for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
 				keyUpObservers.begin();
 				currentRunnerIterator != keyUpObservers.end();
 				currentRunnerIterator++)
-			(*currentRunnerIterator)->keyUp(key, keyModifier);
+			(*currentRunnerIterator)->onKeyUp(key, keyModifier);
 	}
 
-	void mouseMove(int x, int y, int dx, int dy) {
+	void onMouseMove(int x, int y, int dx, int dy) {
 		for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
 				mouseMoveObservers.begin();
 				currentRunnerIterator != mouseMoveObservers.end();
 				currentRunnerIterator++)
-			(*currentRunnerIterator)->mouseMove(x, y, dx, dy);
+			(*currentRunnerIterator)->onMouseMove(x, y, dx, dy);
 	}
 
-	void mouseButtonDown(unsigned char button, int x, int y) {
+	void onMouseButtonDown(unsigned char button, int x, int y) {
 		for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
 				mouseButtonDownObservers.begin();
 				currentRunnerIterator != mouseButtonDownObservers.end();
 				currentRunnerIterator++)
-			(*currentRunnerIterator)->mouseButtonDown(button, x, y);
+			(*currentRunnerIterator)->onMouseButtonDown(button, x, y);
 	}
 
-	void mouseButtonUp(unsigned char button, int x, int y) {
+	void onMouseButtonUp(unsigned char button, int x, int y) {
 			for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
 					mouseButtonUpObservers.begin();
 					currentRunnerIterator != mouseButtonUpObservers.end();
 					currentRunnerIterator++)
-				(*currentRunnerIterator)->mouseButtonUp(button, x, y);
+				(*currentRunnerIterator)->onMouseButtonUp(button, x, y);
 	}
 
-	void mouseWheel(int wheel) {
+	void onMouseWheel(int wheel) {
 				for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
 						mouseWheelObservers.begin();
 						currentRunnerIterator != mouseWheelObservers.end();
 						currentRunnerIterator++)
-					(*currentRunnerIterator)->mouseWheel(wheel);
+					(*currentRunnerIterator)->onMouseWheel(wheel);
 	}
 
 	virtual void shutdown() {

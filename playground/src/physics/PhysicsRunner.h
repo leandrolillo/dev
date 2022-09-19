@@ -38,7 +38,7 @@ public:
 	PhysicsRunner() {
 	}
 
-	unsigned char getId() {
+	unsigned char getId() const override {
 		return ID;
 	}
 

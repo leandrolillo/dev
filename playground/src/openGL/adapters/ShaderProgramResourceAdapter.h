@@ -42,7 +42,7 @@ class ShaderProgramResourceAdapter: public OpenGLResourceAdapter {
 		virtual Resource *load(FileParser &fileParser, const String &mimeType) const override {
 			GLenum glError = glGetError();
 
-			JsonParser *parser = new JsonParser(fileParser);
+			JsonParser parser(fileParser);
 
 			ShaderProgramResource *resource = null;
 
@@ -50,12 +50,12 @@ class ShaderProgramResourceAdapter: public OpenGLResourceAdapter {
 			resource = new ShaderProgramResource(programId);
 
 			String token;
-			parser->readStartObject();
-			while((token = parser->readToken()) != END_OBJECT && token != FileParser::eof)
+			parser.readStartObject();
+			while((token = parser.readToken()) != END_OBJECT && token != FileParser::eof)
 			{
 				if(token == "vertexShaders" || token == "fragmentShaders" || token == "geometryShaders" || token == "tesellationShaders") {
-					parser->readValueSeparator();
-					std::vector<String> vertexShadersFiles = parser->readStringArray();
+					parser.readValueSeparator();
+					std::vector<String> vertexShadersFiles = parser.readStringArray();
 
 					for(std::vector<String>::iterator stringIterator = vertexShadersFiles.begin(); stringIterator != vertexShadersFiles.end(); stringIterator++) {
 						ShaderResource *shader = (ShaderResource *)getResourceManager()->load(fileParser.getFilename(), *stringIterator, shadersMimeTypes.at(token));
@@ -65,8 +65,8 @@ class ShaderProgramResourceAdapter: public OpenGLResourceAdapter {
 							logger->error("Could not load shader [%s]", (*stringIterator).c_str());
 					}
 
-		            if (parser->peekToken() == ",") {
-		                parser->readToken();
+		            if (parser.peekToken() == ",") {
+		                parser.readToken();
 		            }
 
 				} else {

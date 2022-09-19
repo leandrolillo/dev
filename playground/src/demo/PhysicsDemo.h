@@ -92,7 +92,7 @@ public:
 	                        aabbPlatform(new AABB(vector(0, 1, 0), vector(0.5, 0.05, 0.05))) {
 	}
 
-	unsigned char getId() override {
+	unsigned char getId() const override {
 		return 200;
 	}
 
@@ -148,7 +148,7 @@ public:
         return true;
     }
 
-	void resize(unsigned int height, unsigned int width) override {
+	void onResize(unsigned int height, unsigned int width) override {
 	    camera.setProjectionMatrix(Camera::perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 300.0));
 	}
 
@@ -247,19 +247,19 @@ public:
 		}
 	}
 
-	void mouseWheel(int wheel) override {
+	void onMouseWheel(int wheel) override {
         camera.setPosition(camera.getPosition() - vector(0.0f, 0.0f, wheel));
         audio->updateListener(camera.getPosition());
         logger->debug("camera: %s", camera.getPosition().toString("%.2f").c_str());
 	}
 
-	void mouseMove(int x, int y, int dx, int dy) override {
+	void onMouseMove(int x, int y, int dx, int dy) override {
         camera.setPosition(camera.getPosition() - vector(0.1f * dx, 0.1f * dy, 0));
         audio->updateListener(camera.getPosition());
         logger->debug("camera: %s", camera.getPosition().toString("%.2f").c_str());
 	}
 
-	void mouseButtonDown(unsigned char button, int x, int y) override {
+	void onMouseButtonDown(unsigned char button, int x, int y) override {
 		fire(camera.getPosition());
 
 		float randomDx = ((real)rand()/(real)RAND_MAX * 0.1 - 0.05);
@@ -267,7 +267,7 @@ public:
 		fire(vector(randomDx, 2.0, 0.0), true);
 	}
 
-    virtual void keyDown(unsigned int key, unsigned int keyModifier) override {
+    virtual void onKeyDown(unsigned int key, unsigned int keyModifier) override {
         switch (key) {
             case SDLK_SPACE:
                 reset();

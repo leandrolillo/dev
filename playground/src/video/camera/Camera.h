@@ -65,7 +65,7 @@ public:
     void setViewMatrix(const matriz_4x4 &viewMatrix) {
         this->viewMatrix = viewMatrix;
         this->orientation = (matriz_3x3)viewMatrix;
-        this->position = (vector3)((matriz::rotacion(orientation.traspuesta()) * this->viewMatrix).columna(3));
+        this->position = -(vector3)((matriz::rotacion(orientation.traspuesta()) * this->viewMatrix).columna(3));
         this->projectionViewMatrix = this->projectionMatrix * this->viewMatrix;
     }
 

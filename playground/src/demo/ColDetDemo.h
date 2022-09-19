@@ -75,16 +75,16 @@ class CollisionDetectionDemoRunner: public PlaygroundRunner {
     GridRenderer gridRenderer;
     GeometryRenderer geometryRenderer;
 
-    MaterialResource red = MaterialResource(vector(1, 0, 0), vector(1, 0, 0), vector(1, 0, 0), 1.0, 0.5);
-    MaterialResource green = MaterialResource(vector(0, 1, 0), vector(0, 1, 0), vector(0, 1, 0), 1.0);
-    MaterialResource blue = MaterialResource(vector(0, 0, 1), vector(0, 0, 1), vector(0, 0, 1), 1.0);
+    MaterialResource red = MaterialResource(vector(1, 0, 0), vector(1, 0, 0), vector(1, 0, 0), 1.0, 0.2);
+    MaterialResource green = MaterialResource(vector(0, 1, 0), vector(0, 1, 0), vector(0, 1, 0), 1.0, 0.2);
+    MaterialResource blue = MaterialResource(vector(0, 0, 1), vector(0, 0, 1), vector(0, 0, 1), 1.0, 0.2);
 
 public:
     CollisionDetectionDemoRunner() : ground(new Plane(vector(0, 0, 0), vector(0, 1, 0))), geometryRenderer(defaultRenderer) {
         logger->addAppender(LoggerFactory::getAppender("stdout"));
     }
 
-    unsigned char getId() override {
+    unsigned char getId() const override {
         return 200;
     }
 
@@ -92,13 +92,13 @@ public:
         return KEY_DOWN | KEY_UP | MOUSE_MOVE | MOUSE_WHEEL | MOUSE_BUTTON_DOWN | MOUSE_BUTTON_UP | RESIZE;
     }
 
-    void resize(unsigned int height, unsigned int width) override {
+    void onResize(unsigned int height, unsigned int width) override {
         camera.setProjectionMatrix(Camera::perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 300.0));
     }
 
     void reset() {
 //		video->setMousePosition(video->getScreenWidth() >> 1, video->getScreenHeight() >> 1);
-        camera.setViewMatrix(matriz_4x4::traslacion(vector(0.0f, -0.5f, -5.0f)));
+        camera.setViewMatrix(matriz_4x4::traslacion(vector(0.0f, -0.5f, -10.0f)));
 
         real radius = (real) 0.5;
         if(collidingParticles.size() > 0) {
@@ -142,6 +142,8 @@ public:
         video = (VideoRunner*) this->getContainer()->getRequiredRunner(VideoRunner::ID);
         audio = (AudioRunner*) this->getContainer()->getRequiredRunner(AudioRunner::ID);
 
+        this->video->resize(800, 600);
+
         logger->debug("Initializing renderers");
         defaultRenderer.setVideoRunner(video);
         gridRenderer.setVideoRunner(video);
@@ -181,6 +183,8 @@ public:
 
         particleManager.addParticle(&ground);
 
+        geometryRenderer.setCollidingParticleBMaterial(&blue);
+
 
         reset();
 
@@ -218,8 +222,8 @@ public:
         }
     }
 
-    void mouseMove(int x, int y, int dx, int dy) override {
-            Line line(-camera.getPosition(),
+    void onMouseMove(int x, int y, int dx, int dy) override {
+            Line line(camera.getPosition(),
                     camera.getRayDirection((unsigned int) x, (unsigned int) y, video->getScreenWidth(), video->getScreenHeight()));
 
             if (!equalsZero(line.getDirection().z)) {
@@ -235,7 +239,7 @@ public:
         }
     }
 
-    void mouseButtonUp(unsigned char button, int x, int y) override {
+    void onMouseButtonUp(unsigned char button, int x, int y) override {
         if (button == SDL_BUTTON_LEFT) {
             for (auto &particle : collidingParticles) {
                 particle->setSelected(false);
@@ -243,18 +247,18 @@ public:
         }
     }
 
-	void mouseWheel(int wheel) override {
+	void onMouseWheel(int wheel) override {
 		logger->info("Mouse wheel %d", wheel);
 	    camera.setPosition(camera.getPosition() - vector(0.0, 0.0, std::min(1.0, 0.1 * wheel)));
 	    logger->info("Camera position: %s", camera.getPosition().toString().c_str());
 	}
 
 
-    void mouseButtonDown(unsigned char button, int x, int y) override {
+    void onMouseButtonDown(unsigned char button, int x, int y) override {
         if (button == SDL_BUTTON_LEFT) {
             this->startPosition = vector2(x, y);
 
-            Line line(-camera.getPosition(),
+            Line line(camera.getPosition(),
                     camera.getRayDirection((unsigned int) x, (unsigned int) y, video->getScreenWidth(), video->getScreenHeight()));
 
             for(auto &particle : collidingParticles) {
@@ -265,15 +269,25 @@ public:
         }
     }
 
-    void keyDown(unsigned int key, unsigned int keyModifier) override {
+    void onKeyDown(unsigned int key, unsigned int keyModifier) override {
         switch (key) {
+			case '+':
+				camera.setPosition(camera.getPosition() - vector(0.0, 0.0, 0.1));
+			break;
+			case '-':
+				camera.setPosition(camera.getPosition() + vector(0.0, 0.0, 0.1));
+			break;
+			case SDLK_LEFT:
+				camera.setPosition(camera.getPosition() - vector(0.1, 0.0, 0.0));
+			break;
+			case SDLK_RIGHT:
+				camera.setPosition(camera.getPosition() + vector(0.1, 0.0, 0.0));
+			break;
         	case SDLK_UP:
-        		camera.setPosition(camera.getPosition() + vector(0.0, 0.0, 0.1));
-        		logger->info("Camera position: %s", camera.getPosition().toString().c_str());
+        		camera.setPosition(camera.getPosition() + vector(0.0, 0.1, 0.0));
         	break;
         	case SDLK_DOWN:
-        		camera.setPosition(camera.getPosition() - vector(0.0, 0.0, 0.1));
-        		logger->info("Camera position: %s", camera.getPosition().toString().c_str());
+        		camera.setPosition(camera.getPosition() - vector(0.0, 0.1, 0.0));
         		break;
             case SDLK_BACKSPACE:
                 reset();

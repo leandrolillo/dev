@@ -22,41 +22,41 @@ public:
 	}
 
 	virtual Resource *load(FileParser &fileParser, const String &mimeType) const override {
-		JsonParser *parser = new JsonParser(fileParser);
+		JsonParser parser(fileParser);
 		GeometryResource *resource = new GeometryResource(0);
 
 		bool generateNormals = false;
 		bool generateIndexes = false;
 
 		String token;
-		parser->readStartObject();
-		while ((token = parser->readToken()) != END_OBJECT && token != FileParser::eof) {
-            parser->readValueSeparator();
+		parser.readStartObject();
+		while ((token = parser.readToken()) != END_OBJECT && token != FileParser::eof) {
+            parser.readValueSeparator();
 
 			if (token == "vertices") {
-				resource->setVertices(parser->readVector3Array());
+				resource->setVertices(parser.readVector3Array());
 			} else if (token == "textureCoordinates") {
-				resource->setTextureCoordinates(parser->readVector2Array());
+				resource->setTextureCoordinates(parser.readVector2Array());
 			} else if (token == "normals") {
-				resource->setNormals(parser->readVector3Array());
+				resource->setNormals(parser.readVector3Array());
 			} else if (token == "colors") {
-				resource->setColors(parser->readVector3Array());
+				resource->setColors(parser.readVector3Array());
 			} else if (token == "type") {
-				String typeString = parser->readString();
+				String typeString = parser.readString();
 				resource->setType(typeString);
 			} else if (token == "indices") {
-				resource->setIndices(parser->readUnsignedIntegerArray());
+				resource->setIndices(parser.readUnsignedIntegerArray());
 			} else if (token == "generateNormals") {
-				generateNormals = parser->readBoolean();
+				generateNormals = parser.readBoolean();
 			} else if (token == "generateIndexes") {
-				generateIndexes = parser->readBoolean();
+				generateIndexes = parser.readBoolean();
 			} else {
 				logger->error("Unexpected token: [%s] at (%d, %d)",
-						token.c_str(), parser->getLine(), parser->getColumn());
+						token.c_str(), parser.getLine(), parser.getColumn());
 			}
 
-			if (parser->peekToken() == ",") {
-				parser->readToken();
+			if (parser.peekToken() == ",") {
+				parser.readToken();
 			}
 		}
 
@@ -83,17 +83,20 @@ public:
 		return resource;
 	}
 
-	virtual void dispose(Resource *resource) const override {
-	    logger->info("Adapter Disposing of %s", resource->toString().c_str());
-
-		GeometryResource *geometryResource = (GeometryResource*) resource;
-		geometryResource->getVertices().clear();
-		geometryResource->getColors().clear();
-		geometryResource->getNormals().clear();
-		geometryResource->getTextureCoordinates().clear();
-
-		logger->info("Disposed of %s", resource->toString().c_str());
-	}
+	/**
+	 * This is not really necessary since vector takes care of its own data.
+	 */
+//	virtual void dispose(Resource *resource) const override {
+//	    logger->info("Disposing of [%s]", resource->toString().c_str());
+//
+//		GeometryResource *geometryResource = (GeometryResource*) resource;
+//		geometryResource->getVertices().clear();
+//		geometryResource->getColors().clear();
+//		geometryResource->getNormals().clear();
+//		geometryResource->getTextureCoordinates().clear();
+//
+//		logger->info("Disposed of %s", resource->toString().c_str());
+//	}
 
 private:
 	//TODO: Review vertex normals generation. Review amount of needed vertex normals (according to number of indexes or unique vertices?). May need to build adapters and factories based on primitive type.
