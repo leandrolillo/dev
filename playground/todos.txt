@@ -1,10 +1,12 @@
+Tech debts
+
+- review RAII and 5 of 5 principle (move semantics) in resources/playground classes. Troubleshoot error: 
+	playground(82383,0x112261600) malloc: *** error for object 0x600001d917e0: pointer being freed was not allocated
+	playground(82383,0x112261600) malloc: *** set a breakpoint in malloc_error_break to debug
+
 - review design of particle manager/collision detector / geometry vs particles / etc. Too much vector passing and copying. Review polymorfism / std::vector<unique_ptr> usage.
 
 - add 'override' to overridden virtual methods (forces compiler to check everything is ok)
-
-- review RAII of resources
-
-- review 5 of 5 principle (move semantics)
 
 - Review collision action design: use lambdas instead of template pattern for collision response actions. Review design of BulletParticle used for playing sounds on balls bouncing.
 
@@ -14,9 +16,18 @@
 
 ----------------
 
-Add menu for selecting demo. At least add cli parameters to allow selecting demo
+New stuff:
 
-TerrainDemo: 
+- Road fighter:
+	- Add support for loading single resources from a file containing multiple objects (obj files)
+	- Add textured object code support, so that I can load and display a 3d object instead of having to load the vertex array, texture and material separatedly. 
+	- Add labels to resources, so that we can unload a level resources and load next levels.
+
+
+
+- Add menu for selecting demo. At least add cli parameters to allow selecting demo - anything better than commenting lines in main.cpp
+
+- TerrainDemo: 
 	- Add class to compose several terrain patches and make calculations to determine which patch. 
 	- mod infinite terrain? render those inside camera frustrum
 	- Add some class to generate bounding geometry from this.
@@ -24,12 +35,11 @@ TerrainDemo:
 	- Add grass / ferns with transparency
 	- use own particle class or review design (lambdas maybe?)
 
-Battle city:
-Battle road:
-tanques vs naves
-defend the tower
-scenery (with train or racing cars - lightning mcqueen and cruz, wind/rain, vegetation and animals, water, day/night transition, sun and moon, etc.)
+Games: 
+- Battle city:
 
+- tanques vs naves
+- defend the tower
+- scenery (with train or racing cars - lightning mcqueen and cruz, wind/rain, vegetation and animals, water, day/night transition, sun and moon, etc.)
 
-ColDetDemo:
- - use particleManager and geometry renderer to detect/resolve collisions and draw stuff onscreen.
+robotica - brazo (curso)

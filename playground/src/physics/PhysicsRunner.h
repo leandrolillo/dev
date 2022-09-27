@@ -50,7 +50,7 @@ public:
 	    this->playbackSpeed = playbackspeed;
 	}
 
-	bool init() {
+	bool init() override {
 		videoRunner = (VideoRunner*) this->getContainer()->getRequiredRunner(VideoRunner::ID);
 
 		invPerformanceFreq = (real)1 / (real)videoRunner->getPerformanceFreq();
@@ -59,7 +59,7 @@ public:
 		return true;
 	}
 
-	void beforeLoop() {
+	void beforeLoop() override {
 		this->particleManager.clearAccumulators();
 	}
 
@@ -84,7 +84,7 @@ public:
 		}
 	}
 
-	LoopResult doLoop() {
+	LoopResult doLoop() override {
 		unsigned long tf = videoRunner->getPerformanceCounter();
 		real dt = (real)(tf - to) * invPerformanceFreq;
 		to = tf;

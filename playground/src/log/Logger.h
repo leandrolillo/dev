@@ -183,9 +183,9 @@ public:
 
 protected:
     void messageAppenders(const String &message) {
-        for (std::vector<Appender*>::iterator iterator = appenders.begin(); iterator != appenders.end(); iterator++) {
-            (*iterator)->append(message.c_str());
-            (*iterator)->flush();
+        for (auto appender : appenders) {
+            appender->append(message.c_str());
+            appender->flush();
         }
     }
 
@@ -254,16 +254,14 @@ public:
 
 class LoggerFactory {
 private:
-    static std::vector<Appender*> appenders;
-    static std::vector<Logger*> loggers;
+    static std::vector<std::unique_ptr<Appender>> appenders;
+    static std::vector<std::unique_ptr<Logger>> loggers;
 
 public:
     static Appender* getAppender(String output) {
-        for (std::vector<Appender*>::iterator currentLoggerAppender = LoggerFactory::appenders.begin();
-                currentLoggerAppender != LoggerFactory::appenders.end(); currentLoggerAppender++) {
-
-            if ((*currentLoggerAppender)->getTarget() == output) {
-                return *currentLoggerAppender;
+        for (auto &appender : appenders) {
+            if (appender->getTarget() == output) {
+                return appender.get();
             }
         }
 
@@ -275,15 +273,14 @@ public:
             appender = new FileAppender(output);
         }
 
-        LoggerFactory::appenders.push_back(appender);
+        LoggerFactory::appenders.push_back(std::unique_ptr<Appender>(appender));
         return appender;
     }
 
     static Logger* getLogger(String basename) {
-        for (std::vector<Logger*>::iterator currentLoggerIterator = LoggerFactory::loggers.begin();
-                currentLoggerIterator != LoggerFactory::loggers.end(); currentLoggerIterator++) {
-            if ((*currentLoggerIterator)->getBasename() == basename) {
-                return *currentLoggerIterator;
+        for (auto &logger : loggers) {
+            if (logger->getBasename() == basename) {
+                return logger.get();
             }
         }
 
@@ -293,23 +290,9 @@ public:
         logger->setLogLevel(DEFAULT_LOG_LEVEL);
         logger->addAppender(getAppender("playground.log"));
 
-        LoggerFactory::loggers.push_back(logger);
+        LoggerFactory::loggers.push_back(std::unique_ptr<Logger>(logger));
 
         return logger;
-    }
-
-    static void deleteLoggers() {
-        for (std::vector<Logger*>::iterator iterator = LoggerFactory::loggers.begin(); iterator != LoggerFactory::loggers.end();
-                iterator++) {
-            delete *iterator;
-        }
-        loggers.clear();
-
-        for (std::vector<Appender*>::iterator iterator = LoggerFactory::appenders.begin(); iterator != LoggerFactory::appenders.end();
-                iterator++) {
-            delete *iterator;
-        }
-        appenders.clear();
     }
 };
 #endif /* LOGGER_H_ */

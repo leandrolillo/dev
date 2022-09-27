@@ -113,7 +113,7 @@ public:
 class Playground {
 private:
 	Logger *logger = LoggerFactory::getLogger("core/Playground.h");
-	ResourceManager *resourceManager = null;
+	ResourceManager resourceManager;
 	String resourcesRootFolder;
 	std::vector<std::unique_ptr<PlaygroundRunner>> runners;
 	std::map<unsigned char, PlaygroundRunner *> runners_by_id;
@@ -131,18 +131,11 @@ public:
 	Playground() : Playground("Lean/dev/media/"){
 	}
 
-	Playground(const String &rootFolder) {
-		resourcesRootFolder = rootFolder;
+	Playground(const String &rootFolder) : resourceManager(rootFolder) {
 	}
 
 	virtual ResourceManager *getResourceManager() {
-		if (resourceManager == null) {
-			logger->debug("Creating resource manager");
-			resourceManager = new ResourceManager(this->resourcesRootFolder);
-		}
-
-		return resourceManager;
-
+		return &resourceManager;
 	}
 
 	PlaygroundStatus getStatus() const {
@@ -393,16 +386,7 @@ public:
         this->mouseButtonDownObservers.clear();
         this->mouseButtonUpObservers.clear();
 
-        //No longer necessary if using unique_ptr
-//        for (std::vector<PlaygroundRunner *>::iterator currentRunnerIterator =
-//                runners.begin(); currentRunnerIterator != runners.end();
-//                currentRunnerIterator++) {
-//            delete (*currentRunnerIterator);
-//        }
-
-        delete resourceManager;
-
-        LoggerFactory::deleteLoggers();
+        //LoggerFactory::deleteLoggers();
 	}
 
 	virtual ~Playground() {
