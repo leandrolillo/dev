@@ -113,7 +113,6 @@ public:
 class Playground {
 private:
 	Logger *logger = LoggerFactory::getLogger("core/Playground.h");
-	ResourceManager resourceManager;
 	String resourcesRootFolder;
 	std::vector<std::unique_ptr<PlaygroundRunner>> runners;
 	std::map<unsigned char, PlaygroundRunner *> runners_by_id;
@@ -126,6 +125,9 @@ private:
 	std::vector<PlaygroundRunner *> mouseButtonDownObservers;
 	std::vector<PlaygroundRunner *> mouseButtonUpObservers;
 	std::vector<PlaygroundRunner *> mouseWheelObservers;
+
+	ResourceManager resourceManager; //MUST be defined after runners so that it is initialized after them and deleted before them.
+
 
 public:
 	Playground() : Playground("Lean/dev/media/"){
@@ -276,7 +278,7 @@ public:
 				this->loop();
 		}
 		logger->debug("Finished looping... shutting down");
-		shutdown();
+		//shutdown();
 		logger->info("done.");
 	}
 
@@ -374,19 +376,6 @@ public:
 		for (auto currentRunner : mouseWheelObservers) {
 			currentRunner->onMouseWheel(wheel);
 		}
-	}
-
-	virtual void shutdown() {
-		//Clearing vectors is not really necessary.
-        this->keyDownObservers.clear();
-        this->keyUpObservers.clear();
-        this->resizeObservers.clear();
-        this->moveObservers.clear();
-        this->mouseMoveObservers.clear();
-        this->mouseButtonDownObservers.clear();
-        this->mouseButtonUpObservers.clear();
-
-        //LoggerFactory::deleteLoggers();
 	}
 
 	virtual ~Playground() {

@@ -172,6 +172,10 @@ public:
     Logger(const String &basename) {
         this->basename = basename;
     }
+//    ~Logger() {
+//        printf("Deleting logger %s\n",  this->basename.c_str());
+//
+//    }
 
     const String& getBasename() const {
         return this->basename;

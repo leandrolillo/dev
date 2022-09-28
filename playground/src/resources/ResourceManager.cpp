@@ -46,7 +46,6 @@ Resource* ResourceManager::load(FileParser &fileParser, const String &mimeType) 
                     if (response != null) {
                         response->setFileName(fileParser.getFilename());
                         response->setMimeType(mimeType);
-                        response->setAdapter(adaptersCache[mimeType]);
                         addResource(response);
                         logger->debug("Loaded [%s]", response->toString().c_str());
                     } else {
@@ -81,11 +80,25 @@ Resource* ResourceManager::load(FileParser &fileParser, const String &mimeType) 
 
 ResourceManager::~ResourceManager() {
     logger->debug("Shutting down resource manager");
+
+    /**
+     * We could not move dispose logic to Resource destructor since it conflicts with the destructor order.
+     * As coded, adapter.dispose(resource) was being called in Resource::~Resource() - The issue was dispose usually needs to access member properties
+     * as part of cleanup, but those had already been deleted by the subclass destructor.
+     *
+     */
+	for(const auto &[key, resource] : resourceCache) {
+		ResourceAdapter * adapter = adaptersCache[resource->getMimeType()];
+		if(adapter != null) {
+			adapter->dispose(resource.get());
+		}
+	}
+
 	logger->debug("Disposing of %d resources", resourceCache.size());
-	//resourceCache.clear(); // No longer required since using unique_ptr - destroyer gets called automatically
+	resourceCache.clear(); // Not really required, just used to show logs for troubleshooting memory exceptions
 
 	logger->debug("Disposing of %d resource adapters", resourceAdapters.size());
-	//resourceAdapters.clear(); // No longer required since using unique_ptr - destroyer gets called automatically
+	resourceAdapters.clear(); // Not really required, just used to show logs for troubleshooting memory exceptions. This has to happen after resources are deleted, but that is managed by the member definition order.
 	adaptersCache.clear();
 
 	logger->info("Resource manager shutdown complete");

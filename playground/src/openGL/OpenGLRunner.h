@@ -69,9 +69,9 @@ public:
         this->useProgramResource(null);
         logger->debug("Remove active shaders");
         SDL_DestroyWindow(window);
-        logger->debug("OpenGL/SDL Window destroyed");
+        logger->info("OpenGL/SDL Window destroyed");
         SDL_Quit();
-        logger->debug("SDL shutdown");
+        logger->info("SDL shutdown");
     }
 
     virtual bool init() override {

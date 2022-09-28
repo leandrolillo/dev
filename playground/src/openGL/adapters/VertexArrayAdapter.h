@@ -34,36 +34,31 @@ public:
 		return null;
 	}
 	virtual void dispose(Resource *resource) const override {
-	    logger->debug("Deleting [%s]", resource->toString().c_str());
-		VertexArrayResource *vertexArrayResource = (VertexArrayResource*) resource;
+		if(resource != null) {
+			logger->debug("Deleting [%s]", resource->toString().c_str());
+			VertexArrayResource *vertexArrayResource = (VertexArrayResource*) resource;
 
-		if (vertexArrayResource->getId() != 0) {
-		    logger->debug("VAB [%s] bound", resource->getId());
-			glBindVertexArray(vertexArrayResource->getId());
+			if (vertexArrayResource->getId() != 0) {
+				logger->debug("VAB [%lu] bound", resource->getId());
+				glBindVertexArray(vertexArrayResource->getId());
 
-			for (std::map<unsigned int, const VertexAttribPointer*>::iterator currentBuffer =
-					vertexArrayResource->getAttributes().begin();
-					currentBuffer != vertexArrayResource->getAttributes().end();
-					currentBuffer++) {
-				if (currentBuffer->second != null) {
-					glDisableVertexAttribArray(currentBuffer->first);
-					unsigned int buffer = currentBuffer->second->getBuffer();
-					glDeleteBuffers(1, &buffer);
-					delete currentBuffer->second;
+				for (const auto &[key, value] : vertexArrayResource->getAttributes()) {
+					if (value.get() != null) {
+						glDisableVertexAttribArray(key);
+						unsigned int buffer = value->getBuffer();
+						glDeleteBuffers(1, &buffer);
+					}
 				}
+				logger->debug("VAB [%lu] buffers deleted", resource->getId());
+
+				unsigned int vertexArray = vertexArrayResource->getId();
+				glDeleteVertexArrays(1, &vertexArray);
+
+				logger->debug("VAB [%lu] deleted", resource->getId());
+
+				glBindVertexArray(0);
+				vertexArrayResource->setId(0);
 			}
-
-			logger->debug("VAB [%s] buffers deleted", resource->getId());
-
-			vertexArrayResource->clearVertexAttribPointers();
-
-			unsigned int vertexArray = vertexArrayResource->getId();
-			glDeleteVertexArrays(1, &vertexArray);
-
-			logger->debug("VAB [%s] deleted", resource->getId());
-
-			glBindVertexArray(0);
-			vertexArrayResource->setId(0);
 		}
 	}
 

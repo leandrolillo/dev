@@ -21,6 +21,8 @@ enum ShaderAttributeLocation
 
 
 class VertexAttribPointer {
+//	Logger *logger = LoggerFactory::getLogger("video/VertexAttribPointer");
+
 	public:
 		VertexAttribPointer(unsigned int buffer, unsigned int start, unsigned int count)
 		{
@@ -34,6 +36,11 @@ class VertexAttribPointer {
 			this->start = 0;
 			this->count = 0;
 		}
+
+//		~VertexAttribPointer() {
+//			logger->info("Deleting VertexAttribPointer");
+//		}
+
 		unsigned int getCount() const {
 			return count;
 		}
@@ -71,7 +78,7 @@ class VertexAttribPointer {
 class VertexArrayResource : public Resource
 {
 	private:
-		std::map<unsigned int, const VertexAttribPointer *> attributes;
+		std::map<unsigned int, std::unique_ptr<VertexAttribPointer>> attributes;
 		unsigned int primitiveType;
 		vector size;
 	public:
@@ -80,31 +87,23 @@ class VertexArrayResource : public Resource
 			primitiveType = GL_TRIANGLES;
 		}
 
-		~VertexArrayResource()
-		{
-			for(auto attribute : this->attributes) {
-					delete attribute.second;
-			}
-		}
-
 		/**
 		 * stores vertex buffer in the next free vertexAttribPointer, and returns the pointer.
 		 */
 		void addAttribute(unsigned int location, unsigned int vertexBuffer, unsigned int start, unsigned int count)
 		{
-			attributes[location] = new VertexAttribPointer(vertexBuffer, start, count);
+			attributes[location] = std::unique_ptr<VertexAttribPointer>(new VertexAttribPointer(vertexBuffer, start, count));
 		}
 
-
 		const VertexAttribPointer *getAttribute(unsigned int location) const {
-			std::map<unsigned int, const VertexAttribPointer *>::const_iterator iterator = attributes.find(location);
+			std::map<unsigned int, std::unique_ptr<VertexAttribPointer>>::const_iterator iterator = attributes.find(location);
 			if(iterator != attributes.end())
-				return iterator->second;
+				return iterator->second.get();
 
 			return null;
 		}
 
-		std::map<unsigned int, const VertexAttribPointer *> &getAttributes() {
+		std::map<unsigned int, std::unique_ptr<VertexAttribPointer>> &getAttributes() {
 			return attributes;
 		}
 

@@ -12,22 +12,19 @@
 #include "Logger.h"
 #include <string>
 
-class ResourceAdapter;
-
 class Resource {
 	private:
 		Logger *logger = LoggerFactory::getLogger("resources/Resource");
 		unsigned long id; // id makes sense to business only - thus can be repeated. It is not a sequential primary key for all resources
 		String fileName;
 		String mimeType;
-		ResourceAdapter *adapter = null;
 
 	public:
 		Resource(unsigned long id, const String &mimeType) {
 			setId(id);
 			setMimeType(mimeType);
 		}
-		virtual ~Resource();
+		virtual ~Resource() {}
 
 		unsigned long getId() const {
 			return id;
@@ -51,10 +48,6 @@ class Resource {
 
 		void setFileName(const String & fileName) {
 			this->fileName = fileName;
-		}
-
-		void setAdapter(ResourceAdapter *adapter) {
-			this->adapter = adapter;
 		}
 
 		virtual String toString() const {

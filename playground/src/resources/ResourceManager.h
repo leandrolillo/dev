@@ -16,7 +16,7 @@
 class ResourceManager {
 private:
 	Logger *logger = LoggerFactory::getLogger("resources/ResourceManager");
-	std::set<std::unique_ptr<ResourceAdapter>> resourceAdapters;
+	std::set<std::unique_ptr<ResourceAdapter>> resourceAdapters; // Define adapter before resources so that they are initialized before them, and deleted after them.
 	std::map<String, ResourceAdapter *> adaptersCache;
 	std::map<String, std::unique_ptr<Resource>> resourceCache;
 	String rootFolder;

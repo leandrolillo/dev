@@ -30,7 +30,7 @@ class RoadFighterRunner: public PlaygroundRunner {
     VideoRunner *video = null;
     AudioRunner *audio = null;
 
-    DefaultRenderer defaultRenderer;
+    //DefaultRenderer defaultRenderer;
 
     ParticleManager particleManager;
     const CollisionTester &intersectionTester = *(particleManager.getCollisionDetector().getIntersectionTester());
@@ -67,7 +67,7 @@ public:
         this->video->resize(800, 600);
 
         logger->debug("Initializing renderers");
-        defaultRenderer.setVideoRunner(video);
+        //defaultRenderer.setVideoRunner(video);
 
         logger->debug("Setting up video %d", video);
         video->setClearColor(0.0, 0.5, 0.0, 0.0);
@@ -75,7 +75,7 @@ public:
         video->enable(CULL_FACE, CULL_FACE_BACK);
         video->enable(BLEND, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        //car = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("roadFighter/corvette.obj", "video/vertexArray");
+        car = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("roadFighter/corvette.obj", "video/vertexArray");
 
         reset();
 
@@ -85,7 +85,7 @@ public:
 
 
     LoopResult doLoop() override {
-        defaultRenderer.clear();
+        //defaultRenderer.clear();
 //        defaultRenderer.drawAxes(matriz_4x4::identidad);
 //
 //        defaultRenderer.drawObject(matrix_4x4::identidad, car);
