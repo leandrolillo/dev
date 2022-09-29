@@ -14,7 +14,6 @@
 
 #include<vector>
 
-#include<renderers/DefaultRenderer.h>
 #include<renderers/TerrainRenderer.h>
 #include<renderers/SkyboxRenderer.h>
 #include<renderers/geometry/GeometryRenderer.h>
@@ -25,6 +24,8 @@
 
 #include<PhysicsRunner.h>
 #include<forces/Gravity.h>
+
+#include "base/BaseDemo.h"
 
 class TerrainFPSInputController : public FPSInputController {
 protected:
@@ -85,14 +86,11 @@ protected:
 };
 
 
-class TerrainDemoRunner: public PlaygroundRunner {
+class TerrainDemoRunner: public BaseDemoRunner {
 private:
     /**
      * Playground Stuff
      */
-	Logger *logger = LoggerFactory::getLogger("TerrainDemoRunner");
-	VideoRunner *video = nullptr;
-	AudioRunner *audio = nullptr;
     PhysicsRunner *physics = nullptr;
 
     bool debug = false;
@@ -105,7 +103,6 @@ private:
     TerrainThirdPersonInputController thirdPersonController;
     InputController *inputController = &fpsInputController;
 
-    Camera camera;
     matriz playerTransform;
 
     /**
@@ -116,15 +113,14 @@ private:
 
 	TerrainRenderer terrainRenderer;
 	SkyboxRenderer skyboxRenderer;
-	DefaultRenderer defaultRenderer;
 	GeometryRenderer geometryRenderer;
 
-	VertexArrayResource *tree = nullptr;
-	TextureResource *treeTexture = nullptr;
+	VertexArrayResource *tree = null;
+	TextureResource *treeTexture = null;
 	std::vector<matriz_4x4> treePositions;
 	std::vector<std::unique_ptr<AABB>> treeBoundingVolumes;
 
-	TerrainResource *terrain = nullptr;
+	TerrainResource *terrain = null;
 	std::unique_ptr<HierarchicalGeometry> terrainBoundingVolume;
 
 	std::vector<std::unique_ptr<BulletParticle>> particles;
@@ -146,30 +142,12 @@ public:
             thirdPersonController(camera, playerTransform),
 			geometryRenderer(defaultRenderer) {
 	}
-	virtual unsigned char getInterests() override {
-		return KEY_DOWN | KEY_UP | MOUSE_MOVE | MOUSE_WHEEL | MOUSE_BUTTON_DOWN | MOUSE_BUTTON_UP | RESIZE;
-	}
-
-	virtual unsigned char getId() const override {
-		return 200;
-	}
 
     virtual bool init() override {
-        video = (VideoRunner*) this->getContainer()->getRequiredRunner(VideoRunner::ID);
-        audio = (AudioRunner*) this->getContainer()->getRequiredRunner(AudioRunner::ID);
+    	BaseDemoRunner::init();
         physics = (PhysicsRunner *)this->getContainer()->getRequiredRunner(PhysicsRunner::ID);
 
-
-        if (!video) {
-            logger->error("Could not find openGl runner");
-            return false;
-        }
-
         video->enable(RELATIVE_MOUSE_MODE, 0);
-        video->setClearColor(0.0, 0.5, 0.0, 0.0);
-        video->enable(DEPTH_TEST, true);
-        //glPolygonMode( GL_BACK, GL_LINE );
-        video->enable(CULL_FACE, CULL_FACE_BACK);
         video->enable(BLEND, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         treeTexture = (TextureResource *)this->getContainer()->getResourceManager()->load("images/lowPolyTree.png", "video/texture");
@@ -211,8 +189,6 @@ public:
         skyboxRenderer.setVideoRunner(video);
         skyboxRenderer.setSize(500);
 
-        defaultRenderer.setVideoRunner(video);
-
         physics->getParticleManager()->addForce(&this->gravity);
         physics->getParticleManager()->addScenery(terrainBoundingVolume.get());
 
@@ -239,10 +215,6 @@ public:
         logger->info("Done configuring!");
         return true;
     }
-
-	void onResize(unsigned int height, unsigned int width) override {
-		camera.setProjectionMatrix(Camera::perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 1000.0));
-	}
 
 	void reset() {
 		//light.setPosition(position);

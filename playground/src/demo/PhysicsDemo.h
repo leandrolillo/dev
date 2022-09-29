@@ -16,14 +16,14 @@
 #include <AudioRunner.h>
 #include<PhysicsRunner.h>
 
-#include<renderers/DefaultRenderer.h>
 #include<renderers/SkyboxRenderer.h>
 #include<renderers/GridRenderer.h>
 
-#include<Math3d.h>
 #include<forces/Gravity.h>
 
 #include<Geometry.h>
+
+#include "base/BaseDemo.h"
 
 constexpr unsigned int numberOfParticles = 60;
 
@@ -43,13 +43,7 @@ public:
 	void onCollisionResolved(const ParticleContact &contact);
 };
 
-class PhysicsDemoRunner: public PlaygroundRunner {
-    /**
-     * Playground Stuff
-     */
-	Logger *logger = LoggerFactory::getLogger("PhysicsDemoRunner");
-	VideoRunner *video = null;
-	AudioRunner *audio = null;
+class PhysicsDemoRunner: public BaseDemoRunner {
 	PhysicsRunner *physics = null;
 
     /**
@@ -74,8 +68,9 @@ class PhysicsDemoRunner: public PlaygroundRunner {
 	real elapsedTime = 0.0f;
 	unsigned long frames = 0;
 
-	Camera camera;
-	DefaultRenderer defaultRenderer;
+	/**
+	 * Renderers - defaultRenderer inherited from base demo
+	 */
 	SkyboxRenderer skyboxRenderer;
 	GridRenderer gridRenderer;
 
@@ -92,17 +87,9 @@ public:
 	                        aabbPlatform(new AABB(vector(0, 1, 0), vector(0.5, 0.05, 0.05))) {
 	}
 
-	unsigned char getId() const override {
-		return 200;
-	}
-
-	virtual unsigned char getInterests() override {
-			return KEY_DOWN | KEY_UP | MOUSE_MOVE | MOUSE_WHEEL | MOUSE_BUTTON_DOWN | RESIZE;
-	}
-
     bool init() override {
-        video = (VideoRunner*) this->getContainer()->getRequiredRunner(VideoRunner::ID);
-        audio = (AudioRunner*) this->getContainer()->getRequiredRunner(AudioRunner::ID);
+    	BaseDemoRunner::init();
+
         physics = (PhysicsRunner *)this->getContainer()->getRequiredRunner(PhysicsRunner::ID);
         //physics->setPlaybackSpeed(0.3);
 
@@ -111,17 +98,11 @@ public:
 
         textureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("images/basketball.png", "video/texture");
 
-        defaultRenderer.setVideoRunner(video);
         gridRenderer.setVideoRunner(video);
         skyboxRenderer.setVideoRunner(video);
         skyboxRenderer.setSize(200);
 
         defaultRenderer.setLight(&light);
-
-
-        video->setClearColor(0.0, 0.5, 0.0, 0.0);
-        video->enable(DEPTH_TEST, true);
-        video->enable(CULL_FACE, CULL_FACE_BACK);
 
         ground.setInverseMass(0.0); // this is actually the default value
         spherePlatform.setInverseMass(0.0);
@@ -148,9 +129,6 @@ public:
         return true;
     }
 
-	void onResize(unsigned int height, unsigned int width) override {
-	    camera.setProjectionMatrix(Camera::perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 300.0));
-	}
 
 	void reset() {
 	    for(auto &particle : this->particles) {

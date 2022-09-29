@@ -70,13 +70,15 @@ public:
 	void setContainer(Playground *container) {
 		this->container = container;
 	}
-	Playground *getContainer() {
+	Playground *getContainer() const {
 		return this->container;
 	}
 
+	ResourceManager *getResourceManager() const;
+
 	virtual unsigned char getId() const = 0;
 
-	virtual unsigned char getInterests() {
+	virtual unsigned char getInterests() const {
 		return 0;
 	}
 

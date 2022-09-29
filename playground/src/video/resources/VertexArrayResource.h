@@ -75,6 +75,9 @@ class VertexAttribPointer {
 		unsigned int count;
 };
 
+/**
+ * TODO disambiguate this name from GeometryResource. This one is what is sent to the gpu - vertex, normals, etc. data is lost after sending to the gpu
+ */
 class VertexArrayResource : public Resource
 {
 	private:

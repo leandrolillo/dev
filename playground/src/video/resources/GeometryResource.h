@@ -12,6 +12,10 @@
 #include <Math3d.h>
 #include <vector>
 
+/**
+ * Holds "Geometric" (not true, it also has colors and texture coordinates) data. It does not send anything to the gcp.
+ * TODO: Find better name specially since it causes confusion with geometry (coldet).
+ */
 class GeometryResource: public Resource {
 private:
 	Logger *logger = LoggerFactory::getLogger("video/GeometryResource");

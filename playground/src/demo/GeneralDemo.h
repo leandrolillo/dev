@@ -12,17 +12,12 @@
 #include<OpenGLRunner.h>
 #include<AudioRunner.h>
 
-#include<renderers/DefaultRenderer.h>
-#include<Camera.h>
-
 #include<vector>
 
-class GeneralDemoRunner: public PlaygroundRunner {
-private:
-	Logger *logger = LoggerFactory::getLogger("GeneralDemoRunner");
-	VideoRunner *video = null;
-	AudioRunner *audio = null;
+#include "base/BaseDemo.h"
 
+class GeneralDemoRunner: public BaseDemoRunner {
+private:
 	//Graphical stuff
 	vector viewPosition;
 	vector lightPosition;
@@ -44,9 +39,6 @@ private:
 	MaterialResource material;
 	LightResource light;
 
-	Camera camera;
-
-	DefaultRenderer defaultRenderer;
 	DefaultRenderer toonRenderer;
 public:
 	GeneralDemoRunner() :
@@ -56,18 +48,6 @@ public:
 		currentPosition = &viewPosition;
 	}
 
-	virtual unsigned char getInterests() override {
-		return KEY_DOWN | KEY_UP | MOUSE_MOVE | MOUSE_WHEEL | RESIZE;
-	}
-
-	virtual unsigned char getId() const override {
-		return 200;
-	}
-
-	void onResize(unsigned int height, unsigned int width) override {
-	    camera.setProjectionMatrix(Camera::perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 100.0));
-	}
-
 	void reset() {
 		viewPosition = vector(0.0, 0.0f, 6.0);
 		lightPosition = vector(0.0, 0.0, 0.0);
@@ -75,40 +55,30 @@ public:
 	}
 
 	virtual bool init() override {
-		video = (VideoRunner*) this->getContainer()->getRequiredRunner(VideoRunner::ID);
-		audio = (AudioRunner*) this->getContainer()->getRequiredRunner(AudioRunner::ID);
-
-		if (!video) {
-			logger->error("Could not find openGl runner");
-			return false;
-		}
-
-		ResourceManager *resourceManager = this->getContainer()->getResourceManager();
+		BaseDemoRunner::init();
 
 		// demo stuff
 		lightAnnoyingSoundSource = audio->createSource("audio/voltage.wav");
 		audio->playSource(lightAnnoyingSoundSource);
 
-		pngTexture = (TextureResource*) resourceManager->load("images/TEXTURA.PNG", "video/texture");
-		pngTexture2 = (TextureResource*) resourceManager->load("images/CEDFENCE.PNG", "video/texture");
-		jpgTexture = (TextureResource*) resourceManager->load("images/irs.JPG", "video/texture");
+		pngTexture = (TextureResource*) getResourceManager()->load("images/TEXTURA.PNG", "video/texture");
+		pngTexture2 = (TextureResource*) getResourceManager()->load("images/CEDFENCE.PNG", "video/texture");
+		jpgTexture = (TextureResource*) getResourceManager()->load("images/irs.JPG", "video/texture");
 
-		sphereVertexArray = (VertexArrayResource*) resourceManager->load("geometry/sphere.json", "video/vertexArray");
-		triangleVertexArray = (VertexArrayResource*) resourceManager->load("geometry/triangle.json", "video/vertexArray");
+		sphereVertexArray = (VertexArrayResource*) getResourceManager()->load("geometry/sphere.json", "video/vertexArray");
+		triangleVertexArray = (VertexArrayResource*) getResourceManager()->load("geometry/triangle.json", "video/vertexArray");
 
-        defaultRenderer.setVideoRunner(video);
         defaultRenderer.setLight(&light);
 //        defaultRenderer.setMaterial(&material);
 //        defaultRenderer.setTexture(pngTexture);
 
-        toonRenderer.setShaderProgram((ShaderProgramResource*) resourceManager->load("shaders/toon.330.program.json", "video/shaderProgram"));
+        toonRenderer.setShaderProgram((ShaderProgramResource*) getResourceManager()->load("shaders/toon.330.program.json", "video/shaderProgram"));
         toonRenderer.setVideoRunner(video);
         toonRenderer.setLight(&light);
         toonRenderer.setMaterial(&material);
         toonRenderer.setTexture(pngTexture);
 
 
-		video->setClearColor(0.0, 0.5, 0.0, 0.0);
 		video->enable(DEPTH_TEST, true);
 		video->enable(CULL_FACE, CULL_FACE_BACK);
 

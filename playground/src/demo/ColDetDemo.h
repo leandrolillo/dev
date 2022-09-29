@@ -14,7 +14,6 @@
 #define GL_SILENCE_DEPRECATION
 #include <OpenGLRunner.h>
 #include <AudioRunner.h>
-#include<renderers/DefaultRenderer.h>
 #include<renderers/SkyboxRenderer.h>
 #include<renderers/GridRenderer.h>
 #include<renderers/geometry/GeometryRenderer.h>
@@ -23,13 +22,10 @@
 #include<forces/Gravity.h>
 
 #include<Geometry.h>
-#include<geometry/DrawableSphere.h>
-#include<geometry/DrawableAABB.h>
-#include<geometry/DrawableHierarchy.h>
 #include"../geometry/intersection/CollisionTester.h"
 
-#include<InvalidArgumentException.h>
-#include<Camera.h>
+#include "base/BaseDemo.h"
+
 
 class CollisionDetectionDemoRunner;
 
@@ -55,11 +51,7 @@ public:
     void onCollision(const ParticleContact &contact);
 };
 
-class CollisionDetectionDemoRunner: public PlaygroundRunner {
-    Logger *logger = LoggerFactory::getLogger("CollisionDetectionDemoRunner");
-    VideoRunner *video = null;
-    AudioRunner *audio = null;
-
+class CollisionDetectionDemoRunner: public BaseDemoRunner {
     ParticleManager particleManager;
     const CollisionTester &intersectionTester = *(particleManager.getCollisionDetector().getIntersectionTester());
 
@@ -69,8 +61,6 @@ class CollisionDetectionDemoRunner: public PlaygroundRunner {
     vector2 startPosition;
     vector2 endPosition;
 
-    Camera camera;
-    DefaultRenderer defaultRenderer;
     SkyboxRenderer skyboxRenderer;
     GridRenderer gridRenderer;
     GeometryRenderer geometryRenderer;
@@ -81,19 +71,6 @@ class CollisionDetectionDemoRunner: public PlaygroundRunner {
 
 public:
     CollisionDetectionDemoRunner() : ground(new Plane(vector(0, 0, 0), vector(0, 1, 0))), geometryRenderer(defaultRenderer) {
-        logger->addAppender(LoggerFactory::getAppender("stdout"));
-    }
-
-    unsigned char getId() const override {
-        return 200;
-    }
-
-    virtual unsigned char getInterests() override {
-        return KEY_DOWN | KEY_UP | MOUSE_MOVE | MOUSE_WHEEL | MOUSE_BUTTON_DOWN | MOUSE_BUTTON_UP | RESIZE;
-    }
-
-    void onResize(unsigned int height, unsigned int width) override {
-        camera.setProjectionMatrix(Camera::perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 300.0));
     }
 
     void reset() {
@@ -139,21 +116,16 @@ public:
     }
 
     bool init() override {
-        video = (VideoRunner*) this->getContainer()->getRequiredRunner(VideoRunner::ID);
-        audio = (AudioRunner*) this->getContainer()->getRequiredRunner(AudioRunner::ID);
+    	BaseDemoRunner::init();
 
         this->video->resize(800, 600);
 
         logger->debug("Initializing renderers");
-        defaultRenderer.setVideoRunner(video);
         gridRenderer.setVideoRunner(video);
 //	    skyboxRenderer.setVideoRunner(video);
 //	    skyboxRenderer.setSize(200);
 
         logger->debug("Setting up video %d", video);
-        video->setClearColor(0.0, 0.5, 0.0, 0.0);
-        video->enable(DEPTH_TEST, true);
-        video->enable(CULL_FACE, CULL_FACE_BACK);
         video->enable(BLEND, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         collidingParticles.push_back(std::unique_ptr<CollidingParticle>(new CollidingParticle(new Sphere(vector(0, 0, 0), (real) 0.5))));

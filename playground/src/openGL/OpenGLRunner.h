@@ -57,7 +57,7 @@ private:
     std::map<unsigned int, unsigned int> boundTextures;
 public:
 
-    virtual unsigned char getInterests() override {
+    virtual unsigned char getInterests() const override {
         return RESIZE | KEY_DOWN;
     }
 

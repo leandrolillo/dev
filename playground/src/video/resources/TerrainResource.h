@@ -10,8 +10,8 @@
 
 #include <Resource.h>
 #include <resources/TextureResource.h>
-#include <resources/VertexArrayResource.h>
 #include "HeightMapResource.h"
+#include "VertexArrayResource.h"
 
 class TerrainResource: public Resource {
     Logger *logger = LoggerFactory::getLogger("video/TerrainResource");

@@ -8,7 +8,7 @@
 #ifndef VERTEXBUFFERADAPTER_H_
 #define VERTEXBUFFERADAPTER_H_
 #include <adapters/OpenGLResourceAdapter.h>
-#include <resources/VertexArrayResource.h>
+#include "../../video/resources/VertexArrayResource.h"
 
 
 class VertexArrayResourceAdapter: public OpenGLResourceAdapter {
@@ -25,41 +25,12 @@ public:
         geometryMimeType = geometryMimeType.empty() ? "video/geometry" : geometryMimeType;
 
 		GeometryResource *geometry = (GeometryResource*) this->getResourceManager()->load(fileParser, geometryMimeType);
-		if (geometry != null) {
-		    return generateVertexBuffer(geometry);
-		} else {
+		if (geometry == null) {
 		    logger->error("Could not load geometry from %s with mimetype %s", fileParser.getFilename().c_str(), geometryMimeType.c_str());
+		    return null;
 		}
 
-		return null;
-	}
-	virtual void dispose(Resource *resource) const override {
-		if(resource != null) {
-			logger->debug("Deleting [%s]", resource->toString().c_str());
-			VertexArrayResource *vertexArrayResource = (VertexArrayResource*) resource;
-
-			if (vertexArrayResource->getId() != 0) {
-				logger->debug("VAB [%lu] bound", resource->getId());
-				glBindVertexArray(vertexArrayResource->getId());
-
-				for (const auto &[key, value] : vertexArrayResource->getAttributes()) {
-					if (value.get() != null) {
-						glDisableVertexAttribArray(key);
-						unsigned int buffer = value->getBuffer();
-						glDeleteBuffers(1, &buffer);
-					}
-				}
-				logger->debug("VAB [%lu] buffers deleted", resource->getId());
-
-				unsigned int vertexArray = vertexArrayResource->getId();
-				glDeleteVertexArrays(1, &vertexArray);
-
-				logger->debug("VAB [%lu] deleted", resource->getId());
-
-				glBindVertexArray(0);
-				vertexArrayResource->setId(0);
-			}
-		}
+		return generateVertexBuffer(geometry);;
 	}
 
     VertexArrayResource *generateVertexBuffer(GeometryResource *geometry) const {
@@ -131,6 +102,36 @@ public:
 
         return resource;
     }
+
+	virtual void dispose(Resource *resource) const override {
+		if(resource != null) {
+			logger->debug("Deleting [%s]", resource->toString().c_str());
+			VertexArrayResource *vertexArrayResource = (VertexArrayResource*) resource;
+
+			if (vertexArrayResource->getId() != 0) {
+				logger->debug("VAB [%lu] bound", resource->getId());
+				glBindVertexArray(vertexArrayResource->getId());
+
+				for (const auto &[key, value] : vertexArrayResource->getAttributes()) {
+					if (value.get() != null) {
+						glDisableVertexAttribArray(key);
+						unsigned int buffer = value->getBuffer();
+						glDeleteBuffers(1, &buffer);
+					}
+				}
+				logger->debug("VAB [%lu] buffers deleted", resource->getId());
+
+				unsigned int vertexArray = vertexArrayResource->getId();
+				glDeleteVertexArrays(1, &vertexArray);
+
+				logger->debug("VAB [%lu] deleted", resource->getId());
+
+				glBindVertexArray(0);
+				vertexArrayResource->setId(0);
+			}
+		}
+	}
+
 protected:
 	bool addBuffer(ShaderAttributeLocation attributeLocation,
 			VertexArrayResource *resource, GLenum bufferDestination,

@@ -18,8 +18,8 @@
 
 #include <resources/LightResource.h>
 #include <resources/ShaderProgramResource.h>
-#include <resources/VertexArrayResource.h>
 #include <Math3d.h>
+#include "resources/VertexArrayResource.h"
 
 
 class VideoRunner : public PlaygroundRunner {

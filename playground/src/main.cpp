@@ -18,23 +18,23 @@ int main(int, char**){
     TestsPlayground playgroundtests("/Users/leandro/huevadas/projects/dev/media/");
     playgroundtests.run();
 
-//  PlaygroundGeneralDemo playground("/Users/leandro/huevadas/projects/dev/media/");
+//    PlaygroundGeneralDemo playground("/Users/leandro/huevadas/projects/dev/media/");
 //    playground.run();
-//
+
 //    ObjDemoPlayground objPlayground("/Users/leandro/huevadas/projects/dev/media/");
 //    objPlayground.run();
-
+//
 //    CollisionDetectionPlayground colDetplayground("/Users/leandro/huevadas/projects/dev/media/");
 //    colDetplayground.run();
 
-    PlaygroundTerrainDemo terrainPlayground("/Users/leandro/huevadas/projects/dev/media/");
-    terrainPlayground.run();
+//    PlaygroundTerrainDemo terrainPlayground("/Users/leandro/huevadas/projects/dev/media/");
+//    terrainPlayground.run();
 
-//    PhysicsPlayground physicsPlayground("/Users/leandro/huevadas/projects/dev/media/");
-//    physicsPlayground.run();
+    PhysicsPlayground physicsPlayground("/Users/leandro/huevadas/projects/dev/media/");
+    physicsPlayground.run();
 
-    RoadFighter battleRoad("/Users/leandro/huevadas/projects/dev/media/");
-    battleRoad.run();
+    RoadFighter roadFighter("/Users/leandro/huevadas/projects/dev/media/");
+    roadFighter.run();
 
     printf("done\n");
     return 0;

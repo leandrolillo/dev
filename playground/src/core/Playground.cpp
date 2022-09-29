@@ -7,3 +7,9 @@
 //============================================================================
 
 #include "../core/Playground.h"
+
+
+
+ResourceManager *PlaygroundRunner::getResourceManager() const {
+	return this->container->getResourceManager();
+}

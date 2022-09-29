@@ -13,24 +13,15 @@
 
 #define GL_SILENCE_DEPRECATION
 #include <OpenGLRunner.h>
-#include <AudioRunner.h>
-
-#include<renderers/DefaultRenderer.h>
 #include<renderers/GridRenderer.h>
-#include<Math3d.h>
 
+#include "base/BaseDemo.h"
 
-class ObjDemoRunner: public PlaygroundRunner {
-	Logger *logger = LoggerFactory::getLogger("ObjDemoRunner");
-	VideoRunner *video = null;
-	AudioRunner *audio = null;
-
-	Camera camera;
+class ObjDemoRunner: public BaseDemoRunner {
 	LightResource light;
 	MaterialResource material;
 
 	GridRenderer gridRenderer;
-	DefaultRenderer defaultRenderer;
 
 	VertexArrayResource *obj;
 	TextureResource *texture;
@@ -45,18 +36,6 @@ public:
 	    reset();
 	}
 
-	unsigned char getId() const override {
-		return 200;
-	}
-
-	virtual unsigned char getInterests() override {
-			return KEY_DOWN | KEY_UP | MOUSE_MOVE | MOUSE_WHEEL | MOUSE_BUTTON_DOWN | RESIZE;
-	}
-
-	void onResize(unsigned int height, unsigned int width) override {
-	    camera.setProjectionMatrix(Camera::perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 300.0));
-	}
-
 	void reset() {
 	    posicion = vector(0, 0, -5);
 	    light.setPosition(vector(0, 0, -5));
@@ -64,11 +43,9 @@ public:
 	}
 
 	bool init() override {
-		video = (VideoRunner*) this->getContainer()->getRequiredRunner(VideoRunner::ID);
-		audio = (AudioRunner*) this->getContainer()->getRequiredRunner(AudioRunner::ID);
+		BaseDemoRunner::init();
 
 		gridRenderer.setVideoRunner(video);
-	    defaultRenderer.setVideoRunner(video);
 	    defaultRenderer.setLight(&light);
 
 //	    texture = (TextureResource *)this->getContainer()->getResourceManager()->load("images/fern.png", "video/texture");
@@ -79,12 +56,6 @@ public:
 //	    texture = (TextureResource *)this->getContainer()->getResourceManager()->load("images/lowPolyTree.png", "video/texture");
         //obj = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/bunny.obj", "video/vertexArray");
 //        obj = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/untitled.obj", "video/vertexArray");
-
-
-	    video->setClearColor(0.0, 0.5, 0.0, 0.0);
-		video->enable(DEPTH_TEST, true);
-        //glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        //glEnable( GL_BLEND );
 
 
 		reset();

@@ -169,13 +169,13 @@ public:
     }
 
     void clear() {
-        this->setTexture(videoRunner->getDefaultTexture());
+    	this->setTexture(videoRunner != null ? videoRunner->getDefaultTexture() : null);
         this->setMaterial(&defaultMaterial);
         this->objectsByTexture.clear();
     }
 private:
     const VertexArrayResource *getSphere() {
-        if(this->sphere == null) {
+        if(this->sphere == null && resourceManager != null) {
             this->sphere = (VertexArrayResource*) this->resourceManager->load("core/sphere.json", "video/vertexArray");
         }
 
@@ -183,7 +183,7 @@ private:
     }
 
     const VertexArrayResource *getLine() {
-        if(this->line == null) {
+        if(this->line == null && resourceManager != null) {
             this->line= (VertexArrayResource*) this->resourceManager->load("core/line.json", "video/vertexArray");
         }
 
@@ -191,7 +191,7 @@ private:
     }
 
     const VertexArrayResource *getAxes() {
-        if(this->axes == null) {
+        if(this->axes == null && resourceManager != null) {
             this->axes= (VertexArrayResource*) this->resourceManager->load("core/axis.json", "video/vertexArray");
         }
 
@@ -199,7 +199,7 @@ private:
     }
 
     const VertexArrayResource *getBox() {
-            if(this->box == null) {
+            if(this->box == null && resourceManager != null) {
                 this->box= (VertexArrayResource*) this->resourceManager->load("core/box.json", "video/vertexArray");
             }
 
