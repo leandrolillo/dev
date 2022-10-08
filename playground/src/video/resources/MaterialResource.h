@@ -9,9 +9,11 @@
  */
 class MaterialResource: public Resource {
 private:
+	String name;
 	vector3 ambient;
 	vector3 diffuse;
 	vector3 specular;
+	vector3 emissive;
 	real alpha = 1.0;
 	real shininess = 2;
 public:
@@ -57,6 +59,26 @@ public:
 
 	void setShininess(real shininess) {
 		this->shininess = shininess;
+	}
+
+	const String& getName() const {
+		return name;
+	}
+
+	void setName(const String &name) {
+		this->name = name;
+	}
+
+	void setAlpha(real alpha = 1.0) {
+		this->alpha = alpha;
+	}
+
+	const vector3& getEmissive() const {
+		return emissive;
+	}
+
+	void setEmissive(const vector3 &emissive) {
+		this->emissive = emissive;
 	}
 };
 #endif

@@ -106,6 +106,14 @@ public:
         return fileParser.peekToken();
     }
 
+    String takeLine() {
+    	return fileParser.takeLine();
+    }
+
+    const String &getFilename() const {
+    	return fileParser.getFilename();
+    }
+
 protected:
     real readDecimals()
     {

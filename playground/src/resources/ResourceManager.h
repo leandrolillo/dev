@@ -17,8 +17,9 @@ class ResourceManager {
 private:
 	Logger *logger = LoggerFactory::getLogger("resources/ResourceManager");
 	std::set<std::unique_ptr<ResourceAdapter>> resourceAdapters; // Define adapter before resources so that they are initialized before them, and deleted after them.
-	std::map<String, ResourceAdapter *> adaptersCache;
 	std::map<String, std::unique_ptr<Resource>> resourceCache;
+	std::map<String, ResourceAdapter *> adaptersCache;
+
 	String rootFolder;
 
 public:
@@ -79,7 +80,7 @@ public:
 	 * Loads a file using the parent file path as base for relative paths
 	 */
 	Resource* load(const String &parentFilePath, const String &fileName, const String &mimeType) {
-		return load(Paths::add(Paths::getDirName(parentFilePath), fileName), mimeType);
+		return load(Paths::add(Paths::getDirname(parentFilePath), fileName), mimeType);
 	}
 
 

@@ -39,10 +39,19 @@ public:
 	/**
 	 * Return the folder part of a path to a file.
 	 */
-	static const String getDirName(const String &filePath) {
+	static const String getDirname(const String &filePath) {
 		unsigned long location = filePath.find_last_of('/');
 		return (location == std::string::npos ? "." : filePath.substr(0, location + 1));
 
 	}
+
+	/**
+	 * Return the folder part of a path to a file.
+	 */
+	static const String getBasename(const String &filePath) {
+		unsigned long location = filePath.find_last_of('/');
+		return (location == std::string::npos ? filePath : filePath.substr(location + 1, filePath.size() - location));
+	}
+
 };
 #endif /* SRC_RESOURCES_PATHS_H_ */

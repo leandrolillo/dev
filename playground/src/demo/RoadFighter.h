@@ -15,12 +15,14 @@ class RoadFighterRunner: public BaseDemoRunner {
 //    const CollisionTester &intersectionTester = *(particleManager.getCollisionDetector().getIntersectionTester());
 
 	VertexArrayResource *car = null;
+	VertexArrayResource *axes = null;
 //	TextureResource *texture = null;
 
 public:
     bool init() override {
     	BaseDemoRunner::init();
         car = (VertexArrayResource *)this->getResourceManager()->load("roadFighter/corvette.obj", "video/vertexArray");
+        axes = (VertexArrayResource *)this->getResourceManager()->load("roadFighter/axes.obj", "video/vertexArray");
         return true;
     }
 
@@ -30,6 +32,7 @@ public:
         defaultRenderer.drawAxes(matriz_4x4::identidad);
 
         defaultRenderer.drawObject(matrix_4x4::identidad, car);
+        defaultRenderer.drawObject(matrix_4x4::identidad, axes);
 
         return LoopResult::CONTINUE;
     }

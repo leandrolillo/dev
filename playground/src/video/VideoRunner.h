@@ -15,6 +15,7 @@
 #include <adapters/GeometryResourceAdapter.h>
 #include <adapters/TerrainResourceAdapter.h>
 #include <adapters/ObjResourceAdapter.h>
+#include <adapters/MtlResourceAdapter.h>
 
 #include <resources/LightResource.h>
 #include <resources/ShaderProgramResource.h>
@@ -69,14 +70,15 @@ public:
 	virtual void setMousePosition(unsigned int x, unsigned int y) = 0;
 
 	virtual bool init() override {
-			this->getContainer()->getResourceManager()->addAdapter(new PngResourceAdapter());
-			this->getContainer()->getResourceManager()->addAdapter(new JpegResourceAdapter());
-			this->getContainer()->getResourceManager()->addAdapter(new TgaResourceAdapter());
-			this->getContainer()->getResourceManager()->addAdapter(new GeometryResourceAdapter());
-			this->getContainer()->getResourceManager()->addAdapter(new TerrainResourceAdapter());
-			this->getContainer()->getResourceManager()->addAdapter(new ObjResourceAdapter());
+		this->getContainer()->getResourceManager()->addAdapter(new PngResourceAdapter());
+		this->getContainer()->getResourceManager()->addAdapter(new JpegResourceAdapter());
+		this->getContainer()->getResourceManager()->addAdapter(new TgaResourceAdapter());
+		this->getContainer()->getResourceManager()->addAdapter(new GeometryResourceAdapter());
+		this->getContainer()->getResourceManager()->addAdapter(new TerrainResourceAdapter());
+		this->getContainer()->getResourceManager()->addAdapter(new ObjResourceAdapter());
+		this->getContainer()->getResourceManager()->addAdapter(new MtlResourceAdapter());
 
-			return true;
+		return true;
 	}
 
 	/**

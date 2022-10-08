@@ -24,6 +24,8 @@ Building:
 sample command line for rebuilding, running and tailing the log file:
 --------------------------------------------------------------------
 
-release: './cmake-clean.sh && cmake . && make && (./target/playground &  tail -n200 -f ./playground.log)'
+release: './cmake-clean.sh && cmake . && make && ./target/playground'
+
+release & tail log: './cmake-clean.sh && cmake . && make && (./target/playground &  tail -n200 -f ./playground.log)'
 
 debug: './cmake-clean.sh && cmake -DCMAKE_BUILD_TYPE=Debug . && make && lldb ./target/playground -S lldb.settings'

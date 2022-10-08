@@ -19,6 +19,7 @@
 class GeometryResource: public Resource {
 private:
 	Logger *logger = LoggerFactory::getLogger("video/GeometryResource");
+	std::string name;
 
 	std::vector<vector3> vertices;
 	std::vector<unsigned int> indices;
@@ -95,6 +96,14 @@ public:
 		}
 
 		return size;
+	}
+
+	const std::string& getName() const {
+		return name;
+	}
+
+	void setName(const std::string &name) {
+		this->name = name;
 	}
 };
 

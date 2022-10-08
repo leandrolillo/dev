@@ -9,43 +9,76 @@
 #define SRC_VIDEO_ADAPTERS_OBJRESOURCEADAPTER_H_
 
 #include<ResourceAdapter.h>
+#include<GeometryResource.h>
 
 class ObjResourceAdapter: public ResourceAdapter {
 public:
     ObjResourceAdapter() {
         logger = LoggerFactory::getLogger("video/ObjResourceAdapter");
         this->addSupportedMimeType("video/obj");
+        this->addSupportedMimeType("model/obj");
     }
 
     virtual Resource *load(FileParser &fileParser, const String &mimeType) const override {
-        GeometryResource *geometry = new GeometryResource(0);
-        geometry->setType("triangles");
         TextParser textParser(fileParser);
 
-        std::vector<vector> normals;
-        std::vector<vector2> textCoords;
-        std::vector<vector> indices;
+        std::vector<GeometryResource *>objects;
+
         String token;
-        while ((token = fileParser.takeToken()) != FileParser::eof) {
+        while ((token = textParser.takeToken()) != FileParser::eof) {
+
             if (token == "o") {
-                //logger->info("Object %s", fileParser.takeLine().c_str());
-            } else if (token == "v") {
-                geometry->getVertices().push_back(vector(textParser.readReal(), textParser.readReal(), textParser.readReal()));
-            } else if (token == "vn") {
-                normals.push_back(vector(textParser.readReal(), textParser.readReal(), textParser.readReal()));
-            } else if (token == "vt") {
-                textCoords.push_back(vector2(textParser.readReal(), textParser.readReal()));
-            } else if (token == "f") {
-                indices.push_back(readIndicesRow(textParser));
-                indices.push_back(readIndicesRow(textParser));
-                indices.push_back(readIndicesRow(textParser));
+            	objects.push_back(parseObject(textParser, textParser.takeLine()));
+            } else if (token == "mtllib") {
+            	String materialLibraryName = textParser.takeLine();
+            	Resource *materials = this->getResourceManager()->load(Paths::add(Paths::getDirname(textParser.getFilename()), materialLibraryName), "model/mtl");
+            	if(materials == null) {
+            		logger->warn("Could not load material library [%s] referenced from [%s]", materialLibraryName.c_str(), textParser.getFilename().c_str());
+            	}
+
             } else {
-                String line = fileParser.takeLine().c_str();
+                String line = textParser.takeLine().c_str();
                 logger->warn("skipping [%s] [%s]", token.c_str(), line.c_str());
             }
         }
 
 //        logger->info("Parsed [%s] file, converting to geometry...", fileParser.getFilename().c_str());
+
+
+
+        return *objects.begin();
+    }
+
+    GeometryResource *parseObject(TextParser &textParser, String name) const {
+        GeometryResource *geometry = new GeometryResource(0);
+        geometry->setType("triangles");
+        geometry->setName(Paths::getBasename(textParser.getFilename()));
+
+        std::vector<vector> normals;
+        std::vector<vector2> textCoords;
+        std::vector<vector> indices;
+
+        String token;
+        while ((token = textParser.takeToken()) != FileParser::eof) {
+        	if (token == "v") {
+				geometry->getVertices().push_back(vector(textParser.readReal(), textParser.readReal(), textParser.readReal()));
+			} else if (token == "vn") {
+				normals.push_back(vector(textParser.readReal(), textParser.readReal(), textParser.readReal()));
+			} else if (token == "vt") {
+				textCoords.push_back(vector2(textParser.readReal(), textParser.readReal()));
+			} else if (token == "f") {
+				indices.push_back(readIndicesRow(textParser));
+				indices.push_back(readIndicesRow(textParser));
+				indices.push_back(readIndicesRow(textParser));
+			} else {
+                String line = textParser.takeLine().c_str();
+                logger->warn("skipping [%s] [%s]", token.c_str(), line.c_str());
+            }
+
+        	if(textParser.peekToken() == "o") {
+        		break;
+        	}
+        }
 
         for (unsigned int index = 0; index < indices.size(); index++) {
             vector currentIndices = indices[index];

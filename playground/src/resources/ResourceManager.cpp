@@ -88,9 +88,14 @@ ResourceManager::~ResourceManager() {
      *
      */
 	for(const auto &[key, resource] : resourceCache) {
-		ResourceAdapter * adapter = adaptersCache[resource->getMimeType()];
-		if(adapter != null) {
-			adapter->dispose(resource.get());
+		logger->info("Disposing of resource [%s]", resource->toString().c_str());
+		if(resource != null && resource.get() != null && resource->getMimeType() != "") {
+			ResourceAdapter * adapter = adaptersCache[resource->getMimeType()];
+			if(adapter != null) {
+				adapter->dispose(resource.get());
+			}
+		} else {
+			logger->warn("Skipping [%s] disposal due to unexpected nullptrs", key.c_str());
 		}
 	}
 
