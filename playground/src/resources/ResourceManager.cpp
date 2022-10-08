@@ -37,7 +37,7 @@ Resource* ResourceManager::load(FileParser &fileParser, const String &mimeType) 
                 logger->verbose("Resource was not cached previously");
                 Resource *response = null;
 
-                if (adaptersCache[mimeType] != null) {
+                if (adaptersCache.at(mimeType) != null) {
                     logger->debug("Loading [%s] [%s] with adapter [%s]",
                             mimeType.c_str(), fileParser.getFilename().c_str(),
                             adaptersCache[mimeType]->toString().c_str());
@@ -88,14 +88,15 @@ ResourceManager::~ResourceManager() {
      *
      */
 	for(const auto &[key, resource] : resourceCache) {
-		logger->info("Disposing of resource [%s]", resource->toString().c_str());
 		if(resource != null && resource.get() != null && resource->getMimeType() != "") {
+			logger->info("Disposing of resource [%s]", resource->toString().c_str());
+
 			ResourceAdapter * adapter = adaptersCache[resource->getMimeType()];
 			if(adapter != null) {
 				adapter->dispose(resource.get());
 			}
 		} else {
-			logger->warn("Skipping [%s] disposal due to unexpected nullptrs", key.c_str());
+			logger->warn("Skipping disposal of [%s] due to unexpected nullptrs", key.c_str());
 		}
 	}
 

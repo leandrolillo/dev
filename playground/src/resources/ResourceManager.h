@@ -87,7 +87,9 @@ public:
 	Resource* load(FileParser &fileParser, const String &mimeType);
 
 	Resource *addResource(Resource *resource) {
-	    resourceCache[getCacheKey(resource)] = std::unique_ptr<Resource>(resource);
+		if(resource != null) {
+			resourceCache[getCacheKey(resource)] = std::unique_ptr<Resource>(resource);
+		}
 	    return resource;
 	}
 
@@ -157,7 +159,7 @@ private:
 	Resource *getCacheResource(const String &filename, const String &mimeType) {
 		String cacheKey = getCacheKey(filename, mimeType);
 
-		if(resourceCache[cacheKey] != null) {
+		if(resourceCache.at(cacheKey) != null) {
 			return resourceCache[cacheKey].get();
 		}
 
