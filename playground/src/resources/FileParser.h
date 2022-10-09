@@ -25,7 +25,7 @@ public:
 
 private:
     String filename;
-    FILE *fileStream;
+    FILE *fileStream = null;
     Logger *logger = LoggerFactory::getLogger("resources/FileParser");
 
     const char *tokenSeparator;
@@ -72,10 +72,10 @@ private:
         while (isBlank(takeByte()))
             ;
 
-        if (feof(getStream()))
-            fseek(getStream(), 0, SEEK_END);
+        if (feof(fileStream))
+            fseek(fileStream, 0, SEEK_END);
         else
-            fseek(getStream(), -1, SEEK_CUR);
+            fseek(fileStream, -1, SEEK_CUR);
     }
 
     void takeBlanksAndComments() {
@@ -92,24 +92,24 @@ private:
             }
         } while (!exit);
 
-        if (feof(getStream()))
-            fseek(getStream(), 0, SEEK_END);
+        if (feof(fileStream))
+            fseek(fileStream, 0, SEEK_END);
         else
-            fseek(getStream(), -1, SEEK_CUR);
+            fseek(fileStream, -1, SEEK_CUR);
     }
 
     void popPosition() {
         line = lineBackup;
         column = columnBackup;
 
-        if (fsetpos(getStream(), &position) != 0)
+        if (fsetpos(fileStream, &position) != 0)
             throw new Exception("Could not restore stream position");
     }
     void pushPosition() {
         lineBackup = line;
         columnBackup = column;
 
-        if (fgetpos(getStream(), &position) != 0)
+        if (fgetpos(fileStream, &position) != 0)
             throw new Exception("Could not save stream position");
 
     }
@@ -117,7 +117,16 @@ private:
 public:
     FileParser(const String filename) {
         this->filename = filename;
-        this->fileStream = null;
+
+        if (filename == "")
+            throw InvalidArgumentException("FileName can't be null");
+
+        if ((fileStream = fopen(filename.c_str(), "rb")) == null) {
+            logger->error("Error opening [%s]", filename.c_str());
+            throw InvalidArgumentException("Error opening [%s]", filename.c_str());
+        }
+
+        logger->verbose("File opened for reading binary [%s]", filename.c_str());
 
         this->setDefaultSpecialCharacters();
 
@@ -132,18 +141,22 @@ public:
         this->close();
     }
 
+    FILE* getStream() {
+		return fileStream;
+	}
+
     /**
      * returns the number of elements (of size_t) actually read. If that number < count then there was an error reading or reached eof.
      */
     size_t read(void *data, size_t size, size_t count) {
-        return fread(data, size, count, getStream());
+        return fread(data, size, count, fileStream);
     }
 
     bool skip(size_t size, size_t count) {
 
-        if (fseek(getStream(), size * count, SEEK_CUR) != 0) {
-            if (feof(getStream()))
-                fseek(getStream(), 0, SEEK_END);
+        if (fseek(fileStream, size * count, SEEK_CUR) != 0) {
+            if (feof(fileStream))
+                fseek(fileStream, 0, SEEK_END);
 
             return false;
         }
@@ -163,22 +176,6 @@ public:
         return filename;
     }
 
-    FILE* getStream() {
-        if (fileStream == null) {
-            if (filename == "")
-                throw InvalidArgumentException("FileName can't be null");
-
-            if ((fileStream = fopen(filename.c_str(), "rb")) == null) {
-                logger->error("Error al abrir el archivo [%s]", filename.c_str());
-                throw InvalidArgumentException("Error al abrir el archivo [%s]", filename.c_str());
-
-            }
-
-            logger->verbose("File opened for reading binary [%s]", filename.c_str());
-        }
-        return fileStream;
-    }
-
     int peekByte() {
         pushPosition();
         int byte = takeByte();
@@ -188,7 +185,7 @@ public:
     }
 
     int takeByte() {
-        int byte = fgetc(getStream());
+        int byte = fgetc(fileStream);
         //logger->info("Took byte [%d] ['%c'] from %s", byte, byte, getFilename().c_str());
         if ((char) byte == FileParser::charNewl) {
             line++;
@@ -209,11 +206,10 @@ public:
     }
     String takeLine() {
         String line;
-        char caracter[2];
-        caracter[1] = FileParser::charEof;
+        char character;
 
-        while ((caracter[0] = takeByte()) != FileParser::charNewl && caracter[0] != FileParser::charEof )
-            line.append(caracter);
+        while ((character = takeByte()) != FileParser::charNewl && character != FileParser::charEof )
+            line += character;
 
         return line;
     }
@@ -243,7 +239,7 @@ public:
             *(token + 1) = FileParser::charEol;
         else {
             *token = FileParser::charEol;
-            fseek(getStream(), -1, SEEK_CUR);
+            fseek(fileStream, -1, SEEK_CUR);
         }
 
         return (tokenBuffer);
@@ -272,8 +268,8 @@ public:
     }
     unsigned int size() {
         pushPosition();
-        fseek(getStream(), 0, SEEK_END);
-        unsigned int size = ftell(getStream());
+        fseek(fileStream, 0, SEEK_END);
+        unsigned int size = ftell(fileStream);
         popPosition();
         return size;
     }

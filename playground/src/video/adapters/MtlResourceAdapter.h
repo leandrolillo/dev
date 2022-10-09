@@ -34,7 +34,11 @@ public:
             }
         }
 
-        return *materials.begin();
+        if(materials.empty()) {
+        	return null;
+        }
+
+        return *(materials.begin());
     }
 
     MaterialResource *parseMaterial(TextParser &textParser, String name) const {

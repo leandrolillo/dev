@@ -144,14 +144,24 @@ public:
 	}
 
     virtual bool init() override {
-    	BaseDemoRunner::init();
-        physics = (PhysicsRunner *)this->getContainer()->getRequiredRunner(PhysicsRunner::ID);
+    	logger->info("-----------------");
+    	logger->info("| Terrain Demo");
+    	logger->info("-----------------");
+
+    	if(!BaseDemoRunner::init()) {
+    		return false;
+    	}
+
+    	physics = (PhysicsRunner *)this->getContainer()->getRequiredRunner(PhysicsRunner::ID);
 
         video->enable(RELATIVE_MOUSE_MODE, 0);
         video->enable(BLEND, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         treeTexture = (TextureResource *)this->getContainer()->getResourceManager()->load("images/lowPolyTree.png", "video/texture");
-        tree = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/lowPolyTree.obj", "video/vertexArray");
+        if((tree = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/lowPolyTree.obj", "video/vertexArray")) == null) {
+        	logger->error("Could not load tree model");
+        	return false;
+        }
 
 
 

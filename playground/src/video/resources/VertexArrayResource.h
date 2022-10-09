@@ -81,7 +81,7 @@ class VertexAttribPointer {
 class VertexArrayResource : public Resource
 {
 	private:
-		std::map<unsigned int, std::unique_ptr<VertexAttribPointer>> attributes;
+		std::unordered_map<unsigned int, std::unique_ptr<VertexAttribPointer>> attributes;
 		unsigned int primitiveType;
 		vector size;
 	public:
@@ -99,14 +99,14 @@ class VertexArrayResource : public Resource
 		}
 
 		const VertexAttribPointer *getAttribute(unsigned int location) const {
-			std::map<unsigned int, std::unique_ptr<VertexAttribPointer>>::const_iterator iterator = attributes.find(location);
+			auto iterator = attributes.find(location);
 			if(iterator != attributes.end())
 				return iterator->second.get();
 
 			return null;
 		}
 
-		std::map<unsigned int, std::unique_ptr<VertexAttribPointer>> &getAttributes() {
+		std::unordered_map<unsigned int, std::unique_ptr<VertexAttribPointer>> &getAttributes() {
 			return attributes;
 		}
 

@@ -20,9 +20,23 @@ class RoadFighterRunner: public BaseDemoRunner {
 
 public:
     bool init() override {
-    	BaseDemoRunner::init();
-        car = (VertexArrayResource *)this->getResourceManager()->load("roadFighter/corvette.obj", "video/vertexArray");
-        axes = (VertexArrayResource *)this->getResourceManager()->load("roadFighter/axes.obj", "video/vertexArray");
+    	logger->info("-----------------");
+    	logger->info("| Road fighter");
+    	logger->info("-----------------");
+
+    	if(!BaseDemoRunner::init()) {
+    		return false;
+    	}
+
+        if((car = (VertexArrayResource *)this->getResourceManager()->load("roadFighter/corvette.obj", "video/vertexArray")) == null) {
+        	logger->error("Could not load car model");
+        	return false;
+        }
+        if((axes = (VertexArrayResource *)this->getResourceManager()->load("roadFighter/axes.obj", "video/vertexArray")) == null) {
+        	logger->error("Could not load axes model");
+        	return false;
+        }
+
         return true;
     }
 

@@ -65,7 +65,7 @@ private:
     const MaterialResource *currentMaterial = null;
     const LightResource *light = null;
 
-    std::map<const TextureResource *, std::vector<const WorldObject>>objectsByTexture;
+    std::unordered_map<const TextureResource *, std::vector<const WorldObject>>objectsByTexture;
 
     const VertexArrayResource *axes = null;
     const VertexArrayResource *sphere = null;
@@ -142,7 +142,9 @@ public:
     }
 
     void drawObject(const matriz_4x4 &modelMatrix, const VertexArrayResource *object) {
-        this->objectsByTexture[this->currentTexture].push_back(WorldObject(modelMatrix, object, currentMaterial));
+    	if(object != null) {
+    		this->objectsByTexture[this->currentTexture].push_back(WorldObject(modelMatrix, object, currentMaterial));
+    	}
     }
 
     void drawAxes(const matriz_4x4 &modelMatrix, real length = 1.0f) {

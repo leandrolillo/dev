@@ -25,17 +25,17 @@ public:
         std::vector<GeometryResource *>objects;
 
         String token;
-        while ((token = textParser.takeToken()) != FileParser::eof) {
-
-            if (token == "o") {
-            	objects.push_back(parseObject(textParser, textParser.takeLine()));
+        while ((token = textParser.peekToken()) != FileParser::eof) {
+            if (token == "o" || token == "v" || token == "vn" || token == "vt" || token == "f") {
+            	objects.push_back(parseObject(textParser));
             } else if (token == "mtllib") {
+            	textParser.takeToken();
+
             	String materialLibraryName = textParser.takeLine();
-            	Resource *materials = this->getResourceManager()->load(Paths::add(Paths::getDirname(textParser.getFilename()), materialLibraryName), "model/mtl");
+            	Resource *materials = this->getResourceManager()->load(textParser.getFilename(), materialLibraryName, "model/mtl");
             	if(materials == null) {
             		logger->warn("Could not load material library [%s] referenced from [%s]", materialLibraryName.c_str(), textParser.getFilename().c_str());
             	}
-
             } else {
                 String line = textParser.takeLine().c_str();
                 logger->warn("skipping [%s] [%s]", token.c_str(), line.c_str());
@@ -46,11 +46,16 @@ public:
 
 
 
-        return *objects.begin();
+        if(objects.empty()) {
+        	return null;
+        }
+
+        return *(objects.begin());
     }
 
-    GeometryResource *parseObject(TextParser &textParser, String name) const {
+    GeometryResource *parseObject(TextParser &textParser) const {
         GeometryResource *geometry = new GeometryResource(0);
+        geometry->setName(Paths::getBasename(textParser.getFilename()));
         geometry->setType("triangles");
         geometry->setName(Paths::getBasename(textParser.getFilename()));
 
@@ -60,7 +65,9 @@ public:
 
         String token;
         while ((token = textParser.takeToken()) != FileParser::eof) {
-        	if (token == "v") {
+        	if (token == "o") {
+        		geometry->setName(textParser.takeLine());
+        	} else if (token == "v") {
 				geometry->getVertices().push_back(vector(textParser.readReal(), textParser.readReal(), textParser.readReal()));
 			} else if (token == "vn") {
 				normals.push_back(vector(textParser.readReal(), textParser.readReal(), textParser.readReal()));
@@ -71,7 +78,7 @@ public:
 				indices.push_back(readIndicesRow(textParser));
 				indices.push_back(readIndicesRow(textParser));
 			} else {
-                String line = textParser.takeLine().c_str();
+                String line = textParser.takeLine();
                 logger->warn("skipping [%s] [%s]", token.c_str(), line.c_str());
             }
 

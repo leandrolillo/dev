@@ -12,7 +12,7 @@
 #include <Logger.h>
 #include <JavaLike.h>
 #include <vector>
-#include <map>
+#include <unordered_map>
 
 enum class PlaygroundStatus {
 	CREATED,
@@ -117,7 +117,7 @@ private:
 	Logger *logger = LoggerFactory::getLogger("core/Playground.h");
 	String resourcesRootFolder;
 	std::vector<std::unique_ptr<PlaygroundRunner>> runners;
-	std::map<unsigned char, PlaygroundRunner *> runners_by_id;
+	std::unordered_map<unsigned char, PlaygroundRunner *> runners_by_id;
 	PlaygroundStatus status = PlaygroundStatus::CREATED;
 	std::vector<PlaygroundRunner *> resizeObservers;
 	std::vector<PlaygroundRunner *> moveObservers;
@@ -151,15 +151,21 @@ public:
 	}
 
 	PlaygroundRunner *getRequiredRunner(const unsigned char id) const {
-	    if(runners_by_id.at(id) == null) {
+		auto pair = runners_by_id.find(id);
+	    if(pair == runners_by_id.end()) {
 	        throw InvalidArgumentException("Could not find required playground runner");
 	    }
 
-	    return runners_by_id.at(id);
+	    return pair->second;
 	}
 
 	PlaygroundRunner *getRunner(const unsigned char id) const {
-		return runners_by_id.at(id);
+		auto pair = runners_by_id.find(id);
+	    if(pair == runners_by_id.end()) {
+	        return null;
+	    }
+
+	    return pair->second;
 	}
 
 	void addRunner(PlaygroundRunner *runner) {

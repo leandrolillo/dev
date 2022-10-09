@@ -7,9 +7,9 @@
 #include "Paths.h"
 #include <Logger.h>
 #include <Exception.h>
-#include<set>
-#include<vector>
-#include<map>
+#include <set>
+#include <vector>
+#include <unordered_map>
 #include <stdio.h>
 #include <algorithm>
 
@@ -17,8 +17,8 @@ class ResourceManager {
 private:
 	Logger *logger = LoggerFactory::getLogger("resources/ResourceManager");
 	std::set<std::unique_ptr<ResourceAdapter>> resourceAdapters; // Define adapter before resources so that they are initialized before them, and deleted after them.
-	std::map<String, std::unique_ptr<Resource>> resourceCache;
-	std::map<String, ResourceAdapter *> adaptersCache;
+	std::unordered_map<String, std::unique_ptr<Resource>> resourceCache;
+	std::unordered_map<String, ResourceAdapter *> adaptersCache;
 
 	String rootFolder;
 
@@ -77,7 +77,7 @@ public:
 	}
 
 	/**
-	 * Loads a file using the parent file path as base for relative paths
+	 * Loads a file using the parent file path as base for relative paths - TODO: Replace by load with parent resource
 	 */
 	Resource* load(const String &parentFilePath, const String &fileName, const String &mimeType) {
 		return load(Paths::add(Paths::getDirname(parentFilePath), fileName), mimeType);
@@ -159,8 +159,10 @@ private:
 	Resource *getCacheResource(const String &filename, const String &mimeType) {
 		String cacheKey = getCacheKey(filename, mimeType);
 
-		if(resourceCache.at(cacheKey) != null) {
-			return resourceCache[cacheKey].get();
+		auto pair = resourceCache.find(cacheKey);
+
+		if(pair != resourceCache.end()) {
+			return pair->second.get();
 		}
 
 		return null;

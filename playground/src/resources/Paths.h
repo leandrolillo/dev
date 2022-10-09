@@ -29,7 +29,10 @@ public:
 	 */
 	static String add(const String &prefix, const String &postFix) {
 		String normalizedPrefix = prefix.substr(prefix.length() - 1, 1) == "/" ? prefix : prefix + "/";
+		trim(normalizedPrefix);
+
 		String normalizedPostfix = postFix.substr(0, 2) == "./" ? postFix.substr(2, postFix.length() - 2) : postFix;
+		trim(normalizedPostfix);
 
 		return normalizedPostfix.substr(0, 1) == "/" || normalizedPostfix.substr(0, 2) == "~/" ?
 				normalizedPostfix :
@@ -51,6 +54,15 @@ public:
 	static const String getBasename(const String &filePath) {
 		unsigned long location = filePath.find_last_of('/');
 		return (location == std::string::npos ? filePath : filePath.substr(location + 1, filePath.size() - location));
+	}
+private:
+
+	static void trim(String &text) {
+		text.erase(text.begin(), std::find_if(text.begin(), text.end(),
+		            std::not1(std::ptr_fun<int, int>(std::isspace))));
+
+		text.erase(std::find_if(text.rbegin(), text.rend(),
+		            std::not1(std::ptr_fun<int, int>(std::isspace))).base(), text.end());
 	}
 
 };

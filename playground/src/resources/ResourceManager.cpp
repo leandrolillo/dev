@@ -37,12 +37,13 @@ Resource* ResourceManager::load(FileParser &fileParser, const String &mimeType) 
                 logger->verbose("Resource was not cached previously");
                 Resource *response = null;
 
-                if (adaptersCache.at(mimeType) != null) {
+                auto adaptersPair = adaptersCache.find(mimeType);
+                if (adaptersPair != adaptersCache.end()) {
                     logger->debug("Loading [%s] [%s] with adapter [%s]",
                             mimeType.c_str(), fileParser.getFilename().c_str(),
-                            adaptersCache[mimeType]->toString().c_str());
+                            adaptersPair->second->toString().c_str());
 
-                    response = adaptersCache[mimeType]->load(fileParser, mimeType);
+                    response = adaptersPair->second->load(fileParser, mimeType);
                     if (response != null) {
                         response->setFileName(fileParser.getFilename());
                         response->setMimeType(mimeType);
@@ -53,7 +54,7 @@ Resource* ResourceManager::load(FileParser &fileParser, const String &mimeType) 
                                 "Could not load [%s] [%s] with adapter [%s]",
                                 mimeType.c_str(),
                                 fileParser.getFilename().c_str(),
-                                adaptersCache[mimeType]->toString().c_str());
+                                adaptersPair->second->toString().c_str());
                     }
                 } else {
                     logger->error(

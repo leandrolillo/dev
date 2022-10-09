@@ -61,6 +61,7 @@ public:
         //video->enable(BLEND, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         logger->debug("Completed initialization");
+
         return true;
     }
 

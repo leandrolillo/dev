@@ -1,9 +1,10 @@
 Tech debts
 
-- review RAII and 5 of 5 principle (move semantics) in resources/playground classes. Troubleshoot error: 
-	playground(82383,0x112261600) malloc: *** error for object 0x600001d917e0: pointer being freed was not allocated
-	playground(82383,0x112261600) malloc: *** set a breakpoint in malloc_error_break to debug
+- unit tests!
 
+- review RAII and 5 of 5 principle (move semantics) in resources/playground classes.
+	specially in file parser / text parser and resources.
+	
 - review design of particle manager/collision detector / geometry vs particles / etc. Too much vector passing and copying. Review polymorfism / std::vector<unique_ptr> usage.
 
 - add 'override' to overridden virtual methods (forces compiler to check everything is ok)
