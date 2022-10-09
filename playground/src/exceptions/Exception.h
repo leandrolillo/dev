@@ -26,11 +26,11 @@ class Exception {
 		    this->msg = message;
 		}
 
-		std::string toString() {
+		std::string toString() const {
 			return getMessage();
 		}
 
-		std::string getMessage()
+		std::string getMessage() const
 		{
 			return this->msg;
 		}

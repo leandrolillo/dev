@@ -28,12 +28,13 @@ public:
     		return false;
     	}
 
-        if((car = (VertexArrayResource *)this->getResourceManager()->load("roadFighter/corvette.obj", "video/vertexArray")) == null) {
-        	logger->error("Could not load car model");
-        	return false;
-        }
         if((axes = (VertexArrayResource *)this->getResourceManager()->load("roadFighter/axes.obj", "video/vertexArray")) == null) {
         	logger->error("Could not load axes model");
+        	return false;
+        }
+
+        if((car = (VertexArrayResource *)this->getResourceManager()->load("roadFighter/corvette.obj", "video/vertexArray")) == null) {
+        	logger->error("Could not load car model");
         	return false;
         }
 

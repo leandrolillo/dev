@@ -231,8 +231,9 @@ public:
         printMessage("SEVERE ", formato, &args);
         va_end(args);
 
+        //This does not seem to be very reliable
         if (errno != 0 && strlen(strerror(errno)) > 0) {
-            printMessage("Error Message", strerror(errno), &args);
+            printMessage(StringFormatter::format("SEVERE [%d]: ", errno).c_str(), strerror(errno), &args);
             errno = 0;
         }
     }

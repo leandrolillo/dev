@@ -77,6 +77,15 @@ public:
 				indices.push_back(readIndicesRow(textParser));
 				indices.push_back(readIndicesRow(textParser));
 				indices.push_back(readIndicesRow(textParser));
+
+				String remaining = textParser.takeLine();
+				StringUtils::trim(remaining);
+				if(!remaining.empty()) {
+					logger->error("Expected triangulated obj faces - got extra [%s] at line %d, column %d", remaining.c_str(), textParser.getLine(), textParser.getColumn());
+					delete geometry;
+					return null;
+				}
+
 			} else {
                 String line = textParser.takeLine();
                 logger->warn("skipping [%s] [%s]", token.c_str(), line.c_str());

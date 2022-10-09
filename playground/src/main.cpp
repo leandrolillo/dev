@@ -27,8 +27,8 @@ int main(int, char**){
 //    CollisionDetectionPlayground colDetplayground("/Users/leandro/huevadas/projects/dev/media/");
 //    colDetplayground.run();
 
-    PlaygroundTerrainDemo terrainPlayground("/Users/leandro/huevadas/projects/dev/media/");
-    terrainPlayground.run();
+//    PlaygroundTerrainDemo terrainPlayground("/Users/leandro/huevadas/projects/dev/media/");
+//    terrainPlayground.run();
 
 //    PhysicsPlayground physicsPlayground("/Users/leandro/huevadas/projects/dev/media/");
 //    physicsPlayground.run();

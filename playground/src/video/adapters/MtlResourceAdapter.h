@@ -61,7 +61,7 @@ public:
         	} else if (token == "d") {
         		material->setAlpha(1.0 - textParser.readReal());
         	} else if (token == "map_Kd") {
-        		String imageName = textParser.readString();
+        		String imageName = textParser.takeLine();
         		ImageResource *imageResource = (ImageResource *)this->getResourceManager()->load(Paths::add(Paths::getDirname(textParser.getFilename()), imageName));
         		if(imageResource == null) {
         			logger->warn("Could not read texture [%s] referenced from [%s]", imageName.c_str(), textParser.getFilename().c_str());

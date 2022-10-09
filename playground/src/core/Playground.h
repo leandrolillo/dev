@@ -212,9 +212,15 @@ public:
                     logger->error("Failed to initialize runner [%d]", currentRunner->getId());
                     return false;
                 }
-			} catch(Exception &exception) {
+			} catch(const Exception &exception) {
 			    logger->error("Failed to initialize runner [%d]: [%s]", currentRunner->getId(), exception.toString().c_str());
 			    return false;
+			} catch (const std::out_of_range& e) {
+				logger->error("Failed to initialize runner [%d] - out of range: [%s]", currentRunner->getId(), e.what());
+				return false;
+			} catch (const std::exception& stdException) {
+				logger->error("Failed to initialize runner [%d] - std::exception: [%s]", currentRunner->getId(), stdException.what());
+				return false;
 			} catch(...) {
                 logger->error("Failed to initialize runner [%d]", currentRunner->getId());
                 return false;
