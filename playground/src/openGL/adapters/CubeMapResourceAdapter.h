@@ -17,8 +17,7 @@ class CubeMapResourceAdapter : public TextureResourceAdapter {
 public:
 	CubeMapResourceAdapter() : TextureResourceAdapter() {
 		logger = LoggerFactory::getLogger("video/CubeMapResourceAdapter");
-		this->clearSupportedMimeTypes();
-		this->addSupportedMimeType("video/cubemap");
+		this->setSupportedMimeTypes(std::set<String> { "video/cubemap" });
 	}
 
 	Resource *load(FileParser &fileParser, const String &mimeType) const override {

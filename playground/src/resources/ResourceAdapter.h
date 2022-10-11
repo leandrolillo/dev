@@ -17,7 +17,7 @@ class ResourceManager;
 class ResourceAdapter {
 private:
 	ResourceManager *resourceManager = null;
-	std::vector<String> supportedMimeTypes;
+	std::set<String> supportedMimeTypes;
 protected:
 	Logger *logger = null;
 public:
@@ -33,15 +33,15 @@ public:
 		this->resourceManager = resourceManager;
 	}
 
-	void addSupportedMimeType(String mimeType) {
-		supportedMimeTypes.push_back(mimeType);
+	void addSupportedMimeType(const String &mimeType) {
+		supportedMimeTypes.insert(mimeType);
 	}
 
-	void clearSupportedMimeTypes() {
-	    supportedMimeTypes.clear();
+	void setSupportedMimeTypes(const std::set<String> &supportedMimeTypes) {
+	    this->supportedMimeTypes = supportedMimeTypes;
 	}
 
-	const std::vector<String> getSupportedMimeTypes() const {
+	const std::set<String> &getSupportedMimeTypes() const {
 		return supportedMimeTypes;
 	}
 

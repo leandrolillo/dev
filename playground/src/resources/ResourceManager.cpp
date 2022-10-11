@@ -7,10 +7,8 @@
 #include "ResourceManager.h"
 
 void ResourceManager::addAdapter(ResourceAdapter *adapter) {
-	std::vector<String> mimeTypes = adapter->getSupportedMimeTypes();
-
 	bool found = false;
-	for (auto &resourceAdapterPtr : this-> resourceAdapters) {
+	for (auto &resourceAdapterPtr : this->resourceAdapters) {
 		if(resourceAdapterPtr.get() == adapter) {
 			found = true;
 			break;
@@ -21,7 +19,7 @@ void ResourceManager::addAdapter(ResourceAdapter *adapter) {
 		resourceAdapters.insert(std::unique_ptr<ResourceAdapter>(adapter));
 	}
 
-	for (auto &currentMimeTypeIterator : mimeTypes) {
+	for (auto &currentMimeTypeIterator : adapter->getSupportedMimeTypes()) {
 		adaptersCache[currentMimeTypeIterator] = adapter;
 	}
 
