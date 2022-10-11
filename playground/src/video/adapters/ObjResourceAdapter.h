@@ -72,11 +72,13 @@ public:
 
 
         logger->info("Parsing object");
+        std::vector<vector3>indices;
 
         String token;
         while ((token = textParser.takeToken()) != FileParser::eof) {
         	if (token == "o") {
         		String name = textParser.takeLine();
+        		StringUtils::trim(name);
         		logger->info("Name: %s", name.c_str());
         		geometry->setName(name);
         	} else if (token == "v") {
@@ -86,23 +88,15 @@ public:
 			} else if (token == "vt") {
 				textCoords.push_back(vector2(textParser.readReal(), textParser.readReal()));
 			} else if (token == "f") {
-				vector indices = readIndicesRow(textParser);
-	            geometry->getIndices().push_back(geometry->getIndices().size());
-				geometry->getVertices().push_back(vertices.at((int) indices.x - 1));
-				geometry->getTextureCoordinates().push_back(indices.y > 0 ? textCoords.at((int) indices.x - 1) : vector2(0, 0));
-	            geometry->getNormals().push_back(indices.z > 0 ? normals.at((int) indices.z - 1) : vector3(0, 0, 0));
+				vector newIndices = readIndicesRow(textParser);
+				addIndex(geometry, newIndices, vertices, normals, textCoords, indices);
 
-				indices = readIndicesRow(textParser);
-	            geometry->getIndices().push_back(geometry->getIndices().size());
-				geometry->getVertices().push_back(vertices.at((int) indices.x - 1));
-				geometry->getTextureCoordinates().push_back(indices.y > 0 ? textCoords.at((int) indices.x - 1) : vector2(0, 0));
-	            geometry->getNormals().push_back(indices.z > 0 ? normals.at((int) indices.z - 1) : vector3(0, 0, 0));
+				newIndices = readIndicesRow(textParser);
+				addIndex(geometry, newIndices, vertices, normals, textCoords, indices);
 
-				indices = readIndicesRow(textParser);
-	            geometry->getIndices().push_back(geometry->getIndices().size());
-				geometry->getVertices().push_back(vertices.at((int) indices.x - 1));
-				geometry->getTextureCoordinates().push_back(indices.y > 0 ? textCoords.at((int) indices.x - 1) : vector2(0, 0));
-	            geometry->getNormals().push_back(indices.z > 0 ? normals.at((int) indices.z - 1) : vector3(0, 0, 0));
+				newIndices = readIndicesRow(textParser);
+				addIndex(geometry, newIndices, vertices, normals, textCoords, indices);
+
 
 				String remaining = textParser.takeLine();
 				StringUtils::trim(remaining);
@@ -130,7 +124,7 @@ public:
     }
 private:
     void printLogInfo(GeometryResource *geometry) const {
-    	logger->info("Object ", geometry->getName().c_str());
+    	logger->info("Object [%s]", geometry->getName().c_str());
         logger->info("%d vertices", geometry->getVertices().size());
         logger->info("%d textCoords", geometry->getTextureCoordinates().size());
         logger->info("%d normals", geometry->getNormals().size());
@@ -161,6 +155,27 @@ private:
         }
 
         return vector(vertexIndex, textCoordIndex, normalIndex);
+    }
+
+    void addIndex(GeometryResource *geometry, const vector &newIndices, std::vector<vector> &vertices,
+    		std::vector<vector> &normals,
+    		std::vector<vector2> &textCoords,
+			std::vector<vector3> &indices) const {
+
+    	//TODO: Review this - should reuse data but it does not happen.
+    	for(unsigned int index = 0; index < indices.size(); index++) {
+    		vector currentIndices = indices[index];
+    		if((int)currentIndices.x == (int)newIndices.x  && (int)currentIndices.y == (int)newIndices.y && (int)currentIndices.z == (int)newIndices.z) {
+    			geometry->getIndices().push_back(index);
+    			return;
+    		}
+    	}
+
+        geometry->getIndices().push_back(geometry->getIndices().size());
+		geometry->getVertices().push_back(vertices.at((int) newIndices.x - 1));
+		geometry->getTextureCoordinates().push_back(newIndices.y > 0 ? textCoords.at((int) newIndices.x - 1) : vector2(0, 0));
+        geometry->getNormals().push_back(newIndices.z > 0 ? normals.at((int) newIndices.z - 1) : vector3(0, 0, 0));
+
     }
 
 };

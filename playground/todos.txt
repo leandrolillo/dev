@@ -4,7 +4,13 @@ Tech debts
 
 - review RAII and 5 of 5 principle (move semantics) in resources/playground classes.
 	specially in file parser / text parser and resources.
-	
+
+- resource adapters should have two mimetypes: input mimetype (similar to content-type)	and output mimetype (similar to accept)
+
+- resources should have labels and allow deletion by labels.
+
+- There should be a way of marking some resources "temporal" or "ephemeral" since they are auxiliar in creating other objects but we don't want to keep them permanently in caché.
+
 - review design of particle manager/collision detector / geometry vs particles / etc. Too much vector passing and copying. Review polymorfism / std::vector<unique_ptr> usage.
 
 - add 'override' to overridden virtual methods (forces compiler to check everything is ok)
@@ -14,6 +20,8 @@ Tech debts
 - Review collision detection / response: there is no way to configure restitution factor - should be based on the two objects colliding and/or configurable.
 
 - improve box rendering (normals)
+
+- delete demos after they are finished (or they do not trigger destructors if many demos are run).
 
 ----------------
 

@@ -28,6 +28,8 @@ public:
     		return false;
     	}
 
+    	//video->enable(CULL_FACE, GL_NONE);
+
         if((axes = (VertexArrayResource *)this->getResourceManager()->load("roadFighter/axes.obj", "video/vertexArray")) == null) {
         	logger->error("Could not load axes model");
         	return false;
@@ -48,6 +50,8 @@ public:
 
         defaultRenderer.drawObject(matrix_4x4::identidad, car);
         defaultRenderer.drawObject(matrix_4x4::identidad, axes);
+
+        defaultRenderer.render(camera);
 
         return LoopResult::CONTINUE;
     }
