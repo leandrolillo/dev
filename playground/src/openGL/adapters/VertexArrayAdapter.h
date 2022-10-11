@@ -28,6 +28,8 @@ public:
 		if (geometry == null) {
 		    logger->error("Could not load geometry from %s with mimetype %s", fileParser.getFilename().c_str(), geometryMimeType.c_str());
 		    return null;
+		} else {
+			geometry->addLabel(ResourceManager::EphemeralLabel);
 		}
 
 		return generateVertexBuffer(geometry);;

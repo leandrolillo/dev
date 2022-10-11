@@ -284,6 +284,8 @@ public:
 		}
 
 		if (status == PlaygroundStatus::RUNNERS_INITIALIZED || status == PlaygroundStatus::STOPPED) {
+			resourceManager.unload(ResourceManager::EphemeralLabel);
+
 			logger->verbose("Entering loop");
 
 			status = PlaygroundStatus::RUNNING;

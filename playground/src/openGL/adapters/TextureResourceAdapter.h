@@ -24,6 +24,8 @@ class TextureResourceAdapter: public OpenGLResourceAdapter {
 			TextureResource *resource = null;
 
 			if(imageResource != null) {
+				imageResource->addLabel(ResourceManager::EphemeralLabel);
+
 				unsigned int textureHandler = 0;
 				glGetError();
 				glGenTextures(1, &textureHandler);

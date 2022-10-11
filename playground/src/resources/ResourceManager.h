@@ -21,6 +21,8 @@ private:
 	std::unordered_map<String, ResourceAdapter *> adaptersCache;
 
 	String rootFolder;
+public:
+	static const String EphemeralLabel;
 
 public:
 	ResourceManager(const String &rootFolder) {
@@ -83,9 +85,6 @@ public:
 		return load(Paths::add(Paths::getDirname(parentFilePath), fileName), mimeType);
 	}
 
-
-	Resource* load(FileParser &fileParser, const String &mimeType);
-
 	Resource *addResource(Resource *resource) {
 		if(resource != null) {
 			resourceCache[getCacheKey(resource)] = std::unique_ptr<Resource>(resource);
@@ -99,30 +98,39 @@ public:
 	}
 
 	void unload(String label) {
-		for(auto &resourceEntry : resourceCache) {
-			if(resourceEntry.second->getLabels().find(label) != resourceEntry.second->getLabels().end()) {
-				this->unload(resourceEntry.second.get());
-			}
+		auto iterator = resourceCache.begin();
+		while (iterator != resourceCache.end()) {
+			if(iterator->second->getLabels().find(label) != iterator->second->getLabels().end()) {
+				this->dispose(iterator->second.get());
+				iterator = this->resourceCache.erase(iterator);
+			} else {
+		       ++iterator;
+		    }
 		}
 	}
 
 	void unload(std::vector<String>labels) {
-		for(auto & resourceEntry : resourceCache) {
+		auto iterator = resourceCache.begin();
+		while (iterator != resourceCache.end()) {
 			bool hasAllLabels = true;
 			for(auto &label : labels) {
-				if(resourceEntry.second->getLabels().find(label) == resourceEntry.second->getLabels().end()) {
+				if(iterator->second->getLabels().find(label) == iterator->second->getLabels().end()) {
 					hasAllLabels = false;
 					break;
 				}
 			}
 
 			if(hasAllLabels) {
-				this->unload(resourceEntry.second.get());
-			}
+				this->dispose(iterator->second.get());
+				iterator = this->resourceCache.erase(iterator);
+			} else {
+		       ++iterator;
+		    }
 		}
 	}
 
-	void dispose(Resource *resource);
+	Resource* load(FileParser &fileParser, const String &mimeType);
+	void dispose(Resource *resource) const;
 	~ResourceManager();
 
 	String normalize(const String &filePath) const {

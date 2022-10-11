@@ -44,7 +44,10 @@ public:
 					"Error loading bufferResource: could not load audio from [%s]",
 					fileParser.getFilename().c_str());
 			return (null);
+		} else {
+			audioResource->addLabel(ResourceManager::EphemeralLabel);
 		}
+
 		ALuint ALbuffer = 0;
 
 		alGenBuffers(1, &ALbuffer);

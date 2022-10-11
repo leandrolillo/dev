@@ -6,6 +6,8 @@
  */
 #include "ResourceManager.h"
 
+const String ResourceManager::EphemeralLabel = {"ephemeral"};
+
 void ResourceManager::addAdapter(ResourceAdapter *adapter) {
 	bool found = false;
 	for (auto &resourceAdapterPtr : this->resourceAdapters) {
@@ -77,6 +79,20 @@ Resource* ResourceManager::load(FileParser &fileParser, const String &mimeType) 
 	return cached;
 }
 
+void ResourceManager::dispose(Resource *resource) const {
+	if(resource != null && resource->getMimeType() != "") {
+		logger->info("Disposing of resource [%s]", resource->toString().c_str());
+
+		auto adapterIterator = adaptersCache.find(resource->getMimeType());
+		if(adapterIterator != adaptersCache.end()) {
+			adapterIterator->second->dispose(resource);
+		}
+	} else {
+		logger->warn("Skipping resource disposal due to missing required information (resource not null and mimetype not empty)");
+	}
+
+}
+
 ResourceManager::~ResourceManager() {
     logger->debug("Shutting down resource manager");
 
@@ -87,15 +103,9 @@ ResourceManager::~ResourceManager() {
      *
      */
 	for(const auto &[key, resource] : resourceCache) {
-		if(resource != null && resource.get() != null && resource->getMimeType() != "") {
-			logger->info("Disposing of resource [%s]", resource->toString().c_str());
-
-			ResourceAdapter * adapter = adaptersCache[resource->getMimeType()];
-			if(adapter != null) {
-				adapter->dispose(resource.get());
-			}
-		} else {
-			logger->warn("Skipping disposal of [%s] due to unexpected nullptrs", key.c_str());
+		logger->info("Disposing of resource [%s]", key.c_str());
+		if(resource != null) {
+			dispose(resource.get());
 		}
 	}
 
