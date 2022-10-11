@@ -93,6 +93,35 @@ public:
 	    return resource;
 	}
 
+	void unload(Resource *resource) {
+		this->dispose(resource);
+		this->resourceCache.erase(getCacheKey(resource));
+	}
+
+	void unload(String label) {
+		for(auto &resourceEntry : resourceCache) {
+			if(resourceEntry.second->getLabels().find(label) != resourceEntry.second->getLabels().end()) {
+				this->unload(resourceEntry.second.get());
+			}
+		}
+	}
+
+	void unload(std::vector<String>labels) {
+		for(auto & resourceEntry : resourceCache) {
+			bool hasAllLabels = true;
+			for(auto &label : labels) {
+				if(resourceEntry.second->getLabels().find(label) == resourceEntry.second->getLabels().end()) {
+					hasAllLabels = false;
+					break;
+				}
+			}
+
+			if(hasAllLabels) {
+				this->unload(resourceEntry.second.get());
+			}
+		}
+	}
+
 	void dispose(Resource *resource);
 	~ResourceManager();
 

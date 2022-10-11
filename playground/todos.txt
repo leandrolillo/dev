@@ -7,9 +7,9 @@ Tech debts
 
 - resource adapters should have two mimetypes: input mimetype (similar to content-type)	and output mimetype (similar to accept)
 
-- resources should have labels and allow deletion by labels.
+- resources should have labels and allow deletion by labels
 
-- There should be a way of marking some resources "temporal" or "ephemeral" since they are auxiliar in creating other objects but we don't want to keep them permanently in caché.
+- There should be a way of marking some resources "temporal" or "ephemeral" since they are auxiliar in creating other objects but we don't want to keep them permanently in caché (trigger deletion after init is complete?).
 
 - review design of particle manager/collision detector / geometry vs particles / etc. Too much vector passing and copying. Review polymorfism / std::vector<unique_ptr> usage.
 
