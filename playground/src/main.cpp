@@ -15,8 +15,9 @@
 #include "demo/PlaygroundTest.h"
 
 int main(int, char**){
-    TestsPlayground playgroundtests("/Users/leandro/huevadas/projects/dev/media/");
-    playgroundtests.run();
+    TestsPlayground *playgroundtests = new TestsPlayground("/Users/leandro/huevadas/projects/dev/media/");
+    playgroundtests->run();
+    delete playgroundtests;
 
 //    PlaygroundGeneralDemo playground("/Users/leandro/huevadas/projects/dev/media/");
 //    playground.run();
@@ -27,14 +28,17 @@ int main(int, char**){
 //    CollisionDetectionPlayground colDetplayground("/Users/leandro/huevadas/projects/dev/media/");
 //    colDetplayground.run();
 
-    PlaygroundTerrainDemo terrainPlayground("/Users/leandro/huevadas/projects/dev/media/");
-    terrainPlayground.run();
+    PlaygroundTerrainDemo * terrainPlayground = new PlaygroundTerrainDemo("/Users/leandro/huevadas/projects/dev/media/");
+    terrainPlayground->run();
+    delete terrainPlayground;
 
-    PhysicsPlayground physicsPlayground("/Users/leandro/huevadas/projects/dev/media/");
-    physicsPlayground.run();
+    PhysicsPlayground *physicsPlayground = new PhysicsPlayground("/Users/leandro/huevadas/projects/dev/media/");
+    physicsPlayground->run();
+    delete physicsPlayground;
 
-    RoadFighter roadFighter("/Users/leandro/huevadas/projects/dev/media/");
-    roadFighter.run();
+    RoadFighter *roadFighter = new RoadFighter("/Users/leandro/huevadas/projects/dev/media/");
+    roadFighter->run();
+    delete roadFighter;
 
     printf("done\n");
     return 0;
