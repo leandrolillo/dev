@@ -30,8 +30,8 @@ int main(int, char**){
     PlaygroundTerrainDemo terrainPlayground("/Users/leandro/huevadas/projects/dev/media/");
     terrainPlayground.run();
 
-//    PhysicsPlayground physicsPlayground("/Users/leandro/huevadas/projects/dev/media/");
-//    physicsPlayground.run();
+    PhysicsPlayground physicsPlayground("/Users/leandro/huevadas/projects/dev/media/");
+    physicsPlayground.run();
 
     RoadFighter roadFighter("/Users/leandro/huevadas/projects/dev/media/");
     roadFighter.run();

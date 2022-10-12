@@ -51,9 +51,9 @@ public:
 		return null;
 	}
 
-	Resource* load(FileParser &fileParser) {
+	Resource* load(FileParser &fileParser, std::set<String> labels = {}) {
 		try {
-			return load(fileParser, guessMimeType(fileParser.getFilename()));
+			return load(fileParser, guessMimeType(fileParser.getFilename()), labels);
 		} catch (Exception &e) {
 			logger->error("Error loading resource [%s]: [%s]",
 					fileParser.getFilename().c_str(), e.getMessage().c_str());
@@ -61,13 +61,13 @@ public:
 		return null;
 	}
 
-	Resource* load(const String &fileName, const String &mimeType) {
+	Resource* load(const String &fileName, const String &mimeType, std::set<String> labels = {}) {
 		try {
 			String normalizedFileName = Paths::normalize(fileName, this->rootFolder);
 
 			if (!normalizedFileName.empty()) {
 				FileParser fileParser = FileParser(normalizedFileName);
-				return load(fileParser, mimeType);
+				return load(fileParser, mimeType, labels);
 			}
 
 			return null;
@@ -84,6 +84,8 @@ public:
 	Resource* load(const String &parentFilePath, const String &fileName, const String &mimeType) {
 		return load(Paths::add(Paths::getDirname(parentFilePath), fileName), mimeType);
 	}
+
+	Resource* load(FileParser &fileParser, const String &mimeType, std::set<String> labels = {});
 
 	Resource *addResource(Resource *resource) {
 		if(resource != null) {
@@ -129,7 +131,6 @@ public:
 		}
 	}
 
-	Resource* load(FileParser &fileParser, const String &mimeType);
 	void dispose(Resource *resource) const;
 	~ResourceManager();
 

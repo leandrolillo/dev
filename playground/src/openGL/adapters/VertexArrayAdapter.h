@@ -9,6 +9,7 @@
 #define VERTEXBUFFERADAPTER_H_
 #include <adapters/OpenGLResourceAdapter.h>
 #include "../../video/resources/VertexArrayResource.h"
+#include <set>
 
 
 class VertexArrayResourceAdapter: public OpenGLResourceAdapter {
@@ -24,12 +25,10 @@ public:
         geometryMimeType = this->getResourceManager()->guessMimeType(fileParser.getFilename());
         geometryMimeType = geometryMimeType.empty() ? "video/geometry" : geometryMimeType;
 
-		GeometryResource *geometry = (GeometryResource*) this->getResourceManager()->load(fileParser, geometryMimeType);
+		GeometryResource *geometry = (GeometryResource*) this->getResourceManager()->load(fileParser, geometryMimeType, std::set<String> { ResourceManager::EphemeralLabel });
 		if (geometry == null) {
 		    logger->error("Could not load geometry from %s with mimetype %s", fileParser.getFilename().c_str(), geometryMimeType.c_str());
 		    return null;
-		} else {
-			geometry->addLabel(ResourceManager::EphemeralLabel);
 		}
 
 		return generateVertexBuffer(geometry);;

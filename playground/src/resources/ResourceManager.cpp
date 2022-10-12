@@ -28,7 +28,7 @@ void ResourceManager::addAdapter(ResourceAdapter *adapter) {
 	adapter->setResourceManager(this);
 }
 
-Resource* ResourceManager::load(FileParser &fileParser, const String &mimeType) {
+Resource* ResourceManager::load(FileParser &fileParser, const String &mimeType, std::set<String> labels) {
 	Resource *cached = null;
 	if(!mimeType.empty()) {
         try {
@@ -47,6 +47,7 @@ Resource* ResourceManager::load(FileParser &fileParser, const String &mimeType) 
                     if (response != null) {
                         response->setFileName(fileParser.getFilename());
                         response->setMimeType(mimeType);
+                        response->setLabels(labels);
                         addResource(response);
                         logger->debug("Loaded [%s]", response->toString().c_str());
                     } else {

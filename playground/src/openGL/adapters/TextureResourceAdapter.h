@@ -11,6 +11,7 @@
 #include <adapters/OpenGLResourceAdapter.h>
 #include <resources/ImageResource.h>
 #include <resources/TextureResource.h>
+#include <set>
 
 class TextureResourceAdapter: public OpenGLResourceAdapter {
 	public:
@@ -20,12 +21,10 @@ class TextureResourceAdapter: public OpenGLResourceAdapter {
 		}
 
 		virtual Resource *load(FileParser &fileParser, const String &mimeType) const override {
-			ImageResource *imageResource = (ImageResource *)this->getResourceManager()->load(fileParser);
+			ImageResource *imageResource = (ImageResource *)this->getResourceManager()->load(fileParser, std::set<String> {ResourceManager::EphemeralLabel});
 			TextureResource *resource = null;
 
 			if(imageResource != null) {
-				imageResource->addLabel(ResourceManager::EphemeralLabel);
-
 				unsigned int textureHandler = 0;
 				glGetError();
 				glGenTextures(1, &textureHandler);

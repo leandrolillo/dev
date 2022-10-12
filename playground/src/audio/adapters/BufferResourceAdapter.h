@@ -12,6 +12,7 @@
 #include "../resources/AudioResource.h"
 #include "../resources/BufferResource.h"
 #include <ResourceAdapter.h>
+#include <set>
 
 class BufferResourceAdapter: public ResourceAdapter {
 public:
@@ -38,14 +39,12 @@ public:
 		ALenum error = 0;
 
 		AudioResource *audioResource =
-				(AudioResource*) this->getResourceManager()->load(fileParser);
+				(AudioResource*) this->getResourceManager()->load(fileParser, std::set<String> {ResourceManager::EphemeralLabel});
 		if (audioResource == null) {
 			logger->error(
 					"Error loading bufferResource: could not load audio from [%s]",
 					fileParser.getFilename().c_str());
 			return (null);
-		} else {
-			audioResource->addLabel(ResourceManager::EphemeralLabel);
 		}
 
 		ALuint ALbuffer = 0;

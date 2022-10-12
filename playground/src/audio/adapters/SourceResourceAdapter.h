@@ -12,6 +12,7 @@
 #include <resources/SourceResource.h>
 #include <resources/BufferResource.h>
 #include <ResourceAdapter.h>
+#include <set>
 
 class SourceResourceAdapter: public ResourceAdapter {
 	public:
@@ -25,7 +26,7 @@ class SourceResourceAdapter: public ResourceAdapter {
 
 			logger->debug("loading audio/source from [%s]", fileParser.getFilename().c_str());
 
-			BufferResource * buffer = (BufferResource *)getResourceManager()->load(fileParser.getFilename().c_str(), "audio/buffer");
+			BufferResource * buffer = (BufferResource *)getResourceManager()->load(fileParser.getFilename().c_str(), "audio/buffer", std::set<String> {ResourceManager::ResourceManager::EphemeralLabel});
 			if(buffer == null) {
 				logger->error("Error creating source: could not load buffer for [%s]", fileParser.getFilename().c_str());
 				return null;
