@@ -82,7 +82,7 @@ public:
 	 * Loads a file using the parent file path as base for relative paths - TODO: Replace by load with parent resource
 	 */
 	Resource* load(const String &parentFilePath, const String &fileName, const String &mimeType) {
-		return load(Paths::add(Paths::getDirname(parentFilePath), fileName), mimeType);
+		return load(Paths::relative(parentFilePath, fileName), mimeType);
 	}
 
 	Resource* load(FileParser &fileParser, const String &mimeType, std::set<String> labels = {});

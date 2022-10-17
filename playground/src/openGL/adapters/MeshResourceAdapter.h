@@ -46,7 +46,7 @@ public:
 				}
 			}
 
-			if(!geometry->getMaterial()->getAmbientTexture().empty()) {
+			if(!geometry->getMaterial()->getDiffuseTexture().empty()) {
 				TextureResource *texture = (TextureResource *)getResourceManager()->load(geometry->getMaterial()->getDiffuseTexture(), "video/texture");
 				if(texture != null) {
 					resource->setTexture(texture);
@@ -60,7 +60,7 @@ public:
 				if(texture != null) {
 					resource->setNormalMap(texture);
 				} else {
-					logger->warn("Could not load texture [%s]", geometry->getMaterial()->getDiffuseTexture().c_str());
+					logger->warn("Could not load texture [%s]", geometry->getMaterial()->getBumptTexture().c_str());
 				}
 			}
 
@@ -69,7 +69,7 @@ public:
 				if(texture != null) {
 					resource->setSpecularMap(texture);
 				} else {
-					logger->warn("Could not load texture [%s]", geometry->getMaterial()->getDiffuseTexture().c_str());
+					logger->warn("Could not load texture [%s]", geometry->getMaterial()->getSpecularTexture().c_str());
 				}
 			}
 		}

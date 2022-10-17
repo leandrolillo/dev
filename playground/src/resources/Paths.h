@@ -40,6 +40,10 @@ public:
 				normalizedPrefix + normalizedPostfix;
 	}
 
+	static String relative(const String &prefix, const String &postFix) {
+		return Paths::add(Paths::getDirname(prefix), postFix);
+	}
+
 	/**
 	 * Return the folder part of a path to a file.
 	 */

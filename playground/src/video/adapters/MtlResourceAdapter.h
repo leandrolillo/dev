@@ -61,20 +61,19 @@ public:
         	} else if (token == "d") {
         		material->setAlpha(1.0 - textParser.readReal());
         	} else if (token == "map_Ka") {
-        		material->setAmbientTexture(textParser.takeLine());
+        		material->setAmbientTexture(Paths::relative(textParser.getFilename(), textParser.takeLine()));
         	} else if (token == "map_Kd") {
-        		material->setDiffuseTexture(textParser.takeLine());
+        		material->setDiffuseTexture(Paths::relative(textParser.getFilename(), textParser.takeLine()));
         	} else if (token == "map_Ks") {
-        		material->setSpecularTexture(textParser.takeLine());
+        		material->setSpecularTexture(Paths::relative(textParser.getFilename(), textParser.takeLine()));
         	} else if (token == "map_d") {
         		material->setAlphaTexture(textParser.takeLine());
         	} else if (token == "map_bump" || token == "bump") {
-        		material->setBumptTexture(textParser.takeLine());
-        	}else {
+        		material->setBumptTexture(Paths::relative(textParser.getFilename(), textParser.takeLine()));
+        	} else {
                 String line = textParser.takeLine().c_str();
                 logger->warn("skipping [%s] [%s]", token.c_str(), line.c_str());
             }
-
 
         	if(textParser.peekToken() == "newmtl") {
         		break;
