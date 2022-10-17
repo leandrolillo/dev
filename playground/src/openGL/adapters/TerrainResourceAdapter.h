@@ -85,12 +85,9 @@ protected:
                 }
             }
 
-            VertexArrayResourceAdapter *adapter = (VertexArrayResourceAdapter *)this->getResourceManager()->getAdapter("video/vertexArray");
-            if(adapter != null) {
-                model = adapter->generateVertexBuffer(&heightMapGeometry);
-                model->setFileName(heightMap->getFileName());
-                this->getResourceManager()->addResource(model);
-            }
+			model = OpenGLUtilites::generateVertexBuffer(&heightMapGeometry);
+			model->setFileName(heightMap->getFileName());
+			this->getResourceManager()->addResource(model);
         }
 
         return model;

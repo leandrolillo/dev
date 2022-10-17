@@ -23,6 +23,7 @@
 #include <adapters/ShaderProgramResourceAdapter.h>
 #include <adapters/CubeMapResourceAdapter.h>
 #include <adapters/HeightMapResourceAdapter.h>
+#include <adapters/MeshResourceAdapter.h>
 
 constexpr unsigned int DEPTH_TEST=GL_DEPTH_TEST;
 constexpr unsigned int CULL_FACE=GL_CULL_FACE;
@@ -82,6 +83,7 @@ public:
         this->getContainer()->getResourceManager()->addAdapter(new HeightMapResourceAdapter());
         this->getContainer()->getResourceManager()->addAdapter(new VertexArrayResourceAdapter());
         this->getContainer()->getResourceManager()->addAdapter(new ShaderResourceAdapter());
+        this->getContainer()->getResourceManager()->addAdapter(new MeshResourceAdapter());
         this->getContainer()->getResourceManager()->addAdapter(new ShaderProgramResourceAdapter());
 
         if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -199,7 +201,7 @@ public:
                 return 0;
             case SDL_MOUSEMOTION:
                 //SDL_Log("SDL_MOUSEMOTION (%d,%d) delta=(%d,%d)", event->motion.x, event->motion.y, event->motion.xrel, event->motion.yrel);
-                this->getContainer()->onMouseMove(event->motion.x, event->motion.y, event->motion.xrel, event->motion.yrel);
+                this->getContainer()->onMouseMove(event->motion.x, event->motion.y, event->motion.xrel, event->motion.yrel, event->motion.state);
                 logger->verbose("MOUSEMOVE: (%d, %d)", event->motion.xrel, event->motion.yrel);
                 return 0;
             case SDL_MOUSEBUTTONDOWN:

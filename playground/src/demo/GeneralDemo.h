@@ -148,7 +148,7 @@ public:
 		logger->verbose("%s", (*currentPosition).toString().c_str());
 	}
 
-	virtual void onMouseMove(int x, int y, int dx, int dy) override {
+	virtual void onMouseMove(int x, int y, int dx, int dy, unsigned int buttons) override {
 		*currentPosition += vector(0.1f * dx, 0.1f * dy, 0);
 		logger->verbose("%s", (*currentPosition).toString().c_str());
 	}

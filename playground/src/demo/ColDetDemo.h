@@ -194,7 +194,7 @@ public:
         }
     }
 
-    void onMouseMove(int x, int y, int dx, int dy) override {
+    void onMouseMove(int x, int y, int dx, int dy, unsigned int buttons) override {
             Line line(camera.getPosition(),
                     camera.getRayDirection((unsigned int) x, (unsigned int) y, video->getScreenWidth(), video->getScreenHeight()));
 

@@ -9,6 +9,7 @@
 #define GEOMETRYRESOURCE_H_
 
 #include <Resource.h>
+#include <MaterialResource.h>
 #include <Math3d.h>
 #include <vector>
 
@@ -27,12 +28,13 @@ private:
 	std::vector<vector2> textureCoordinates;
 	std::vector<vector3> colors;
 	String type;
+	MaterialResource *material = null;
 
 	vector size {0.0, 0.0, 0.0 };
 public:
 	GeometryResource(unsigned int id) :
 			Resource(id, "video/geometry") {
-		type = 4;
+		type = "triangles";
 	}
 
 	std::vector<vector3>& getNormals() {
@@ -104,6 +106,14 @@ public:
 
 	void setName(const std::string &name) {
 		this->name = name;
+	}
+
+	MaterialResource* getMaterial() const {
+		return material;
+	}
+
+	void setMaterial(MaterialResource *material) {
+		this->material = material;
 	}
 };
 

@@ -9,7 +9,8 @@
 #define SRC_VIDEO_ADAPTERS_OBJRESOURCEADAPTER_H_
 
 #include<ResourceAdapter.h>
-#include<GeometryResource.h>
+#include<GeometryCollection.h>
+#include<MaterialCollection.h>
 
 class ObjResourceAdapter: public ResourceAdapter {
 public:
@@ -29,20 +30,23 @@ public:
         std::vector<vector> normals;
         std::vector<vector2> textCoords;
 
-        std::vector<GeometryResource *>objects;
+        GeometryCollection *objects = new GeometryCollection();
+        MaterialCollection *materials = null;
 
         String token;
         while ((token = textParser.peekToken()) != FileParser::eof) {
             if (token == "o" || token == "v" || token == "vn" || token == "vt" || token == "f") {
-            	objects.push_back(parseObject(textParser, vertices, normals, textCoords));
+            	GeometryResource *object = parseObject(textParser, vertices, normals, textCoords, materials);
+            	object->setFileName(Paths::add(fileParser.getFilename(), object->getName()));
+
+            	this->getResourceManager()->addResource(object);
+
+            	objects->addObject(object);
             } else if (token == "mtllib") {
             	textParser.takeToken();
-
             	String materialLibraryName = textParser.takeLine();
-            	Resource *materials = this->getResourceManager()->load(textParser.getFilename(), materialLibraryName, "model/mtl");
-            	if(materials == null) {
-            		logger->warn("Could not load material library [%s] referenced from [%s]", materialLibraryName.c_str(), textParser.getFilename().c_str());
-            	}
+
+            	materials = (MaterialCollection *)this->getResourceManager()->load(textParser.getFilename(), materialLibraryName, "model/mtl");
             } else {
                 String line = textParser.takeLine().c_str();
                 logger->warn("skipping [%s] [%s]", token.c_str(), line.c_str());
@@ -52,18 +56,14 @@ public:
 //        logger->info("Parsed [%s] file, converting to geometry...", fileParser.getFilename().c_str());
 
 
-
-        if(objects.empty()) {
-        	return null;
-        }
-
-        return *(objects.begin());
+        return objects;
     }
 
     GeometryResource *parseObject(TextParser &textParser,
 		std::vector<vector> &vertices,
 		std::vector<vector> &normals,
-		std::vector<vector2> &textCoords) const {
+		std::vector<vector2> &textCoords,
+		MaterialCollection *materials) const {
 
         GeometryResource *geometry = new GeometryResource(0);
         geometry->setName(Paths::getBasename(textParser.getFilename()));
@@ -105,6 +105,10 @@ public:
 					delete geometry;
 					return null;
 				}
+			} else if (token == "usemtl") {
+				String materialName = textParser.takeLine();
+				StringUtils::trim(materialName);
+				geometry->setMaterial(materials->getMaterial(materialName));
 
 			} else {
                 String line = textParser.takeLine();

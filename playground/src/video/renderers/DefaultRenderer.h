@@ -32,7 +32,7 @@ public:
          * drawLine functionality which generates singular matrixes.
          */
         matriz_3x3 reducedModelMatrix = (matriz_3x3) modelMatrix;
-        if(reducedModelMatrix.determinante() != 0.0f) {
+        if(equalsZero(reducedModelMatrix.determinante())) {
             this->normalMatrix = reducedModelMatrix.inversa().traspuesta();
         } else {
             this->normalMatrix = matriz_3x3::identidad;
@@ -144,6 +144,12 @@ public:
     void drawObject(const matriz_4x4 &modelMatrix, const VertexArrayResource *object) {
     	if(object != null) {
     		this->objectsByTexture[this->currentTexture].push_back(WorldObject(modelMatrix, object, currentMaterial));
+    	}
+    }
+
+    void drawObject(const matriz_4x4 &modelMatrix, const MeshResource *object) {
+    	if(object != null) {
+    		this->objectsByTexture[object->getTexture()].push_back(WorldObject(modelMatrix, object->getVertexArray(), object->getMaterial()));
     	}
     }
 

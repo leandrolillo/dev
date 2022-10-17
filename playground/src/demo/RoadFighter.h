@@ -9,11 +9,13 @@
 #define SRC_BATTLEROAD_H_
 
 #include "base/BaseDemo.h"
+#include <MeshResource.h>
 
 class RoadFighterRunner: public BaseDemoRunner {
 //    ParticleManager particleManager;
 //    const CollisionTester &intersectionTester = *(particleManager.getCollisionDetector().getIntersectionTester());
 
+	MeshResource *carMesh = null;
 	VertexArrayResource *car = null;
 	VertexArrayResource *axes = null;
 //	TextureResource *texture = null;
@@ -40,6 +42,11 @@ public:
         	return false;
         }
 
+        if((carMesh = (MeshResource *)this->getResourceManager()->load("roadFighter/corvette.obj", "video/mesh")) == null) {
+        	logger->error("Could not load car mesh");
+        	return false;
+        }
+
         return true;
     }
 
@@ -50,14 +57,25 @@ public:
 
         defaultRenderer.drawObject(matrix_4x4::identidad, car);
         defaultRenderer.drawObject(matrix_4x4::identidad, axes);
+        defaultRenderer.drawObject(matrix_4x4::traslacion(0, 0, -3), carMesh);
+
 
         defaultRenderer.render(camera);
 
         return LoopResult::CONTINUE;
     }
 
-//    void onMouseMove(int x, int y, int dx, int dy) override {
-//    }
+    void onMouseMove(int x, int y, int dx, int dy, unsigned int buttons) override {
+    	const Uint8 *state = SDL_GetKeyboardState(NULL);
+
+    	if((buttons & SDL_BUTTON_MMASK) && state[SDL_SCANCODE_LSHIFT]) {
+    		camera.setPosition(camera.getPosition() + vector(-dx, dy, 0.0) * 0.1f);
+    	}
+    	else if((buttons & SDL_BUTTON_MMASK) && state[SDL_SCANCODE_LCTRL]) {
+    		camera.setPosition(camera.getPosition() + vector(0, 0, dy) * 0.1f);
+    	}
+
+    }
 //
 //    void onMouseButtonUp(unsigned char button, int x, int y) override {
 //    }
@@ -69,8 +87,8 @@ public:
 //	}
 //
 //
-//    void onMouseButtonDown(unsigned char button, int x, int y) override {
-//    }
+    void onMouseButtonDown(unsigned char button, int x, int y) override {
+    }
 //
 //    void onKeyDown(unsigned int key, unsigned int keyModifier) override {
 //        switch (key) {

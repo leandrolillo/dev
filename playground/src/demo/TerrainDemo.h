@@ -326,7 +326,7 @@ public:
 	    inputController->mouseButtonUp(button, x, y);
 	}
 
-    virtual void onMouseMove(int x, int y, int dx, int dy) override {
+    virtual void onMouseMove(int x, int y, int dx, int dy, unsigned int buttons) override {
         if(dx != 0 || dy != 0) {
             inputController->mouseMove(x, y, dx, dy);
             this->video->setMousePosition(video->getScreenWidth() >> 1, video->getScreenHeight() >> 1);

@@ -231,7 +231,7 @@ public:
         logger->debug("camera: %s", camera.getPosition().toString("%.2f").c_str());
 	}
 
-	void onMouseMove(int x, int y, int dx, int dy) override {
+	void onMouseMove(int x, int y, int dx, int dy, unsigned int buttons) override {
         camera.setPosition(camera.getPosition() - vector(0.1f * dx, 0.1f * dy, 0));
         audio->updateListener(camera.getPosition());
         logger->debug("camera: %s", camera.getPosition().toString("%.2f").c_str());

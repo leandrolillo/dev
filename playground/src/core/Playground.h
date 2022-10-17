@@ -91,7 +91,7 @@ public:
 	virtual void onKeyUp(unsigned int key, unsigned int keyModifier) {
 	}
 
-	virtual void onMouseMove(int x, int y, int dx, int dy) {
+	virtual void onMouseMove(int x, int y, int dx, int dy, unsigned int buttons) {
 	}
 
 	virtual void onMouseButtonDown(unsigned char button, int x, int y) {
@@ -370,9 +370,9 @@ public:
 		}
 	}
 
-	void onMouseMove(int x, int y, int dx, int dy) {
+	void onMouseMove(int x, int y, int dx, int dy, unsigned int buttons) const {
 		for (auto currentRunner : mouseMoveObservers) {
-			currentRunner->onMouseMove(x, y, dx, dy);
+			currentRunner->onMouseMove(x, y, dx, dy, buttons);
 		}
 	}
 

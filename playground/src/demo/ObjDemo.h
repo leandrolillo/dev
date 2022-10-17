@@ -89,7 +89,7 @@ public:
                 posicion.toString("%.2f").c_str());
 	}
 
-	virtual void onMouseMove(int x, int y, int dx, int dy) override {
+	virtual void onMouseMove(int x, int y, int dx, int dy, unsigned int buttons) override {
         camera.setPosition(camera.getPosition() - vector(0.1f * dx, 0.1f * dy, 0));
         light.setPosition(camera.getPosition());
         posicion = posicion + vector(0.1f * dx, 0.1f * dy, 0);

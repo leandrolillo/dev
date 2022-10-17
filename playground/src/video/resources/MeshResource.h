@@ -15,12 +15,15 @@
 
 class MeshResource : public Resource
 {
-	VertexArrayResource *vertexArray;
-	MaterialResource *material;
-	TextureResource *texture;
-	TextureResource *specularMap;
-	TextureResource *normalMap;
+	VertexArrayResource *vertexArray = null;
+	MaterialResource *material = null;
+	TextureResource *texture = null;
+	TextureResource *specularMap = null;
+	TextureResource *normalMap = null;
 public:
+	MeshResource() : Resource(0, "video/mesh") {
+	}
+
 	const MaterialResource* getMaterial() const {
 		return material;
 	}
@@ -43,6 +46,22 @@ public:
 
 	void setVertexArray(VertexArrayResource *vertexArray) {
 		this->vertexArray = vertexArray;
+	}
+
+	TextureResource *getNormalMap() const {
+		return normalMap;
+	}
+
+	void setNormalMap(TextureResource *normalMap = null) {
+		this->normalMap = normalMap;
+	}
+
+	TextureResource * getSpecularMap() const {
+		return specularMap;
+	}
+
+	void setSpecularMap(TextureResource *specularMap = null) {
+		this->specularMap = specularMap;
 	}
 };
 
