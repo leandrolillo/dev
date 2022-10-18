@@ -73,10 +73,17 @@ class PngResourceAdapter : public ResourceAdapter {
 				return null;
 			}
 
-			if (color_type == PNG_COLOR_TYPE_PALETTE || (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8) || png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS)) png_set_expand(png_ptr);
-			if (bit_depth == 16) png_set_strip_16(png_ptr);
-			if (color_type == PNG_COLOR_TYPE_GRAY || color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
+			if (color_type == PNG_COLOR_TYPE_PALETTE || (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8) || png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS)) {
+				png_set_expand(png_ptr);
+			}
+
+			if (bit_depth == 16) {
+				png_set_strip_16(png_ptr);
+			}
+
+			if (color_type == PNG_COLOR_TYPE_GRAY || color_type == PNG_COLOR_TYPE_GRAY_ALPHA) {
 				png_set_gray_to_rgb(png_ptr);
+			}
 
 			png_read_update_info(png_ptr, info_ptr);
 

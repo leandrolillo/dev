@@ -68,7 +68,6 @@ public:
         GeometryResource *geometry = new GeometryResource(0);
         geometry->setName(Paths::getBasename(textParser.getFilename()));
         geometry->setType("triangles");
-        geometry->setName(Paths::getBasename(textParser.getFilename()));
 
 
         logger->info("Parsing object");
@@ -86,7 +85,7 @@ public:
 			} else if (token == "vn") {
 				normals.push_back(vector(textParser.readReal(), textParser.readReal(), textParser.readReal()));
 			} else if (token == "vt") {
-				textCoords.push_back(vector2(textParser.readReal(), textParser.readReal()));
+				textCoords.push_back(vector2(textParser.readReal(), 1.0 - textParser.readReal()));
 			} else if (token == "f") {
 				vector newIndices = readIndicesRow(textParser);
 				addIndex(geometry, newIndices, vertices, normals, textCoords, indices);
@@ -105,11 +104,10 @@ public:
 					delete geometry;
 					return null;
 				}
-			} else if (token == "usemtl") {
+			} else if (token == "usemtl" && materials != null) {
 				String materialName = textParser.takeLine();
 				StringUtils::trim(materialName);
 				geometry->setMaterial(materials->getMaterial(materialName));
-
 			} else {
                 String line = textParser.takeLine();
                 logger->warn("skipping [%s] [%s]", token.c_str(), line.c_str());
@@ -177,7 +175,7 @@ private:
 
         geometry->getIndices().push_back(geometry->getIndices().size());
 		geometry->getVertices().push_back(vertices.at((int) newIndices.x - 1));
-		geometry->getTextureCoordinates().push_back(newIndices.y > 0 ? textCoords.at((int) newIndices.x - 1) : vector2(0, 0));
+		geometry->getTextureCoordinates().push_back(newIndices.y > 0 ? textCoords.at((int) newIndices.y - 1) : vector2(0, 0));
         geometry->getNormals().push_back(newIndices.z > 0 ? normals.at((int) newIndices.z - 1) : vector3(0, 0, 0));
 
     }

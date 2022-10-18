@@ -16,6 +16,7 @@ class RoadFighterRunner: public BaseDemoRunner {
 //    const CollisionTester &intersectionTester = *(particleManager.getCollisionDetector().getIntersectionTester());
 
 	MeshResource *carMesh = null;
+	MeshResource *texturedBoxMesh = null;
 	VertexArrayResource *car = null;
 	VertexArrayResource *axes = null;
 //	TextureResource *texture = null;
@@ -37,13 +38,18 @@ public:
         	return false;
         }
 
-        if((car = (VertexArrayResource *)this->getResourceManager()->load("roadFighter/corvette.obj", "video/vertexArray")) == null) {
-        	logger->error("Could not load car model");
-        	return false;
-        }
+//        if((car = (VertexArrayResource *)this->getResourceManager()->load("roadFighter/corvette.obj", "video/vertexArray")) == null) {
+//        	logger->error("Could not load car model");
+//        	return false;
+//        }
 
         if((carMesh = (MeshResource *)this->getResourceManager()->load("roadFighter/corvette.obj", "video/mesh")) == null) {
         	logger->error("Could not load car mesh");
+        	return false;
+        }
+
+        if((texturedBoxMesh = (MeshResource *)this->getResourceManager()->load("roadFighter/texturedCube.obj", "video/mesh")) == null) {
+        	logger->error("Could not load textured box mesh");
         	return false;
         }
 
@@ -57,6 +63,7 @@ public:
 
         defaultRenderer.drawObject(matrix_4x4::identidad, car);
         defaultRenderer.drawObject(matrix_4x4::identidad, axes);
+        defaultRenderer.drawObject(matrix_4x4::identidad, texturedBoxMesh);
         defaultRenderer.drawObject(matrix_4x4::traslacion(0, 0, -3), carMesh);
 
 

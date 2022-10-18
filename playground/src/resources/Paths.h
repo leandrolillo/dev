@@ -54,7 +54,7 @@ public:
 	}
 
 	/**
-	 * Return the folder part of a path to a file.
+	 * Return the file part of a path to a file.
 	 */
 	static const String getBasename(const String &filePath) {
 		unsigned long location = filePath.find_last_of('/');
