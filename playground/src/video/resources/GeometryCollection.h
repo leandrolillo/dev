@@ -22,6 +22,8 @@ public:
 	void addObject(GeometryResource *object) {
 		if(object != null && !object->getName().empty()) {
 			objects[object->getName()] = object;
+		} else {
+			logger->warn("Not adding object to collection because it is null or its name is empty");
 		}
 	}
 

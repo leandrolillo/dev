@@ -1,5 +1,5 @@
 # Apple ModelIO OBJ File: lowPolyTree
-mtllib lowPolyTree.mtl
+# mtllib lowPolyTree.mtl
 g 
 v -0.376162 -0.721954 -2.78951
 v 0 2.11951 -1.44278

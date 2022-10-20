@@ -12,6 +12,7 @@
 #include <resources/GeometryResource.h>
 #include <JsonParser.h>
 #include "normalGenerators/NormalGenerator.h"
+#include <GeometryCollection.h>
 
 
 class GeometryResourceAdapter: public ResourceAdapter {
@@ -23,7 +24,9 @@ public:
 
 	virtual Resource *load(FileParser &fileParser, const String &mimeType) const override {
 		JsonParser parser(fileParser);
+		GeometryCollection *geometryCollection = new GeometryCollection;
 		GeometryResource *resource = new GeometryResource(0);
+		resource->setName(Paths::getBasename(fileParser.getFilename()));
 
 		bool generateNormals = false;
 		bool generateIndexes = false;
@@ -80,7 +83,11 @@ public:
 		log("colors ", resource->getColors());
 		log("normals ", resource->getNormals());
 		log("textureCoordinates ", resource->getTextureCoordinates());
-		return resource;
+
+		getResourceManager()->addResource(resource);
+		geometryCollection->addObject(resource);
+
+		return geometryCollection;
 	}
 
 	/**
