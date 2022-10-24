@@ -85,7 +85,7 @@ public:
 	Resource* load(const String &parentFilePath, const String &fileName, const String &outputMimeType) {
 		logger->debug("Load [%s] [%s] relative to [%s]", outputMimeType.c_str(), fileName.c_str(), parentFilePath.c_str());
 
-		FileParser fileParser(Paths::relative(parentFilePath, fileName, this->rootFolder));
+		FileParser fileParser(Paths::relative(parentFilePath, fileName));
 		return load(ResourceLoadRequest(fileParser).produceMimeType(outputMimeType));
 	}
 
