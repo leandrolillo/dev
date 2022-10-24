@@ -8,20 +8,20 @@
 #ifndef SRC_VIDEO_ADAPTERS_TERRAINRESOURCEADAPTER_H_
 #define SRC_VIDEO_ADAPTERS_TERRAINRESOURCEADAPTER_H_
 
-#include <ResourceAdapter.h>
-#include"VertexArrayAdapter.h"
 #include <resources/TerrainResource.h>
+#include <ResourceAdapter.h>
 #include <JsonParser.h>
+#include <OpenGLUtilities.h>
 
 class TerrainResourceAdapter: public ResourceAdapter {
 public:
 	TerrainResourceAdapter() {
 		logger = LoggerFactory::getLogger("video/TerrainResourceAdapter");
-		this->addSupportedMimeType("video/terrain");
+		this->produces(MimeTypes::TERRAIN);
 	}
 
-	Resource *load(FileParser &fileParser, const String &mimeType) const override {
-		JsonParser jsonParser(fileParser);
+	Resource *load(ResourceLoadRequest &request) const override {
+		JsonParser jsonParser(request.getFileParser());
 		TerrainResource *resource = new TerrainResource();
 
 		jsonParser.readStartObject();
@@ -31,19 +31,19 @@ public:
             jsonParser.readValueSeparator();
 
 			if (token == "r") {
-				resource->setR((TextureResource *)this->getResourceManager()->load(fileParser.getFilename(), jsonParser.readString(), "video/texture"));
+				resource->setR((TextureResource *)this->getResourceManager()->load(request.getFilePath(), jsonParser.readString(), MimeTypes::TEXTURE));
 			} else if (token == "g") {
-				resource->setG((TextureResource *)this->getResourceManager()->load(fileParser.getFilename(), jsonParser.readString(), "video/texture"));
+				resource->setG((TextureResource *)this->getResourceManager()->load(request.getFilePath(), jsonParser.readString(), MimeTypes::TEXTURE));
 			} else if (token == "b") {
-				resource->setB((TextureResource *)this->getResourceManager()->load(fileParser.getFilename(), jsonParser.readString(), "video/texture"));
+				resource->setB((TextureResource *)this->getResourceManager()->load(request.getFilePath(), jsonParser.readString(), MimeTypes::TEXTURE));
 			} else if (token == "a") {
-				resource->setA((TextureResource *)this->getResourceManager()->load(fileParser.getFilename(), jsonParser.readString(), "video/texture"));
+				resource->setA((TextureResource *)this->getResourceManager()->load(request.getFilePath(), jsonParser.readString(), MimeTypes::TEXTURE));
 			} else if (token == "map") {
-				resource->setMap((TextureResource *)this->getResourceManager()->load(fileParser.getFilename(), jsonParser.readString(), "video/texture"));
+				resource->setMap((TextureResource *)this->getResourceManager()->load(request.getFilePath(), jsonParser.readString(), MimeTypes::TEXTURE));
 			} else if (token == "model") {
-				resource->setModel((VertexArrayResource *)this->getResourceManager()->load(fileParser.getFilename(), jsonParser.readString(), "video/vertexArray"));
+				resource->setModel((VertexArrayResource *)this->getResourceManager()->load(request.getFilePath(), jsonParser.readString(), MimeTypes::VERTEXARRAY));
 			} else if (token == "heightmap") {
-			    resource->setHeightmap((HeightMapResource *)this->getResourceManager()->load(fileParser.getFilename(), jsonParser.readString(), "video/heightmap"));
+			    resource->setHeightmap((HeightMapResource *)this->getResourceManager()->load(request.getFilePath(), jsonParser.readString(), MimeTypes::HEIGHTMAP));
 			    resource->setModel(buildModel(resource->getHeightMap()));
 			} else {
 				logger->error("Unexpected token: [%s] at (%d, %d)",

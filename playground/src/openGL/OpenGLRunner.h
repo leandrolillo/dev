@@ -19,7 +19,8 @@
 #include <VideoRunner.h>
 #include <adapters/TextureResourceAdapter.h>
 #include <adapters/VertexArrayAdapter.h>
-#include <adapters/ShaderResourceAdapter.h>
+#include <adapters/VertexShaderResourceAdapter.h>
+#include <adapters/FragmentShaderResourceAdapter.h>
 #include <adapters/ShaderProgramResourceAdapter.h>
 #include <adapters/CubeMapResourceAdapter.h>
 #include <adapters/HeightMapResourceAdapter.h>
@@ -82,8 +83,9 @@ public:
         this->getContainer()->getResourceManager()->addAdapter(new CubeMapResourceAdapter());
         this->getContainer()->getResourceManager()->addAdapter(new HeightMapResourceAdapter());
         this->getContainer()->getResourceManager()->addAdapter(new VertexArrayResourceAdapter());
-        this->getContainer()->getResourceManager()->addAdapter(new ShaderResourceAdapter());
         this->getContainer()->getResourceManager()->addAdapter(new MeshResourceAdapter());
+        this->getContainer()->getResourceManager()->addAdapter(new VertexShaderResourceAdapter());
+        this->getContainer()->getResourceManager()->addAdapter(new FragmentShaderResourceAdapter());
         this->getContainer()->getResourceManager()->addAdapter(new ShaderProgramResourceAdapter());
 
         if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -502,7 +504,7 @@ public:
     void drawVertexArray(const VertexArrayResource *vertexArrayResource) const override {
         String errorMessage;
 
-        if (vertexArrayResource != null && vertexArrayResource->getId() > 0 /*&& vertexArrayResource->getMimeType() == "video/vertexArray"*/) {
+        if (vertexArrayResource != null && vertexArrayResource->getId() > 0) {
             getGlError();
             //logger->info("Drawing vertexArray %s", vertexArrayResource->toString().c_str());
 

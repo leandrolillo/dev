@@ -17,11 +17,12 @@ class TextureResourceAdapter: public OpenGLResourceAdapter {
 	public:
 		TextureResourceAdapter() {
 			logger = LoggerFactory::getLogger("video/TextureResourceAdapter");
-			this->addSupportedMimeType("video/texture");
+			this->produces(MimeTypes::TEXTURE);
+			//this->setInputMimeType(MimeTypes::IMAGE); //TODO: if at some point use a tree search of chained adapters the input mimetype should be image. In the meantime leave it blank as a wildcard.
 		}
 
-		virtual Resource *load(FileParser &fileParser, const String &mimeType) const override {
-			ImageResource *imageResource = (ImageResource *)this->getResourceManager()->load(fileParser, std::set<String> {ResourceManager::EphemeralLabel});
+		virtual Resource *load(ResourceLoadRequest &request) const override {
+			ImageResource *imageResource = (ImageResource *)this->getResourceManager()->load(request.getFileParser(), MimeTypes::IMAGE, std::set<String> {ResourceManager::EphemeralLabel});
 			TextureResource *resource = null;
 
 			if(imageResource != null) {
@@ -49,7 +50,7 @@ class TextureResourceAdapter: public OpenGLResourceAdapter {
 
 				String errorMessage;
                 if (!(errorMessage = getGlError()).empty()) {
-                    logger->error("Error loading texture [%s]: [%s]", fileParser.getFilename().c_str(), errorMessage.c_str());
+                    logger->error("Error loading texture [%s]: [%s]", request.getFilePath().c_str(), errorMessage.c_str());
                     dispose(resource);
                     return null;
                 }

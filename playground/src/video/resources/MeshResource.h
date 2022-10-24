@@ -21,7 +21,7 @@ class MeshResource : public Resource
 	TextureResource *specularMap = null;
 	TextureResource *normalMap = null;
 public:
-	MeshResource() : Resource(0, "video/mesh") {
+	MeshResource() : Resource(0, MimeTypes::MESH) {
 	}
 
 	const MaterialResource* getMaterial() const {

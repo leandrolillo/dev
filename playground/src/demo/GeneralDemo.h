@@ -61,18 +61,18 @@ public:
 		lightAnnoyingSoundSource = audio->createSource("audio/voltage.wav");
 		audio->playSource(lightAnnoyingSoundSource);
 
-		pngTexture = (TextureResource*) getResourceManager()->load("images/TEXTURA.PNG", "video/texture");
-		pngTexture2 = (TextureResource*) getResourceManager()->load("images/CEDFENCE.PNG", "video/texture");
-		jpgTexture = (TextureResource*) getResourceManager()->load("images/irs.JPG", "video/texture");
+		pngTexture = (TextureResource*) getResourceManager()->load("images/TEXTURA.PNG", MimeTypes::TEXTURE);
+		pngTexture2 = (TextureResource*) getResourceManager()->load("images/CEDFENCE.PNG", MimeTypes::TEXTURE);
+		jpgTexture = (TextureResource*) getResourceManager()->load("images/irs.JPG", MimeTypes::TEXTURE);
 
-		sphereVertexArray = (VertexArrayResource*) getResourceManager()->load("geometry/sphere.json", "video/vertexArray");
-		triangleVertexArray = (VertexArrayResource*) getResourceManager()->load("geometry/triangle.json", "video/vertexArray");
+		sphereVertexArray = (VertexArrayResource*) getResourceManager()->load("geometry/sphere.json", MimeTypes::VERTEXARRAY);
+		triangleVertexArray = (VertexArrayResource*) getResourceManager()->load("geometry/triangle.json", MimeTypes::VERTEXARRAY);
 
         defaultRenderer.setLight(&light);
 //        defaultRenderer.setMaterial(&material);
 //        defaultRenderer.setTexture(pngTexture);
 
-        toonRenderer.setShaderProgram((ShaderProgramResource*) getResourceManager()->load("shaders/toon.330.program.json", "video/shaderProgram"));
+        toonRenderer.setShaderProgram((ShaderProgramResource*) getResourceManager()->load("shaders/toon.330.program.json", MimeTypes::SHADERPROGRAM));
         toonRenderer.setVideoRunner(video);
         toonRenderer.setLight(&light);
         toonRenderer.setMaterial(&material);

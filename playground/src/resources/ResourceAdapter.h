@@ -9,6 +9,7 @@
 #define RESOURCEADAPTER_H_
 
 #include "Resource.h"
+#include "ResourceLoadRequest.h"
 #include "ResourceManager.h"
 #include<vector>
 
@@ -17,7 +18,8 @@ class ResourceManager;
 class ResourceAdapter {
 private:
 	ResourceManager *resourceManager = null;
-	std::set<String> supportedMimeTypes;
+	String inputMimeType = "";
+	String outputMimeType = "";
 protected:
 	Logger *logger = null;
 public:
@@ -33,19 +35,8 @@ public:
 		this->resourceManager = resourceManager;
 	}
 
-	void addSupportedMimeType(const String &mimeType) {
-		supportedMimeTypes.insert(mimeType);
-	}
 
-	void setSupportedMimeTypes(const std::set<String> &supportedMimeTypes) {
-	    this->supportedMimeTypes = supportedMimeTypes;
-	}
-
-	const std::set<String> &getSupportedMimeTypes() const {
-		return supportedMimeTypes;
-	}
-
-	virtual Resource* load(FileParser &fileParser, const String &mimeType) const = 0;
+	virtual Resource* load(ResourceLoadRequest &request) const = 0;
 	virtual void dispose(Resource *resource) const {};
 
 	virtual String toString() const {
@@ -54,6 +45,24 @@ public:
 		}
 
 		return logger->getBasename();
+	}
+
+	const String& getInputMimeType() const {
+		return inputMimeType;
+	}
+
+	void accepts(const String &inputMimeType) {
+		this->inputMimeType = inputMimeType;
+	}
+
+	const String& getOutputMimeType() const {
+		return outputMimeType;
+	}
+
+	ResourceAdapter * produces(const String &outputMimeType) {
+		this->outputMimeType = outputMimeType;
+
+		return this;
 	}
 };
 

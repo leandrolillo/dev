@@ -96,7 +96,7 @@ public:
         gunshotSource = audio->createSource("audio/handgunfire.wav", vector(0, 0, 0), vector(0, 0, 0), false);
         bounceSource = audio->createSource("audio/twang3.wav", vector(0, 0, 0), vector(0, 0, 0), false);
 
-        textureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("images/basketball.png", "video/texture");
+        textureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("images/basketball.png", MimeTypes::TEXTURE);
 
         gridRenderer.setVideoRunner(video);
         skyboxRenderer.setVideoRunner(video);

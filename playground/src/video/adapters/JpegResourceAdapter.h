@@ -7,9 +7,8 @@
 
 #ifndef JPEGRESOURCEADAPTER_H_
 #define JPEGRESOURCEADAPTER_H_
-#include <stdio.h>
 #include <ResourceAdapter.h>
-
+#include <ImageResource.h>
 #include <jpeglib.h>
 
 class JpegResourceAdapter: public ResourceAdapter {
@@ -17,17 +16,17 @@ public:
 	JpegResourceAdapter() {
 		logger = LoggerFactory::getLogger("video/JpegResourceAdapter");
 
-		this->addSupportedMimeType("image/jpeg");
-		this->addSupportedMimeType("image/jpg");
+		this->accepts(MimeTypes::JPEG);
+		this->produces(MimeTypes::IMAGE);
 	}
 
-	virtual Resource *load(FileParser &fileParser, const String &mimeType) const override {
+	virtual Resource *load(ResourceLoadRequest &request) const override {
 		struct jpeg_decompress_struct cinfo;
 		struct jpeg_error_mgr jerr;
 
 		cinfo.err = jpeg_std_error(&jerr);
 		jpeg_create_decompress(&cinfo);
-		jpeg_stdio_src(&cinfo, fileParser.getStream());
+		jpeg_stdio_src(&cinfo, request.getFileParser().getStream());
 		jpeg_read_header(&cinfo, TRUE);
 		jpeg_start_decompress(&cinfo);
 		int row_stride = cinfo.output_width * cinfo.output_components;
@@ -35,7 +34,7 @@ public:
 		JSAMPARRAY buffer = (*cinfo.mem->alloc_sarray)((j_common_ptr) &cinfo,
 				JPOOL_IMAGE, row_stride, 1);
 
-		ImageResource *resource = new ImageResource(0, mimeType);
+		ImageResource *resource = new ImageResource(0, request.getOutputMimeType());
 		resource->setAlto(cinfo.output_height);
 		resource->setAncho(cinfo.output_width);
 		resource->setBpp(cinfo.output_components);

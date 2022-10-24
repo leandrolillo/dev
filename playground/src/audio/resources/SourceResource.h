@@ -22,7 +22,7 @@ class Source: public Resource {
 
 	public:
 		Source(unsigned int id) :
-				Resource(id, "audio/source") {
+				Resource(id, MimeTypes::AUDIOSOURCE) {
 			velocity = position = vector(0, 0, 0);
 			loop = false;
 			gain = pitch = rolloff = 1.0f;

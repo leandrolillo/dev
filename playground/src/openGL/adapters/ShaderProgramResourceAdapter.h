@@ -31,18 +31,19 @@ class ShaderProgramResourceAdapter: public OpenGLResourceAdapter {
 
 		ShaderProgramResourceAdapter() {
 			logger = LoggerFactory::getLogger("video/ShaderProgramResourceAdapter");
-			this->addSupportedMimeType("video/shaderProgram");
+			this->produces(MimeTypes::SHADERPROGRAM);
+			this->accepts(MimeTypes::JSON);
 
-			shadersMimeTypes["vertexShaders"] = "video/vertexShader";
-			shadersMimeTypes["fragmentShaders"] = "video/fragmentShader";
-			shadersMimeTypes["geometryShaders"] = "video/geometryShader";
-			shadersMimeTypes["tesellationShaders"] = "video/tesellationShader";
+			shadersMimeTypes["vertexShaders"] = MimeTypes::VERTEXSHADER;
+			shadersMimeTypes["fragmentShaders"] = MimeTypes::FRAGMENTSHADER;
+			shadersMimeTypes["geometryShaders"] = MimeTypes::GEOMETRYSHADER;
+			shadersMimeTypes["tesellationShaders"] = MimeTypes::TESELLATIONSHADER;
 		}
 
-		virtual Resource *load(FileParser &fileParser, const String &mimeType) const override {
+		virtual Resource *load(ResourceLoadRequest &request) const override {
 			GLenum glError = glGetError();
 
-			JsonParser parser(fileParser);
+			JsonParser parser(request.getFileParser());
 
 			ShaderProgramResource *resource = null;
 
@@ -58,7 +59,7 @@ class ShaderProgramResourceAdapter: public OpenGLResourceAdapter {
 					std::vector<String> vertexShadersFiles = parser.readStringArray();
 
 					for(std::vector<String>::iterator stringIterator = vertexShadersFiles.begin(); stringIterator != vertexShadersFiles.end(); stringIterator++) {
-						ShaderResource *shader = (ShaderResource *)getResourceManager()->load(fileParser.getFilename(), *stringIterator, shadersMimeTypes.at(token));
+						ShaderResource *shader = (ShaderResource *)getResourceManager()->load(request.getFilePath(), *stringIterator, shadersMimeTypes.at(token));
 						if(shader != null)
 							resource->getShaders().push_back(shader);
 						else
@@ -93,7 +94,7 @@ class ShaderProgramResourceAdapter: public OpenGLResourceAdapter {
 				return null;
 			}
 
-			Resource *vertexArray = this->getResourceManager()->load("core/sphere.json", "video/vertexArray");
+			Resource *vertexArray = this->getResourceManager()->load("core/sphere.json", MimeTypes::VERTEXARRAY);
 			if(vertexArray) {
 				glBindVertexArray(vertexArray->getId());
 				glValidateProgram(resource->getId());
@@ -106,14 +107,14 @@ class ShaderProgramResourceAdapter: public OpenGLResourceAdapter {
 				}
 			}
 
-			logger->debug("Shader executable [%s] successfully linked and validated", fileParser.getFilename().c_str());
+			logger->debug("Shader executable [%s] successfully linked and validated", request.getFilePath().c_str());
 
 			for(std::vector<ShaderResource *>::iterator shaderIterator = resource->getShaders().begin(); shaderIterator != resource->getShaders().end(); shaderIterator++)
 				glDetachShader(resource->getId(), (*shaderIterator)->getId());
 
 			glError = glGetError();
 			if(glError != GL_NO_ERROR) {
-				logger->error("Error loading texture [%s]: 0x[%x]", fileParser.getFilename().c_str(), glError);
+				logger->error("Error loading texture [%s]: 0x[%x]", request.getFilePath().c_str(), glError);
 				dispose(resource);
 				return null;
 			}

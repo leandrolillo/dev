@@ -14,7 +14,7 @@
 class ShaderResource : public Resource
 {
 	public:
-		ShaderResource(unsigned int id) : Resource(id, "video/vertexShader")
+		ShaderResource(unsigned int id) : Resource(id, MimeTypes::VERTEXSHADER)
 		{
 
 		}

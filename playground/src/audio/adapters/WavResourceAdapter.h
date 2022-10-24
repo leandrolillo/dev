@@ -17,7 +17,8 @@ class WavResourceAdapter: public ResourceAdapter {
 public:
 	WavResourceAdapter() {
 		logger = LoggerFactory::getLogger("audio/WavResourceAdapter");
-		this->addSupportedMimeType("audio/wav");
+		this->accepts(MimeTypes::WAVE);
+		this->produces(MimeTypes::AUDIO);
 	}
 
 	uint32_t asDword(char *string) const {
@@ -42,7 +43,7 @@ public:
 		return result;
 	}
 
-	virtual Resource* load(FileParser &fileParser, const String &mimeType) const override {
+	virtual Resource* load(ResourceLoadRequest &request) const override {
 		AudioResource *audioResource = null;
 
 		struct ChunkHeader {
@@ -67,11 +68,11 @@ public:
 			std::vector<char> data;
 		} *dataChunk = null;
 
-		while (fileParser.read(&chunkHeader, sizeof(ChunkHeader), 1) == 1) {
+		while (request.getFileParser().read(&chunkHeader, sizeof(ChunkHeader), 1) == 1) {
 			if (asString(chunkHeader.id) == "RIFF") {
 				logger->verbose("Reading riff chunk");
 				riffChunk = new RiffChunk;
-				if (fileParser.read(riffChunk, sizeof(RiffChunk), 1) != 1) { // riff chunk length is the file size, so read based on struct size instead.
+				if (request.getFileParser().read(riffChunk, sizeof(RiffChunk), 1) != 1) { // riff chunk length is the file size, so read based on struct size instead.
 					logger->error("Could not read RIFF chunk");
 					delete riffChunk;
 					riffChunk = null;
@@ -80,7 +81,7 @@ public:
 				logger->verbose("Reading format chunk");
 				if (sizeof(FormatChunk) >= chunkHeader.length) {
 					formatChunk = new FormatChunk;
-					if (fileParser.read(formatChunk, sizeof(char),
+					if (request.getFileParser().read(formatChunk, sizeof(char),
 							chunkHeader.length) != chunkHeader.length) {
 						logger->error("Could not read fmt chunk");
 						delete formatChunk;
@@ -100,7 +101,7 @@ public:
 				 */
 				char buffer[chunkHeader.length];
 
-				if (fileParser.read(buffer, sizeof(char), chunkHeader.length)
+				if (request.getFileParser().read(buffer, sizeof(char), chunkHeader.length)
 						!= chunkHeader.length) {
 					logger->error("Could not read data chunk");
 					delete dataChunk;
@@ -112,7 +113,7 @@ public:
 			} else { // skip chunk
 				logger->verbose("Skipping unsupported chunk: [%s] of size [%u]",
 						asString(chunkHeader.id).c_str(), chunkHeader.length);
-				fileParser.skip(sizeof(char), chunkHeader.length);
+				request.getFileParser().skip(sizeof(char), chunkHeader.length);
 			}
 		}
 

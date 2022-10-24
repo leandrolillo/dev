@@ -2,4 +2,6 @@ type summary add -s "<${var.x}, ${var.y}, ${var.z}>" vector
 type summary add -s "<${var.x}, ${var.y}, ${var.z}>" vector3
 type summary add -s "origin:${var.origin}, halfSizes:${var.halfSizes}" AABB
 type summary add -s "origin:${var.origin}, radius:${var.radius}" Sphere
-type summary add -s "FileParser[${var.filename} ${var.line}:${var.column}]" FileParser
+type summary add -s "${var.filename} ${var.line}:${var.column}" FileParser
+type summary add -s "${var.inputMimeType}->${var.outputMimeType} ${var.fileParser.filename}" ResourceLoadRequest
+type summary add -s "${var.mimeType} ${var.fileName} [${var.labels}]" Resource

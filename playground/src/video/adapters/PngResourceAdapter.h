@@ -17,10 +17,11 @@ class PngResourceAdapter : public ResourceAdapter {
 		public:
 		PngResourceAdapter() {
 			logger = LoggerFactory::getLogger("video/PngResourceAdapter");
-			this->addSupportedMimeType("image/png");
+			this->accepts(MimeTypes::PNG);
+			this->produces(MimeTypes::IMAGE);
 		}
 
-		virtual Resource *load(FileParser &fileParser, const String &mimeType) const override {
+		virtual Resource *load(ResourceLoadRequest &request) const override {
 			unsigned char *pBitmap;
 			unsigned int width, height;
 			int  bit_depth;
@@ -30,7 +31,7 @@ class PngResourceAdapter : public ResourceAdapter {
 			int channels, color_type;
 
 			unsigned char sig[8];
-			fileParser.read(sig, 1, 8);
+			request.getFileParser().read(sig, 1, 8);
 
 			if (!png_check_sig(sig, 8)) {
 				logger->error( "Not a valid png file");
@@ -54,7 +55,7 @@ class PngResourceAdapter : public ResourceAdapter {
 				return(null);
 			}
 
-			png_init_io(png_ptr, fileParser.getStream());
+			png_init_io(png_ptr, request.getFileParser().getStream());
 			png_set_sig_bytes(png_ptr, 8);  /* we already read the 8 signature bytes */
 
 			png_read_info(png_ptr, info_ptr);  /* read all PNG info up to image data */
@@ -144,7 +145,7 @@ class PngResourceAdapter : public ResourceAdapter {
 			bit_depth = 32;
 			delete image_data;
 
-			ImageResource *resource = new ImageResource(0, "image/png");
+			ImageResource *resource = new ImageResource(0, request.getOutputMimeType());
 			resource->setAlto(height);
 			resource->setAncho(width);
 			resource->setBpp(bit_depth);

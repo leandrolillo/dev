@@ -15,18 +15,18 @@ class MeshResourceAdapter: public OpenGLResourceAdapter {
 public:
 	MeshResourceAdapter() {
 		logger = LoggerFactory::getLogger("video/MeshResourceAdapter");
-		this->addSupportedMimeType("video/mesh");
+		this->produces(MimeTypes::MESH);
 	}
 
-	virtual Resource *load(FileParser &fileParser, const String &mimeType) const override {
+	virtual Resource *load(ResourceLoadRequest &request) const override {
 	    String geometryMimeType;
 
-        geometryMimeType = this->getResourceManager()->guessMimeType(fileParser.getFilename());
-        geometryMimeType = geometryMimeType.empty() ? "video/geometry" : geometryMimeType;
+		GeometryCollection *geometryCollection = (GeometryCollection*) this->getResourceManager()->load(request.getFileParser(),
+				MimeTypes::GEOMETRYCOLLECTION,
+				std::set<String> { ResourceManager::EphemeralLabel });
 
-		GeometryCollection *geometryCollection = (GeometryCollection*) this->getResourceManager()->load(fileParser, geometryMimeType, std::set<String> { ResourceManager::EphemeralLabel });
 		if (geometryCollection == null || geometryCollection->getObjects().empty()) {
-		    logger->error("Could not load geometry from %s with mimetype %s", fileParser.getFilename().c_str(), geometryMimeType.c_str());
+		    logger->error("Could not load geometry from %s with mimetype %s", request.getFilePath().c_str(), geometryMimeType.c_str());
 		    return null;
 		}
 
@@ -38,7 +38,7 @@ public:
 			resource->setMaterial(geometry->getMaterial());
 
 			if(!geometry->getMaterial()->getAmbientTexture().empty()) {
-				TextureResource *texture = (TextureResource *)getResourceManager()->load(geometry->getMaterial()->getDiffuseTexture(), "video/texture");
+				TextureResource *texture = (TextureResource *)getResourceManager()->load(geometry->getMaterial()->getDiffuseTexture(), MimeTypes::TEXTURE);
 				if(texture != null) {
 					resource->setTexture(texture);
 				} else {
@@ -47,7 +47,7 @@ public:
 			}
 
 			if(!geometry->getMaterial()->getDiffuseTexture().empty()) {
-				TextureResource *texture = (TextureResource *)getResourceManager()->load(geometry->getMaterial()->getDiffuseTexture(), "video/texture");
+				TextureResource *texture = (TextureResource *)getResourceManager()->load(geometry->getMaterial()->getDiffuseTexture(), MimeTypes::TEXTURE);
 				if(texture != null) {
 					resource->setTexture(texture);
 				} else {
@@ -56,7 +56,7 @@ public:
 			}
 
 			if(!geometry->getMaterial()->getBumptTexture().empty()) {
-				TextureResource *texture = (TextureResource *)getResourceManager()->load(geometry->getMaterial()->getBumptTexture(), "video/texture");
+				TextureResource *texture = (TextureResource *)getResourceManager()->load(geometry->getMaterial()->getBumptTexture(), MimeTypes::TEXTURE);
 				if(texture != null) {
 					resource->setNormalMap(texture);
 				} else {
@@ -65,7 +65,7 @@ public:
 			}
 
 			if(!geometry->getMaterial()->getSpecularTexture().empty()) {
-				TextureResource *texture = (TextureResource *)getResourceManager()->load(geometry->getMaterial()->getSpecularTexture(), "video/texture");
+				TextureResource *texture = (TextureResource *)getResourceManager()->load(geometry->getMaterial()->getSpecularTexture(), MimeTypes::TEXTURE);
 				if(texture != null) {
 					resource->setSpecularMap(texture);
 				} else {

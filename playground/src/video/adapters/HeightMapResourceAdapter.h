@@ -17,11 +17,15 @@ class HeightMapResourceAdapter : public ResourceAdapter {
 public:
     HeightMapResourceAdapter() {
         logger = LoggerFactory::getLogger("video/HeightMapResourceAdapter");
-        this->addSupportedMimeType("video/heightmap");
+        this->produces(MimeTypes::HEIGHTMAP);
     }
 
-    virtual Resource *load(FileParser &fileParser, const String &mimeType) const override {
-        ImageResource *image = (ImageResource *)this->getResourceManager()->load(fileParser);
+    virtual Resource *load(ResourceLoadRequest &request) const override {
+        ImageResource *image = (ImageResource *)this->getResourceManager()->load(request.getFileParser(), MimeTypes::IMAGE);
+        if(image == null) {
+        	logger->error("Could not load image [%s] - skipping heightmap creation", request.getFilePath().c_str());
+        }
+
         HeightMapResource *resource = new HeightMapResource(image, vector(2, 80, 2));
         return resource;
     }

@@ -9,75 +9,75 @@
 const String ResourceManager::EphemeralLabel = {"ephemeral"};
 
 void ResourceManager::addAdapter(ResourceAdapter *adapter) {
-	bool found = false;
-	for (auto &resourceAdapterPtr : this->resourceAdapters) {
-		if(resourceAdapterPtr.get() == adapter) {
-			found = true;
-			break;
+	if(adapter != null && !adapter->getOutputMimeType().empty()) {
+		bool found = false;
+		for (auto &resourceAdapterPtr : this->resourceAdapters) {
+			if(resourceAdapterPtr.get() == adapter) {
+				found = true;
+				break;
+			}
 		}
-	}
 
-	if(!found) {
-		resourceAdapters.insert(std::unique_ptr<ResourceAdapter>(adapter));
-	}
+		if(!found) {
+			resourceAdapters.insert(std::unique_ptr<ResourceAdapter>(adapter));
+		}
 
-	for (auto &currentMimeTypeIterator : adapter->getSupportedMimeTypes()) {
-		adaptersCache[currentMimeTypeIterator] = adapter;
-	}
+		String key = adapter->getInputMimeType().empty() ? adapter->getOutputMimeType() + "|" : adapter->getOutputMimeType() + "|" + adapter->getInputMimeType();
 
-	adapter->setResourceManager(this);
+		adaptersCache[key] = adapter;
+
+		adapter->setResourceManager(this);
+	} else {
+		logger->error("NOT adding invalid adapter [%s] - either null or empty output mime type", adapter == null ? "null" : adapter->toString().c_str());
+	}
 }
 
-Resource* ResourceManager::load(FileParser &fileParser, const String &mimeType, std::set<String> labels) {
-	Resource *cached = null;
-	if(!mimeType.empty()) {
-        try {
-            cached = getCacheResource(fileParser.getFilename(), mimeType);
-            if (cached == null) {
-                logger->verbose("Resource was not cached previously");
-                Resource *response = null;
+Resource* ResourceManager::load(ResourceLoadRequest &resourceLoadRequest) {
+	Resource *response = null;
+	String key = getCacheKey(resourceLoadRequest.getFileParser().getFilename(), resourceLoadRequest.getInputMimeType());
 
-                auto adaptersPair = adaptersCache.find(mimeType);
-                if (adaptersPair != adaptersCache.end()) {
-                    logger->debug("Loading [%s] [%s] with adapter [%s]",
-                            mimeType.c_str(), fileParser.getFilename().c_str(),
-                            adaptersPair->second->toString().c_str());
+	if(resourceLoadRequest.isValid()) {
+		response = getCacheResource(key);
+		if (response == null) {
+			try {
+				logger->verbose("Resource was not cached previously");
 
-                    response = adaptersPair->second->load(fileParser, mimeType);
-                    if (response != null) {
-                        response->setFileName(fileParser.getFilename());
-                        response->setMimeType(mimeType);
-                        response->setLabels(labels);
-                        addResource(response);
-                        logger->debug("Loaded [%s]", response->toString().c_str());
-                    } else {
-                        logger->warn(
-                                "Could not load [%s] [%s] with adapter [%s]",
-                                mimeType.c_str(),
-                                fileParser.getFilename().c_str(),
-                                adaptersPair->second->toString().c_str());
-                    }
-                } else {
-                    logger->error(
-                            "No adapter found for mimetype [%s] - file not loaded [%s]",
-                            mimeType.c_str(), fileParser.getFilename().c_str());
-                }
+				ResourceAdapter *adapter = getAdapter(resourceLoadRequest);
+				if (adapter != null) {
+					logger->debug("Loading %s with adapter [%s]",
+							resourceLoadRequest.toString().c_str(),
+							adapter->toString().c_str());
 
-                return response;
-            } else {
-                logger->debug("Getting [%s] [%s] from cache", mimeType.c_str(),
-                        fileParser.getFilename().c_str());
-            }
-        } catch (Exception &e) {
-            logger->error("Error loading resource [%s] [%s]: [%s]",
-                    mimeType.c_str(), fileParser.getFilename().c_str(),
-                    e.getMessage().c_str());
-        }
+					response = adapter->load(resourceLoadRequest);
+					if (response != null) {
+						response->setFileName(resourceLoadRequest.getFileParser().getFilename());
+						response->setMimeType(resourceLoadRequest.getInputMimeType());
+						response->setLabels(resourceLoadRequest.getLabels());
+						logger->debug("Loaded [%s]", response->toString().c_str());
+					} else {
+						logger->warn(
+								"Could not load %s with adapter [%s]",
+								resourceLoadRequest.toString().c_str(),
+								adapter->toString().c_str());
+					}
+				} else {
+					logger->error("No adapter found for loading %s", resourceLoadRequest.toString().c_str());
+				}
+			} catch (Exception &e) {
+				logger->error("Error loading [%s]: [%s]",
+						resourceLoadRequest.toString().c_str(),
+						e.getMessage().c_str());
+			}
+
+		} else {
+			logger->debug("Getting %s from cache", resourceLoadRequest.toString().c_str());
+		}
 	} else {
-	    logger->error("Error loading resource [%s]: Could not determine mimetype", fileParser.getFilename().c_str());
+	    logger->error("Invalid Resource load request %s: %s ", resourceLoadRequest.toString().c_str(), resourceLoadRequest.errors().c_str());
 	}
 
-	return cached;
+	addResource(key, response);
+	return response;
 }
 
 void ResourceManager::dispose(Resource *resource) const {

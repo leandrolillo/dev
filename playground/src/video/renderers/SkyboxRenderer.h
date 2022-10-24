@@ -35,16 +35,15 @@ public:
 
     bool init() override {
         if (this->shader == null) {
-            this->shader = (ShaderProgramResource*) this->resourceManager->load("shaders/skybox/skybox.program.json",
-                    "video/shaderProgram");
+            this->shader = (ShaderProgramResource*) this->resourceManager->load("shaders/skybox/skybox.program.json", MimeTypes::SHADERPROGRAM);
         }
 
         if (this->cubeMap == null) {
-            this->cubeMap = (CubeMapResource*) this->resourceManager->load("geometry/skybox/skybox.json", "video/cubemap");
+            this->cubeMap = (CubeMapResource*) this->resourceManager->load("geometry/skybox/skybox.json", MimeTypes::CUBEMAP);
         }
 
         if (this->box == null) {
-            this->box = (VertexArrayResource*) this->resourceManager->load("geometry/skybox/skybox_geometry.json", "video/vertexArray");
+            this->box = (VertexArrayResource*) this->resourceManager->load("geometry/skybox/skybox_geometry.json", MimeTypes::VERTEXARRAY);
         }
 
         return true;

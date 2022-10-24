@@ -24,7 +24,7 @@ private:
 	String bumptTexture = "";
 
 public:
-	MaterialResource(const vector &ambient, const vector &diffuse, const vector &specular, real shininess, real alpha = 1.0) : Resource(0, "model/mtl") {
+	MaterialResource(const vector &ambient, const vector &diffuse, const vector &specular, real shininess, real alpha = 1.0) : Resource(0, MimeTypes::WAVEFRONT_MATERIAL) {
 		this->ambient = ambient;
 		this->diffuse = diffuse;
 		this->specular = specular;

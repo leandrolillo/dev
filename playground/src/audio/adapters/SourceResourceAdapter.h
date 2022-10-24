@@ -18,30 +18,32 @@ class SourceResourceAdapter: public ResourceAdapter {
 	public:
 		SourceResourceAdapter() {
 			logger = LoggerFactory::getLogger("audio/SourceResourceAdapter");
-			this->addSupportedMimeType("audio/source");
+			this->produces(MimeTypes::AUDIOSOURCE);
 		}
 
-		virtual Resource *load(FileParser &fileParser, const String &mimeType) const override {
+		virtual Resource *load(ResourceLoadRequest &request) const override {
 			ALenum error = 0;
 
-			logger->debug("loading audio/source from [%s]", fileParser.getFilename().c_str());
+			logger->debug("loading audio/source from [%s]", request.getFilePath().c_str());
 
-			BufferResource * buffer = (BufferResource *)getResourceManager()->load(fileParser.getFilename().c_str(), "audio/buffer", std::set<String> {ResourceManager::ResourceManager::EphemeralLabel});
+			BufferResource * buffer = (BufferResource *)getResourceManager()->load(request.getFileParser(),
+					MimeTypes::AUDIOBUFFER,
+					std::set<String> {ResourceManager::ResourceManager::EphemeralLabel});
 			if(buffer == null) {
-				logger->error("Error creating source: could not load buffer for [%s]", fileParser.getFilename().c_str());
+				logger->error("Error creating source: could not load buffer for [%s]", request.getFilePath().c_str());
 				return null;
 			}
 
 			ALuint sourceId;
 			alGenSources(1, &sourceId);
 			if((error = alGetError()) != AL_NO_ERROR) {
-				logger->error("Error creating source for [%s]: %d", fileParser.getFilename().c_str(), error);
+				logger->error("Error creating source for [%s]: %d", request.getFilePath().c_str(), error);
 				return null;
 			}
 
 			alSourcei (sourceId, AL_BUFFER, (ALuint) buffer->getId());
 			if((error = alGetError()) != AL_NO_ERROR) {
-				logger->error("Error setting properties for source [%s]: %d", fileParser.getFilename().c_str(), error);
+				logger->error("Error setting properties for source [%s]: %d", request.getFilePath().c_str(), error);
 				return(null);
 			}
 

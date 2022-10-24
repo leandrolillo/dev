@@ -14,19 +14,16 @@
 class ImageResource : public Resource
 {
 	private:
-        Logger *logger = LoggerFactory::getLogger("video/ImageResource");
-		unsigned int alto;
-		unsigned int ancho;
-		unsigned char bpp;
-		void *data;
+        Logger *logger = LoggerFactory::getLogger("video/image");
+		unsigned int alto = 0;
+		unsigned int ancho = 0;
+		unsigned char bpp = 0;
+		unsigned char format = 0; //future storage of rgba, rgb, bgr, bgra, etc.
+		void *data = null;
 
 	public:
 		ImageResource(unsigned int id, String mimeType) : Resource(id, mimeType)
 		{
-			alto = 0;
-			ancho = 0;
-			bpp = 0;
-			data = null;
 		}
 
 		unsigned int getAlto() const

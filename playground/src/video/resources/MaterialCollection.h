@@ -16,7 +16,7 @@ class MaterialCollection : public Resource {
 private:
 	std::unordered_map<String, MaterialResource *>materials;
 public:
-	MaterialCollection() : Resource(0, "model/mtls") {
+	MaterialCollection() : Resource(0, MimeTypes::MATERIALCOLLECTION) {
 
 	}
 	void addMaterial(MaterialResource *material) {

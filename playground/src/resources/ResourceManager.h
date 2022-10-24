@@ -1,6 +1,7 @@
 #ifndef RESOURCEMANAGER_H_
 #define RESOURCEMANAGER_H_
 
+#include "ResourceLoadRequest.h"
 #include "FileParser.h"
 #include "ResourceAdapter.h"
 #include "Resource.h"
@@ -36,73 +37,84 @@ public:
 
 	void addAdapter(ResourceAdapter *adapter);
 
-	ResourceAdapter *getAdapter(const String &mimetype) {
-		return adaptersCache[mimetype];
+	/**
+	 * Find Adapter matching output MimeType and input mimetype - give priority to those adapters with empty input mimecard (kind of a wildcard)
+	 */
+	ResourceAdapter *getAdapter(ResourceLoadRequest &request) const {
+		String key = request.getOutputMimeType() + "|";
+
+		auto adaptersPair = adaptersCache.find(request.getOutputMimeType() + "|");
+		if(adaptersPair != adaptersCache.end()) {
+			return adaptersPair->second;
+		}
+
+		key = request.getOutputMimeType() + "|" + request.getInputMimeType();
+
+		adaptersPair = adaptersCache.find(request.getOutputMimeType() + "|" + request.getInputMimeType());
+		return adaptersPair == adaptersCache.end() ? null : adaptersPair->second;
 	}
 
 	Resource* load(const String &fileName) {
-		try {
-			return load(fileName, guessMimeType(fileName));
-		} catch (Exception &e) {
-			logger->error("Error loading resource [%s]: [%s]", fileName.c_str(),
-					e.getMessage().c_str());
-		}
+		logger->debug("Load [%s]", fileName.c_str());
 
-		return null;
+		FileParser fileParser(Paths::normalize(fileName, this->rootFolder));
+		ResourceLoadRequest request(fileParser);
+		return this->load(request);
 	}
 
-	Resource* load(FileParser &fileParser, std::set<String> labels = {}) {
-		try {
-			return load(fileParser, guessMimeType(fileParser.getFilename()), labels);
-		} catch (Exception &e) {
-			logger->error("Error loading resource [%s]: [%s]",
-					fileParser.getFilename().c_str(), e.getMessage().c_str());
-		}
-		return null;
+//	Resource* load(FileParser &fileParser, std::set<String> labels = {}) {
+//		return load(ResourceLoadRequest(fileParser).withLabels(labels));
+//	}
+
+	Resource* load(FileParser &fileParser, const String &outputMimeType, std::set<String> labels = {}) {
+		logger->debug("Load [%s] [%s]", outputMimeType.c_str(), fileParser.getFilename().c_str());
+
+		return load(ResourceLoadRequest(fileParser).produceMimeType(outputMimeType).withLabels(labels));
 	}
 
-	Resource* load(const String &fileName, const String &mimeType, std::set<String> labels = {}) {
-		try {
-			String normalizedFileName = Paths::normalize(fileName, this->rootFolder);
+	Resource* load(const String &fileName, const String &outputMimeType, std::set<String> labels = {}) {
+		logger->debug("Load [%s] [%s]", outputMimeType.c_str(), fileName.c_str(), fileName.c_str());
 
-			if (!normalizedFileName.empty()) {
-				FileParser fileParser = FileParser(normalizedFileName);
-				return load(fileParser, mimeType, labels);
-			}
-
-			return null;
-		} catch (Exception &e) {
-			logger->error("Error loading resource [%s] [%s]: [%s]",
-					mimeType.c_str(), fileName.c_str(), e.getMessage().c_str());
-		}
-		return null;
+		FileParser fileParser(Paths::normalize(fileName, this->rootFolder));
+		return load(ResourceLoadRequest(fileParser).produceMimeType(outputMimeType).withLabels(labels));
 	}
 
 	/**
 	 * Loads a file using the parent file path as base for relative paths - TODO: Replace by load with parent resource
 	 */
-	Resource* load(const String &parentFilePath, const String &fileName, const String &mimeType) {
-		return load(Paths::relative(parentFilePath, fileName), mimeType);
+	Resource* load(const String &parentFilePath, const String &fileName, const String &outputMimeType) {
+		logger->debug("Load [%s] [%s] relative to [%s]", outputMimeType.c_str(), fileName.c_str(), parentFilePath.c_str());
+
+		FileParser fileParser(Paths::relative(parentFilePath, fileName, this->rootFolder));
+		return load(ResourceLoadRequest(fileParser).produceMimeType(outputMimeType));
 	}
 
-	Resource* load(FileParser &fileParser, const String &mimeType, std::set<String> labels = {});
+	Resource* load(ResourceLoadRequest &loadRequest);
+
+	Resource *addResource(const String &key, Resource *resource) {
+		resourceCache[key] = std::unique_ptr<Resource>(resource);
+		return resource;
+	}
 
 	Resource *addResource(Resource *resource) {
-		if(resource != null) {
-			resourceCache[getCacheKey(resource)] = std::unique_ptr<Resource>(resource);
+		String key = getCacheKey(resource);
+		if(!key.empty()) {
+			resourceCache[key] = std::unique_ptr<Resource>(resource);
 		}
 	    return resource;
 	}
 
 	void unload(Resource *resource) {
-		this->dispose(resource);
-		this->resourceCache.erase(getCacheKey(resource));
+		if(resource != null) {
+			this->dispose(resource);
+			this->resourceCache.erase(getCacheKey(resource));
+		}
 	}
 
 	void unload(String label) {
 		auto iterator = resourceCache.begin();
 		while (iterator != resourceCache.end()) {
-			if(iterator->second->getLabels().find(label) != iterator->second->getLabels().end()) {
+			if(iterator->second.get() != null && iterator->second->getLabels().find(label) != iterator->second->getLabels().end()) {
 				this->dispose(iterator->second.get());
 				iterator = this->resourceCache.erase(iterator);
 			} else {
@@ -138,49 +150,6 @@ public:
 		return Paths::normalize(filePath, this->rootFolder);
 	}
 
-    String guessMimeType(const String &fileName) const {
-        int position = fileName.find_last_of(".");
-        if (position > 0) {
-            String extension = fileName.substr(position + 1,
-                    fileName.length() - position - 1);
-            std::transform(extension.begin(), extension.end(),
-                    extension.begin(), ::tolower);
-            if (extension == "ogg") {
-                logger->verbose("guessMimeType: mime type for [%s] is [%s]",
-                        fileName.c_str(), "audio/ogg");
-                return "audio/ogg";
-            } else if (extension == "wav") {
-                logger->verbose("guessMimeType: mime type for [%s] is [%s]",
-                        fileName.c_str(), "audio/wav");
-                return "audio/wav";
-            } else if (extension == "jpeg" || extension == "jpg") {
-                logger->verbose("guessMimeType: mime type for [%s] is [%s]",
-                        fileName.c_str(), "image/jpeg");
-                return "image/jpeg";
-            } else if (extension == "png") {
-                logger->verbose("guessMimeType: mime type for [%s] is [%s]",
-                        fileName.c_str(), "image/png");
-                return "image/png";
-            } else if (extension == "tga") {
-                logger->verbose("guessMimeType: mime type for [%s] is [%s]",
-                        fileName.c_str(), "image/tga");
-                return "image/tga";
-            } else if (extension == "obj") {
-                logger->verbose("guessMimeType: mime type for [%s] is [%s]",
-                        fileName.c_str(), "video/obj");
-                return "video/obj";
-            }
-        }
-
-
-        return "";
-
-//        logger->error("Could not determine mimetype for [%s]",
-//                fileName.c_str());
-//        throw InvalidArgumentException("Could not determine mimetype for [%s]",
-//                fileName.c_str());
-    }
-
 private:
 	const String getCacheKey(const String &filename, const String &mimeType) const {
 		return Paths::normalize(filename, this->rootFolder) + "|" + mimeType;
@@ -194,9 +163,7 @@ private:
 	    return "";
 	}
 
-	Resource *getCacheResource(const String &filename, const String &mimeType) {
-		String cacheKey = getCacheKey(filename, mimeType);
-
+	Resource *getCacheResource(const String &cacheKey) {
 		auto pair = resourceCache.find(cacheKey);
 
 		if(pair != resourceCache.end()) {

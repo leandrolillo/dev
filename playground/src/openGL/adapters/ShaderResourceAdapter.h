@@ -26,28 +26,20 @@ class ShaderResourceAdapter: public OpenGLResourceAdapter {
 			return response;
 		}
 	public:
-		ShaderResourceAdapter() {
-			logger = LoggerFactory::getLogger("video/ShaderResourceAdapter");
-			this->addSupportedMimeType("video/vertexShader");
-			this->addSupportedMimeType("video/fragmentShader");
-		}
-
-		virtual Resource *load(FileParser &fileParser, const String &mimeType) const override {
+		virtual Resource *load(ResourceLoadRequest &request) const override {
 			ShaderResource *resource = null;
 
-			int shaderSize = fileParser.size();
+			int shaderSize = request.getFileParser().size();
 			char *shaderCode = new char[shaderSize + 1];
 
-			if(fileParser.read(shaderCode, sizeof(char), shaderSize) != (unsigned int)shaderSize)
+			if(request.getFileParser().read(shaderCode, sizeof(char), shaderSize) != (unsigned int)shaderSize)
 			{
-				logger->error("Error reading shader source [%s]", fileParser.getFilename().c_str());
+				logger->error("Error reading shader source [%s]", request.getFilePath().c_str());
 				return null;
 			}
-			shaderCode[fileParser.size()] = '\0';
+			shaderCode[request.getFileParser().size()] = '\0';
 
-			unsigned int shaderType = (mimeType == "video/vertexShader" ? GL_VERTEX_SHADER : GL_FRAGMENT_SHADER);
-
-			unsigned int shaderId = glCreateShader(shaderType);
+			unsigned int shaderId = glCreateShader(asShaderType(request.getOutputMimeType()));
 			resource = new ShaderResource(shaderId);
 
 			glShaderSource(resource->getId(), 1, (const char**)&shaderCode, &shaderSize);
@@ -57,12 +49,12 @@ class ShaderResourceAdapter: public OpenGLResourceAdapter {
 			int compilationSuccessfull = 0;
 			glGetShaderiv(resource->getId(), GL_COMPILE_STATUS, &compilationSuccessfull);
 			if (!compilationSuccessfull) {
-				logger->error("Failed to compile [%s] [%s]: [%s]\n", shaderType == GL_VERTEX_SHADER ? "Vertex Shader" : "Fragment Shader", fileParser.getFilename().c_str(), getInfoLog(shaderId).c_str());
+				logger->error("Failed to compile [%s] [%s]: [%s]\n", request.getOutputMimeType().c_str(), request.getFilePath().c_str(), getInfoLog(shaderId).c_str());
 				logger->debug("Shader code: \n%s", shaderCode);
 				dispose(resource);
 				return null;
 			} else {
-				logger->debug("[%s] compilation sucessful.", shaderType == GL_VERTEX_SHADER ? "Vertex Shader" : "Fragment Shader");
+				logger->debug("[%s] [%s] compilation successful.", request.getFilePath().c_str(), request.getOutputMimeType().c_str());
 			}
 
 			return resource;

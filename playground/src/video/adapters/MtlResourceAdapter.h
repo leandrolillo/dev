@@ -16,11 +16,12 @@ class MtlResourceAdapter: public ResourceAdapter {
 public:
     MtlResourceAdapter() {
         logger = LoggerFactory::getLogger(typeid(*this).name());
-        this->addSupportedMimeType("model/mtl");
+        this->produces(MimeTypes::MATERIALCOLLECTION);
+        this->accepts(MimeTypes::WAVEFRONT_MATERIAL);
     }
 
-    virtual Resource *load(FileParser &fileParser, const String &mimeType) const override {
-        TextParser textParser(fileParser);
+    virtual Resource *load(ResourceLoadRequest &request) const override {
+        TextParser textParser(request.getFileParser());
 
         MaterialCollection *materials = new MaterialCollection();
 
@@ -28,7 +29,8 @@ public:
         while ((token = textParser.takeToken()) != FileParser::eof) {
             if (token == "newmtl") {
             	MaterialResource *material = parseMaterial(textParser, textParser.takeLine());
-            	material->setFileName(Paths::add(fileParser.getFilename(), material->getName()));
+            	material->setFileName(Paths::add(request.getFilePath(), material->getName()));
+            	material->setMimeType(MimeTypes::WAVEFRONT_MATERIAL);
 
             	this->getResourceManager()->addResource(material);
             	materials->addMaterial(material);

@@ -16,7 +16,7 @@ class ShaderProgramResource : public Resource
 	private:
 		std::vector<ShaderResource *>shaders;
 	public:
-		ShaderProgramResource(unsigned int id) : Resource(id, "video/shaderProgram")
+		ShaderProgramResource(unsigned int id) : Resource(id, MimeTypes::SHADERPROGRAM)
 		{
 
 		}

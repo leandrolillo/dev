@@ -17,18 +17,15 @@ class VertexArrayResourceAdapter: public OpenGLResourceAdapter {
 public:
 	VertexArrayResourceAdapter() {
 		logger = LoggerFactory::getLogger("video/VertexArrayResourceAdapter");
-		this->addSupportedMimeType("video/vertexArray");
+		this->produces(MimeTypes::VERTEXARRAY);
 	}
 
-	virtual Resource *load(FileParser &fileParser, const String &mimeType) const override {
-	    String geometryMimeType;
-
-        geometryMimeType = this->getResourceManager()->guessMimeType(fileParser.getFilename());
-        geometryMimeType = geometryMimeType.empty() ? "video/geometry" : geometryMimeType;
-
-		GeometryCollection *geometry = (GeometryCollection*) this->getResourceManager()->load(fileParser, geometryMimeType, std::set<String> { ResourceManager::EphemeralLabel });
+	virtual Resource *load(ResourceLoadRequest &request) const override {
+		GeometryCollection *geometry = (GeometryCollection*) this->getResourceManager()->load(request.getFileParser(),
+				MimeTypes::GEOMETRYCOLLECTION,
+				std::set<String> { ResourceManager::EphemeralLabel });
 		if (geometry == null || geometry->getObjects().empty()) {
-		    logger->error("Could not load geometry from %s with mimetype %s", fileParser.getFilename().c_str(), geometryMimeType.c_str());
+		    logger->error("Could not load geometry from %s with mimetype %s", request.getFilePath().c_str(), MimeTypes::GEOMETRYCOLLECTION.c_str());
 		    return null;
 		}
 

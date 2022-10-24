@@ -72,7 +72,7 @@ class AudioRunner: public PlaygroundRunner {
 
 		Source *createSource(String fileName, const vector &position = vector(0, 0, 0), const vector &velocity = vector(0, 0, 0), bool loop = true)
 		{
-			Source *source = (Source *)this->getContainer()->getResourceManager()->load(fileName, "audio/source");
+			Source *source = (Source *)this->getContainer()->getResourceManager()->load(fileName, MimeTypes::AUDIOSOURCE);
 			if(source != null)
 			{
 				source->setPosition(position);

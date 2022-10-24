@@ -71,6 +71,20 @@ protected:
                     typeString.c_str());
     }
 
+    GLenum asShaderType(const String &mimeType) const {
+    	if(mimeType == MimeTypes::VERTEXSHADER) {
+    		return GL_VERTEX_SHADER;
+    	} else if(mimeType == MimeTypes::FRAGMENTSHADER) {
+    		return GL_FRAGMENT_SHADER;
+    	} else if(mimeType == MimeTypes::FRAGMENTSHADER) {
+    		return GL_GEOMETRY_SHADER;
+    	} else if(mimeType == MimeTypes::GEOMETRYSHADER) {
+    		return GL_FRAGMENT_SHADER;
+    	} else {
+            throw InvalidArgumentException("Invalid primitive type: [%s]", mimeType.c_str());
+    	}
+    }
+
     GLenum getLocation(const String &faceName) const {
         if(faceName == "top") {
             return GL_TEXTURE_CUBE_MAP_POSITIVE_Y;

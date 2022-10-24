@@ -16,7 +16,7 @@ class GeometryCollection : public Resource {
 private:
 	std::unordered_map<String, GeometryResource *>objects;
 public:
-	GeometryCollection() : Resource(0, "model/objs") {
+	GeometryCollection() : Resource(0, MimeTypes::GEOMETRYCOLLECTION) {
 
 	}
 	void addObject(GeometryResource *object) {

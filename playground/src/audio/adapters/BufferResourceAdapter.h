@@ -18,7 +18,7 @@ class BufferResourceAdapter: public ResourceAdapter {
 public:
 	BufferResourceAdapter() {
 		logger = LoggerFactory::getLogger("audio/BufferResourceAdapter");
-		this->addSupportedMimeType("audio/buffer");
+		this->produces(MimeTypes::AUDIOBUFFER);
 	}
 
 	ALenum asOpenALFormat(AudioFormat format) const {
@@ -35,15 +35,17 @@ public:
 
 		return AL_FORMAT_STEREO16;
 	}
-	virtual Resource* load(FileParser &fileParser, const String &mimeType) const override {
+	virtual Resource* load(ResourceLoadRequest &request) const override {
 		ALenum error = 0;
 
 		AudioResource *audioResource =
-				(AudioResource*) this->getResourceManager()->load(fileParser, std::set<String> {ResourceManager::EphemeralLabel});
+				(AudioResource*) this->getResourceManager()->load(request.getFileParser(),
+						MimeTypes::AUDIO,
+						std::set<String> {ResourceManager::ResourceManager::EphemeralLabel});
 		if (audioResource == null) {
 			logger->error(
 					"Error loading bufferResource: could not load audio from [%s]",
-					fileParser.getFilename().c_str());
+					request.getFilePath().c_str());
 			return (null);
 		}
 
@@ -52,7 +54,7 @@ public:
 		alGenBuffers(1, &ALbuffer);
 		if ((error = alGetError()) != AL_NO_ERROR) {
 			logger->error("Error creating resource for [%s]: %d",
-					fileParser.getFilename().c_str(), error);
+					request.getFilePath().c_str(), error);
 			return null;
 		}
 
@@ -61,7 +63,7 @@ public:
 				audioResource->getData().size(), audioResource->getFrequency());
 		if (alGetError() != AL_NO_ERROR) {
 			logger->error("Error setting buffer data for [%s]: %d",
-					fileParser.getFilename().c_str(), error);
+					request.getFilePath().c_str(), error);
 			alDeleteBuffers(1, &ALbuffer);
 			return (null);
 		}

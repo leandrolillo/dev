@@ -85,7 +85,7 @@ class VertexArrayResource : public Resource
 		unsigned int primitiveType;
 		vector size;
 	public:
-		VertexArrayResource(unsigned int id) : Resource(id, "video/vertexArray")
+		VertexArrayResource(unsigned int id) : Resource(id, MimeTypes::VERTEXARRAY)
 		{
 			primitiveType = GL_TRIANGLES;
 		}

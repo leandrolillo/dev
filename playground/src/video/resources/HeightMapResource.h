@@ -26,7 +26,7 @@ public:
     /**
      * VoxelSize can be interpreted as the dimensions of each and all individual voxels, or the factor/zoom applied to enlarge the original image dimensions
      */
-    HeightMapResource(ImageResource *heightMap, vector voxelSize) : Resource(0, "video/heightmap") {
+    HeightMapResource(ImageResource *heightMap, vector voxelSize) : Resource(0, MimeTypes::HEIGHTMAP) {
         this->heightMap = heightMap;
         this->voxelSize = voxelSize;
         this->height = calculateHeight();

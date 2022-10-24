@@ -93,7 +93,7 @@ public:
 
     bool init() override {
         if(this->shader == null) {
-            this->shader = (ShaderProgramResource*) this->resourceManager->load("core/simple.program.json", "video/shaderProgram");
+            this->shader = (ShaderProgramResource*) this->resourceManager->load("core/simple.program.json", MimeTypes::SHADERPROGRAM);
         }
 
         this->setMaterial(null);
@@ -184,7 +184,7 @@ public:
 private:
     const VertexArrayResource *getSphere() {
         if(this->sphere == null && resourceManager != null) {
-            this->sphere = (VertexArrayResource*) this->resourceManager->load("core/sphere.json", "video/vertexArray");
+            this->sphere = (VertexArrayResource*) this->resourceManager->load("core/sphere.json", MimeTypes::VERTEXARRAY);
         }
 
         return this->sphere;
@@ -192,7 +192,7 @@ private:
 
     const VertexArrayResource *getLine() {
         if(this->line == null && resourceManager != null) {
-            this->line= (VertexArrayResource*) this->resourceManager->load("core/line.json", "video/vertexArray");
+            this->line= (VertexArrayResource*) this->resourceManager->load("core/line.json", MimeTypes::VERTEXARRAY);
         }
 
         return this->line;
@@ -200,7 +200,7 @@ private:
 
     const VertexArrayResource *getAxes() {
         if(this->axes == null && resourceManager != null) {
-            this->axes= (VertexArrayResource*) this->resourceManager->load("core/axis.json", "video/vertexArray");
+            this->axes= (VertexArrayResource*) this->resourceManager->load("core/axis.json", MimeTypes::VERTEXARRAY);
         }
 
         return this->axes;
@@ -208,7 +208,7 @@ private:
 
     const VertexArrayResource *getBox() {
             if(this->box == null && resourceManager != null) {
-                this->box= (VertexArrayResource*) this->resourceManager->load("core/box.json", "video/vertexArray");
+                this->box= (VertexArrayResource*) this->resourceManager->load("core/box.json", MimeTypes::VERTEXARRAY);
             }
 
             return this->box;

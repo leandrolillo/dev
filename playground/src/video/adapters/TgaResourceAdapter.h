@@ -20,10 +20,11 @@ private:
 public:
 	TgaResourceAdapter() {
 		logger = LoggerFactory::getLogger("video/TgaResourceAdapter");
-		this->addSupportedMimeType("image/tga");
+		this->accepts(MimeTypes::TGA);
+		this->produces(MimeTypes::IMAGE);
 	}
 
-	virtual Resource *load(FileParser &fileParser, const String &mimeType) const override {
+	virtual Resource *load(ResourceLoadRequest &request) const override {
 		ImageResource *resource = new ImageResource(0, "image/tga");
 
 		struct tgaHeader {
@@ -41,35 +42,35 @@ public:
 			char image_descriptor;
 		} header;
 
-		if (fileParser.read(&header, sizeof(header), 1) != 1) {
+		if (request.getFileParser().read(&header, sizeof(header), 1) != 1) {
 			logger->error("%s has incomplete tga header\n",
-					fileParser.getFilename().c_str());
+					request.getFilePath().c_str());
 			return null;
 		}
 		if (header.data_type_code != 2) {
 			logger->error("[%s] compressed tga not supported\n",
-					fileParser.getFilename().c_str());
+					request.getFilePath().c_str());
 			return null;
 		}
 		if (header.bits_per_pixel != 24) {
 			logger->error("%s is not a 24-bit uncompressed RGB tga file\n",
-					fileParser.getFilename().c_str());
+					request.getFilePath().c_str());
 			return null;
 		}
 
 		for (int i = 0; i < header.id_length; ++i)
-			if (fileParser.takeByte() == EOF) {
+			if (request.getFileParser().takeByte() == EOF) {
 				logger->error("%s has incomplete id string\n",
-						fileParser.getFilename().c_str());
+						request.getFilePath().c_str());
 				return null;
 			}
 
 		unsigned int color_map_size = le_short(header.color_map_length)
 				* (header.color_map_depth / 8);
 		for (unsigned int i = 0; i < color_map_size; ++i)
-			if (fileParser.takeByte() == EOF) {
+			if (request.getFileParser().takeByte() == EOF) {
 				logger->error("%s has incomplete color map\n",
-						fileParser.getFilename().c_str());
+						request.getFilePath().c_str());
 				return null;
 			}
 
@@ -81,9 +82,9 @@ public:
 				* resource->getBpp();
 		resource->setData(new char[size]);
 
-		if (fileParser.read(resource->getData(), 1, size) != size) {
+		if (request.getFileParser().read(resource->getData(), 1, size) != size) {
 			logger->error("%s has incomplete image\n",
-					fileParser.getFilename().c_str());
+					request.getFilePath().c_str());
 			dispose(resource);
 			return null;
 		}

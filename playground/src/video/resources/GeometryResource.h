@@ -33,7 +33,7 @@ private:
 	vector size {0.0, 0.0, 0.0 };
 public:
 	GeometryResource(unsigned int id) :
-			Resource(id, "video/geometry") {
+			Resource(id, MimeTypes::GEOMETRY) {
 		type = "triangles";
 	}
 

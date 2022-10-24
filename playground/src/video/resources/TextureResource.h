@@ -13,7 +13,7 @@
 class TextureResource : public Resource
 {
 	public:
-		TextureResource(unsigned int id) : Resource(id, "video/texture")
+		TextureResource(unsigned int id) : Resource(id, MimeTypes::TEXTURE)
 		{
 
 		}

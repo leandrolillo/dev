@@ -13,7 +13,7 @@
 
 class CubeMapResource : public TextureResource {
 public:
-	CubeMapResource(unsigned int id) : TextureResource(id, "video/cubemap")
+	CubeMapResource(unsigned int id) : TextureResource(id, MimeTypes::CUBEMAP)
 	{
 
 	}

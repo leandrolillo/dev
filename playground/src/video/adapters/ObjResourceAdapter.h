@@ -16,12 +16,12 @@ class ObjResourceAdapter: public ResourceAdapter {
 public:
     ObjResourceAdapter() {
         logger = LoggerFactory::getLogger("video/ObjResourceAdapter");
-        this->addSupportedMimeType("video/obj");
-        this->addSupportedMimeType("model/obj");
+        this->produces(MimeTypes::GEOMETRYCOLLECTION);
+        this->accepts(MimeTypes::WAVEFRONT_OBJ);
     }
 
-    virtual Resource *load(FileParser &fileParser, const String &mimeType) const override {
-        TextParser textParser(fileParser);
+    virtual Resource *load(ResourceLoadRequest &request) const override {
+        TextParser textParser(request.getFileParser());
 
     	/**
     	 * Auxiliar variables for loading. Obj file format define one global list of vertices, one of normals and one of textCoords. All objects within the file reference this uber-list when using indices.
@@ -37,7 +37,7 @@ public:
         while ((token = textParser.peekToken()) != FileParser::eof) {
             if (token == "o" || token == "v" || token == "vn" || token == "vt" || token == "f") {
             	GeometryResource *object = parseObject(textParser, vertices, normals, textCoords, materials);
-            	object->setFileName(Paths::add(fileParser.getFilename(), object->getName()));
+            	object->setFileName(Paths::add(request.getFilePath(), object->getName()));
 
             	this->getResourceManager()->addResource(object);
 
@@ -46,14 +46,14 @@ public:
             	textParser.takeToken();
             	String materialLibraryName = textParser.takeLine();
 
-            	materials = (MaterialCollection *)this->getResourceManager()->load(textParser.getFilename(), materialLibraryName, "model/mtl");
+            	materials = (MaterialCollection *)this->getResourceManager()->load(textParser.getFilename(), materialLibraryName, MimeTypes::MATERIALCOLLECTION);
             } else {
                 String line = textParser.takeLine().c_str();
                 logger->warn("skipping [%s] [%s]", token.c_str(), line.c_str());
             }
         }
 
-//        logger->info("Parsed [%s] file, converting to geometry...", fileParser.getFilename().c_str());
+//        logger->info("Parsed [%s] file, converting to geometry...", request.getFilePath().c_str());
 
 
         return objects;
@@ -76,8 +76,7 @@ public:
         String token;
         while ((token = textParser.takeToken()) != FileParser::eof) {
         	if (token == "o") {
-        		String name = textParser.takeLine();
-        		StringUtils::trim(name);
+        		String name = StringUtils::trim(textParser.takeLine());
         		logger->info("Name: %s", name.c_str());
         		geometry->setName(name);
         	} else if (token == "v") {
@@ -97,8 +96,7 @@ public:
 				addIndex(geometry, newIndices, vertices, normals, textCoords, indices);
 
 
-				String remaining = textParser.takeLine();
-				StringUtils::trim(remaining);
+				String remaining = StringUtils::trim(textParser.takeLine());
 				if(!remaining.empty()) {
 					logger->error("Expected triangulated obj faces - got extra [%s] at line %d, column %d", remaining.c_str(), textParser.getLine(), textParser.getColumn());
 					delete geometry;

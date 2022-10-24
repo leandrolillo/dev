@@ -48,14 +48,14 @@ public:
 		gridRenderer.setVideoRunner(video);
 	    defaultRenderer.setLight(&light);
 
-//	    texture = (TextureResource *)this->getContainer()->getResourceManager()->load("images/fern.png", "video/texture");
-//        obj = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/fern.obj", "video/vertexArray");
-        texture = (TextureResource *)this->getContainer()->getResourceManager()->load("images/lowPolyTree.png", "video/texture");
-        obj = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/lowPolyTree.obj", "video/vertexArray");
+//	    texture = (TextureResource *)this->getContainer()->getResourceManager()->load("images/fern.png", MimeTypes::TEXTURE);
+//        obj = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/fern.obj", MimeTypes::VERTEXARRAY);
+        texture = (TextureResource *)this->getContainer()->getResourceManager()->load("images/lowPolyTree.png", MimeTypes::TEXTURE);
+        obj = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/lowPolyTree.obj", MimeTypes::VERTEXARRAY);
 
-//	    texture = (TextureResource *)this->getContainer()->getResourceManager()->load("images/lowPolyTree.png", "video/texture");
-        //obj = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/bunny.obj", "video/vertexArray");
-//        obj = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/untitled.obj", "video/vertexArray");
+//	    texture = (TextureResource *)this->getContainer()->getResourceManager()->load("images/lowPolyTree.png", MimeTypes::TEXTURE);
+        //obj = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/bunny.obj", MimeTypes::VERTEXARRAY);
+//        obj = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/untitled.obj", MimeTypes::VERTEXARRAY);
 
 
 		reset();

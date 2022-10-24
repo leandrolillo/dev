@@ -17,11 +17,11 @@ class CubeMapResourceAdapter : public TextureResourceAdapter {
 public:
 	CubeMapResourceAdapter() : TextureResourceAdapter() {
 		logger = LoggerFactory::getLogger("video/CubeMapResourceAdapter");
-		this->setSupportedMimeTypes(std::set<String> { "video/cubemap" });
+		this->produces(MimeTypes::CUBEMAP);
 	}
 
-	Resource *load(FileParser &fileParser, const String &mimeType) const override {
-		JsonParser jsonParser(fileParser);
+	Resource *load(ResourceLoadRequest &request) const override {
+		JsonParser jsonParser(request.getFileParser());
 
 		unsigned int textureHandler = 0;
 		getGlError();
@@ -38,7 +38,9 @@ public:
 			String faceName = token;
 			jsonParser.readValueSeparator();
 			String faceFileName = jsonParser.readString();
-			ImageResource *imageResource = (ImageResource *)this->getResourceManager()->load(faceFileName);
+			ImageResource *imageResource = (ImageResource *)this->getResourceManager()->load(faceFileName,
+					MimeTypes::IMAGE,
+					std::set<String> { ResourceManager::EphemeralLabel });
 
 			if(imageResource != null) {
 				if(imageResource->getBpp() == 32) {
@@ -47,9 +49,8 @@ public:
 				else {
 					glTexImage2D(getLocation(faceName), 0, GL_RGB, imageResource->getAncho(), imageResource->getAlto(), 0, GL_BGR, GL_UNSIGNED_BYTE, imageResource->getData());
 				}
-
-				//Disposing of this image during this adapter load method, seems to be causing an exception when leaving the program.
-				//this->getResourceManager()->dispose(imageResource);
+			} else {
+				logger->error("Could not load image [%s]", faceFileName.c_str());
 			}
 
 			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -58,7 +59,7 @@ public:
             String errorMessage;
             if (!(errorMessage = getGlError()).empty()) {
                 logger->error("Error loading [%s] cubeMap: face [%s (%u)]: [%s]",
-                        fileParser.getFilename().c_str(),
+                        request.getFilePath().c_str(),
                         faceFileName.c_str(),
                         getLocation(faceName),
                         errorMessage.c_str());

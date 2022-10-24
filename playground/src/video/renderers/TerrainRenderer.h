@@ -51,7 +51,7 @@ public:
 
     bool init() override {
         if(this->shader == null) {
-            this->shader = (ShaderProgramResource *)resourceManager->load("shaders/terrain/terrain.program.json", "video/shaderProgram");
+            this->shader = (ShaderProgramResource *)resourceManager->load("shaders/terrain/terrain.program.json", MimeTypes::SHADERPROGRAM);
         }
 
         return true;

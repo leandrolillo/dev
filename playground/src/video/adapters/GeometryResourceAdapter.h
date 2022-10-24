@@ -19,14 +19,15 @@ class GeometryResourceAdapter: public ResourceAdapter {
 public:
 	GeometryResourceAdapter() {
 		logger = LoggerFactory::getLogger("video/GeometryResourceAdapter");
-		this->addSupportedMimeType("video/geometry");
+		this->produces(MimeTypes::GEOMETRYCOLLECTION);
+		this->accepts(MimeTypes::JSON);
 	}
 
-	virtual Resource *load(FileParser &fileParser, const String &mimeType) const override {
-		JsonParser parser(fileParser);
+	virtual Resource *load(ResourceLoadRequest &request) const override {
+		JsonParser parser(request.getFileParser());
 		GeometryCollection *geometryCollection = new GeometryCollection;
 		GeometryResource *resource = new GeometryResource(0);
-		resource->setName(Paths::getBasename(fileParser.getFilename()));
+		resource->setName(Paths::getBasename(request.getFilePath()));
 
 		bool generateNormals = false;
 		bool generateIndexes = false;

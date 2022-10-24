@@ -13,7 +13,7 @@
 class BufferResource : public Resource
 {
 	public:
-		BufferResource(unsigned int id) : Resource(id, "audio/buffer") {
+		BufferResource(unsigned int id) : Resource(id, MimeTypes::AUDIOBUFFER) {
 		}
 };
 

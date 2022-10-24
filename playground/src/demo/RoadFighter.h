@@ -33,22 +33,22 @@ public:
 
     	//video->enable(CULL_FACE, GL_NONE);
 
-        if((axes = (VertexArrayResource *)this->getResourceManager()->load("roadFighter/axes.obj", "video/vertexArray")) == null) {
+        if((axes = (VertexArrayResource *)this->getResourceManager()->load("roadFighter/axes.obj", MimeTypes::VERTEXARRAY)) == null) {
         	logger->error("Could not load axes model");
         	return false;
         }
 
-//        if((car = (VertexArrayResource *)this->getResourceManager()->load("roadFighter/corvette.obj", "video/vertexArray")) == null) {
+//        if((car = (VertexArrayResource *)this->getResourceManager()->load("roadFighter/corvette.obj", MimeTypes::VERTEXARRAY)) == null) {
 //        	logger->error("Could not load car model");
 //        	return false;
 //        }
 
-        if((carMesh = (MeshResource *)this->getResourceManager()->load("roadFighter/corvette.obj", "video/mesh")) == null) {
+        if((carMesh = (MeshResource *)this->getResourceManager()->load("roadFighter/corvette.obj", MimeTypes::MESH)) == null) {
         	logger->error("Could not load car mesh");
         	return false;
         }
 
-        if((texturedBoxMesh = (MeshResource *)this->getResourceManager()->load("roadFighter/texturedCube.obj", "video/mesh")) == null) {
+        if((texturedBoxMesh = (MeshResource *)this->getResourceManager()->load("roadFighter/texturedCube.obj", MimeTypes::MESH)) == null) {
         	logger->error("Could not load textured box mesh");
         	return false;
         }

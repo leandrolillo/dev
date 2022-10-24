@@ -21,11 +21,11 @@ private:
 public:
     bool init() override {
         if(this->shader == null) {
-            this->shader = (ShaderProgramResource *)resourceManager->load("shaders/grid/grid.program.json", "video/shaderProgram");
+            this->shader = (ShaderProgramResource *)resourceManager->load("shaders/grid/grid.program.json", MimeTypes::SHADERPROGRAM);
         }
 
         if(this->plane == null) {
-            this->plane = (VertexArrayResource *)resourceManager->load("geometry/grid/plane.json", "video/vertexArray");
+            this->plane = (VertexArrayResource *)resourceManager->load("geometry/grid/plane.json", MimeTypes::VERTEXARRAY);
         }
 
         return true;

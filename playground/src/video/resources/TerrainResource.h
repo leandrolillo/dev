@@ -27,7 +27,7 @@ class TerrainResource: public Resource {
 	VertexArrayResource *model = null;
 
 public:
-	TerrainResource() : Resource(0, "video/terrain") {
+	TerrainResource() : Resource(0, MimeTypes::TERRAIN) {
 	}
 
 	const TextureResource* getA() const {

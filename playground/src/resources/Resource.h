@@ -10,7 +10,7 @@
 
 #include "JavaLike.h"
 #include "Logger.h"
-#include <string>
+#include "MimeTypes.h"
 #include<set>
 
 class Resource {

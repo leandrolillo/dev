@@ -261,17 +261,17 @@ class PlaygroundTestsRunner: public PlaygroundRunner, UnitTest {
 		}
 
 		void testLoadBuffer() {
-			BufferResource *resource = (BufferResource *)this->getContainer()->getResourceManager()->load("tests/audio.ogg", "audio/buffer");
+			BufferResource *resource = (BufferResource *)this->getContainer()->getResourceManager()->load("tests/audio.ogg", MimeTypes::AUDIOBUFFER);
 			assertTrue("BUFFER resource not loaded", resource != null);
 			assertTrue("BUFFER resource id not set correctly", resource->getId() != 0);
-			assertEquals("Buffer mimetype invalid", "audio/buffer", resource->getMimeType());
+			assertEquals("Buffer mimetype invalid", MimeTypes::AUDIOBUFFER, resource->getMimeType());
 		}
 
 		void testCreateSource()		{
-			Source *resource = (Source *)this->getContainer()->getResourceManager()->load("tests/audio.ogg", "audio/source");
+			Source *resource = (Source *)this->getContainer()->getResourceManager()->load("tests/audio.ogg", MimeTypes::AUDIOSOURCE);
 			assertTrue("Source resource not loaded", resource != null);
 			assertTrue("Source resource id not set correctly", resource->getId() != 0);
-			assertEquals("Source mimetype invalid", "audio/source", resource->getMimeType());
+			assertEquals("Source mimetype invalid", MimeTypes::AUDIOSOURCE, resource->getMimeType());
 
 		}
 
@@ -305,32 +305,32 @@ class PlaygroundTestsRunner: public PlaygroundRunner, UnitTest {
 		}
 
 		void testLoadTexture()		{
-			TextureResource *resource = (TextureResource *)this->getContainer()->getResourceManager()->load("tests/image.png", "video/texture");
+			TextureResource *resource = (TextureResource *)this->getContainer()->getResourceManager()->load("tests/image.png", MimeTypes::TEXTURE);
 
 			assertTrue("TEXTURE resource not loaded", resource != null);
 			assertTrue("TEXTURE id not set properly", resource->getId() != 0);
-			assertEquals("TEXTURE mimetype invalid", "video/texture", resource->getMimeType());
+			assertEquals("TEXTURE mimetype invalid", MimeTypes::TEXTURE, resource->getMimeType());
 
-			resource = (TextureResource *)this->getContainer()->getResourceManager()->load("tests/image.jpg", "video/texture");
-
-			assertTrue("TEXTURE resource not loaded", resource != null);
-			assertTrue("TEXTURE id not set properly", resource->getId() != 0);
-			assertEquals("TEXTURE mimetype invalid", "video/texture", resource->getMimeType());
-
-			resource = (TextureResource *)this->getContainer()->getResourceManager()->load("tests/image.tga", "video/texture");
+			resource = (TextureResource *)this->getContainer()->getResourceManager()->load("tests/image.jpg", MimeTypes::TEXTURE);
 
 			assertTrue("TEXTURE resource not loaded", resource != null);
 			assertTrue("TEXTURE id not set properly", resource->getId() != 0);
-			assertEquals("TEXTURE mimetype invalid", "video/texture", resource->getMimeType());
+			assertEquals("TEXTURE mimetype invalid", MimeTypes::TEXTURE, resource->getMimeType());
+
+			resource = (TextureResource *)this->getContainer()->getResourceManager()->load("tests/image.tga", MimeTypes::TEXTURE);
+
+			assertTrue("TEXTURE resource not loaded", resource != null);
+			assertTrue("TEXTURE id not set properly", resource->getId() != 0);
+			assertEquals("TEXTURE mimetype invalid", MimeTypes::TEXTURE, resource->getMimeType());
 
 
 		}
 
 		void testLoadGeometry()	{
-			GeometryResource *resource = (GeometryResource *)this->getContainer()->getResourceManager()->load("tests/geometry.json", "video/geometry");
+			GeometryResource *resource = (GeometryResource *)this->getContainer()->getResourceManager()->load("tests/geometry.json", MimeTypes::GEOMETRY);
 
 			assertTrue("GEOMETRY resource not loaded", resource != null);
-			assertEquals("GEOMETRY mimetype invalid", "video/geometry", resource->getMimeType());
+			assertEquals("GEOMETRY mimetype invalid", MimeTypes::GEOMETRY, resource->getMimeType());
 			assertEquals("Incorrect number of vertices", 10, resource->getVertices().size());
 			assertEquals("Incorrect number of colors", 3, resource->getColors().size());
 			assertEquals("Incorrect number of texture coordinates", 3, resource->getTextureCoordinates().size());
@@ -340,24 +340,24 @@ class PlaygroundTestsRunner: public PlaygroundRunner, UnitTest {
 		}
 
 		void testLoadVertexBuffer()	{
-			VertexArrayResource *resource = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("tests/geometry.json", "video/vertexArray");
+			VertexArrayResource *resource = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("tests/geometry.json", MimeTypes::VERTEXARRAY);
 
 			assertTrue("VertexArray resource not loaded", resource != null);
-			assertEquals("VertexArray mimetype invalid", "video/vertexArray", resource->getMimeType());
+			assertEquals("VertexArray mimetype invalid", MimeTypes::VERTEXARRAY, resource->getMimeType());
 		}
 
 		void testLoadShaders()	{
-			ShaderResource *resource = (ShaderResource *)this->getContainer()->getResourceManager()->load("tests/vertexShader.glsl", "video/vertexShader");
+			ShaderResource *resource = (ShaderResource *)this->getContainer()->getResourceManager()->load("tests/vertexShader.glsl", MimeTypes::VERTEXSHADER);
 
 			assertTrue("Shader resource not loaded", resource != null);
-			assertEquals("Shader mimetype invalid", "video/vertexShader", resource->getMimeType());
+			assertEquals("Shader mimetype invalid", MimeTypes::VERTEXSHADER, resource->getMimeType());
 		}
 
 		void testLoadShaderProgram()	{
-			ShaderProgramResource *resource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("tests/shaderProgram.json", "video/shaderProgram");
+			ShaderProgramResource *resource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("tests/shaderProgram.json", MimeTypes::SHADERPROGRAM);
 
 			assertTrue("Shader Program resource not loaded", resource != null);
-			assertEquals("Shader Program mimetype invalid", "video/shaderProgram", resource->getMimeType());
+			assertEquals("Shader Program mimetype invalid", MimeTypes::SHADERPROGRAM, resource->getMimeType());
 		}
 
 		void testLoadShaderProgramByVersion()
@@ -367,20 +367,20 @@ class PlaygroundTestsRunner: public PlaygroundRunner, UnitTest {
 //			ShaderProgramResource *shaderProgramResource = null;
 //
 //			if(wgl->getMajorVersion() >= 3) {
-//				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/lighting.140.program.json", "video/shaderProgram");
+//				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/lighting.140.program.json", MimeTypes::SHADERPROGRAM);
 //			} else {
-//				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/lighting.120.program.json", "video/shaderProgram");
+//				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/lighting.120.program.json", MimeTypes::SHADERPROGRAM);
 //			}
 //			assertTrue("Shader Program resource not loaded", shaderProgramResource != null);
-//			assertEquals("Shader Program mimetype invalid", "video/shaderProgram", shaderProgramResource->getMimeType());
+//			assertEquals("Shader Program mimetype invalid", MimeTypes::SHADERPROGRAM, shaderProgramResource->getMimeType());
 //
 //			if(wgl->getMajorVersion() >= 3) {
-//				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/toon.140.program.json", "video/shaderProgram");
+//				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/toon.140.program.json", MimeTypes::SHADERPROGRAM);
 //			} else {
-//				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/toon.120.program.json", "video/shaderProgram");
+//				shaderProgramResource = (ShaderProgramResource *)this->getContainer()->getResourceManager()->load("shaders/toon.120.program.json", MimeTypes::SHADERPROGRAM);
 //			}
 //			assertTrue("Shader Program resource not loaded", shaderProgramResource != null);
-//			assertEquals("Shader Program mimetype invalid", "video/shaderProgram", shaderProgramResource->getMimeType());
+//			assertEquals("Shader Program mimetype invalid", MimeTypes::SHADERPROGRAM, shaderProgramResource->getMimeType());
 
 		}
 };

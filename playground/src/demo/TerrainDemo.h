@@ -157,8 +157,8 @@ public:
         video->enable(RELATIVE_MOUSE_MODE, 0);
         video->enable(BLEND, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-        treeTexture = (TextureResource *)this->getContainer()->getResourceManager()->load("images/lowPolyTree.png", "video/texture");
-        if((tree = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/lowPolyTree.obj", "video/vertexArray")) == null) {
+        treeTexture = (TextureResource *)this->getContainer()->getResourceManager()->load("images/lowPolyTree.png", MimeTypes::TEXTURE);
+        if((tree = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/lowPolyTree.obj", MimeTypes::VERTEXARRAY)) == null) {
         	logger->error("Could not load tree model");
         	return false;
         }
@@ -167,6 +167,9 @@ public:
 
         ResourceManager *resourceManager = this->getContainer()->getResourceManager();
         terrain = (TerrainResource *)resourceManager->load("geometry/terrain/terrain.json", "video/terrain");
+        if(!terrain) {
+        	throw Exception("Could not load terrain geometry/terrain/terrain.json");
+        }
 
         fpsInputController.setTerrain(terrain);
         thirdPersonController.setTerrain(terrain);
