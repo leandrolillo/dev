@@ -38,7 +38,7 @@ public:
         String value;
         String token = fileParser.takeToken();
         if(token != "\"")
-            throw ParsingException("Expected %s, got [%s] at (%d, %d)", "\"", token.c_str(), fileParser.getLine(), fileParser.getColumn());
+            throw ParsingException("Expected %s, got [%s] at %s", "\"", token.c_str(), fileParser.toString().c_str());
 
         char character;
         while((character = fileParser.takeByte()) != '\"' && character != FileParser::charEof) {
@@ -58,7 +58,7 @@ public:
             return false;
         }
 
-        throw ParsingException("Expected [true|false], got [%s] at (%d, %d)", token.c_str(), fileParser.getLine(), fileParser.getColumn());
+        throw ParsingException("Expected [true|false], got [%s] at %s", token.c_str(), fileParser.toString().c_str());
     }
 
     unsigned int readUnsignedInteger() {
@@ -76,7 +76,7 @@ public:
         }
 
         if(!readValue)
-            throw ParsingException("Unexpected %s at (%d, %d)", fileParser.takeToken().c_str(), fileParser.getLine(), fileParser.getColumn());
+            throw ParsingException("Unexpected %s at %s", fileParser.takeToken().c_str(), fileParser.toString().c_str());
 
         return value;
     }
@@ -133,7 +133,7 @@ protected:
         }
 
         if(!readValue)
-            throw ParsingException("Unexpected %s at (%d, %d)", fileParser.takeToken().c_str(), fileParser.getLine(), fileParser.getColumn());
+            throw ParsingException("Unexpected %s at %s", fileParser.takeToken().c_str(), fileParser.toString().c_str());
 
         return value;
     }
@@ -182,6 +182,10 @@ protected:
             fileParser.takeToken();
 
         return sign;
+    }
+
+    String toString() {
+    	return fileParser.toString();
     }
 
 };

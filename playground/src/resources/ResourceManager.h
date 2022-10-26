@@ -62,21 +62,22 @@ public:
 		return this->load(request);
 	}
 
-//	Resource* load(FileParser &fileParser, std::set<String> labels = {}) {
-//		return load(ResourceLoadRequest(fileParser).withLabels(labels));
-//	}
-
 	Resource* load(FileParser &fileParser, const String &outputMimeType, std::set<String> labels = {}) {
 		logger->debug("Load [%s] [%s]", outputMimeType.c_str(), fileParser.getFilename().c_str());
 
-		return load(ResourceLoadRequest(fileParser).produceMimeType(outputMimeType).withLabels(labels));
+		ResourceLoadRequest request(fileParser);
+		request.acceptMimeType(outputMimeType).withLabels(labels);
+
+		return load(request);
 	}
 
 	Resource* load(const String &fileName, const String &outputMimeType, std::set<String> labels = {}) {
 		logger->debug("Load [%s] [%s]", outputMimeType.c_str(), fileName.c_str(), fileName.c_str());
 
 		FileParser fileParser(Paths::normalize(fileName, this->rootFolder));
-		return load(ResourceLoadRequest(fileParser).produceMimeType(outputMimeType).withLabels(labels));
+		ResourceLoadRequest request(fileParser);
+		request.acceptMimeType(outputMimeType).withLabels(labels);
+		return load(request);
 	}
 
 	/**
@@ -85,12 +86,17 @@ public:
 	Resource* load(const String &parentFilePath, const String &fileName, const String &outputMimeType) {
 		logger->debug("Load [%s] [%s] relative to [%s]", outputMimeType.c_str(), fileName.c_str(), parentFilePath.c_str());
 
-		FileParser fileParser(Paths::relative(parentFilePath, fileName));
-		return load(ResourceLoadRequest(fileParser).produceMimeType(outputMimeType));
+		FileParser fileParser(Paths::relative(parentFilePath, fileName, this->rootFolder));
+		ResourceLoadRequest request(fileParser);
+		request.acceptMimeType(outputMimeType);
+		return load(request);
 	}
 
 	Resource* load(ResourceLoadRequest &loadRequest);
 
+	/**
+	 * Beware with adding a key that already exists: it will trigger deletion of the unique_ptr and exceptions
+	 */
 	Resource *addResource(const String &key, Resource *resource) {
 		resourceCache[key] = std::unique_ptr<Resource>(resource);
 		return resource;

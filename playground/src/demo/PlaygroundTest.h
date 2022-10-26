@@ -13,7 +13,10 @@
 #include "../geometry/tests/CollisionTesterTests.h"
 #include "../physics/tests/CollisionDetectorTests.h"
 #include "../physics/tests/ContactResolverTests.h"
-#include "Paths.h"
+#include "../resources/tests/PathsTests.h"
+#include "../resources/tests/ResourceManagerTests.h"
+
+#include "../video/tests/GeometryResourceAdapterTests.h"
 
 class PlaygroundTestsRunner: public PlaygroundRunner, UnitTest {
 		Logger *logger;
@@ -22,12 +25,15 @@ class PlaygroundTestsRunner: public PlaygroundRunner, UnitTest {
 		CollisionTesterTests collisionTesterTests;
 		CollisionDetectorTests collisionDetectorTests;
 		ContactResolverTests collisionResolverTests;
+		PathsTests pathsTests;
+		ResourceManagerTests resourceManagerTests;
+		GeometryResourceAdapterTests geometryResourceAdapterTests;
 
 	public:
 		static const unsigned char ID = 100;
 
 	public:
-		PlaygroundTestsRunner() {
+		PlaygroundTestsRunner() : testsManager(this) {
 		    logger = LoggerFactory::getLogger("PlaygroundTestsRunner");
 		}
 		unsigned char getId() const override {
@@ -49,12 +55,15 @@ class PlaygroundTestsRunner: public PlaygroundRunner, UnitTest {
         }
 
 		virtual bool init() override {
-            this->addTest("testMousePicking", static_cast<void (UnitTest::*)()>(&PlaygroundTestsRunner::testMousePicking));
+            this->addTest("testMousePicking", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&PlaygroundTestsRunner::testMousePicking));
 
             this->testsManager.addTest(math3dTests);
             this->testsManager.addTest(collisionTesterTests);
             this->testsManager.addTest(collisionDetectorTests);
             this->testsManager.addTest(collisionResolverTests);
+            this->testsManager.addTest(pathsTests);
+            this->testsManager.addTest(resourceManagerTests);
+            this->testsManager.addTest(geometryResourceAdapterTests);
             this->testsManager.addTest(*this);
 
 
@@ -79,7 +88,7 @@ class PlaygroundTestsRunner: public PlaygroundRunner, UnitTest {
 			return true;
 		}
 
-		void testMousePicking()
+		void testMousePicking(PlaygroundRunner *runner)
         {
 		    vector4 point(0, 0, -1, 0);
 

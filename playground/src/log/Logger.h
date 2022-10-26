@@ -14,7 +14,7 @@
 #include <stdarg.h>
 #include <time.h>
 #include<sys/stat.h>
-#include <vector>
+#include <set>
 #include <string.h>
 #include <errno.h>
 
@@ -164,7 +164,7 @@ public:
 class Logger {
 protected:
     String basename;
-    std::vector<Appender*> appenders;
+    std::set<Appender*> appenders;
     LogLevel logLevel = LogLevel::INFO;
     //static FILE *fileHandler;
 
@@ -205,7 +205,7 @@ protected:
     }
 public:
     void addAppender(Appender *appender) {
-        this->appenders.push_back(appender);
+        this->appenders.insert(appender);
     }
 
     void info(const char *formato, ...) {
@@ -259,8 +259,8 @@ public:
 
 class LoggerFactory {
 private:
-    static std::vector<std::unique_ptr<Appender>> appenders;
-    static std::vector<std::unique_ptr<Logger>> loggers;
+    static std::set<std::unique_ptr<Appender>> appenders;
+    static std::set<std::unique_ptr<Logger>> loggers;
 
 public:
     static Appender* getAppender(String output) {
@@ -278,7 +278,7 @@ public:
             appender = new FileAppender(output);
         }
 
-        LoggerFactory::appenders.push_back(std::unique_ptr<Appender>(appender));
+        LoggerFactory::appenders.insert(std::unique_ptr<Appender>(appender));
         return appender;
     }
 
@@ -295,7 +295,7 @@ public:
         logger->setLogLevel(DEFAULT_LOG_LEVEL);
         logger->addAppender(getAppender("playground.log"));
 
-        LoggerFactory::loggers.push_back(std::unique_ptr<Logger>(logger));
+        LoggerFactory::loggers.insert(std::unique_ptr<Logger>(logger));
 
         return logger;
     }

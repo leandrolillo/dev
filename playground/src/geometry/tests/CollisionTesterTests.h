@@ -17,16 +17,16 @@
 class CollisionTesterTests : public UnitTest {
 public:
     CollisionTesterTests() {
-        logger = LoggerFactory::getLogger("GeometryTests");
+        logger = LoggerFactory::getLogger("CollisionTesterTests");
         logger->addAppender(LoggerFactory::getAppender("stdout"));
 
-        this->addTest("CollisionTesterTests::testSphereIntersections", static_cast<void (UnitTest::*)()>(&CollisionTesterTests::testSphereIntersections));
-        this->addTest("CollisionTesterTests::testPlaneIntersections", static_cast<void (UnitTest::*)()>(&CollisionTesterTests::testPlaneIntersections));
-        this->addTest("CollisionTesterTests::testAabbIntersections", static_cast<void (UnitTest::*)()>(&CollisionTesterTests::testAabbIntersections));
-        this->addTest("CollisionTesterTests::testSphereContacts", static_cast<void (UnitTest::*)()>(&CollisionTesterTests::testSphereContacts));
+        this->addTest("CollisionTesterTests::testSphereIntersections", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&CollisionTesterTests::testSphereIntersections));
+        this->addTest("CollisionTesterTests::testPlaneIntersections", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&CollisionTesterTests::testPlaneIntersections));
+        this->addTest("CollisionTesterTests::testAabbIntersections", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&CollisionTesterTests::testAabbIntersections));
+        this->addTest("CollisionTesterTests::testSphereContacts", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&CollisionTesterTests::testSphereContacts));
     }
 
-    void testSphereIntersections()
+    void testSphereIntersections(PlaygroundRunner *runner)
     {
         CollisionTester intersectionTester;
 
@@ -46,7 +46,7 @@ public:
         assertFalse("Sphere is not intersecting aabb", intersectionTester.intersects((Geometry &)anotherSphere, (Geometry &)aabb));
     }
 
-    void testPlaneIntersections()
+    void testPlaneIntersections(PlaygroundRunner *runner)
     {
         CollisionTester intersectionTester;
 
@@ -58,7 +58,7 @@ public:
         assertFalse("Plane is not intersecting sphere", intersectionTester.intersects((Geometry &)plane, (Geometry &)anotherSphere));
     }
 
-    void testAabbIntersections()
+    void testAabbIntersections(PlaygroundRunner *runner)
     {
         CollisionTester intersectionTester;
 
@@ -70,7 +70,7 @@ public:
         assertFalse("Aabb is not intersecting sphere", intersectionTester.intersects((Geometry &)aabb, (Geometry &)sphere));
     }
 
-    void testSphereContacts()
+    void testSphereContacts(PlaygroundRunner *runner)
     {
         CollisionTester intersectionTester;
 

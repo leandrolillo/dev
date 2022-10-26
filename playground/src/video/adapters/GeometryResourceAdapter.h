@@ -57,6 +57,8 @@ public:
 			} else {
 				logger->error("Unexpected token: [%s] at (%d, %d)",
 						token.c_str(), parser.getLine(), parser.getColumn());
+//				delete resource;
+//				return null;
 			}
 
 			if (parser.peekToken() == ",") {

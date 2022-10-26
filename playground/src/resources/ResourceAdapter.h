@@ -24,7 +24,9 @@ protected:
 	Logger *logger = null;
 public:
 	virtual ~ResourceAdapter() {
-		logger->debug("Destroying resource adapter %s", this->toString().c_str());
+		if(logger != null) {
+			logger->debug("Destroying resource adapter %s", this->toString().c_str());
+		}
 	}
 
 	ResourceManager* getResourceManager() const {

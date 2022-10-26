@@ -10,16 +10,15 @@
 
 #include<Math3d.h>
 #include<Logger.h>
+#include<Playground.h>
 
 #include<map>
 
 #define defaultAssertMessage StringFormatter::format("Assertion Failed in [%s], at line [%d]", __FILE__, __LINE__)
 #define assertMessage(message) StringFormatter::format("Assertion Failed in [%s], at line [%d]", __FILE__, __LINE__).append(message)
 
-class TestsManager;
-
 class UnitTest {
-    std::map<String, void (UnitTest::*)()> tests;
+    std::map<String, void (UnitTest::*)(PlaygroundRunner *)> tests;
 protected:
     Logger *logger = LoggerFactory::getLogger("UnitTest");
 
@@ -32,7 +31,7 @@ public:
         return logger->getBasename();
     }
 
-    void addTest(String name, void (UnitTest::*testFunction)())
+    void addTest(String name, void (UnitTest::*testFunction)(PlaygroundRunner *))
     {
         tests[name] = testFunction;
     }
@@ -41,23 +40,26 @@ public:
         return this->tests.size();
     }
 
-    std::vector<String> run() {
+    std::vector<String> run(PlaygroundRunner *runner) {
         std::vector<String> failedTests;
 
-        logger->info("Running [%d] Tests...", getNumberOfTests());
+        //logger->info("Running [%d] Tests...", getNumberOfTests());
 
         for(auto iterator : tests)
         {
             try {
                 logger->info("- Running test [%s]...", iterator.first.c_str());
-                void (UnitTest::*currentTest)();
+                void (UnitTest::*currentTest)(PlaygroundRunner *);
                 currentTest = iterator.second;
 
-                (this->*currentTest)();
+                (this->*currentTest)(runner);
 
                 //logger->info("Test [%s] passed.", iterator.first.c_str());
             } catch (Exception &e) {
                 logger->error("TEST FAILED:[%s] FAILED: %s", iterator.first.c_str(), e.toString().c_str());
+                failedTests.push_back(iterator.first);
+            } catch(...) {
+                logger->error("TEST FAILED:[%s] FAILED", iterator.first.c_str());
                 failedTests.push_back(iterator.first);
             }
 
@@ -104,7 +106,7 @@ public:
     void assertFalse(const String &message, bool condition)
     {
         if(condition)
-        assertFail(message);
+        	assertFail(message);
     }
     void assertFalse(bool condition)
     {
@@ -113,6 +115,10 @@ public:
 
     void assertFail(const String &message) {
         throw Exception(message.c_str());
+    }
+
+    void assertNotNull(const String &message, void *pointer) {
+    	assertFalse(message, pointer == null);
     }
 
     void assertEquals(const String &message, const vector &expected, const vector &actual)
@@ -187,10 +193,12 @@ class TestsManager {
 	private:
 		Logger *logger = LoggerFactory::getLogger("TestsManager");
 		std::vector<UnitTest> unitTests;
+		PlaygroundRunner *runner = null;
 	public:
-		TestsManager()
+		TestsManager(PlaygroundRunner *runner)
 		{
 			logger->addAppender(LoggerFactory::getAppender("stdout"));
+			this->runner = runner;
 		}
 
 		void addTest(UnitTest &unitTest)
@@ -209,7 +217,7 @@ class TestsManager {
 			logger->info("Running [%d] tests from [%d] test packs...", totalTests, unitTests.size());
 			for(auto unitTest : unitTests) {
 			    logger->info("Running tests pack [%s] ...", unitTest.toString().c_str());
-			    std::vector<String> failedTests = unitTest.run();
+			    std::vector<String> failedTests = unitTest.run(runner);
 
 			    allFailedTests.insert(std::begin(allFailedTests), std::begin(failedTests), std::end(failedTests));
 

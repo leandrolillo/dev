@@ -8,5 +8,5 @@
 
 #include "Logger.h"
 
-std::vector<std::unique_ptr<Logger>> LoggerFactory::loggers;
-std::vector<std::unique_ptr<Appender>> LoggerFactory::appenders;
+std::set<std::unique_ptr<Logger>> LoggerFactory::loggers;
+std::set<std::unique_ptr<Appender>> LoggerFactory::appenders;

@@ -76,8 +76,7 @@ public:
         String token;
         while ((token = textParser.takeToken()) != FileParser::eof) {
         	if (token == "o") {
-        		String name = textParser.takeLine();
-        		StringUtils::trim(name);
+        		String name = StringUtils::trim(textParser.takeLine());
         		logger->info("Name: %s", name.c_str());
         		geometry->setName(name);
         	} else if (token == "v") {
@@ -97,8 +96,7 @@ public:
 				addIndex(geometry, newIndices, vertices, normals, textCoords, indices);
 
 
-				String remaining = textParser.takeLine();
-				StringUtils::trim(remaining);
+				String remaining = StringUtils::trim(textParser.takeLine());
 				if(!remaining.empty()) {
 					logger->error("Expected triangulated obj faces - got extra [%s] at line %d, column %d", remaining.c_str(), textParser.getLine(), textParser.getColumn());
 					delete geometry;

@@ -16,13 +16,13 @@ public:
         logger = LoggerFactory::getLogger("Math3dTests");
         logger->addAppender(LoggerFactory::getAppender("stdout"));
 
-        this->addTest("Math3dTests::testBasis", static_cast<void (UnitTest::*)()>(&Math3dTests::testBasis));
+        this->addTest("Math3dTests::testBasis", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&Math3dTests::testBasis));
     }
 
     /**
      * Check if rotation * translation equals manually building with orientation matrix top-left 3x3 and top-right column vector
      */
-    void testBasis()
+    void testBasis(PlaygroundRunner *runner)
     {
         vector angles(radian(45), radian(45), radian(45));
         vector position(1, 2, 3);

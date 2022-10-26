@@ -48,8 +48,10 @@ class JsonParser : public TextParser
 		String readElement(String expectedValue, String name)
 		{
 			String token = fileParser.takeToken();
-			if(token != expectedValue)
-				throw ParsingException("Expected %s, got [%s] at (%d, %d)", name.c_str(), token.c_str(), fileParser.getLine(), fileParser.getColumn());
+			if(token != expectedValue) {
+				throw ParsingException("Expected %s, got [%s] at %s", name.c_str(), token.c_str(), fileParser.toString().c_str());
+			}
+
 			return token;
 		}
 
@@ -129,8 +131,6 @@ class JsonParser : public TextParser
 
 				if((token = fileParser.peekToken()) == ",")
 					fileParser.takeToken();
-
-					//throw ParsingException("Unexpected %s at (%d, %d)", token.c_str(), fileParser.getLine(), fileParser.getColumn());
 			}
 
 			readEndArray();
@@ -151,8 +151,6 @@ class JsonParser : public TextParser
 
 						if((token = fileParser.peekToken()) == ",")
 							fileParser.takeToken();
-
-							//throw ParsingException("Unexpected %s at (%d, %d)", token.c_str(), fileParser.getLine(), fileParser.getColumn());
 					}
 
 					readEndArray();
@@ -173,8 +171,6 @@ class JsonParser : public TextParser
 
 				if((token = fileParser.peekToken()) == ",")
 					fileParser.takeToken();
-
-					//throw ParsingException("Unexpected %s at (%d, %d)", token.c_str(), fileParser.getLine(), fileParser.getColumn());
 			}
 
 			readEndArray();
@@ -195,8 +191,6 @@ class JsonParser : public TextParser
 
 				if((token = fileParser.peekToken()) == ",")
 					fileParser.takeToken();
-
-					//throw ParsingException("Unexpected %s at (%d, %d)", token.c_str(), fileParser.getLine(), fileParser.getColumn());
 			}
 
 			readEndArray();

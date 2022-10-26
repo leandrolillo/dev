@@ -10,11 +10,11 @@
 
 #include <GeometryResource.h>
 #include <MaterialResource.h>
-#include <unordered_map>
+#include <map>
 
 class GeometryCollection : public Resource {
 private:
-	std::unordered_map<String, GeometryResource *>objects;
+	std::map<String, GeometryResource *>objects;
 public:
 	GeometryCollection() : Resource(0, MimeTypes::GEOMETRYCOLLECTION) {
 
@@ -36,7 +36,7 @@ public:
 		return iterator->second;
 	}
 
-	const std::unordered_map<String, GeometryResource*> &getObjects() const {
+	const std::map<String, GeometryResource*> &getObjects() const {
 		return objects;
 	}
 };

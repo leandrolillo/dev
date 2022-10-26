@@ -273,6 +273,10 @@ public:
         popPosition();
         return size;
     }
+
+    String  toString() {
+    	return String(this->filename + ":(" + std::to_string(this->getLine()) + ":" + std::to_string(this->getColumn()) + ")");
+    }
 };
 
 #endif /* FILEPARSER_H_ */

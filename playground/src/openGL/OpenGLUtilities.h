@@ -14,7 +14,18 @@
 
 class OpenGLUtilites {
 protected:
-	static Logger *logger;
+	inline static Logger *logger = null;
+
+	/**
+	 * use a get logger method to avoid static initialization hell colliding with LoggerFactory::getLogger
+	 */
+	static Logger *getLogger() {
+		if(logger == null) {
+			logger = LoggerFactory::getLogger("openGL/OpenGLUtilities");
+		}
+
+		return logger;
+	}
 public:
     static VertexArrayResource *generateVertexBuffer(GeometryResource *geometry) {
         VertexArrayResource *resource = null;
@@ -32,7 +43,7 @@ public:
         glBindVertexArray(resource->getId());
         GLenum glError = glGetError();
         if (glError != GL_NO_ERROR) {
-            logger->error("Error creating vertex array  0x[%x]", glError);
+            getLogger()->error("Error creating vertex array  0x[%x]", glError);
             disposeVertexArray(resource);
             return null;
         }
@@ -88,10 +99,10 @@ public:
 
 	static void disposeVertexArray(VertexArrayResource *vertexArrayResource) {
 		if(vertexArrayResource != null) {
-			logger->debug("Deleting [%s]", vertexArrayResource->toString().c_str());
+			getLogger()->debug("Deleting [%s]", vertexArrayResource->toString().c_str());
 
 			if (vertexArrayResource->getId() != 0) {
-				logger->debug("VAB [%lu] bound", vertexArrayResource->getId());
+				getLogger()->debug("VAB [%lu] bound", vertexArrayResource->getId());
 				glBindVertexArray(vertexArrayResource->getId());
 
 				for (const auto &[key, value] : vertexArrayResource->getAttributes()) {
@@ -101,12 +112,12 @@ public:
 						glDeleteBuffers(1, &buffer);
 					}
 				}
-				logger->debug("VAB [%lu] buffers deleted", vertexArrayResource->getId());
+				getLogger()->debug("VAB [%lu] buffers deleted", vertexArrayResource->getId());
 
 				unsigned int vertexArray = vertexArrayResource->getId();
 				glDeleteVertexArrays(1, &vertexArray);
 
-				logger->debug("VAB [%lu] deleted", vertexArrayResource->getId());
+				getLogger()->debug("VAB [%lu] deleted", vertexArrayResource->getId());
 
 				glBindVertexArray(0);
 				vertexArrayResource->setId(0);
@@ -146,7 +157,7 @@ protected:
 			VertexArrayResource *resource, GLenum bufferDestination,
 			const std::vector<vector2> &data) {
 		if (data.size() > 0) {
-			logger->verbose("Creating [%d] vector2 buffer for attribute [%d]",
+			getLogger()->verbose("Creating [%d] vector2 buffer for attribute [%d]",
 					data.size(), attributeLocation);
 
 			// create vertex buffer
@@ -158,7 +169,7 @@ protected:
 
 			GLenum glError = glGetError();
 			if (glError != GL_NO_ERROR) {
-				logger->error("Error loading vertex buffer: 0x[%x]", glError);
+				getLogger()->error("Error loading vertex buffer: 0x[%x]", glError);
 				return false;
 			}
 
@@ -168,12 +179,12 @@ protected:
 				glVertexAttribPointer((GLuint) attributeLocation, 2, GL_FLOAT,
 						GL_FALSE, 0, 0);
 				glEnableVertexAttribArray(attributeLocation);
-				logger->verbose("Enabled attribute [%d]", attributeLocation);
+				getLogger()->verbose("Enabled attribute [%d]", attributeLocation);
 			}
 
 			glError = glGetError();
 			if (glError != GL_NO_ERROR) {
-				logger->error(
+				getLogger()->error(
 						"Error binding buffer [%d] to attribute Location [%d]: 0x[%x]",
 						attributeLocation, buffer, glError);
 				return false;
@@ -186,7 +197,7 @@ protected:
 	static bool addBuffer(ShaderAttributeLocation attributeLocation,
 			VertexArrayResource *resource, GLenum bufferDestination,
 			const std::vector<vector3> &data) {
-		logger->verbose("Creating [%d] vector3 buffer for attribute [%d]",
+		getLogger()->verbose("Creating [%d] vector3 buffer for attribute [%d]",
 				data.size(), attributeLocation);
 
 		// create vertex buffer
@@ -198,7 +209,7 @@ protected:
 
 		GLenum glError = glGetError();
 		if (glError != GL_NO_ERROR) {
-			logger->error("Error loading vertex buffer: 0x[%x]", glError);
+			getLogger()->error("Error loading vertex buffer: 0x[%x]", glError);
 			return false;
 		}
 
@@ -207,12 +218,12 @@ protected:
 			glVertexAttribPointer((GLuint) attributeLocation, 3, GL_FLOAT,
 					GL_FALSE, 0, 0);
 			glEnableVertexAttribArray(attributeLocation);
-			logger->verbose("Enabled attribute [%d]", attributeLocation);
+			getLogger()->verbose("Enabled attribute [%d]", attributeLocation);
 		}
 
 		glError = glGetError();
 		if (glError != GL_NO_ERROR) {
-			logger->error(
+			getLogger()->error(
 					"Error binding buffer [%d] to attribute location [%d]: 0x[%x]",
 					attributeLocation, buffer, glError);
 			return false;
@@ -223,7 +234,7 @@ protected:
 	static bool addBuffer(ShaderAttributeLocation attributeLocation,
 			VertexArrayResource *resource, GLenum bufferDestination,
 			const std::vector<unsigned int> &data) {
-		logger->verbose("Creating [%d] unsigned int buffer for attribute [%d]",
+		getLogger()->verbose("Creating [%d] unsigned int buffer for attribute [%d]",
 				data.size(), attributeLocation);
 
 		// create vertex buffer
@@ -235,7 +246,7 @@ protected:
 
 		GLenum glError = glGetError();
 		if (glError != GL_NO_ERROR) {
-			logger->error("Error loading vertex buffer: 0x[%x]", glError);
+			getLogger()->error("Error loading vertex buffer: 0x[%x]", glError);
 			return false;
 		}
 
@@ -244,12 +255,12 @@ protected:
 			glVertexAttribPointer((GLuint) attributeLocation, 1,
 					GL_UNSIGNED_INT, GL_FALSE, 0, 0);
 			glEnableVertexAttribArray(attributeLocation);
-			logger->verbose("Enabled attribute [%d]", attributeLocation);
+			getLogger()->verbose("Enabled attribute [%d]", attributeLocation);
 		}
 
 		glError = glGetError();
 		if (glError != GL_NO_ERROR) {
-			logger->error("Error binding buffer [%d] to location [%d]: 0x[%x]",
+			getLogger()->error("Error binding buffer [%d] to location [%d]: 0x[%x]",
 					buffer, attributeLocation, glError);
 			return false;
 		}
@@ -257,8 +268,5 @@ protected:
 		return true;
 	}
 };
-
-Logger * OpenGLUtilites::logger = LoggerFactory::getLogger("openGL/OpenGLUtilities");
-
 
 #endif /* SRC_OPENGL_OPENGLUTILITIES_H_ */

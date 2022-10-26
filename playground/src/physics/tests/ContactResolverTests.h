@@ -18,17 +18,17 @@
 class ContactResolverTests : public UnitTest {
 public:
     ContactResolverTests() {
-        logger = LoggerFactory::getLogger("GeometryTests");
+        logger = LoggerFactory::getLogger("ContactResolverTests");
         logger->addAppender(LoggerFactory::getAppender("stdout"));
 
-        this->addTest("ContactResolverTests::testSphereIntersections", static_cast<void (UnitTest::*)()>(&ContactResolverTests::testSphereSphere));
-        this->addTest("ContactResolverTests::testSpherePlaneIntersections", static_cast<void (UnitTest::*)()>(&ContactResolverTests::testSpherePlane));
-        this->addTest("ContactResolverTests::testPlaneSphereIntersections", static_cast<void (UnitTest::*)()>(&ContactResolverTests::testPlaneSphere));
-        this->addTest("ContactResolverTests::testSphereAabbIntersections", static_cast<void (UnitTest::*)()>(&ContactResolverTests::testSphereAabb));
-        this->addTest("ContactResolverTests::testAabbSphereIntersections", static_cast<void (UnitTest::*)()>(&ContactResolverTests::testAabbSphere));
+        this->addTest("ContactResolverTests::testSphereIntersections", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&ContactResolverTests::testSphereSphere));
+        this->addTest("ContactResolverTests::testSpherePlaneIntersections", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&ContactResolverTests::testSpherePlane));
+        this->addTest("ContactResolverTests::testPlaneSphereIntersections", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&ContactResolverTests::testPlaneSphere));
+        this->addTest("ContactResolverTests::testSphereAabbIntersections", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&ContactResolverTests::testSphereAabb));
+        this->addTest("ContactResolverTests::testAabbSphereIntersections", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&ContactResolverTests::testAabbSphere));
     }
 
-    void testSphereSphere() {
+    void testSphereSphere(PlaygroundRunner *runner) {
         CollisionDetector collisionDetector;
         ContactResolver contactResolver;
 
@@ -58,7 +58,7 @@ public:
         assertTrue("Unexpected velocity", 0.0 >= deltaVelocity);
     }
 
-    void testSpherePlane() {
+    void testSpherePlane(PlaygroundRunner *runner) {
         CollisionDetector collisionDetector;
         ContactResolver contactResolver;
 
@@ -86,15 +86,15 @@ public:
         assertTrue("Unexpected velocity", 0.0 >= deltaVelocity);
     }
 
-    void testPlaneSphere() {
+    void testPlaneSphere(PlaygroundRunner *runner) {
 
     }
 
-    void testSphereAabb() {
+    void testSphereAabb(PlaygroundRunner *runner) {
 
     }
 
-    void testAabbSphere() {
+    void testAabbSphere(PlaygroundRunner *runner) {
 
     }
 };

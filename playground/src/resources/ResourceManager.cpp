@@ -48,7 +48,13 @@ Resource* ResourceManager::load(ResourceLoadRequest &resourceLoadRequest) {
 							resourceLoadRequest.toString().c_str(),
 							adapter->toString().c_str());
 
-					response = adapter->load(resourceLoadRequest);
+					try {
+						response = adapter->load(resourceLoadRequest);
+					} catch(Exception &exception) {
+						logger->error("Could not load %s with adapter [%s]: %s", resourceLoadRequest.toString().c_str(), adapter->toString().c_str(), exception.getMessage().c_str());
+					} catch(...) {
+						;
+					}
 					if (response != null) {
 						response->setFileName(resourceLoadRequest.getFileParser().getFilename());
 						response->setMimeType(resourceLoadRequest.getInputMimeType());
@@ -69,14 +75,14 @@ Resource* ResourceManager::load(ResourceLoadRequest &resourceLoadRequest) {
 						e.getMessage().c_str());
 			}
 
+			addResource(key, response);
+
 		} else {
 			logger->debug("Getting %s from cache", resourceLoadRequest.toString().c_str());
 		}
 	} else {
 	    logger->error("Invalid Resource load request %s: %s ", resourceLoadRequest.toString().c_str(), resourceLoadRequest.errors().c_str());
 	}
-
-	addResource(key, response);
 	return response;
 }
 
@@ -114,8 +120,8 @@ ResourceManager::~ResourceManager() {
 	resourceCache.clear(); // Not really required, just used to show logs for troubleshooting memory exceptions
 
 	logger->debug("Disposing of %d resource adapters", resourceAdapters.size());
-	resourceAdapters.clear(); // Not really required, just used to show logs for troubleshooting memory exceptions. This has to happen after resources are deleted, but that is managed by the member definition order.
-	adaptersCache.clear();
+//	resourceAdapters.clear(); // Not really required, just used to show logs for troubleshooting memory exceptions. This has to happen after resources are deleted, but that is managed by the member definition order.
+//	adaptersCache.clear();
 
 	logger->info("Resource manager shutdown complete");
 }

@@ -13,17 +13,20 @@
 class StringUtils {
 public:
 	//TODO: this should return a new string?
-	static void trim(String &text) {
+	static String trim(String text) {
 		text.erase(text.begin(), std::find_if(text.begin(), text.end(),
-		            std::not1(std::ptr_fun<int, int>(std::isspace))));
+				[](unsigned char ch) {
+		        	return !std::isspace(ch);
+		    	}
+		));
 
 		text.erase(std::find_if(text.rbegin(), text.rend(),
-		            std::not1(std::ptr_fun<int, int>(std::isspace))).base(), text.end());
+				[](unsigned char ch) {
+					return !std::isspace(ch);
+				}
+		).base(), text.end());
+
+		return text;
 	}
-
 };
-
-
-
-
 #endif /* SRC_JAVALIKE_STRINGUTILS_H_ */

@@ -15,9 +15,9 @@
 #include "demo/PlaygroundTest.h"
 
 int main(int, char**){
-    TestsPlayground *playgroundtests = new TestsPlayground("/Users/leandro/huevadas/projects/dev/media/");
-    playgroundtests->run();
-    delete playgroundtests;
+//    TestsPlayground *playgroundtests = new TestsPlayground("/Users/leandro/huevadas/projects/dev/media/");
+//    playgroundtests->run();
+//    delete playgroundtests;
 
 //    PlaygroundGeneralDemo playground("/Users/leandro/huevadas/projects/dev/media/");
 //    playground.run();
@@ -28,9 +28,9 @@ int main(int, char**){
 //    CollisionDetectionPlayground colDetplayground("/Users/leandro/huevadas/projects/dev/media/");
 //    colDetplayground.run();
 
-    PlaygroundTerrainDemo * terrainPlayground = new PlaygroundTerrainDemo("/Users/leandro/huevadas/projects/dev/media/");
-    terrainPlayground->run();
-    delete terrainPlayground;
+//    PlaygroundTerrainDemo * terrainPlayground = new PlaygroundTerrainDemo("/Users/leandro/huevadas/projects/dev/media/");
+//    terrainPlayground->run();
+//    delete terrainPlayground;
 //
 //    PhysicsPlayground *physicsPlayground = new PhysicsPlayground("/Users/leandro/huevadas/projects/dev/media/");
 //    physicsPlayground->run();

@@ -24,24 +24,47 @@ public:
 	}
 
 	/**
+	 * TODO: Unify with normalize
+	 */
+	static String relative(const String &prefix, const String &postFix, const String &home = "") {
+		String normalizedPostfix = StringUtils::trim(postFix);
+
+		if(normalizedPostfix.length() >= 2 && normalizedPostfix.substr(0, 2) == "~/") {
+			return Paths::add(home, normalizedPostfix.substr(2, normalizedPostfix.size() - 2));
+		} else {
+			return Paths::add(Paths::getDirname(prefix), postFix);
+		}
+	}
+
+	/**
 	 * if the provided postfix is an absolute path, return that.
-	 * if the provided postfix starts with ~/ then make it is relative to the repository and we return that as well.
+	 * if the provided postfix starts with ~/ then it is relative to the "home" directory.
 	 * Otherwise concatenate the prefix + postfix and remove extra slashes.
 	 */
 	static String add(const String &prefix, const String &postFix) {
-		String normalizedPrefix = prefix.substr(prefix.length() - 1, 1) == "/" ? prefix : prefix + "/";
-		StringUtils::trim(normalizedPrefix);
+		String normalizedPrefix = StringUtils::trim(prefix);
+		String normalizedPostfix = StringUtils::trim(postFix);
 
-		String normalizedPostfix = postFix.substr(0, 2) == "./" ? postFix.substr(2, postFix.length() - 2) : postFix;
-		StringUtils::trim(normalizedPostfix);
+		if(normalizedPostfix.rfind("/", 0) == 0) {
+			return normalizedPostfix;
+		}
 
-		return normalizedPostfix.substr(0, 1) == "/" || normalizedPostfix.substr(0, 2) == "~/" ?
-				normalizedPostfix :
-				normalizedPrefix + normalizedPostfix;
-	}
+		if(normalizedPrefix.empty()) {
+			return normalizedPostfix;
+		} else {
 
-	static String relative(const String &prefix, const String &postFix) {
-		return Paths::add(Paths::getDirname(prefix), postFix);
+			size_t position = 0;
+			if((position = normalizedPostfix.rfind("./", 0)) == 0) {
+				normalizedPostfix.replace(0, 2, "");
+			}
+			if((position = normalizedPostfix.rfind("~/", 0)) == 0) {
+				normalizedPostfix.replace(0, 2, "");
+			}
+
+			normalizedPrefix = normalizedPrefix.substr(normalizedPrefix.length() - 1, 1) == "/" ? normalizedPrefix : normalizedPrefix + "/";
+
+			return normalizedPrefix + normalizedPostfix;
+		}
 	}
 
 	/**

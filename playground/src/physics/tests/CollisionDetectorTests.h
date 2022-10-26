@@ -17,13 +17,13 @@
 class CollisionDetectorTests : public UnitTest {
 public:
     CollisionDetectorTests() {
-        logger = LoggerFactory::getLogger("GeometryTests");
+        logger = LoggerFactory::getLogger("CollisionDetectorTests");
         logger->addAppender(LoggerFactory::getAppender("stdout"));
 
-        this->addTest("CollisionDetectorTests::testSphereIntersections", static_cast<void (UnitTest::*)()>(&CollisionDetectorTests::testSphereSphere));
+        this->addTest("CollisionDetectorTests::testSphereIntersections", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&CollisionDetectorTests::testSphereSphere));
     }
 
-    void testSphereSphere() {
+    void testSphereSphere(PlaygroundRunner *runner) {
         CollisionDetector collisionDetector;
 
         real radius = 2.0f;
