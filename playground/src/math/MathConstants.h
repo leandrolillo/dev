@@ -23,8 +23,8 @@
 		#define powr powf
 	#endif
 
-	constexpr real DELTA = 0.005;
-	constexpr real one_over_rand_max = (real)1 / (RAND_MAX);
+	constexpr real DELTA = (real)0.005;
+	constexpr real one_over_rand_max = ((real)1 / (real)RAND_MAX);
 
 	#ifndef M_PI	// algunos math.h no lo definen, como el de visual studio.
 		#define M_PI 3.14159265358979323846264338327950288419716939937510f

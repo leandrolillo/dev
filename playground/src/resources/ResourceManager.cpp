@@ -34,7 +34,7 @@ void ResourceManager::addAdapter(ResourceAdapter *adapter) {
 
 Resource* ResourceManager::load(ResourceLoadRequest &resourceLoadRequest) {
 	Resource *response = null;
-	String key = getCacheKey(resourceLoadRequest.getFileParser().getFilename(), resourceLoadRequest.getInputMimeType());
+	String key = getCacheKey(resourceLoadRequest.getFileParser().getFilename(), resourceLoadRequest.getOutputMimeType());
 
 	if(resourceLoadRequest.isValid()) {
 		response = getCacheResource(key);
@@ -57,7 +57,7 @@ Resource* ResourceManager::load(ResourceLoadRequest &resourceLoadRequest) {
 					}
 					if (response != null) {
 						response->setFileName(resourceLoadRequest.getFileParser().getFilename());
-						response->setMimeType(resourceLoadRequest.getInputMimeType());
+						response->setMimeType(resourceLoadRequest.getOutputMimeType());
 						response->setLabels(resourceLoadRequest.getLabels());
 						logger->debug("Loaded [%s]", response->toString().c_str());
 					} else {

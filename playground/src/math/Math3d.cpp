@@ -1,6 +1,9 @@
 #include <string.h>
 #include "Math3d.h"
 
+/**
+ * Returns a random number of type real - in the range [0-1]
+ */
 real rrand() {
 	return ((real) rand() * one_over_rand_max);
 }

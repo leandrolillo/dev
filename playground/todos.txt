@@ -42,7 +42,9 @@ New stuff:
 	- Add some class to generate bounding geometry from this.
 	- Some other tree model
 	- Add grass / ferns with transparency
-	- use own particle class or review design (lambdas maybe?)
+	- use own particle class or review design (lambdas maybe?) - currently it is using class from a different demo
+
+	- evolve this demo to be a planet and then a solar system.
 
 Games: 
 - Battle city:
@@ -52,3 +54,4 @@ Games:
 - scenery (with train or racing cars - lightning mcqueen and cruz, wind/rain, vegetation and animals, water, day/night transition, sun and moon, etc.)
 
 robotica - brazo (curso)
+scalectric - o vehículos (autos, trenes, naves) que sigan una ruta predefinida con escenarios de fondo

@@ -63,6 +63,7 @@ protected:
 	    VertexArrayResource *model = null;
         if(heightMap != null) {
             GeometryResource heightMapGeometry(0);
+            heightMapGeometry.setName(Paths::getBasename(heightMap->getFileName()));
             heightMapGeometry.setType("triangles");
 
             for(unsigned int i = 0; i < heightMap->getGridWidth(); i++) {

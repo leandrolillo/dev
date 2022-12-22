@@ -94,7 +94,7 @@ public:
 				min = vector(std::min(min.x, vertice.x), std::min(min.y, vertice.y), std::min(min.z, vertice.z));
 			}
 			this->size = max - min;
-			logger->info("Size is: %s", size.toString().c_str());
+			logger->info("[%s] size is: %s", this->name.c_str(), size.toString().c_str());
 		}
 
 		return size;

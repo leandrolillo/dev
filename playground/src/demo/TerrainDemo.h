@@ -156,16 +156,14 @@ public:
 
         video->enable(RELATIVE_MOUSE_MODE, 0);
         video->enable(BLEND, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        ResourceManager *resourceManager = this->getResourceManager();
 
-        treeTexture = (TextureResource *)this->getContainer()->getResourceManager()->load("images/lowPolyTree.png", MimeTypes::TEXTURE);
-        if((tree = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/lowPolyTree.obj", MimeTypes::VERTEXARRAY)) == null) {
+        treeTexture = (TextureResource *)resourceManager->load("images/lowPolyTree.png", MimeTypes::TEXTURE);
+        if((tree = (VertexArrayResource *)resourceManager->load("geometry/lowPolyTree.obj", MimeTypes::VERTEXARRAY)) == null) {
         	logger->error("Could not load tree model");
         	return false;
         }
 
-
-
-        ResourceManager *resourceManager = this->getContainer()->getResourceManager();
         terrain = (TerrainResource *)resourceManager->load("geometry/terrain/terrain.json", "video/terrain");
         if(!terrain) {
         	throw Exception("Could not load terrain geometry/terrain/terrain.json");
@@ -214,7 +212,11 @@ public:
         }
 
         for(int index = 0; index < 20; index++) {
-        	vector position(terrain->getHeightMap()->positionAt(rrand() * terrain->getHeightMap()->getWidth(), rrand() * terrain->getHeightMap()->getDepth()));
+        	real x = rrand() * terrain->getHeightMap()->getWidth();
+        	real z = rrand() * terrain->getHeightMap()->getDepth();
+
+        	vector position(terrain->getHeightMap()->positionAt(x, z));
+
         	this->treePositions.push_back(matriz_4x4::traslacion(position) * matriz_4x4::rotacion(0, radian(rrand() * 360.0), 0));
 
         	vector halfsizes(tree->getSize() * 0.5);

@@ -8,6 +8,7 @@
 #ifndef SRC_VIDEO_RESOURCES_HEIGHTMAPRESOURCE_H_
 #define SRC_VIDEO_RESOURCES_HEIGHTMAPRESOURCE_H_
 
+#include<InvalidArgumentException.h>
 #include <Resource.h>
 #include <Math3d.h>
 #include<Logger.h>
@@ -27,6 +28,9 @@ public:
      * VoxelSize can be interpreted as the dimensions of each and all individual voxels, or the factor/zoom applied to enlarge the original image dimensions
      */
     HeightMapResource(ImageResource *heightMap, vector voxelSize) : Resource(0, MimeTypes::HEIGHTMAP) {
+    	if(heightMap == null) {
+    		throw InvalidArgumentException("Heightmap can not be null");
+    	}
         this->heightMap = heightMap;
         this->voxelSize = voxelSize;
         this->height = calculateHeight();
@@ -166,6 +170,11 @@ public:
     vector positionAt(real x, real z) const {
     	return vector(x, heightAt(x, z), z);
     }
+
+	virtual String toString() const {
+		return String("HeightMap patch ["  + std::to_string(this->getWidth()) + "x" + std::to_string(this->getHeight()) + "x" + std::to_string(this->getDepth()) + "] based on [ " + std::to_string(this->getGridWidth()) + "x" + std::to_string(this->getGridHeight()) + " - voxel size: " + this->voxelSize.toString());
+	}
+
 
 private:
     real barycentric(const vector &p1, const vector &p2, const vector &p3, const vector2 &pos) const {

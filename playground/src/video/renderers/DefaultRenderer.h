@@ -32,7 +32,7 @@ public:
          * drawLine functionality which generates singular matrixes.
          */
         matriz_3x3 reducedModelMatrix = (matriz_3x3) modelMatrix;
-        if(equalsZero(reducedModelMatrix.determinante())) {
+        if(!equalsZero(reducedModelMatrix.determinante())) {
             this->normalMatrix = reducedModelMatrix.inversa().traspuesta();
         } else {
             this->normalMatrix = matriz_3x3::identidad;
