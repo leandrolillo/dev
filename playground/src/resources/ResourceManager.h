@@ -31,6 +31,12 @@ public:
 		this->rootFolder = rootFolder;
 	}
 
+	void logStatus() {
+		logger->debug("Resource Manager status:");
+		logger->debug("Resources %d", resourceCache.size());
+		logger->debug("Resource adapters: %d", resourceAdapters.size());
+	}
+
 	const String& getRootFolder() {
 		return this->rootFolder;
 	}
@@ -98,7 +104,10 @@ public:
 	 * Beware with adding a key that already exists: it will trigger deletion of the unique_ptr and exceptions
 	 */
 	Resource *addResource(const String &key, Resource *resource) {
-		resourceCache[key] = std::unique_ptr<Resource>(resource);
+		if(!key.empty()) {
+			resourceCache[key] = std::unique_ptr<Resource>(resource);
+		}
+
 		return resource;
 	}
 
@@ -106,6 +115,7 @@ public:
 		String key = getCacheKey(resource);
 		if(!key.empty()) {
 			resourceCache[key] = std::unique_ptr<Resource>(resource);
+			logger->debug("Managing externally loaded [%s]", resource->toString().c_str());
 		}
 	    return resource;
 	}

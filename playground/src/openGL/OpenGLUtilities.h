@@ -39,6 +39,7 @@ public:
         resource = new VertexArrayResource(vertexArray);
         resource->setPrimitiveType(asGlPrimitiveType(geometry->getType()));
         resource->setSize(geometry->getSize());
+        resource->setFileName(geometry->getFileName());
 
         glBindVertexArray(resource->getId());
         GLenum glError = glGetError();

@@ -506,7 +506,7 @@ public:
 
         if (vertexArrayResource != null && vertexArrayResource->getId() > 0) {
             getGlError();
-            //logger->info("Drawing vertexArray %s", vertexArrayResource->toString().c_str());
+//            logger->info("Drawing vertexArray %s", vertexArrayResource->toString().c_str());
 
             glEnableVertexAttribArray(0);
             glBindVertexArray(vertexArrayResource->getId());

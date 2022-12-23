@@ -33,7 +33,7 @@ public:
 		GeometryResource *geometry = geometryCollection->getObjects().begin()->second;
 		MeshResource *resource = new MeshResource();
 
-		resource->setVertexArray(OpenGLUtilites::generateVertexBuffer(geometry));
+		resource->setVertexArray((VertexArrayResource *)this->getResourceManager()->addResource(OpenGLUtilites::generateVertexBuffer(geometry))); //make sure to add generated resources to resource manager or they're leaked
 		if(geometry->getMaterial() != null) {
 			resource->setMaterial(geometry->getMaterial());
 

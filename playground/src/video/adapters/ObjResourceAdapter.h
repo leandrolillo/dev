@@ -70,14 +70,14 @@ public:
         geometry->setType("triangles");
 
 
-        logger->info("Parsing object");
+        logger->debug("Parsing object");
         std::vector<vector3>indices;
 
         String token;
         while ((token = textParser.takeToken()) != FileParser::eof) {
         	if (token == "o") {
         		String name = StringUtils::trim(textParser.takeLine());
-        		logger->info("Name: %s", name.c_str());
+        		logger->debug("Name: %s", name.c_str());
         		geometry->setName(name);
         	} else if (token == "v") {
 				vertices.push_back(vector(textParser.readReal(), textParser.readReal(), textParser.readReal()));
@@ -116,7 +116,7 @@ public:
         	}
         }
 
-        logger->info("Read %d vertices, %d textCoords, %d normals", geometry->getVertices().size(), textCoords.size(), normals.size());
+        logger->debug("Read %d vertices, %d textCoords, %d normals", geometry->getVertices().size(), textCoords.size(), normals.size());
 
         printLogInfo(geometry);
 
@@ -124,11 +124,11 @@ public:
     }
 private:
     void printLogInfo(GeometryResource *geometry) const {
-    	logger->info("Object [%s]", geometry->getName().c_str());
-        logger->info("%d vertices", geometry->getVertices().size());
-        logger->info("%d textCoords", geometry->getTextureCoordinates().size());
-        logger->info("%d normals", geometry->getNormals().size());
-        logger->info("%d indices", geometry->getIndices().size());
+    	logger->debug("Object [%s]", geometry->getName().c_str());
+        logger->debug("%d vertices", geometry->getVertices().size());
+        logger->debug("%d textCoords", geometry->getTextureCoordinates().size());
+        logger->debug("%d normals", geometry->getNormals().size());
+        logger->debug("%d indices", geometry->getIndices().size());
 
         for (std::vector<unsigned int>::iterator indexIterator = geometry->getIndices().begin();
                 indexIterator != geometry->getIndices().end(); indexIterator++) {

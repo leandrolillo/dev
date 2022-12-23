@@ -267,6 +267,13 @@ public:
 	}
 
 	virtual void run() {
+		logger->info("");
+		logger->info("--------------");
+		logger->info("Playground Run"),
+		logger->info("--------------");
+
+		this->getResourceManager()->logStatus();
+
 		if (status == PlaygroundStatus::CREATED) {
 			logger->debug("Initializing playground");
 			init();
@@ -290,8 +297,9 @@ public:
 
 			status = PlaygroundStatus::RUNNING;
 
-			while (status == PlaygroundStatus::RUNNING)
+			while (status == PlaygroundStatus::RUNNING) {
 				this->loop();
+			}
 		}
 		logger->debug("Finished looping... shutting down");
 		//shutdown();

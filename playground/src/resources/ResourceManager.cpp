@@ -102,6 +102,7 @@ void ResourceManager::dispose(Resource *resource) const {
 
 ResourceManager::~ResourceManager() {
     logger->debug("Shutting down resource manager");
+    logStatus();
 
     /**
      * We could not move dispose logic to Resource destructor since it conflicts with the destructor order.

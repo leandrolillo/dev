@@ -29,7 +29,7 @@ public:
 		    return null;
 		}
 
-		return OpenGLUtilites::generateVertexBuffer(geometry->getObjects().begin()->second);
+		return OpenGLUtilites::generateVertexBuffer(geometry->getObjects().begin()->second); // no need to explicitly add this object to resource manager since it is the result of load method
 	}
 
 	virtual void dispose(Resource *resource) const override {

@@ -32,8 +32,8 @@
 
 	#ifndef _MAX_MINS_
 		#define _MAX_MINS_
-		#define REAL_MAX FLT_MAX	//Maximo valor positivo
-		#define REAL_MIN FLT_MIN	// Minimo valor POSITIVO
+		constexpr real REAL_MAX = FLT_MAX;	//Maximo valor positivo
+		constexpr real REAL_MIN = FLT_MIN;	// Minimo valor POSITIVO
 	#endif
 
 	#ifndef radian
