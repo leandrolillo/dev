@@ -28,17 +28,16 @@ public:
 	void testLoad(PlaygroundRunner *runner){
 		GeometryResourceAdapter resourceAdapter;
 
-		FileParser fileParser(Paths::normalize("tests/geometry.json", runner->getContainer()->getResourceManager()->getRootFolder()));
-		ResourceLoadRequest request(fileParser);
+		ResourceLoadRequest request(Paths::normalize("tests/geometry.json", runner->getContainer()->getResourceManager()->getRootFolder()));
 		Resource *resource = resourceAdapter.load(request.acceptMimeType(MimeTypes::GEOMETRYCOLLECTION));
 		assertNotNull(defaultAssertMessage, resource);
 	}
 
+	// Note that resource Adapters are owned by resource manager, thus we should send a new() and not a heap variable. Otherwise we get crazy things like accessing deleted memory in logs appenders.
 	void testLoadWithResourceManager(PlaygroundRunner *runner) {
 		ResourceManager resourceManager(runner->getContainer()->getResourceManager()->getRootFolder());
-		GeometryResourceAdapter resourceAdapter;
 
-		resourceManager.addAdapter(&resourceAdapter);
+		resourceManager.addAdapter(new GeometryResourceAdapter());
 
 		Resource *resource = resourceManager.load("tests/geometry.json", MimeTypes::GEOMETRYCOLLECTION);
 		assertNotNull(defaultAssertMessage, resource);
