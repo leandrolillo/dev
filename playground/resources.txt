@@ -6,3 +6,65 @@ Copy & Swap idiom: https://stackoverflow.com/questions/3279543/what-is-the-copy-
 Rule of Three: https://en.m.wikipedia.org/wiki/Rule_of_three_(C++_programming)
 RAII: https://en.m.wikipedia.org/wiki/Resource_acquisition_is_initialization
 C++ core guidelines: https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md
+
+
+Move semantics, l-values and r-values and copy and swap idiom go hand to hand like this:
+    /* Rule of five and copy-and-swap*/
+    friend void swap(MyClass& first, MyClass& second)
+	{
+		// enable ADL (not necessary in our case, but good practice)
+		using std::swap;
+
+		// by swapping the members of two objects, the two objects are effectively swapped
+		swap(first.propertyA, second.propertyA);
+		swap(first.wrappedResource, second.wrappedResource);
+		...
+	}
+
+	/**
+	 * Regular copy constructor
+	 **/
+    MyClass(const MyClass &other) {
+    	this->propertyA = other.propertyA;
+    	this->wrappedResource = new ... && copy from other.wrappedResource;
+    }
+
+	/** 
+	 * move constructor - the core idea here is that no one else has access to "other" since it was instanciated anonymous (is an l-value?) for this call and will go out of scope 
+	 * as soon as it ends. Thus  we can steal its contests without the risk leaving it in an inconsistent state for others.
+	 **/
+    MyClass(MyClass && other) { 
+    	swap(*this, other);
+    }
+
+	/**
+	 * Operator= If other is an anonymous/temporal/l-value then the move constructor will be used. Otherwise the regular copy constructor will be called. 
+	 * Either case we can just swap and discard other.
+	 * If this object had previous data, it should be disposed by the destructor of other (since we swapped the contents)
+	 */
+    MyClass &operator =(MyClass other) {
+    	swap(*this, other);
+    	return *this;
+    }
+
+
+smart pointers: 
+	- owner references are handled with unique_ptr. Non-owner references with naked pointers. The idea is that objects get deleted as the unique_ptr goes out of scope.
+	- owner references can be collected in vectors (std::vector<unique_ptr<something>>), sets or maps.
+		- beware that in maps, if you replace a key the old value goes out of scope thus deletes the wrapped pointer - this might cause illegal access if somebody had that raw pointer.
+		
+stl
+	- vectors are insertion ordered
+	- sets are ordered according to natural <, or some provided lambda/functor
+	- deletion + iteration can only be done with iterators
+		while (iterator != resources.end()) {
+			if(shouldDelete) {
+				iterator = resources.erase(iterator);
+			} else {
+		       ++iterator;
+		    }
+	    }
+		
+C++:
+	- objects are constructed in the order that are declared and destructed in the opposite order. This is important for knowing what goes out of scope before.
+	- polymorphism is no good in destructors: base class destructor is called after children class destructor. This means child data has already been destroyed when running base destructor and any attempts to trigger polymorfism with cause errors. 
