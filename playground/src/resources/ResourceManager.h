@@ -14,16 +14,39 @@
 #include <stdio.h>
 #include <algorithm>
 
-struct resourceComparator {
-    bool operator() (std::unique_ptr<Resource> const &left, std::unique_ptr<Resource> const &right) {
-    	return left.get() < right.get();
+
+struct resourceAdapterComparator
+{
+    using is_transparent = void;
+    bool operator()(std::unique_ptr<ResourceAdapter> const& left, std::unique_ptr<ResourceAdapter> const& right) const
+    {
+        return left.get() < right.get();
+    }
+    bool operator()(ResourceAdapter *left, std::unique_ptr<ResourceAdapter> const& right) const
+    {
+        return left < right.get();
+    }
+    bool operator()(std::unique_ptr<ResourceAdapter>const& left, ResourceAdapter *right) const
+    {
+        return left.get() < right;
     }
 };
 
 
-struct resourceAdapterComparator {
-    bool operator() (std::unique_ptr<ResourceAdapter> const &left, std::unique_ptr<ResourceAdapter> const &right) {
-    	return left.get() < right.get();
+struct resourceComparator
+{
+    using is_transparent = void;
+    bool operator()(std::unique_ptr<Resource> const& left, std::unique_ptr<Resource> const& right) const
+    {
+        return left.get() < right.get();
+    }
+    bool operator()(Resource *left, std::unique_ptr<Resource> const& right) const
+    {
+        return left < right.get();
+    }
+    bool operator()(std::unique_ptr<Resource>const& left, Resource *right) const
+    {
+        return left.get() < right;
     }
 };
 
@@ -32,10 +55,8 @@ class ResourceManager {
 protected:
 	Logger *logger = LoggerFactory::getLogger("resources/ResourceManager");
 
-
 	std::set<std::unique_ptr<ResourceAdapter>, resourceAdapterComparator> resourceAdapters; // Define adapter before resources so that they are initialized before them, and deleted after them.
 	std::set<std::unique_ptr<Resource>, resourceComparator> resources; // Define adapter before resources so that they are initialized before them, and deleted after them.
-
 
 	std::unordered_map<String, Resource *> resourceCache;
 	std::unordered_map<String, ResourceAdapter *> loadAdaptersCache;
@@ -46,6 +67,9 @@ public:
 	static const String EphemeralLabel;
 
 public:
+	ResourceManager (const ResourceManager&) = delete;
+	ResourceManager& operator= (const ResourceManager&) = delete;
+
 	ResourceManager(const String &rootFolder) {
 		logger->setLogLevel(LogLevel::DEBUG);
 		this->rootFolder = rootFolder;
@@ -113,25 +137,15 @@ public:
 
 	Resource* load(ResourceLoadRequest &loadRequest);
 
-	/**
-	 * Beware with adding a key that already exists: it will trigger deletion of the unique_ptr and exceptions
-	 */
-	Resource *addResource(const String &key, Resource *resource) {
-		if(resource != null) {
-			resources.insert(std::unique_ptr<Resource>(resource));
-
-			if(!key.empty()) {
-				resourceCache[key] = resource;
-			}
-		}
-
-		return resource;
-	}
-
 	Resource *addResource(Resource *resource) {
 		if(resource != null) {
 			String key = getCacheKey(*resource);
-			this->addResource(key, resource);
+			if(!key.empty()) {
+				if(resources.find(resource) == resources.end()) {
+					resources.insert(std::unique_ptr<Resource>(resource));
+				}
+				resourceCache[key] = resource;
+			}
 		}
 
 		return resource;

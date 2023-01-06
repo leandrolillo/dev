@@ -15,9 +15,9 @@
 #include "demo/PlaygroundTest.h"
 
 int main(int, char**){
-//    TestsPlayground *playgroundtests = new TestsPlayground("/Users/leandro/huevadas/projects/dev/media/");
-//    playgroundtests->run();
-//    delete playgroundtests;
+    TestsPlayground *playgroundtests = new TestsPlayground("/Users/leandro/huevadas/projects/dev/media/");
+    playgroundtests->run();
+    delete playgroundtests;
 
 //    PlaygroundGeneralDemo playground("/Users/leandro/huevadas/projects/dev/media/");
 //    playground.run();

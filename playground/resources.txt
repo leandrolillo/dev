@@ -52,6 +52,9 @@ smart pointers:
 	- owner references are handled with unique_ptr. Non-owner references with naked pointers. The idea is that objects get deleted as the unique_ptr goes out of scope.
 	- owner references can be collected in vectors (std::vector<unique_ptr<something>>), sets or maps.
 		- beware that in maps, if you replace a key the old value goes out of scope thus deletes the wrapped pointer - this might cause illegal access if somebody had that raw pointer.
+		- beware that in sets, if you have a custom less function and call set.insert(std_unique<myclass>(obj)) for a duplicated object, the lvalue std_unique<class>(obj) will be removed from scope thus delete the obj.
+			We should check the raw pointer is in the set before attempting to insert (even build) a std_unique(obj). We can do this by iterating the set and checking iterator->get() but that would be O(n). 
+			Instead, it is possible to use heterogeneous lookups, which allow you to do find(another type) which is O(1): https://www.fluentcpp.com/2017/06/09/search-set-another-type-key/
 		
 stl
 	- vectors are insertion ordered

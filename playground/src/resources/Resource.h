@@ -15,7 +15,7 @@
 
 class Resource {
 protected:
-	Logger *logger = LoggerFactory::getLogger("resources/Resource");;
+	Logger *logger = LoggerFactory::getLogger("resources/Resource");
 
 private:
 	unsigned long id; // id makes sense to business only - thus can be repeated. It is not a sequential primary key for all resources
@@ -28,7 +28,9 @@ public:
 		setId(id);
 		setMimeType(mimeType);
 	}
-	virtual ~Resource() {}
+	virtual ~Resource() {
+		logger->debug("Destroying [%s]", this->toString().c_str());
+	}
 
 	unsigned long getId() const {
 		return id;

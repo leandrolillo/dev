@@ -10,15 +10,7 @@ const String ResourceManager::EphemeralLabel = {"ephemeral"};
 
 void ResourceManager::addAdapter(ResourceAdapter *adapter) {
 	if(adapter != null && !adapter->getOutputMimeType().empty()) {
-		bool found = false;
-		for (auto &resourceAdapterPtr : this->resourceAdapters) {
-			if(resourceAdapterPtr.get() == adapter) {
-				found = true;
-				break;
-			}
-		}
-
-		if(!found) {
+		if(resourceAdapters.find(adapter) != resourceAdapters.end()) {
 			resourceAdapters.insert(std::unique_ptr<ResourceAdapter>(adapter));
 		}
 
@@ -38,53 +30,55 @@ void ResourceManager::addAdapter(ResourceAdapter *adapter) {
 
 Resource* ResourceManager::load(ResourceLoadRequest &resourceLoadRequest) {
 	Resource *response = null;
-	String key = getCacheKey(resourceLoadRequest);
-	response = getCacheResource(key);
-	if (response == null) {
-		if(resourceLoadRequest.isValid()) {
-			try {
-				logger->verbose("Resource was not cached previously");
+	try {
+		response = getCacheResource(getCacheKey(resourceLoadRequest));
+		if (response == null) {
+			if(resourceLoadRequest.isValid()) {
+					logger->verbose("Resource was not cached previously");
 
-				ResourceAdapter *adapter = getAdapter(resourceLoadRequest);
-				if (adapter != null) {
-					logger->debug("Loading %s with adapter [%s]",
-							resourceLoadRequest.toString().c_str(),
-							adapter->toString().c_str());
-
-					try {
-						response = adapter->load(resourceLoadRequest);
-					} catch(Exception &exception) {
-						logger->error("Could not load %s with adapter [%s]: %s", resourceLoadRequest.toString().c_str(), adapter->toString().c_str(), exception.getMessage().c_str());
-					} catch(...) {
-						;
-					}
-					if (response != null) {
-						response->setFileName(resourceLoadRequest.getFilePath());
-						response->setMimeType(resourceLoadRequest.getOutputMimeType());
-						response->setLabels(resourceLoadRequest.getLabels());
-						logger->debug("Loaded [%s]", response->toString().c_str());
-					} else {
-						logger->warn(
-								"Could not load %s with adapter [%s]",
+					ResourceAdapter *adapter = getAdapter(resourceLoadRequest);
+					if (adapter != null) {
+						logger->debug("Loading %s with adapter [%s]",
 								resourceLoadRequest.toString().c_str(),
 								adapter->toString().c_str());
-					}
-				} else {
-					logger->error("No adapter found for loading %s", resourceLoadRequest.toString().c_str());
-				}
-			} catch (Exception &e) {
-				logger->error("Error loading [%s]: [%s]",
-						resourceLoadRequest.toString().c_str(),
-						e.getMessage().c_str());
-			}
 
-			addResource(key, response);
+						try {
+							response = adapter->load(resourceLoadRequest);
+						} catch(Exception &exception) {
+							logger->error("Could not load %s with adapter [%s]: %s", resourceLoadRequest.toString().c_str(), adapter->toString().c_str(), exception.getMessage().c_str());
+						} catch(...) {
+							;
+						}
+						if (response != null) { // TODO: add a response object that takes care of all this?
+							if(response->getFileName() == "") {
+								response->setFileName(resourceLoadRequest.getFilePath());
+							}
+
+							response->setMimeType(resourceLoadRequest.getOutputMimeType());
+							response->setLabels(resourceLoadRequest.getLabels());
+							logger->debug("Loaded [%s]", response->toString().c_str());
+						} else {
+							logger->warn(
+									"Could not load %s with adapter [%s]",
+									resourceLoadRequest.toString().c_str(),
+									adapter->toString().c_str());
+						}
+					} else {
+						logger->error("No adapter found for loading %s", resourceLoadRequest.toString().c_str());
+					}
+				addResource(response);
+			} else {
+				logger->error("Invalid Resource load request %s: %s ", resourceLoadRequest.toString().c_str(), resourceLoadRequest.errors().c_str());
+			}
 		} else {
-		    logger->error("Invalid Resource load request %s: %s ", resourceLoadRequest.toString().c_str(), resourceLoadRequest.errors().c_str());
+			logger->debug("Getting %s from cache", resourceLoadRequest.toString().c_str());
 		}
-	} else {
-		logger->debug("Getting %s from cache", resourceLoadRequest.toString().c_str());
+	} catch (Exception &e) {
+		logger->error("Error loading [%s]: [%s]",
+				resourceLoadRequest.toString().c_str(),
+				e.getMessage().c_str());
 	}
+
 	return response;
 }
 

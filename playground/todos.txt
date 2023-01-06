@@ -5,15 +5,13 @@ Tech debts
 - review RAII and 5 of 5 principle (move semantics) in resources/playground classes.
 	specially in file parser / text parser and resources.
 
-- resource adapters should have two mimetypes: input mimetype (similar to content-type)	and output mimetype (similar to accept)
+- resource adapters should have two mimetypes: input mimetype (similar to content-type)	and output mimetype (similar to accept). Also dispose mimetypes since they might delete different types
 
-- resources should have labels and allow deletion by labels
+- what should be a resource identifiers: filepath+name+mimetype - uri+mimetype where uri is fullpath/name? This has implications in cache key and cache storage itself.
 
-- There should be a way of marking some resources "temporal" or "ephemeral" since they are auxiliar in creating other objects but we don't want to keep them permanently in caché (trigger deletion after init is complete?).
+- Add a resource load response that takes care of normalizing resources properties like uri, name, path, mimetype, etc. Currently that only happens for the returned object in a load adapter, but the adapter might load several objects with addResource method.
 
 - review design of particle manager/collision detector / geometry vs particles / etc. Too much vector passing and copying. Review polymorfism / std::vector<unique_ptr> usage.
-
-- add 'override' to overridden virtual methods (forces compiler to check everything is ok)
 
 - Review collision action design: use lambdas instead of template pattern for collision response actions. Review design of BulletParticle used for playing sounds on balls bouncing.
 
@@ -21,7 +19,6 @@ Tech debts
 
 - improve box rendering (normals)
 
-- delete demos after they are finished (or they do not trigger destructors if many demos are run).
 
 ----------------
 

@@ -33,17 +33,27 @@ public:
 		Resource *resource = new Resource(1, "test/mimetype");
 		resource->setFileName("/test/filename");
 		resourceManager.addResource(resource);
-		assertEquals("Resources mismatch", 1, resourceManager.getResourcesCount());
+		resource->toString(); //any better way to try to trigger illegal access?
+		assertEquals(defaultAssertMessage, 1, resourceManager.getResourcesCount());
 
 		resource = new Resource(2, "test/mimetype");
 		resource->setFileName("/test/filename2");
 		resourceManager.addResource(resource);
-		assertEquals("Resources mismatch", 2, resourceManager.getResourcesCount());
+		resource->toString(); //any better way to try to trigger illegal access?
+		assertEquals(defaultAssertMessage, 2, resourceManager.getResourcesCount());
 
 		resource = resourceManager.load("/test/filename", "test/mimetype");
 		assertNotNull("Resource not found in cache", resource);
 		assertEquals("filename does not match", "/test/filename", resource->getFileName());
 		assertEquals("mimetype does not match", "test/mimetype", resource->getMimeType());
+
+		/**
+		 * Add a duplicated resource to check nothing gets deleted
+		 */
+		resourceManager.addResource(resource);
+		resource->toString(); //any better way to try to trigger illegal access?
+		assertEquals(defaultAssertMessage, 2, resourceManager.getResourcesCount());
+
 	}
 
 	void testUnload(PlaygroundRunner *runner) {
@@ -70,7 +80,7 @@ public:
 		resourceManager.addResource(resource);
 
 //		/*
-//		 * This one should evict the previous one and keep resources count to 4
+//		 * This one should evict the previous one from cache and keep resources count to 4
 //		 */
 //		resource = new Resource(4, "test/mimetype");
 //		resource->setFileName("test/filename4");
