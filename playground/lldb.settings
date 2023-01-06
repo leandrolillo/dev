@@ -7,7 +7,7 @@ type summary add -s "origin:${var.origin}, radius:${var.radius}" Sphere
 type summary add -s "${var.filename} ${var.line}:${var.column}" FileParser
 type summary add -s "${var.fileParser.filename} ${var.fileParser.line}:${var.fileParser.column}" JsonParser
 
-type summary add -s "${var.inputMimeType}->${var.outputMimeType} ${var.fileParser.filename}" ResourceLoadRequest
+type summary add -s "${var.uri}|${var.outputMimeType} <- ${var.inputMimeType}" ResourceLoadRequest
 type summary add -s "${var.inputMimeType}->${var.outputMimeType}" ResourceAdapter
 
 type summary add -s "(id:${var.id}) [${var.mimeType}] [${var.fileName}] [${var.labels}]" Resource

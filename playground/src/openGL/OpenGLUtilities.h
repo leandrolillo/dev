@@ -22,6 +22,7 @@ protected:
 	static Logger *getLogger() {
 		if(logger == null) {
 			logger = LoggerFactory::getLogger("openGL/OpenGLUtilities");
+			logger->setLogLevel(LogLevel::DEBUG);
 		}
 
 		return logger;
@@ -99,7 +100,7 @@ public:
     }
 
 	static void disposeVertexArray(VertexArrayResource *vertexArrayResource) {
-		if(vertexArrayResource != null) {
+		if(vertexArrayResource != null && vertexArrayResource->getId() != 0) {
 			getLogger()->debug("Deleting [%s]", vertexArrayResource->toString().c_str());
 
 			if (vertexArrayResource->getId() != 0) {
@@ -128,29 +129,26 @@ public:
 protected:
 
     static GLenum asGlPrimitiveType(const String &typeString) {
-        if (typeString == "points")
+        if (typeString == "points") {
             return GL_POINTS;
-        else if (typeString == "points")
-            return GL_LINES;
-        else if (typeString == "lineLoop")
+        } else if (typeString == "lineLoop") {
             return GL_LINE_LOOP;
-        else if (typeString == "lineStrip")
+        } else if (typeString == "lineStrip") {
             return GL_LINE_STRIP;
-        else if (typeString == "lines")
+        } else if (typeString == "lines") {
             return GL_LINES;
-        else if (typeString == "triangles")
+        } else if (typeString == "triangles") {
             return GL_TRIANGLES;
-        else if (typeString == "triangleStrip")
+        } else if (typeString == "triangleStrip") {
             return GL_TRIANGLE_STRIP;
-        else if (typeString == "triangleFan")
-            return GL_TRIANGLE_FAN;
-        else if (typeString == "quads")
+        } else if (typeString == "quads") {
             return GL_QUADS;
-        else if (typeString == "triangleFan")
+        } else if (typeString == "triangleFan") {
             return GL_TRIANGLE_FAN;
-        else
+        } else {
             throw InvalidArgumentException("Invalid primitive type: [%s]",
                     typeString.c_str());
+        }
     }
 
 

@@ -24,7 +24,11 @@ void ResourceManager::addAdapter(ResourceAdapter *adapter) {
 
 		String key = adapter->getInputMimeType().empty() ? adapter->getOutputMimeType() + "|" : adapter->getOutputMimeType() + "|" + adapter->getInputMimeType();
 
-		adaptersCache[key] = adapter;
+		loadAdaptersCache[key] = adapter;
+
+		for(auto &mimetype : adapter->getDisposesMimeTypes()) {
+			disposeAdaptersCache[mimetype] = adapter;
+		}
 
 		adapter->setResourceManager(this);
 	} else {
@@ -34,11 +38,10 @@ void ResourceManager::addAdapter(ResourceAdapter *adapter) {
 
 Resource* ResourceManager::load(ResourceLoadRequest &resourceLoadRequest) {
 	Resource *response = null;
-	String key = getCacheKey(resourceLoadRequest.getFileParser().getFilename(), resourceLoadRequest.getOutputMimeType());
-
-	if(resourceLoadRequest.isValid()) {
-		response = getCacheResource(key);
-		if (response == null) {
+	String key = getCacheKey(resourceLoadRequest);
+	response = getCacheResource(key);
+	if (response == null) {
+		if(resourceLoadRequest.isValid()) {
 			try {
 				logger->verbose("Resource was not cached previously");
 
@@ -56,7 +59,7 @@ Resource* ResourceManager::load(ResourceLoadRequest &resourceLoadRequest) {
 						;
 					}
 					if (response != null) {
-						response->setFileName(resourceLoadRequest.getFileParser().getFilename());
+						response->setFileName(resourceLoadRequest.getFilePath());
 						response->setMimeType(resourceLoadRequest.getOutputMimeType());
 						response->setLabels(resourceLoadRequest.getLabels());
 						logger->debug("Loaded [%s]", response->toString().c_str());
@@ -76,28 +79,30 @@ Resource* ResourceManager::load(ResourceLoadRequest &resourceLoadRequest) {
 			}
 
 			addResource(key, response);
-
 		} else {
-			logger->debug("Getting %s from cache", resourceLoadRequest.toString().c_str());
+		    logger->error("Invalid Resource load request %s: %s ", resourceLoadRequest.toString().c_str(), resourceLoadRequest.errors().c_str());
 		}
 	} else {
-	    logger->error("Invalid Resource load request %s: %s ", resourceLoadRequest.toString().c_str(), resourceLoadRequest.errors().c_str());
+		logger->debug("Getting %s from cache", resourceLoadRequest.toString().c_str());
 	}
 	return response;
 }
 
+/**
+ * Disposes of the resource by calling the appropriate adapter dispose method. This frees allocated resources but does not remove the resource from internal caches - caller needs to do so as it would break iteration logic.
+ */
 void ResourceManager::dispose(Resource *resource) const {
 	if(resource != null && resource->getMimeType() != "") {
 		logger->info("Disposing of resource [%s]", resource->toString().c_str());
 
-		auto adapterIterator = adaptersCache.find(resource->getMimeType());
-		if(adapterIterator != adaptersCache.end()) {
+		auto adapterIterator = disposeAdaptersCache.find(resource->getMimeType());
+		if(adapterIterator != disposeAdaptersCache.end()) {
 			adapterIterator->second->dispose(resource);
 		}
+
 	} else {
 		logger->warn("Skipping resource disposal due to missing required information (resource not null and mimetype not empty)");
 	}
-
 }
 
 ResourceManager::~ResourceManager() {
@@ -110,17 +115,17 @@ ResourceManager::~ResourceManager() {
      * as part of cleanup, but those had already been deleted by the subclass destructor.
      *
      */
-	for(const auto &[key, resource] : resourceCache) {
-		logger->info("Disposing of resource [%s]", key.c_str());
+	for(const auto &resource : resources) {
 		if(resource != null) {
+			logger->info("Disposing of resource [%s]", resource.get()->toString().c_str());
 			dispose(resource.get());
 		}
 	}
 
-	logger->debug("Disposing of %d resources", resourceCache.size());
-	resourceCache.clear(); // Not really required, just used to show logs for troubleshooting memory exceptions
-
-	logger->debug("Disposing of %d resource adapters", resourceAdapters.size());
+//	logger->debug("Disposing of %d resources", resourceCache.size());
+//	resourceCache.clear(); // Not really required, just used to show logs for troubleshooting memory exceptions
+//
+//	logger->debug("Disposing of %d resource adapters", resourceAdapters.size());
 //	resourceAdapters.clear(); // Not really required, just used to show logs for troubleshooting memory exceptions. This has to happen after resources are deleted, but that is managed by the member definition order.
 //	adaptersCache.clear();
 

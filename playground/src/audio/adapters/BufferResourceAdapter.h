@@ -38,10 +38,11 @@ public:
 	virtual Resource* load(ResourceLoadRequest &request) const override {
 		ALenum error = 0;
 
+		ResourceLoadRequest audioRequest(request);
 		AudioResource *audioResource =
-				(AudioResource*) this->getResourceManager()->load(request.getFileParser(),
-						MimeTypes::AUDIO,
-						std::set<String> {ResourceManager::ResourceManager::EphemeralLabel});
+				(AudioResource*) this->getResourceManager()->load(
+						audioRequest.acceptMimeType(MimeTypes::AUDIO).withAdditionalLabels(std::set<String> {ResourceManager::ResourceManager::EphemeralLabel})
+		);
 		if (audioResource == null) {
 			logger->error(
 					"Error loading bufferResource: could not load audio from [%s]",

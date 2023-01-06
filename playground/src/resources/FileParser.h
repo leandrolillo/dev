@@ -116,8 +116,6 @@ private:
 
 public:
     FileParser(const String filename) {
-        this->filename = filename;
-
         if (filename == "")
             throw InvalidArgumentException("FileName can't be null");
 
@@ -126,7 +124,9 @@ public:
             throw InvalidArgumentException("Error opening [%s]", filename.c_str());
         }
 
-        logger->verbose("File opened for reading binary [%s]", filename.c_str());
+        this->filename = filename;
+
+        logger->verbose("File opened for reading binary [%s]", this->filename.c_str());
 
         this->setDefaultSpecialCharacters();
 
@@ -135,6 +135,40 @@ public:
         column = 1;
         lineBackup = line;
         columnBackup = column;
+    }
+
+    /* Rule of five and copy-and-swap*/
+    friend void swap(FileParser& first, FileParser& second)
+	{
+		// enable ADL (not necessary in our case, but good practice)
+		using std::swap;
+
+		// by swapping the members of two objects, the two objects are effectively swapped
+		swap(first.fileStream, second.fileStream);
+		swap(first.filename, second.filename);
+		swap(first.position, second.position);
+		swap(first.line, second.line);
+		swap(first.column, second.column);
+		swap(first.lineBackup, second.lineBackup);
+		swap(first.columnBackup, second.columnBackup);
+	}
+
+    FileParser(const FileParser &other) : FileParser(other.filename) {
+    	fseek(this->fileStream, ftell(other.fileStream), SEEK_SET);
+
+    	this->position = other.position;
+    	this->line = other.line;
+    	this->lineBackup = other.lineBackup;
+    	this->columnBackup = other.columnBackup;
+    }
+
+    FileParser(FileParser && other) {
+    	swap(*this, other);
+    }
+
+    FileParser &operator =(FileParser other) {
+    	swap(*this, other);
+    	return *this;
     }
 
     ~FileParser() {
@@ -153,7 +187,6 @@ public:
     }
 
     bool skip(size_t size, size_t count) {
-
         if (fseek(fileStream, size * count, SEEK_CUR) != 0) {
             if (feof(fileStream))
                 fseek(fileStream, 0, SEEK_END);

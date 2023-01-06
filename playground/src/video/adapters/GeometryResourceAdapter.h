@@ -28,6 +28,7 @@ public:
 		GeometryCollection *geometryCollection = new GeometryCollection;
 		GeometryResource *resource = new GeometryResource(0);
 		resource->setName(Paths::getBasename(request.getFilePath()));
+		resource->setFileName(request.getFilePath());
 
 		bool generateNormals = false;
 		bool generateIndexes = false;
@@ -57,8 +58,7 @@ public:
 			} else {
 				logger->error("Unexpected token: [%s] at (%d, %d)",
 						token.c_str(), parser.getLine(), parser.getColumn());
-//				delete resource;
-//				return null;
+				parser.takeLine();
 			}
 
 			if (parser.peekToken() == ",") {

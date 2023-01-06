@@ -8,10 +8,11 @@
 #ifndef TEXTURERESOURCEADAPTER_H_
 #define TEXTURERESOURCEADAPTER_H_
 
+#include <set>
+
 #include <adapters/OpenGLResourceAdapter.h>
 #include <resources/ImageResource.h>
 #include <resources/TextureResource.h>
-#include <set>
 
 class TextureResourceAdapter: public OpenGLResourceAdapter {
 	public:
@@ -22,7 +23,9 @@ class TextureResourceAdapter: public OpenGLResourceAdapter {
 		}
 
 		virtual Resource *load(ResourceLoadRequest &request) const override {
-			ImageResource *imageResource = (ImageResource *)this->getResourceManager()->load(request.getFileParser(), MimeTypes::IMAGE, std::set<String> {ResourceManager::EphemeralLabel});
+			ResourceLoadRequest imageRequest(request);
+			ImageResource *imageResource = (ImageResource *)this->getResourceManager()->load(imageRequest.acceptMimeType(MimeTypes::IMAGE).withAdditionalLabels(std::set<String> {ResourceManager::EphemeralLabel}));
+
 			TextureResource *resource = null;
 
 			if(imageResource != null) {
@@ -37,6 +40,7 @@ class TextureResourceAdapter: public OpenGLResourceAdapter {
 					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imageResource->getAncho(), imageResource->getAlto(), 0, GL_BGR, GL_UNSIGNED_BYTE, imageResource->getData());
 
 
+//TODO: Move this to resorceLoadRequests options or labels
 //				glGenerateMipmap(GL_TEXTURE_2D);
 //				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 //				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

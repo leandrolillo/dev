@@ -20,6 +20,9 @@ private:
 	ResourceManager *resourceManager = null;
 	String inputMimeType = "";
 	String outputMimeType = "";
+
+	std::set<String> disposesMimeTypes;
+
 protected:
 	Logger *logger = null;
 public:
@@ -53,18 +56,33 @@ public:
 		return inputMimeType;
 	}
 
-	void accepts(const String &inputMimeType) {
-		this->inputMimeType = inputMimeType;
-	}
-
 	const String& getOutputMimeType() const {
 		return outputMimeType;
 	}
 
+	ResourceAdapter *accepts(const String &inputMimeType) {
+		this->inputMimeType = inputMimeType;
+		return this;
+	}
+
 	ResourceAdapter * produces(const String &outputMimeType) {
 		this->outputMimeType = outputMimeType;
-
 		return this;
+	}
+
+
+
+	const std::set<String>& getDisposesMimeTypes() const {
+		return disposesMimeTypes;
+	}
+
+	ResourceAdapter *disposes(const String &mimeType) {
+		this->disposesMimeTypes.insert(this->disposesMimeTypes.begin(), mimeType);
+		return this;
+	}
+
+	void setDisposesMimeTypes(const std::set<String> &disposesMimeTypes) {
+		this->disposesMimeTypes = disposesMimeTypes;
 	}
 };
 

@@ -1,0 +1,8 @@
+---------------
+c++
+---------------
+Move semantics: https://stackoverflow.com/questions/3106110/what-is-move-semantics
+Copy & Swap idiom: https://stackoverflow.com/questions/3279543/what-is-the-copy-and-swap-idiom
+Rule of Three: https://en.m.wikipedia.org/wiki/Rule_of_three_(C++_programming)
+RAII: https://en.m.wikipedia.org/wiki/Resource_acquisition_is_initialization
+C++ core guidelines: https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md

@@ -14,20 +14,24 @@
 #include "../physics/tests/CollisionDetectorTests.h"
 #include "../physics/tests/ContactResolverTests.h"
 #include "../resources/tests/PathsTests.h"
+#include "../resources/tests/ResourceLoadRequestTests.h"
 #include "../resources/tests/ResourceManagerTests.h"
 
 #include "../video/tests/GeometryResourceAdapterTests.h"
+#include "../video/tests/ObjResourceAdapterTests.h"
 
 class PlaygroundTestsRunner: public PlaygroundRunner, UnitTest {
 		Logger *logger;
 		TestsManager testsManager;
         Math3dTests math3dTests;
-		CollisionTesterTests collisionTesterTests;
+		ResourceManagerTests resourceManagerTests;
+		ResourceLoadRequestTests resourceLoadRequestTests;
+        CollisionTesterTests collisionTesterTests;
 		CollisionDetectorTests collisionDetectorTests;
 		ContactResolverTests collisionResolverTests;
 		PathsTests pathsTests;
-		ResourceManagerTests resourceManagerTests;
 		GeometryResourceAdapterTests geometryResourceAdapterTests;
+		ObjResourceAdapterTests objResourceAdapterTests;
 
 	public:
 		static const unsigned char ID = 100;
@@ -57,13 +61,15 @@ class PlaygroundTestsRunner: public PlaygroundRunner, UnitTest {
 		virtual bool init() override {
             this->addTest("testMousePicking", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&PlaygroundTestsRunner::testMousePicking));
 
+            this->testsManager.addTest(pathsTests);
+            this->testsManager.addTest(resourceManagerTests);
+            this->testsManager.addTest(resourceLoadRequestTests);
             this->testsManager.addTest(math3dTests);
             this->testsManager.addTest(collisionTesterTests);
             this->testsManager.addTest(collisionDetectorTests);
             this->testsManager.addTest(collisionResolverTests);
-            this->testsManager.addTest(pathsTests);
-            this->testsManager.addTest(resourceManagerTests);
             this->testsManager.addTest(geometryResourceAdapterTests);
+            this->testsManager.addTest(objResourceAdapterTests);
             this->testsManager.addTest(*this);
 
 

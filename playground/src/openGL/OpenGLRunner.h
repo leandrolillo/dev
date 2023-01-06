@@ -504,9 +504,9 @@ public:
     void drawVertexArray(const VertexArrayResource *vertexArrayResource) const override {
         String errorMessage;
 
-        if (vertexArrayResource != null && vertexArrayResource->getId() > 0) {
+        if (vertexArrayResource != null && vertexArrayResource->getId() > 0 && vertexArrayResource->getPrimitiveType() < 7) {
             getGlError();
-//            logger->info("Drawing vertexArray %s", vertexArrayResource->toString().c_str());
+            //logger->info("Drawing vertexArray %s", vertexArrayResource->toString().c_str());
 
             glEnableVertexAttribArray(0);
             glBindVertexArray(vertexArrayResource->getId());

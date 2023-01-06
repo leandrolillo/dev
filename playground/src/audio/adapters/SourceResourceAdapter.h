@@ -26,9 +26,10 @@ class SourceResourceAdapter: public ResourceAdapter {
 
 			logger->debug("loading audio/source from [%s]", request.getFilePath().c_str());
 
-			BufferResource * buffer = (BufferResource *)getResourceManager()->load(request.getFileParser(),
-					MimeTypes::AUDIOBUFFER,
-					std::set<String> {ResourceManager::ResourceManager::EphemeralLabel});
+			ResourceLoadRequest bufferRequest(request);
+			BufferResource * buffer = (BufferResource *)getResourceManager()->load(
+					bufferRequest.acceptMimeType(MimeTypes::AUDIOBUFFER).withAdditionalLabels(std::set<String> {ResourceManager::ResourceManager::EphemeralLabel})
+			);
 			if(buffer == null) {
 				logger->error("Error creating source: could not load buffer for [%s]", request.getFilePath().c_str());
 				return null;

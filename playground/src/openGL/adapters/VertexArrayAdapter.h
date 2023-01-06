@@ -21,15 +21,24 @@ public:
 	}
 
 	virtual Resource *load(ResourceLoadRequest &request) const override {
-		GeometryCollection *geometry = (GeometryCollection*) this->getResourceManager()->load(request.getFileParser(),
-				MimeTypes::GEOMETRYCOLLECTION,
-				std::set<String> { ResourceManager::EphemeralLabel });
-		if (geometry == null || geometry->getObjects().empty()) {
+		ResourceLoadRequest geometryCollectionRLR(request);
+		GeometryCollection *geometryCollection = (GeometryCollection*) this->getResourceManager()->load(
+				geometryCollectionRLR.acceptMimeType(MimeTypes::GEOMETRYCOLLECTION).withAdditionalLabels(std::set<String> { ResourceManager::EphemeralLabel })
+		);
+		if (geometryCollection == null || geometryCollection->getObjects().empty()) {
 		    logger->error("Could not load geometry from %s with mimetype %s", request.getFilePath().c_str(), MimeTypes::GEOMETRYCOLLECTION.c_str());
 		    return null;
 		}
 
-		return OpenGLUtilites::generateVertexBuffer(geometry->getObjects().begin()->second); // no need to explicitly add this object to resource manager since it is the result of load method
+		//VertexArrayResource *result = OpenGLUtilites::generateVertexBuffer(geometryCollection->getObjects().begin()->second);
+
+		Resource *result = null;
+		for(auto & geometry : geometryCollection->getObjects()) {
+			Resource *resource = this->getResourceManager()->addResource(OpenGLUtilites::generateVertexBuffer(geometry.second)); //make sure we add it to resource manager to avoid leaks
+			result = (result == null ? resource: result);
+		}
+
+		return result;
 	}
 
 	virtual void dispose(Resource *resource) const override {

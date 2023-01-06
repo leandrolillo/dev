@@ -16,16 +16,59 @@
 class ResourceLoadRequest {
 private:
 	Logger *logger = LoggerFactory::getLogger("ResourceLoadRequest");
-	FileParser &fileParser;
+	String uri;
 	String inputMimeType;
 	String outputMimeType;
 	std::set<String> labels = {};
+	std::shared_ptr<FileParser> fileParser;
+	const Resource *parent = null;
 
 public:
-	ResourceLoadRequest(FileParser &fileParser) : fileParser(fileParser) {
-		this->inputMimeType = MimeTypes::guessMimeType(fileParser.getFilename());
+	ResourceLoadRequest(const String &uri) {
+		this->uri = uri;
+		this->inputMimeType = MimeTypes::guessMimeType(this->uri);
 	}
 
+	ResourceLoadRequest(std::shared_ptr<FileParser> &fileParser) : fileParser(fileParser) {
+		this->uri = fileParser.get()->getFilename();
+		this->inputMimeType = MimeTypes::guessMimeType(this->uri);
+	}
+
+//    /* Rule of five and copy-and-swap -- this is only necessary if fileParser is a resource not to be shared*/
+//    friend void swap(ResourceLoadRequest& first, ResourceLoadRequest& second)
+//	{
+//		// enable ADL (not necessary in our case, but good practice)
+//		using std::swap;
+//
+//		// by swapping the members of two objects, the two objects are effectively swapped
+//		swap(first.uri, second.uri);
+//		swap(first.inputMimeType, second.inputMimeType);
+//		swap(first.outputMimeType, second.outputMimeType);
+//		swap(first.labels, second.labels);
+//		swap(first.parent, second.parent);
+//		swap(first.fileParser, second.fileParser);
+//	}
+//
+//
+//	ResourceLoadRequest(const ResourceLoadRequest &other) {
+//		this->uri = other.uri;
+//		this->inputMimeType = other.inputMimeType;
+//		this->outputMimeType = other.outputMimeType;
+//		this->labels = other.labels;
+//		this->parent = other.parent;
+//		this->fileParser = other.fileParser; // copy or share?
+//	}
+//
+//	ResourceLoadRequest(ResourceLoadRequest && other) {
+//		swap(*this, other);
+//	}
+//
+//	ResourceLoadRequest &operator=(ResourceLoadRequest other) {
+//		swap(*this, other);
+//		return *this;
+//	}
+
+	//TODO: review if it would be better to return new objects - would be safer and shorter syntax while giving up performance
 	ResourceLoadRequest &acceptMimeType(const String &mimeType) {
 		this->outputMimeType = mimeType;
 		return *this;
@@ -48,18 +91,23 @@ public:
 	}
 
 	ResourceLoadRequest &withParent(const Resource *resource) {
-		if(resource != null) {
-			fileParser = FileParser(Paths::relative(resource->getFileName(), fileParser.getFilename()));
-		}
+		this->parent = resource;
 		return *this;
 	}
 
-	FileParser& getFileParser() const {
-		return fileParser;
+	const String &getUri() const {
+		return this->uri;
 	}
 
-	const String &getFilePath() const {
-		return fileParser.getFilename();
+	FileParser& getFileParser() {
+		if(!fileParser) {
+			fileParser = std::shared_ptr<FileParser>(new FileParser(this->getFilePath()));
+		}
+		return *fileParser.get();
+	}
+
+	const String getFilePath() const {
+		return Paths::getActualPath(Paths::relative(parent == null ? "" : parent->getFileName(), this->uri));
 	}
 
 	const String& getInputMimeType() const {
@@ -77,8 +125,16 @@ public:
 	String errors() const {
 		String errors;
 
+		if(uri.empty()) {
+			errors.append("uri is required");
+		}
+
+		if(outputMimeType.empty()) {
+			errors.append("Output mimetype is required");
+		}
+
 		if(inputMimeType.empty()) {
-			errors.append("Could not determine input mimeType");
+			errors.append("Could not determine input mimeType and it was not provided");
 		}
 
 		return errors;
@@ -89,7 +145,7 @@ public:
 	}
 
 	String toString() const {
-		return StringFormatter::format("[%s]->[%s] [%s]", getInputMimeType().c_str(), getOutputMimeType().c_str(), getFilePath().c_str());
+		return StringFormatter::format("[%s]->[%s] [%s]", getInputMimeType().c_str(), getOutputMimeType().c_str(), getUri().c_str());
 	}
 };
 

@@ -18,7 +18,19 @@ public:
         logger->addAppender(LoggerFactory::getAppender("stdout"));
 
         this->addTest("Paths::add", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&PathsTests::testAdd));
+        this->addTest("Paths::getDirname", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&PathsTests::testGetDirname));
+        this->addTest("Paths::getBasename", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&PathsTests::testGetBasename));
     }
+
+	void testGetDirname(PlaygroundRunner *runner) {
+		String actual = Paths::getDirname("");
+		assertEquals(defaultAssertMessage, ".", actual);
+	}
+
+	void testGetBasename(PlaygroundRunner *runner) {
+		String actual = Paths::getBasename("");
+		assertEquals(defaultAssertMessage, "", actual);
+	}
 
     void testAdd(PlaygroundRunner *runner)
     {

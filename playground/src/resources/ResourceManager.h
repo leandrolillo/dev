@@ -14,12 +14,32 @@
 #include <stdio.h>
 #include <algorithm>
 
+struct resourceComparator {
+    bool operator() (std::unique_ptr<Resource> const &left, std::unique_ptr<Resource> const &right) {
+    	return left.get() < right.get();
+    }
+};
+
+
+struct resourceAdapterComparator {
+    bool operator() (std::unique_ptr<ResourceAdapter> const &left, std::unique_ptr<ResourceAdapter> const &right) {
+    	return left.get() < right.get();
+    }
+};
+
+
 class ResourceManager {
-private:
+protected:
 	Logger *logger = LoggerFactory::getLogger("resources/ResourceManager");
-	std::set<std::unique_ptr<ResourceAdapter>> resourceAdapters; // Define adapter before resources so that they are initialized before them, and deleted after them.
-	std::unordered_map<String, std::unique_ptr<Resource>> resourceCache;
-	std::unordered_map<String, ResourceAdapter *> adaptersCache;
+
+
+	std::set<std::unique_ptr<ResourceAdapter>, resourceAdapterComparator> resourceAdapters; // Define adapter before resources so that they are initialized before them, and deleted after them.
+	std::set<std::unique_ptr<Resource>, resourceComparator> resources; // Define adapter before resources so that they are initialized before them, and deleted after them.
+
+
+	std::unordered_map<String, Resource *> resourceCache;
+	std::unordered_map<String, ResourceAdapter *> loadAdaptersCache;
+	std::unordered_map<String, ResourceAdapter *> disposeAdaptersCache;
 
 	String rootFolder;
 public:
@@ -49,41 +69,36 @@ public:
 	ResourceAdapter *getAdapter(ResourceLoadRequest &request) const {
 		String key = request.getOutputMimeType() + "|";
 
-		auto adaptersPair = adaptersCache.find(request.getOutputMimeType() + "|");
-		if(adaptersPair != adaptersCache.end()) {
+		auto adaptersPair = loadAdaptersCache.find(request.getOutputMimeType() + "|");
+		if(adaptersPair != loadAdaptersCache.end()) {
 			return adaptersPair->second;
 		}
 
 		key = request.getOutputMimeType() + "|" + request.getInputMimeType();
 
-		adaptersPair = adaptersCache.find(request.getOutputMimeType() + "|" + request.getInputMimeType());
-		return adaptersPair == adaptersCache.end() ? null : adaptersPair->second;
+		adaptersPair = loadAdaptersCache.find(request.getOutputMimeType() + "|" + request.getInputMimeType());
+		return adaptersPair == loadAdaptersCache.end() ? null : adaptersPair->second;
 	}
 
 	Resource* load(const String &fileName) {
 		logger->debug("Load [%s]", fileName.c_str());
 
-		FileParser fileParser(Paths::normalize(fileName, this->rootFolder));
-		ResourceLoadRequest request(fileParser);
+		ResourceLoadRequest request(Paths::normalize(fileName, this->rootFolder));
 		return this->load(request);
 	}
 
-	Resource* load(FileParser &fileParser, const String &outputMimeType, std::set<String> labels = {}) {
-		logger->debug("Load [%s] [%s]", outputMimeType.c_str(), fileParser.getFilename().c_str());
+	Resource* load(std::shared_ptr<FileParser> &fileParser, const String &outputMimeType, std::set<String> labels = {}) {
+		logger->debug("Load [%s] [%s]", outputMimeType.c_str(), fileParser.get()->getFilename().c_str());
 
 		ResourceLoadRequest request(fileParser);
-		request.acceptMimeType(outputMimeType).withLabels(labels);
-
-		return load(request);
+		return load(request.acceptMimeType(outputMimeType).withLabels(labels));
 	}
 
 	Resource* load(const String &fileName, const String &outputMimeType, std::set<String> labels = {}) {
 		logger->debug("Load [%s] [%s]", outputMimeType.c_str(), fileName.c_str(), fileName.c_str());
 
-		FileParser fileParser(Paths::normalize(fileName, this->rootFolder));
-		ResourceLoadRequest request(fileParser);
-		request.acceptMimeType(outputMimeType).withLabels(labels);
-		return load(request);
+		ResourceLoadRequest request(Paths::normalize(fileName, this->rootFolder));
+		return load(request.acceptMimeType(outputMimeType).withLabels(labels));
 	}
 
 	/**
@@ -92,10 +107,8 @@ public:
 	Resource* load(const String &parentFilePath, const String &fileName, const String &outputMimeType) {
 		logger->debug("Load [%s] [%s] relative to [%s]", outputMimeType.c_str(), fileName.c_str(), parentFilePath.c_str());
 
-		FileParser fileParser(Paths::relative(parentFilePath, fileName, this->rootFolder));
-		ResourceLoadRequest request(fileParser);
-		request.acceptMimeType(outputMimeType);
-		return load(request);
+		ResourceLoadRequest request(Paths::relative(parentFilePath, fileName, this->rootFolder));
+		return load(request.acceptMimeType(outputMimeType));
 	}
 
 	Resource* load(ResourceLoadRequest &loadRequest);
@@ -104,55 +117,73 @@ public:
 	 * Beware with adding a key that already exists: it will trigger deletion of the unique_ptr and exceptions
 	 */
 	Resource *addResource(const String &key, Resource *resource) {
-		if(!key.empty()) {
-			resourceCache[key] = std::unique_ptr<Resource>(resource);
+		if(resource != null) {
+			resources.insert(std::unique_ptr<Resource>(resource));
+
+			if(!key.empty()) {
+				resourceCache[key] = resource;
+			}
 		}
 
 		return resource;
 	}
 
 	Resource *addResource(Resource *resource) {
-		String key = getCacheKey(resource);
-		if(!key.empty()) {
-			resourceCache[key] = std::unique_ptr<Resource>(resource);
-			logger->debug("Managing externally loaded [%s]", resource->toString().c_str());
+		if(resource != null) {
+			String key = getCacheKey(*resource);
+			this->addResource(key, resource);
 		}
-	    return resource;
+
+		return resource;
 	}
 
-	void unload(Resource *resource) {
+	std::set<std::unique_ptr<Resource>>::iterator unload(Resource *resource) {
 		if(resource != null) {
-			this->dispose(resource);
-			this->resourceCache.erase(getCacheKey(resource));
+			auto iterator = std::find_if(
+			    resources.begin(), resources.end(),
+			    [&resource](const std::unique_ptr<Resource>& resourceUniquePtr) { return resourceUniquePtr.get() == resource; });
+
+			if(iterator != resources.end()) {
+				this->dispose(resource);
+				this->resourceCache.erase(getCacheKey(*resource));
+				return resources.erase(iterator);
+			}
 		}
+
+		return resources.end();
 	}
 
 	void unload(String label) {
-		auto iterator = resourceCache.begin();
-		while (iterator != resourceCache.end()) {
-			if(iterator->second.get() != null && iterator->second->getLabels().find(label) != iterator->second->getLabels().end()) {
-				this->dispose(iterator->second.get());
-				iterator = this->resourceCache.erase(iterator);
-			} else {
-		       ++iterator;
-		    }
+		auto iterator = std::find_if(
+		    resources.begin(), resources.end(),
+		    [&label](const std::unique_ptr<Resource>& resourceUniquePtr) {
+				return resourceUniquePtr.get() != null && resourceUniquePtr->getLabels().find(label) != resourceUniquePtr->getLabels().end();
+			});
+
+		if(iterator != resources.end()) {
+			this->dispose(iterator->get());
+			this->resourceCache.erase(getCacheKey(*iterator->get()));
+			resources.erase(iterator);
 		}
 	}
 
-	void unload(std::vector<String>labels) {
-		auto iterator = resourceCache.begin();
-		while (iterator != resourceCache.end()) {
+	void unload(std::set<String>labels) {
+		std::set<std::unique_ptr<Resource>>::iterator iterator = resources.begin();
+
+		while (iterator != resources.end()) {
 			bool hasAllLabels = true;
-			for(auto &label : labels) {
-				if(iterator->second->getLabels().find(label) == iterator->second->getLabels().end()) {
-					hasAllLabels = false;
-					break;
+			if(*iterator) {
+				for(auto &label : labels) {
+					const std::set<String> labels = iterator->get()->getLabels();
+					if(labels.find(label) == labels.end()) {
+						hasAllLabels = false;
+						break;
+					}
 				}
 			}
 
 			if(hasAllLabels) {
-				this->dispose(iterator->second.get());
-				iterator = this->resourceCache.erase(iterator);
+				iterator = this->unload(iterator->get());
 			} else {
 		       ++iterator;
 		    }
@@ -168,22 +199,26 @@ public:
 
 private:
 	const String getCacheKey(const String &filename, const String &mimeType) const {
+		if(filename.empty() || mimeType.empty()) {
+			throw InvalidArgumentException("Can not get cache key from empty values - filename: [%s] mimeType[%s]", filename.c_str(), mimeType.c_str());
+		}
+
 		return Paths::normalize(filename, this->rootFolder) + "|" + mimeType;
 	}
 
-	const String getCacheKey(Resource *resource) {
-	    if(resource != null) {
-	        return getCacheKey(resource->getFileName(), resource->getMimeType());
-	    }
+	const String getCacheKey(const Resource &resource) {
+		return getCacheKey(resource.getFileName(), resource.getMimeType());
+	}
 
-	    return "";
+	const String getCacheKey(const ResourceLoadRequest &resourceLoadRequest) {
+		return getCacheKey(resourceLoadRequest.getUri(), resourceLoadRequest.getOutputMimeType());
 	}
 
 	Resource *getCacheResource(const String &cacheKey) {
 		auto pair = resourceCache.find(cacheKey);
 
 		if(pair != resourceCache.end()) {
-			return pair->second.get();
+			return pair->second;
 		}
 
 		return null;

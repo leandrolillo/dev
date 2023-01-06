@@ -70,7 +70,7 @@ public:
 	/**
 	 * Return the folder part of a path to a file.
 	 */
-	static const String getDirname(const String &filePath) {
+	static String getDirname(const String &filePath) {
 		unsigned long location = filePath.find_last_of('/');
 		return (location == std::string::npos ? "." : filePath.substr(0, location + 1));
 
@@ -79,9 +79,14 @@ public:
 	/**
 	 * Return the file part of a path to a file.
 	 */
-	static const String getBasename(const String &filePath) {
+	static String getBasename(const String &filePath) {
 		unsigned long location = filePath.find_last_of('/');
 		return (location == std::string::npos ? filePath : filePath.substr(location + 1, filePath.size() - location));
+	}
+
+	//TODO: This should inspect filePath and return the longest path that is a real file/directory
+	static String getActualPath(const String &uri) {
+		return uri;
 	}
 private:
 

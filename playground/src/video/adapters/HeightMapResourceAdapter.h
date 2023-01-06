@@ -21,7 +21,8 @@ public:
     }
 
     virtual Resource *load(ResourceLoadRequest &request) const override {
-        ImageResource *image = (ImageResource *)this->getResourceManager()->load(request.getFileParser(), MimeTypes::IMAGE);
+    	ResourceLoadRequest imageRequest(request);
+        ImageResource *image = (ImageResource *)this->getResourceManager()->load(imageRequest.acceptMimeType(MimeTypes::IMAGE));
         if(image == null) {
         	logger->error("Could not load image [%s] - skipping heightmap creation", request.getFilePath().c_str());
         }

@@ -15,7 +15,6 @@
 class GeometryResourceAdapterTests : public UnitTest
 {
 public:
-
 	GeometryResourceAdapterTests() {
         logger = LoggerFactory::getLogger("GeometryResourceAdapterTests");
         logger->addAppender(LoggerFactory::getAppender("stdout"));
@@ -25,15 +24,24 @@ public:
     }
 
 
+	/**
+	 * Needs to provide a resource manager since the adapter might make usage of it.
+	 */
 	void testLoad(PlaygroundRunner *runner){
-		GeometryResourceAdapter resourceAdapter;
+		ResourceManager resourceManager(runner->getContainer()->getResourceManager()->getRootFolder());
+		GeometryResourceAdapter *resourceAdapter = new GeometryResourceAdapter();
+
+		resourceManager.addAdapter(resourceAdapter);
 
 		ResourceLoadRequest request(Paths::normalize("tests/geometry.json", runner->getContainer()->getResourceManager()->getRootFolder()));
-		Resource *resource = resourceAdapter.load(request.acceptMimeType(MimeTypes::GEOMETRYCOLLECTION));
+		Resource *resource = resourceAdapter->load(request.acceptMimeType(MimeTypes::GEOMETRYCOLLECTION));
 		assertNotNull(defaultAssertMessage, resource);
 	}
 
-	// Note that resource Adapters are owned by resource manager, thus we should send a new() and not a heap variable. Otherwise we get crazy things like accessing deleted memory in logs appenders.
+	/*
+	 * Note that resource Adapters are owned by resource manager, thus we should send a new() and not a heap variable.
+	 * Otherwise we get crazy things like accessing deleted memory in logs appenders.
+	 */
 	void testLoadWithResourceManager(PlaygroundRunner *runner) {
 		ResourceManager resourceManager(runner->getContainer()->getResourceManager()->getRootFolder());
 

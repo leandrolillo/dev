@@ -66,6 +66,7 @@ public:
 		MaterialCollection *materials) const {
 
         GeometryResource *geometry = new GeometryResource(0);
+        geometry->setFileName(textParser.getFilename());
         geometry->setName(Paths::getBasename(textParser.getFilename()));
         geometry->setType("triangles");
 

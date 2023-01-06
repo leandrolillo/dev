@@ -21,10 +21,10 @@ public:
 	virtual Resource *load(ResourceLoadRequest &request) const override {
 	    String geometryMimeType;
 
-		GeometryCollection *geometryCollection = (GeometryCollection*) this->getResourceManager()->load(request.getFileParser(),
-				MimeTypes::GEOMETRYCOLLECTION,
-				std::set<String> { ResourceManager::EphemeralLabel });
-
+	    ResourceLoadRequest geometryRequest(request);
+		GeometryCollection *geometryCollection = (GeometryCollection*) this->getResourceManager()->load(
+				geometryRequest.acceptMimeType(MimeTypes::GEOMETRYCOLLECTION).withAdditionalLabels(std::set<String> { ResourceManager::EphemeralLabel })
+		);
 		if (geometryCollection == null || geometryCollection->getObjects().empty()) {
 		    logger->error("Could not load geometry from %s with mimetype %s", request.getFilePath().c_str(), geometryMimeType.c_str());
 		    return null;

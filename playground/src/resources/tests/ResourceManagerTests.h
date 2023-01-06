@@ -9,7 +9,7 @@
 #define SRC_RESOURCES_TESTS_RESOURCEMANAGERTESTS_H_
 
 #include <Tests.h>
-#include <ResourceManager.h>
+#include "ResourceManagerMock.h"
 
 class ResourceManagerTests : public UnitTest
 {
@@ -20,8 +20,86 @@ public:
         logger->addAppender(LoggerFactory::getAppender("stdout"));
 
         this->addTest("ResourceManagerTests::testInvalidResource", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&ResourceManagerTests::testInvalidResource));
-        //this->addTest("ResourceManagerTests::testFileParser", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&ResourceManagerTests::testFileParser));
+        this->addTest("ResourceManagerTests::testFileParser", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&ResourceManagerTests::testFileParser));
+
+        this->addTest("ResourceManagerTests::testAddResource", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&ResourceManagerTests::testAddResource));
+        this->addTest("ResourceManagerTests::testUnload", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&ResourceManagerTests::testUnload));
     }
+
+
+	void testAddResource(PlaygroundRunner *runner) {
+		ResourceManagerMock resourceManager(runner->getContainer()->getResourceManager()->getRootFolder());
+
+		Resource *resource = new Resource(1, "test/mimetype");
+		resource->setFileName("/test/filename");
+		resourceManager.addResource(resource);
+		assertEquals("Resources mismatch", 1, resourceManager.getResourcesCount());
+
+		resource = new Resource(2, "test/mimetype");
+		resource->setFileName("/test/filename2");
+		resourceManager.addResource(resource);
+		assertEquals("Resources mismatch", 2, resourceManager.getResourcesCount());
+
+		resource = resourceManager.load("/test/filename", "test/mimetype");
+		assertNotNull("Resource not found in cache", resource);
+		assertEquals("filename does not match", "/test/filename", resource->getFileName());
+		assertEquals("mimetype does not match", "test/mimetype", resource->getMimeType());
+	}
+
+	void testUnload(PlaygroundRunner *runner) {
+		ResourceManagerMock resourceManager(runner->getContainer()->getResourceManager()->getRootFolder());
+
+		Resource *resource = new Resource(1, "test/mimetype");
+		resource->setFileName("test/filename1");
+		resource->addLabel("ephemeral");
+		resourceManager.addResource(resource);
+
+		resource = new Resource(2, "test/mimetype");
+		resource->setFileName("test/filename2");
+		resource->addLabel("not ephemeral");
+		resource->addLabel("level 1");
+		resourceManager.addResource(resource);
+
+		resource = new Resource(3, "test/mimetype");
+		resource->setFileName("test/filename3");
+		resource->addLabel("permanent");
+		resourceManager.addResource(resource);
+
+		resource = new Resource(4, "test/mimetype");
+		resource->setFileName("test/filename4");
+		resourceManager.addResource(resource);
+
+//		/*
+//		 * This one should evict the previous one and keep resources count to 4
+//		 */
+//		resource = new Resource(4, "test/mimetype");
+//		resource->setFileName("test/filename4");
+//		resourceManager.addResource(resource);
+
+		assertEquals("Resources mismatch", 4, resourceManager.getResourcesCount());
+
+		/*
+		 * Test unload by resource
+		 */
+
+		resourceManager.unload(resource);
+		assertEquals("Resources mismatch", 3, resourceManager.getResourcesCount());
+
+		/*
+		 * Test unload by single label
+		 */
+		resourceManager.unload("ephemeral");
+		assertEquals("Resources mismatch", 2, resourceManager.getResourcesCount());
+
+		/*
+		 * Test unload by multiple labels
+		 */
+		resourceManager.unload(std::set<String> {"not ephemeral", "level 1"});
+		assertEquals("Resources mismatch", 1, resourceManager.getResourcesCount());
+
+	}
+
+
 
 
 	void testInvalidResource(PlaygroundRunner *runner)
