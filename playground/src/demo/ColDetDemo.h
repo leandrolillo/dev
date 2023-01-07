@@ -178,7 +178,7 @@ public:
         geometryRenderer.render(&particleManager);
 
         defaultRenderer.render(camera);
-        //skyboxRenderer.render(camera);
+        skyboxRenderer.render(camera);
         gridRenderer.render(camera);
 
         return LoopResult::CONTINUE;

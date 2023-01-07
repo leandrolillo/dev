@@ -124,43 +124,34 @@ private:
 		//create one to one index array.
 		unsigned int currentIndex = 0;
 
-		for (std::vector<vector3>::iterator source =
-				resource->getVertices().begin();
-				source != resource->getVertices().end(); source++) {
-			resource->getIndices().push_back(currentIndex++);
+		for(auto &source : resource->getVertices()) {
+			resource->addIndex(currentIndex++);
 		}
 	}
 
 	void ensureColors(GeometryResource *resource) const {
-		unsigned int numberOfColors = (resource->getVertices().size()
-				- resource->getColors().size());
-		for (unsigned int currentIndex = 0; currentIndex < numberOfColors;
-				currentIndex++)
-			resource->getColors().push_back(vector3(1.0f, 1.0f, 1.0f));
+		unsigned int numberOfColors = (resource->getVertices().size() - resource->getColors().size());
+		for (unsigned int currentIndex = 0; currentIndex < numberOfColors; currentIndex++) {
+			resource->addColor(vector3(1.0f, 1.0f, 1.0f));
+		}
 	}
 
-	void buildVerticesArray(GeometryResource *resource,
-			std::vector<vector3> &vertices) const {
-		if (resource != null && vertices.size() > 0) {
-			for (std::vector<vector3>::iterator source = vertices.begin();
-					source != vertices.end(); source++) {
+	void buildVerticesArray(GeometryResource *resource, std::vector<vector3> &vertices) const {
+		if (resource != null) {
+			for (auto &source : vertices) {
 				unsigned int index = 0;
 				bool preExisting = false;
-				for (std::vector<vector3>::iterator destination =
-						resource->getVertices().begin();
-						destination != resource->getVertices().end();
-						destination++) {
-					if (*source == *destination) {
-						resource->getIndices().push_back(index);
+				for (auto &destination : resource->getVertices()) {
+					if (source == destination) {
+						resource->addIndex(index);
 						preExisting = true;
 						break;
 					}
 					index++;
 				}
 				if (!preExisting) {
-					resource->getVertices().push_back(*source);
-					resource->getIndices().push_back(
-							resource->getVertices().size() - 1);
+					resource->addVertex(source);
+					resource->addIndex(resource->getVertices().size() - 1);
 				}
 			}
 		}

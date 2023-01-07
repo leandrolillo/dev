@@ -19,22 +19,25 @@ int main(int, char**){
     playgroundtests->run();
     delete playgroundtests;
 
-//    PlaygroundGeneralDemo playground("/Users/leandro/huevadas/projects/dev/media/");
-//    playground.run();
-
-//    ObjDemoPlayground objPlayground("/Users/leandro/huevadas/projects/dev/media/");
-//    objPlayground.run();
+//    PlaygroundGeneralDemo *playground = new PlaygroundGeneralDemo("/Users/leandro/huevadas/projects/dev/media/");
+//    playground->run();
+//    delete playground;
 //
-//    CollisionDetectionPlayground colDetplayground("/Users/leandro/huevadas/projects/dev/media/");
-//    colDetplayground.run();
+//    ObjDemoPlayground *objPlayground = new ObjDemoPlayground("/Users/leandro/huevadas/projects/dev/media/");
+//    objPlayground->run();
+//    delete objPlayground;
+//
+//    CollisionDetectionPlayground *colDetplayground = new CollisionDetectionPlayground("/Users/leandro/huevadas/projects/dev/media/");
+//    colDetplayground->run();
+//    delete colDetplayground;
 
-//    PlaygroundTerrainDemo * terrainPlayground = new PlaygroundTerrainDemo("/Users/leandro/huevadas/projects/dev/media/");
-//    terrainPlayground->run();
-//    delete terrainPlayground;
+    PlaygroundTerrainDemo * terrainPlayground = new PlaygroundTerrainDemo("/Users/leandro/huevadas/projects/dev/media/");
+    terrainPlayground->run();
+    delete terrainPlayground;
 
-//    PhysicsPlayground *physicsPlayground = new PhysicsPlayground("/Users/leandro/huevadas/projects/dev/media/");
-//    physicsPlayground->run();
-//    delete physicsPlayground;
+    PhysicsPlayground *physicsPlayground = new PhysicsPlayground("/Users/leandro/huevadas/projects/dev/media/");
+    physicsPlayground->run();
+    delete physicsPlayground;
 
     RoadFighter *roadFighter = new RoadFighter("/Users/leandro/huevadas/projects/dev/media/");
     roadFighter->run();

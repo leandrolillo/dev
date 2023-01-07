@@ -28,13 +28,6 @@ public:
     	logger->info("| Road fighter");
     	logger->info("-----------------");
 
-        if((axesVertexArray = (VertexArrayResource *)this->getResourceManager()->load("roadFighter/axes.obj", MimeTypes::VERTEXARRAY)) == null) {
-        	logger->error("Could not load axes model");
-        	return false;
-        }
-
-        return false;
-
     	if(!BaseDemoRunner::init()) {
     		return false;
     	}
@@ -49,21 +42,25 @@ public:
     	 * json -> vertex array
     	 */
 
+        if((axesVertexArray = (VertexArrayResource *)this->getResourceManager()->load("roadFighter/axes.obj", MimeTypes::VERTEXARRAY)) == null) {
+        	logger->error("Could not load axes model");
+        	return false;
+        }
 
-////        if((car = (VertexArrayResource *)this->getResourceManager()->load("roadFighter/corvette.obj", MimeTypes::VERTEXARRAY)) == null) {
-////        	logger->error("Could not load car model");
-////        	return false;
-////        }
-//
-//        if((carMesh = (MeshResource *)this->getResourceManager()->load("roadFighter/corvette.obj", MimeTypes::MESH)) == null) {
-//        	logger->error("Could not load car mesh");
-//        	return false;
-//        }
-//
-//        if((texturedBoxMesh = (MeshResource *)this->getResourceManager()->load("roadFighter/texturedCube.obj", MimeTypes::MESH)) == null) {
-//        	logger->error("Could not load textured box mesh");
-//        	return false;
-//        }
+        if((carVertexArray = (VertexArrayResource *)this->getResourceManager()->load("roadFighter/corvette.obj", MimeTypes::VERTEXARRAY)) == null) {
+        	logger->error("Could not load car model");
+        	return false;
+        }
+
+        if((carMesh = (MeshResource *)this->getResourceManager()->load("roadFighter/corvette.obj", MimeTypes::MESH)) == null) {
+        	logger->error("Could not load car mesh");
+        	return false;
+        }
+
+        if((texturedBoxMesh = (MeshResource *)this->getResourceManager()->load("roadFighter/texturedCube.obj", MimeTypes::MESH)) == null) {
+        	logger->error("Could not load textured box mesh");
+        	return false;
+        }
 
         if((axesMesh = (MeshResource *)this->getResourceManager()->load("roadFighter/axes.obj", MimeTypes::MESH)) == null) {
         	logger->error("Could not load axes model");
@@ -80,7 +77,8 @@ public:
 
         defaultRenderer.drawObject(matrix_4x4::identidad, carVertexArray);
         defaultRenderer.drawObject(matrix_4x4::identidad, axesVertexArray);
-        defaultRenderer.drawObject(matrix_4x4::identidad, texturedBoxMesh);
+        defaultRenderer.drawObject(matrix_4x4::identidad, axesMesh);
+        defaultRenderer.drawObject(matrix_4x4::traslacion(0, 2, -3), texturedBoxMesh);
         defaultRenderer.drawObject(matrix_4x4::traslacion(0, 0, -3), carMesh);
 
 

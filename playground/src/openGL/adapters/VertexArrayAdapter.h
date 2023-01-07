@@ -20,6 +20,9 @@ public:
 		this->produces(MimeTypes::VERTEXARRAY);
 	}
 
+	/**
+	 * Temporarily returns a single VERTEXARRAY but it also loads all other meshes in the file, leaving them available in the resource manager caché
+	 */
 	virtual Resource *load(ResourceLoadRequest &request) const override {
 		ResourceLoadRequest geometryCollectionRLR(request);
 		GeometryCollection *geometryCollection = (GeometryCollection*) this->getResourceManager()->load(
@@ -29,8 +32,6 @@ public:
 		    logger->error("Could not load geometry from %s with mimetype %s", request.getFilePath().c_str(), MimeTypes::GEOMETRYCOLLECTION.c_str());
 		    return null;
 		}
-
-		//VertexArrayResource *result = OpenGLUtilites::generateVertexBuffer(geometryCollection->getObjects().begin()->second);
 
 		Resource *result = null;
 		for(auto & geometry : geometryCollection->getObjects()) {

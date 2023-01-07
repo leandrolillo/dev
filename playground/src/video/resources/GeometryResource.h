@@ -31,13 +31,15 @@ private:
 	MaterialResource *material = null;
 
 	vector size {0.0, 0.0, 0.0 };
+	vector max {REAL_MIN, REAL_MIN, REAL_MIN};
+	vector min {REAL_MAX, REAL_MAX, REAL_MAX};
 public:
 	GeometryResource(unsigned int id) :
 			Resource(id, MimeTypes::GEOMETRY) {
 		type = "triangles";
 	}
 
-	std::vector<vector3>& getNormals() {
+	const std::vector<vector3>& getNormals() const {
 		return normals;
 	}
 
@@ -45,7 +47,12 @@ public:
 		this->normals = normals;
 	}
 
-	std::vector<vector2>& getTextureCoordinates() {
+	void addNormal(const vector3 &normal) {
+		this->normals.push_back(normal);
+	}
+
+
+	const std::vector<vector2>& getTextureCoordinates() const {
 		return textureCoordinates;
 	}
 
@@ -53,15 +60,38 @@ public:
 		this->textureCoordinates = texCoordinates;
 	}
 
-	std::vector<vector3>& getVertices() {
+	void addTextureCoordinate(const vector2 &texCoordinate) {
+		this->textureCoordinates.push_back(texCoordinate);
+	}
+
+	const std::vector<vector3>& getVertices() const {
 		return vertices;
 	}
 
 	void setVertices(const std::vector<vector3> &vertex) {
 		this->vertices = vertex;
+
+		//recalculate size
+		max = vector(REAL_MIN, REAL_MIN, REAL_MIN);
+		min = vector(REAL_MAX, REAL_MAX, REAL_MAX);
+		for(auto &vertice : vertices) {
+			max = vector(std::max(max.x, vertice.x), std::max(max.y, vertice.y), std::max(max.z, vertice.z));
+			min = vector(std::min(min.x, vertice.x), std::min(min.y, vertice.y), std::min(min.z, vertice.z));
+		}
+		this->size = max - min;
+		logger->info("[%s] size is: %s", this->name.c_str(), size.toString().c_str());
 	}
 
-	std::vector<vector3>& getColors() {
+	void addVertex(const vector3 &vertex) {
+		this->vertices.push_back(vertex);
+
+		max = vector(std::max(max.x, vertex.x), std::max(max.y, vertex.y), std::max(max.z, vertex.z));
+		min = vector(std::min(min.x, vertex.x), std::min(min.y, vertex.y), std::min(min.z, vertex.z));
+		this->size = max - min;
+		//logger->info("[%s] size is: %s", this->name.c_str(), size.toString().c_str());
+	}
+
+	const std::vector<vector3>& getColors() const {
 		return colors;
 	}
 
@@ -69,12 +99,20 @@ public:
 		this->colors = colors;
 	}
 
-	std::vector<unsigned int>& getIndices() {
+	void addColor(const vector3 &color) {
+		this->colors.push_back(color);
+	}
+
+	const std::vector<unsigned int>& getIndices() const {
 		return indices;
 	}
 
 	void setIndices(const std::vector<unsigned int> &indexes) {
 		this->indices = indexes;
+	}
+
+	void addIndex(unsigned int index) {
+		this->indices.push_back(index);
 	}
 
 	const String &getType() const {
@@ -85,18 +123,7 @@ public:
 		this->type = type;
 	}
 
-	vector getSize() {
-		if(size == vector(0, 0, 0)) {
-			vector max(REAL_MIN, REAL_MIN, REAL_MIN);
-			vector min(REAL_MAX, REAL_MAX, REAL_MAX);
-			for(auto &vertice : vertices) {
-				max = vector(std::max(max.x, vertice.x), std::max(max.y, vertice.y), std::max(max.z, vertice.z));
-				min = vector(std::min(min.x, vertice.x), std::min(min.y, vertice.y), std::min(min.z, vertice.z));
-			}
-			this->size = max - min;
-			logger->info("[%s] size is: %s", this->name.c_str(), size.toString().c_str());
-		}
-
+	const vector3 &getSize() const {
 		return size;
 	}
 

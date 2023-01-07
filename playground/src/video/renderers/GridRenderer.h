@@ -32,6 +32,8 @@ public:
     }
 
     void render(const Camera &camera) override {
+    	return; //TODO: troubleshoot grid renderer crashing program.
+
         if(videoRunner != null && shader != null) {
             videoRunner->useProgramResource(shader);
 

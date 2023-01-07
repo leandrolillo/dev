@@ -16,30 +16,28 @@
 class NormalGenerator
 {
 	public:
-		virtual const void generateNormals(GeometryResource *resource) = 0;
+		virtual void generateNormals(GeometryResource *resource) const = 0;
 
 	protected:
-	virtual const void compressVertices(std::vector<vector3> &unCompressed, std::vector<vector3> &compressed, std::vector<unsigned int> &indices)
+	virtual void compressVertices(const std::vector<vector3> &unCompressed, std::vector<vector3> &compressed, std::vector<unsigned int> &indices) const
 	{
-		for(std::vector<vector3>::iterator source = unCompressed.begin(); source != unCompressed.end(); source ++)
-				{
-					unsigned int index = 0;
-					bool preExisting = false;
-					for(std::vector<vector3>::iterator destination = compressed.begin(); destination != compressed.end(); destination++)
-					{
-						if(*source == *destination) {
-							indices.push_back(index);
-							preExisting = true;
-							break;
-						}
-						index++;
-					}
-					if(!preExisting) {
-						compressed.push_back(*source);
-						indices.push_back(compressed.size() - 1);
-					}
+		for(auto &source : unCompressed) {
+			unsigned int index = 0;
+			bool preExisting = false;
+			for(auto &destination : compressed)
+			{
+				if(source == destination) {
+					indices.push_back(index);
+					preExisting = true;
+					break;
 				}
-
+				index++;
+			}
+			if(!preExisting) {
+				compressed.push_back(source);
+				indices.push_back(compressed.size() - 1);
+			}
+		}
 	}
 };
 class PerVertexGLTrianglesNormalGenerator : public NormalGenerator
@@ -51,7 +49,7 @@ class PerVertexGLTrianglesNormalGenerator : public NormalGenerator
 		{
 			logger = LoggerFactory::getLogger("video/normalGenerator/PerVertexGLTrianglesNormalGenerator.h");
 		}
-		const void generateNormals(GeometryResource *resource) override
+		void generateNormals(GeometryResource *resource) const override
 		{
 			if(!resource->getVertices().empty())
 			{
@@ -104,9 +102,9 @@ class PerVertexGLTrianglesNormalGenerator : public NormalGenerator
 				for(unsigned int currentNormalIndex = 0; currentNormalIndex < normals.size(); currentNormalIndex++)
 					normals[currentNormalIndex] =  VectorUtilities::normalizar(normals[currentNormalIndex] * (1.0f / divisor[currentNormalIndex]));
 
-				resource->getNormals().clear();
+				resource->setNormals(std::vector<vector3> {}); //clear normals
 				for(std::vector<unsigned int>::iterator iterator = indices.begin(); iterator != indices.end(); iterator++)
-					resource->getNormals().push_back(normals[(*iterator)]);
+					resource->addNormal(normals[(*iterator)]);
 			}
 		}
 

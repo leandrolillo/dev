@@ -19,6 +19,7 @@ Tech debts
 
 - improve box rendering (normals)
 
+- troubleshoot skybox renderer and grid renderer - they cause the application to crash thus are disabled
 
 ----------------
 

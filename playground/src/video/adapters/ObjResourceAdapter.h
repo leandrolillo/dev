@@ -131,11 +131,10 @@ private:
         logger->debug("%d normals", geometry->getNormals().size());
         logger->debug("%d indices", geometry->getIndices().size());
 
-        for (std::vector<unsigned int>::iterator indexIterator = geometry->getIndices().begin();
-                indexIterator != geometry->getIndices().end(); indexIterator++) {
-            logger->verbose("%d: %s - %s - %s", *indexIterator, geometry->getVertices().at(*indexIterator).toString("%.6f").c_str(),
-                    geometry->getTextureCoordinates().at(*indexIterator).toString("%.6f").c_str(),
-                    geometry->getNormals().at(*indexIterator).toString("%.6f").c_str());
+        for (auto &index : geometry->getIndices()) {
+            logger->verbose("%d: %s - %s - %s", index, geometry->getVertices().at(index).toString("%.6f").c_str(),
+                    geometry->getTextureCoordinates().at(index).toString("%.6f").c_str(),
+                    geometry->getNormals().at(index).toString("%.6f").c_str());
         }
     }
 
@@ -167,15 +166,15 @@ private:
     	for(unsigned int index = 0; index < indices.size(); index++) {
     		vector currentIndices = indices[index];
     		if((int)currentIndices.x == (int)newIndices.x  && (int)currentIndices.y == (int)newIndices.y && (int)currentIndices.z == (int)newIndices.z) {
-    			geometry->getIndices().push_back(index);
+    			geometry->addIndex(index);
     			return;
     		}
     	}
 
-        geometry->getIndices().push_back(geometry->getIndices().size());
-		geometry->getVertices().push_back(vertices.at((int) newIndices.x - 1));
-		geometry->getTextureCoordinates().push_back(newIndices.y > 0 ? textCoords.at((int) newIndices.y - 1) : vector2(0, 0));
-        geometry->getNormals().push_back(newIndices.z > 0 ? normals.at((int) newIndices.z - 1) : vector3(0, 0, 0));
+        geometry->addIndex(geometry->getIndices().size());
+		geometry->addVertex(vertices.at((int) newIndices.x - 1));
+		geometry->addTextureCoordinate(newIndices.y > 0 ? textCoords.at((int) newIndices.y - 1) : vector2(0, 0));
+        geometry->addNormal(newIndices.z > 0 ? normals.at((int) newIndices.z - 1) : vector3(0, 0, 0));
 
     }
 

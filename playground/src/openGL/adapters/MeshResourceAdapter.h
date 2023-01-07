@@ -18,6 +18,9 @@ public:
 		this->produces(MimeTypes::MESH);
 	}
 
+	/**
+	 * Temporarily returns a single MESH but it also loads all other meshes in the file, leaving them available in the resource manager caché
+	 */
 	virtual Resource *load(ResourceLoadRequest &request) const override {
 	    String geometryMimeType;
 
@@ -30,8 +33,20 @@ public:
 		    return null;
 		}
 
-		GeometryResource *geometry = geometryCollection->getObjects().begin()->second;
+		Resource *result = null;
+		for(auto &geometry : geometryCollection->getObjects()) {
+			MeshResource *mesh = buildMesh(geometry.second);
+			Resource *resource = this->getResourceManager()->addResource(mesh); //make sure we add it to resource manager to avoid leaks
+			result = (result == null ? resource: result);
+
+		}
+
+		return result;
+	}
+
+	MeshResource * buildMesh(const GeometryResource *geometry) const {
 		MeshResource *resource = new MeshResource();
+        resource->setFileName(geometry->getFileName());
 
 		resource->setVertexArray((VertexArrayResource *)this->getResourceManager()->addResource(OpenGLUtilites::generateVertexBuffer(geometry))); //make sure to add generated resources to resource manager or they're leaked
 		if(geometry->getMaterial() != null) {

@@ -28,7 +28,7 @@ protected:
 		return logger;
 	}
 public:
-    static VertexArrayResource *generateVertexBuffer(GeometryResource *geometry) {
+    static VertexArrayResource *generateVertexBuffer(const GeometryResource *geometry) {
         VertexArrayResource *resource = null;
 
         glGetError();

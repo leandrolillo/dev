@@ -50,6 +50,8 @@ public:
     }
 
     void render(const Camera &camera) override {
+    	return; //TODO: troubleshoot skybox renderer causing crashes.
+
         if (videoRunner != null && this->shader != null && this->box != null && this->cubeMap != null) {
             videoRunner->useProgramResource(shader);
             videoRunner->setTexture(0, "textureUnit", cubeMap, GL_TEXTURE_CUBE_MAP);
