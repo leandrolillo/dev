@@ -29,9 +29,11 @@ public:
 	 */
 	void testLoad(PlaygroundRunner *runner){
 		ResourceManager resourceManager(runner->getContainer()->getResourceManager()->getRootFolder());
-		GeometryResourceAdapter *resourceAdapter = new GeometryResourceAdapter();
+		ResourceAdapter *resourceAdapter = resourceManager.addAdapter(std::unique_ptr<ResourceAdapter>(new GeometryResourceAdapter()));
 
-		resourceManager.addAdapter(resourceAdapter);
+		assertNotNull(defaultAssertMessage, resourceAdapter);
+		assertNotNull(defaultAssertMessage, resourceAdapter->getResourceManager());
+		logger->info("Testing resource adapter [%s]", resourceAdapter->toString().c_str());
 
 		ResourceLoadRequest request(Paths::normalize("tests/geometry.json", runner->getContainer()->getResourceManager()->getRootFolder()));
 		Resource *resource = resourceAdapter->load(request.acceptMimeType(MimeTypes::GEOMETRYCOLLECTION));
@@ -45,7 +47,7 @@ public:
 	void testLoadWithResourceManager(PlaygroundRunner *runner) {
 		ResourceManager resourceManager(runner->getContainer()->getResourceManager()->getRootFolder());
 
-		resourceManager.addAdapter(new GeometryResourceAdapter());
+		resourceManager.addAdapter(std::unique_ptr<ResourceAdapter>(new GeometryResourceAdapter()));
 
 		Resource *resource = resourceManager.load("tests/geometry.json", MimeTypes::GEOMETRYCOLLECTION);
 		assertNotNull(defaultAssertMessage, resource);

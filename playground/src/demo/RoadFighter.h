@@ -42,15 +42,15 @@ public:
     	 * json -> vertex array
     	 */
 
-        if((axesVertexArray = (VertexArrayResource *)this->getResourceManager()->load("roadFighter/axes.obj", MimeTypes::VERTEXARRAY)) == null) {
-        	logger->error("Could not load axes model");
-        	return false;
-        }
-
-        if((carVertexArray = (VertexArrayResource *)this->getResourceManager()->load("roadFighter/corvette.obj", MimeTypes::VERTEXARRAY)) == null) {
-        	logger->error("Could not load car model");
-        	return false;
-        }
+//        if((axesVertexArray = (VertexArrayResource *)this->getResourceManager()->load("roadFighter/axes.obj", MimeTypes::VERTEXARRAY)) == null) {
+//        	logger->error("Could not load axes model");
+//        	return false;
+//        }
+//
+//        if((carVertexArray = (VertexArrayResource *)this->getResourceManager()->load("roadFighter/corvette.obj", MimeTypes::VERTEXARRAY)) == null) {
+//        	logger->error("Could not load car model");
+//        	return false;
+//        }
 
         if((carMesh = (MeshResource *)this->getResourceManager()->load("roadFighter/corvette.obj", MimeTypes::MESH)) == null) {
         	logger->error("Could not load car mesh");

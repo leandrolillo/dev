@@ -1,15 +1,25 @@
 Tech debts
+- resource adapters should have thesemimetypes: 
+	- input mimetype (similar to content-type in http requests)	
+	- output mimetype (similar to accept in http requests) - should have as many as the adapter produces
+	- dispose mimetypes since they might delete types different than the one returned - and make sure everything is getting deleted. This might be unnecessary if having multiple output mimetypes that cover everything.
+
+- add "options" to resourceLoadRequest and use them to set the texture options in order to support mipmaps in terrain demo
+
+- Add a resource load response that takes care of normalizing resources properties like uri, name, path, mimetype, labels, etc. 
+	- Currently that only happens for the returned object in a load adapter, but the adapter might load several objects with addResource method.
+	- also it might be better to load everything in resource manager and then use the cache to return a particular resource, instead of having a load method returning one object.
+
+- troubleshoot skybox renderer and grid renderer - they cause the application to crash thus are disabled (if possible cover issue with unit tests)
 
 - unit tests!
+
+- replace printf by streams and toString() by << operator
 
 - review RAII and 5 of 5 principle (move semantics) in resources/playground classes.
 	specially in file parser / text parser and resources.
 
-- resource adapters should have two mimetypes: input mimetype (similar to content-type)	and output mimetype (similar to accept). Also dispose mimetypes since they might delete different types
-
-- what should be a resource identifiers: filepath+name+mimetype - uri+mimetype where uri is fullpath/name? This has implications in cache key and cache storage itself.
-
-- Add a resource load response that takes care of normalizing resources properties like uri, name, path, mimetype, etc. Currently that only happens for the returned object in a load adapter, but the adapter might load several objects with addResource method.
+- what should be a resource identifier: filepath+name+mimetype - uri+mimetype where uri is fullpath/name? This has implications in cache key and cache storage itself.
 
 - review design of particle manager/collision detector / geometry vs particles / etc. Too much vector passing and copying. Review polymorfism / std::vector<unique_ptr> usage.
 
@@ -19,7 +29,6 @@ Tech debts
 
 - improve box rendering (normals)
 
-- troubleshoot skybox renderer and grid renderer - they cause the application to crash thus are disabled
 
 ----------------
 

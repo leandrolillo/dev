@@ -23,8 +23,7 @@ class TextureResourceAdapter: public OpenGLResourceAdapter {
 		}
 
 		virtual Resource *load(ResourceLoadRequest &request) const override {
-			ResourceLoadRequest imageRequest(request);
-			ImageResource *imageResource = (ImageResource *)this->getResourceManager()->load(imageRequest.acceptMimeType(MimeTypes::IMAGE).withAdditionalLabels(std::set<String> {ResourceManager::EphemeralLabel}));
+			ImageResource *imageResource = (ImageResource *)this->getResourceManager()->load(ResourceLoadRequest(request).acceptMimeType(MimeTypes::IMAGE).withAdditionalLabels(std::set<String> {ResourceManager::EphemeralLabel}));
 
 			TextureResource *resource = null;
 

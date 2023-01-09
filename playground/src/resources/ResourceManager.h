@@ -85,7 +85,7 @@ public:
 		return this->rootFolder;
 	}
 
-	void addAdapter(ResourceAdapter *adapter);
+	ResourceAdapter *addAdapter(std::unique_ptr<ResourceAdapter> adapter);
 
 	/**
 	 * Find Adapter matching output MimeType and input mimetype - give priority to those adapters with empty input mimecard (kind of a wildcard)

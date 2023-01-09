@@ -70,13 +70,13 @@ public:
 	virtual void setMousePosition(unsigned int x, unsigned int y) = 0;
 
 	virtual bool init() override {
-		this->getContainer()->getResourceManager()->addAdapter(new PngResourceAdapter());
-		this->getContainer()->getResourceManager()->addAdapter(new JpegResourceAdapter());
-		this->getContainer()->getResourceManager()->addAdapter(new TgaResourceAdapter());
-		this->getContainer()->getResourceManager()->addAdapter(new GeometryResourceAdapter());
-		this->getContainer()->getResourceManager()->addAdapter(new TerrainResourceAdapter());
-		this->getContainer()->getResourceManager()->addAdapter(new ObjResourceAdapter());
-		this->getContainer()->getResourceManager()->addAdapter(new MtlResourceAdapter());
+		this->getResourceManager()->addAdapter(std::unique_ptr<ResourceAdapter>(new PngResourceAdapter()));
+		this->getResourceManager()->addAdapter(std::unique_ptr<ResourceAdapter>(new JpegResourceAdapter()));
+		this->getResourceManager()->addAdapter(std::unique_ptr<ResourceAdapter>(new TgaResourceAdapter()));
+		this->getResourceManager()->addAdapter(std::unique_ptr<ResourceAdapter>(new GeometryResourceAdapter()));
+		this->getResourceManager()->addAdapter(std::unique_ptr<ResourceAdapter>(new TerrainResourceAdapter()));
+		this->getResourceManager()->addAdapter(std::unique_ptr<ResourceAdapter>(new ObjResourceAdapter()));
+		this->getResourceManager()->addAdapter(std::unique_ptr<ResourceAdapter>(new MtlResourceAdapter()));
 
 		return true;
 	}

@@ -14,6 +14,10 @@ public:
 	ResourceManagerMock(const String &rootFolder) : ResourceManager(rootFolder) {
 	}
 
+	unsigned int getAdaptersCount() {
+		return this->resourceAdapters.size();
+	}
+
 	unsigned int getResourcesCount() {
 		return this->resources.size();
 	}

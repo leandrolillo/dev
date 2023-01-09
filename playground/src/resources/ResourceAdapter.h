@@ -19,10 +19,7 @@ class ResourceAdapter {
 private:
 	ResourceManager *resourceManager = null;
 	String inputMimeType = "";
-	String outputMimeType = "";
-
-	std::set<String> disposesMimeTypes;
-
+	std::set<String> outputMimeTypes;
 protected:
 	Logger *logger = null;
 public:
@@ -44,20 +41,8 @@ public:
 	virtual Resource* load(ResourceLoadRequest &request) const = 0;
 	virtual void dispose(Resource *resource) const {};
 
-	virtual String toString() const {
-		if (logger == null) {
-			return "Unknown resource adapter";
-		}
-
-		return logger->getBasename();
-	}
-
 	const String& getInputMimeType() const {
 		return inputMimeType;
-	}
-
-	const String& getOutputMimeType() const {
-		return outputMimeType;
 	}
 
 	ResourceAdapter *accepts(const String &inputMimeType) {
@@ -65,25 +50,50 @@ public:
 		return this;
 	}
 
+	const std::set<String>& getOutputMimeTypes() const {
+		return outputMimeTypes;
+	}
+
+	void setOutputMimeTypes(const std::set<String> &outputMimeTypes) {
+		this->outputMimeTypes = outputMimeTypes;
+	}
+
 	ResourceAdapter * produces(const String &outputMimeType) {
-		this->outputMimeType = outputMimeType;
+		this->outputMimeTypes.insert(outputMimeType);
 		return this;
 	}
 
+	String errors() const {
+		String errors;
 
+		if(outputMimeTypes.empty()) {
+			errors.append("Output mimetypes are required");
+		}
 
-	const std::set<String>& getDisposesMimeTypes() const {
-		return disposesMimeTypes;
+		return errors;
 	}
 
-	ResourceAdapter *disposes(const String &mimeType) {
-		this->disposesMimeTypes.insert(this->disposesMimeTypes.begin(), mimeType);
-		return this;
+	bool isValid() const {
+		return errors().empty();
 	}
 
-	void setDisposesMimeTypes(const std::set<String> &disposesMimeTypes) {
-		this->disposesMimeTypes = disposesMimeTypes;
+	virtual String toString() const {
+		String result = this->isValid() ? "✓ " : "x ";
+
+		if (logger != null) {
+			logger->getBasename();
+		}
+
+		result += "[";
+		for(auto &mimeType : this->outputMimeTypes) {
+			result += (mimeType + " ");
+		}
+		result += "] <-";
+		result += inputMimeType.empty() ? "*" : inputMimeType;
+
+		return result;
 	}
+
 };
 
 #endif /* RESOURCEADAPTER_H_ */

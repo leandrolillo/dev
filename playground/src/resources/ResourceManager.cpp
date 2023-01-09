@@ -8,24 +8,37 @@
 
 const String ResourceManager::EphemeralLabel = {"ephemeral"};
 
-void ResourceManager::addAdapter(ResourceAdapter *adapter) {
-	if(adapter != null && !adapter->getOutputMimeType().empty()) {
-		if(resourceAdapters.find(adapter) != resourceAdapters.end()) {
-			resourceAdapters.insert(std::unique_ptr<ResourceAdapter>(adapter));
+ResourceAdapter * ResourceManager::addAdapter(std::unique_ptr<ResourceAdapter> adapterUniquePtr) { //should this accept a unique_ptr and move it?
+	logger->info("Adding adapter");
+	if(adapterUniquePtr.get() != null && adapterUniquePtr->isValid()) {
+		logger->info("Adapter [%s] is valid - proceeding to add it", adapterUniquePtr->toString().c_str());
+
+		ResourceAdapter * adapter = adapterUniquePtr.get();
+		if(resourceAdapters.find(adapter) == resourceAdapters.end()) {
+			/* std::move makes this an l-value so it behaves like it is a temporary variable - it makes adapterUniquePtr variable point to null so it should not be referenced after this. */
+			resourceAdapters.insert(std::move(adapterUniquePtr));
+			adapter->setResourceManager(this);
+
+			logger->info("Adapter [%s] added to set with resourceManager [%d]", adapter->toString().c_str(), adapter->getResourceManager());
+		} else {
+			logger->warn("Skipping adapter [%s] - already managed", adapter->toString().c_str());
 		}
 
-		String key = adapter->getInputMimeType().empty() ? adapter->getOutputMimeType() + "|" : adapter->getOutputMimeType() + "|" + adapter->getInputMimeType();
+		for(auto &outputMimeType : adapter->getOutputMimeTypes()) {
+			String key = adapter->getInputMimeType().empty() ? outputMimeType  + "|" : outputMimeType + "|" + adapter->getInputMimeType();
+			loadAdaptersCache[key] = adapter;
 
-		loadAdaptersCache[key] = adapter;
-
-		for(auto &mimetype : adapter->getDisposesMimeTypes()) {
-			disposeAdaptersCache[mimetype] = adapter;
+			logger->info("Adapter [%s] added to manage [%s] with key [%s]", adapter->toString().c_str(), outputMimeType.c_str(), key.c_str());
 		}
 
-		adapter->setResourceManager(this);
-	} else {
-		logger->error("NOT adding invalid adapter [%s] - either null or empty output mime type", adapter == null ? "null" : adapter->toString().c_str());
+		return adapter;
 	}
+
+	logger->error("NOT adding invalid adapter [%s]: [%s] ",
+			adapterUniquePtr.get() == null ? "null" : adapterUniquePtr->toString().c_str(),
+			adapterUniquePtr.get() == null ? "N/A" : adapterUniquePtr->errors().c_str());
+
+	return null;
 }
 
 Resource* ResourceManager::load(ResourceLoadRequest &resourceLoadRequest) {

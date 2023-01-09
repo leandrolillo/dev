@@ -11,6 +11,19 @@
 #include <Tests.h>
 #include "ResourceManagerMock.h"
 
+class ResourceAdapterMock : public ResourceAdapter {
+public:
+	ResourceAdapterMock(const std::set<String> &outputMimeTypes, String inputMimeType) {
+		this->setOutputMimeTypes(outputMimeTypes);
+		this->accepts(inputMimeType);
+	}
+
+	virtual Resource* load(ResourceLoadRequest &request) const override {
+		return null;
+	}
+};
+
+
 class ResourceManagerTests : public UnitTest
 {
 public:
@@ -22,9 +35,21 @@ public:
         this->addTest("ResourceManagerTests::testInvalidResource", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&ResourceManagerTests::testInvalidResource));
         this->addTest("ResourceManagerTests::testFileParser", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&ResourceManagerTests::testFileParser));
 
+        this->addTest("ResourceManagerTests::testAddResourceAdapter", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&ResourceManagerTests::testAddResourceAdapter));
         this->addTest("ResourceManagerTests::testAddResource", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&ResourceManagerTests::testAddResource));
         this->addTest("ResourceManagerTests::testUnload", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&ResourceManagerTests::testUnload));
     }
+
+	void testAddResourceAdapter(PlaygroundRunner *runner) {
+		ResourceManagerMock resourceManager(runner->getContainer()->getResourceManager()->getRootFolder());
+
+		ResourceAdapter *resourceAdapter = resourceManager.addAdapter(std::unique_ptr<ResourceAdapter>(new ResourceAdapterMock(std::set<String>{"test/outputMimeType"}, "test/inputMimeType")));
+		assertNotNull(defaultAssertMessage, resourceAdapter);
+		assertNotNull(defaultAssertMessage, resourceAdapter->getResourceManager());
+		logger->info("Testing resource adapter [%s]", resourceAdapter->toString().c_str());
+
+		assertEquals(defaultAssertMessage, 1, resourceManager.getAdaptersCount());
+	}
 
 
 	void testAddResource(PlaygroundRunner *runner) {

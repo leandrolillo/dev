@@ -38,10 +38,10 @@ class AudioRunner: public PlaygroundRunner {
 		}
 
 		virtual bool init() override {
-			this->getContainer()->getResourceManager()->addAdapter(new SourceResourceAdapter);
-			this->getContainer()->getResourceManager()->addAdapter(new BufferResourceAdapter);
+			this->getContainer()->getResourceManager()->addAdapter(std::unique_ptr<ResourceAdapter>(new SourceResourceAdapter));
+			this->getContainer()->getResourceManager()->addAdapter(std::unique_ptr<ResourceAdapter>(new BufferResourceAdapter));
 //			this->getContainer()->getResourceManager()->addAdapter(new OggResourceAdapter);
-			this->getContainer()->getResourceManager()->addAdapter(new WavResourceAdapter);
+			this->getContainer()->getResourceManager()->addAdapter(std::unique_ptr<ResourceAdapter>(new WavResourceAdapter));
 
 			device = alcOpenDevice(null);
 			if(device == null) {

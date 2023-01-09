@@ -31,13 +31,13 @@ int main(int, char**){
 //    colDetplayground->run();
 //    delete colDetplayground;
 
-    PlaygroundTerrainDemo * terrainPlayground = new PlaygroundTerrainDemo("/Users/leandro/huevadas/projects/dev/media/");
-    terrainPlayground->run();
-    delete terrainPlayground;
-
-    PhysicsPlayground *physicsPlayground = new PhysicsPlayground("/Users/leandro/huevadas/projects/dev/media/");
-    physicsPlayground->run();
-    delete physicsPlayground;
+//    PlaygroundTerrainDemo * terrainPlayground = new PlaygroundTerrainDemo("/Users/leandro/huevadas/projects/dev/media/");
+//    terrainPlayground->run();
+//    delete terrainPlayground;
+//
+//    PhysicsPlayground *physicsPlayground = new PhysicsPlayground("/Users/leandro/huevadas/projects/dev/media/");
+//    physicsPlayground->run();
+//    delete physicsPlayground;
 
     RoadFighter *roadFighter = new RoadFighter("/Users/leandro/huevadas/projects/dev/media/");
     roadFighter->run();

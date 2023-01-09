@@ -79,14 +79,14 @@ public:
     virtual bool init() override {
         //logger->setLogLevel(LogLevel::DEBUG);
         VideoRunner::init();
-        this->getContainer()->getResourceManager()->addAdapter(new TextureResourceAdapter());
-        this->getContainer()->getResourceManager()->addAdapter(new CubeMapResourceAdapter());
-        this->getContainer()->getResourceManager()->addAdapter(new HeightMapResourceAdapter());
-        this->getContainer()->getResourceManager()->addAdapter(new VertexArrayResourceAdapter());
-        this->getContainer()->getResourceManager()->addAdapter(new MeshResourceAdapter());
-        this->getContainer()->getResourceManager()->addAdapter(new VertexShaderResourceAdapter());
-        this->getContainer()->getResourceManager()->addAdapter(new FragmentShaderResourceAdapter());
-        this->getContainer()->getResourceManager()->addAdapter(new ShaderProgramResourceAdapter());
+        this->getContainer()->getResourceManager()->addAdapter(std::unique_ptr<ResourceAdapter>(new TextureResourceAdapter()));
+        this->getContainer()->getResourceManager()->addAdapter(std::unique_ptr<ResourceAdapter>(new CubeMapResourceAdapter()));
+        this->getContainer()->getResourceManager()->addAdapter(std::unique_ptr<ResourceAdapter>(new HeightMapResourceAdapter()));
+        this->getContainer()->getResourceManager()->addAdapter(std::unique_ptr<ResourceAdapter>(new VertexArrayResourceAdapter()));
+        this->getContainer()->getResourceManager()->addAdapter(std::unique_ptr<ResourceAdapter>(new MeshResourceAdapter()));
+        this->getContainer()->getResourceManager()->addAdapter(std::unique_ptr<ResourceAdapter>(new VertexShaderResourceAdapter()));
+        this->getContainer()->getResourceManager()->addAdapter(std::unique_ptr<ResourceAdapter>(new FragmentShaderResourceAdapter()));
+        this->getContainer()->getResourceManager()->addAdapter(std::unique_ptr<ResourceAdapter>(new ShaderProgramResourceAdapter()));
 
         if (SDL_Init(SDL_INIT_VIDEO) != 0) {
             logger->error("SDL_Init Error: %s", SDL_GetError());
