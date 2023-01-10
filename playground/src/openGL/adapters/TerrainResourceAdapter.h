@@ -20,7 +20,7 @@ public:
 		this->produces(MimeTypes::TERRAIN);
 	}
 
-	Resource *load(ResourceLoadRequest &request) const override {
+	virtual void load(ResourceLoadRequest &request, ResourceLoadResponse &response) const override {
 		JsonParser jsonParser(request.getFileParser());
 		TerrainResource *resource = new TerrainResource();
 
@@ -44,7 +44,7 @@ public:
 				resource->setModel((VertexArrayResource *)this->getResourceManager()->load(request.getFilePath(), jsonParser.readString(), MimeTypes::VERTEXARRAY));
 			} else if (token == "heightmap") {
 			    resource->setHeightmap((HeightMapResource *)this->getResourceManager()->load(request.getFilePath(), jsonParser.readString(), MimeTypes::HEIGHTMAP));
-			    resource->setModel(buildModel(resource->getHeightMap()));
+			    resource->setModel(buildModel(resource->getHeightMap(), response));
 			} else {
 				logger->error("Unexpected token: [%s] at (%d, %d)",
 						token.c_str(), jsonParser.getLine(), jsonParser.getColumn());
@@ -55,15 +55,15 @@ public:
 			}
 		}
 
-		return resource;
+		response.addResource(resource);
 	}
 
 protected:
-	VertexArrayResource *buildModel(const HeightMapResource *heightMap) const {
+	VertexArrayResource *buildModel(const HeightMapResource *heightMap, ResourceLoadResponse &response) const {
 	    VertexArrayResource *model = null;
         if(heightMap != null) {
             GeometryResource heightMapGeometry(0);
-            heightMapGeometry.setName(Paths::getBasename(heightMap->getFileName()));
+            heightMapGeometry.setName(Paths::getBasename(heightMap->getUri()));
             heightMapGeometry.setType("triangles");
 
             for(unsigned int i = 0; i < heightMap->getGridWidth(); i++) {
@@ -87,8 +87,8 @@ protected:
             }
 
 			model = OpenGLUtilites::generateVertexBuffer(&heightMapGeometry);
-			model->setFileName(heightMap->getFileName());
-			this->getResourceManager()->addResource(model);
+			model->setUri(heightMap->getUri());
+			response.addResource(model);
         }
 
         return model;

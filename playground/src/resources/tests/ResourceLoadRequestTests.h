@@ -20,33 +20,49 @@ public:
 
         this->addTest("ResourceLoadRequestTests::testToString", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&ResourceLoadRequestTests::testToString));
         this->addTest("ResourceLoadRequestTests::testIsValid", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&ResourceLoadRequestTests::testIsValid));
-        this->addTest("ResourceLoadRequestTests::testSimpleUri", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&ResourceLoadRequestTests::testSimpleUri));
+        this->addTest("ResourceLoadRequestTests::testFilePath", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&ResourceLoadRequestTests::testFilePath));
     }
 
 	void testToString(PlaygroundRunner *runner) {
 		ResourceLoadRequest request("/test/filename.json");
 		String actual = request.acceptMimeType("test/mimetype").withAdditionalLabels(std::set<String> {"additionalLabel"}).toString();
-		assertEquals("Unexpected toString", "[application/json]->[test/mimetype] [/test/filename.json]", actual);
+		assertEquals("Unexpected toString", "[test/mimetype]<-[application/json] [/test/filename.json]", actual);
 	}
 
 	void testIsValid(PlaygroundRunner *runner) {
-		ResourceLoadRequest request("/test/filename.json");
+		ResourceLoadRequest request("tests/fileToParse.txt");
 		bool actual = request.acceptMimeType("test/mimetype").withAdditionalLabels(std::set<String> {"additionalLabel"}).isValid();
-		assertTrue(request.errors(), actual);
+		assertTrue(assertMessage(request.errors()), actual);
+
+		/** Should be able to guess mimetype from filename even with object name*/
+		ResourceLoadRequest requestAgain("tests/fileToParse.txt/objectName");
+		actual = requestAgain.withParent(runner->getResourceManager()->getRootFolder()).acceptMimeType("test/mimetype").withAdditionalLabels(std::set<String> {"additionalLabel"}).isValid();
+		assertTrue(assertMessage(requestAgain.errors()), actual);
 
 		ResourceLoadRequest anotherRequest("");
 		actual = anotherRequest.isValid();
-		assertTrue(anotherRequest.errors(), !actual);
+		assertTrue(assertMessage(anotherRequest.errors()), !actual);
 
-		ResourceLoadRequest yetAnotherRequest("/test/filename");
-		actual = yetAnotherRequest.acceptMimeType("test/mimetype") .isValid();
-		assertTrue(yetAnotherRequest.errors(), !actual); //expect could not guess input mimetype
+		ResourceLoadRequest yetAnotherRequest("/tests/filename");
+		actual = yetAnotherRequest.acceptMimeType("test/mimetype").isValid();
+		assertTrue(assertMessage(yetAnotherRequest.errors()), !actual); //expect could not guess input mimetype
 	}
 
 	void testFilePath(PlaygroundRunner *runner) {
-		ResourceLoadRequest request("/test/filename.json");
+		/* Just filename*/
+		ResourceLoadRequest request("/tests/filename.json");
 		String actual = request.getFilePath();
-		assertEquals(defaultAssertMessage, "/test/filename.json", actual);
+		assertEquals(defaultAssertMessage, "/tests/filename.json", actual);
+
+		/* Uri with name - relative to root */
+		ResourceLoadRequest requestB("tests/fileToParse.txt/name");
+		actual = requestB.withParent(runner->getResourceManager()->getRootFolder()) .getFilePath();
+		assertEquals(defaultAssertMessage, runner->getResourceManager()->getRootFolder() + "tests/fileToParse.txt", actual);
+
+		/* Uri with name - and parent - returns the object as well since filename does not exist */
+		ResourceLoadRequest requestC("tests/filename.json/name");
+		actual = requestC.withParent("/home").withParent("leandro").getFilePath();
+		assertEquals(defaultAssertMessage, "/home/leandro/tests/filename.json/name", actual);
 	}
 
 	void testSimpleUri(PlaygroundRunner *runner) {

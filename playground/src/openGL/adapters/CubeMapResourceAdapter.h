@@ -21,7 +21,7 @@ public:
 		this->setOutputMimeTypes(std::set<String> {MimeTypes::CUBEMAP}); // override texture resource adapter mimetypes.
 	}
 
-	Resource *load(ResourceLoadRequest &request) const override {
+	virtual void load(ResourceLoadRequest &request, ResourceLoadResponse &response) const override {
 		JsonParser jsonParser(request.getFileParser());
 
 		unsigned int textureHandler = 0;
@@ -65,7 +65,7 @@ public:
                         getLocation(faceName),
                         errorMessage.c_str());
                 dispose(resource);
-                return null;
+                return;
             }
 
 			if (jsonParser.peekToken() == ",") {
@@ -75,7 +75,7 @@ public:
 
 		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
-		return resource;
+		response.addResource(resource);
 	}
 
 	//TODO: review if this needs to implement dispose

@@ -20,7 +20,7 @@ public:
         this->accepts(MimeTypes::WAVEFRONT_MATERIAL);
     }
 
-    virtual Resource *load(ResourceLoadRequest &request) const override {
+    virtual void load(ResourceLoadRequest &request, ResourceLoadResponse &response) const override {
         TextParser textParser(request.getFileParser());
 
         MaterialCollection *materials = new MaterialCollection();
@@ -29,10 +29,10 @@ public:
         while ((token = textParser.takeToken()) != FileParser::eof) {
             if (token == "newmtl") {
             	MaterialResource *material = parseMaterial(textParser, textParser.takeLine());
-            	material->setFileName(Paths::add(request.getFilePath(), material->getName()));
+            	material->setUri(Paths::add(request.getFilePath(), material->getName()));
             	material->setMimeType(MimeTypes::WAVEFRONT_MATERIAL);
 
-            	this->getResourceManager()->addResource(material);
+            	response.addResource(material);
             	materials->addMaterial(material);
             } else {
                 String line = textParser.takeLine().c_str();
@@ -40,7 +40,7 @@ public:
             }
         }
 
-        return materials;
+        response.addResource(materials);
     }
 
     MaterialResource *parseMaterial(TextParser &textParser, const String &name) const {

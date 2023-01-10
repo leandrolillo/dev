@@ -15,45 +15,40 @@ class MeshResourceAdapter: public OpenGLResourceAdapter {
 public:
 	MeshResourceAdapter() {
 		logger = LoggerFactory::getLogger("video/MeshResourceAdapter");
+		this->produces(MimeTypes::MESHCOLLECTION);
 		this->produces(MimeTypes::MESH);
 	}
 
 	/**
-	 * Temporarily returns a single MESH but it also loads all other meshes in the file, leaving them available in the resource manager caché
+	 * Load all objects including the mesh collection
 	 */
-	virtual Resource *load(ResourceLoadRequest &request) const override {
+	virtual void load(ResourceLoadRequest &request, ResourceLoadResponse &response) const override {
 	    String geometryMimeType;
 
-	    ResourceLoadRequest geometryRequest(request);
 		GeometryCollection *geometryCollection = (GeometryCollection*) this->getResourceManager()->load(
-				geometryRequest.acceptMimeType(MimeTypes::GEOMETRYCOLLECTION).withAdditionalLabels(std::set<String> { ResourceManager::EphemeralLabel })
+				ResourceLoadRequest(request).acceptMimeType(MimeTypes::GEOMETRYCOLLECTION).withAdditionalLabels(std::set<String> { ResourceManager::EphemeralLabel })
 		);
 		if (geometryCollection == null || geometryCollection->getObjects().empty()) {
 		    logger->error("Could not load geometry from %s with mimetype %s", request.getFilePath().c_str(), geometryMimeType.c_str());
-		    return null;
 		}
 
-		Resource *result = null;
 		for(auto &geometry : geometryCollection->getObjects()) {
-			MeshResource *mesh = buildMesh(geometry.second);
-			Resource *resource = this->getResourceManager()->addResource(mesh); //make sure we add it to resource manager to avoid leaks
-			result = (result == null ? resource: result);
-
+			response.addResource(buildMesh(geometry.second, request, response));
 		}
 
-		return result;
+		response.addResource(geometryCollection);
 	}
 
-	MeshResource * buildMesh(const GeometryResource *geometry) const {
+	MeshResource * buildMesh(const GeometryResource *geometry, ResourceLoadRequest &request, ResourceLoadResponse &response) const {
 		MeshResource *resource = new MeshResource();
-        resource->setFileName(geometry->getFileName());
+        resource->setUri(geometry->getUri());
 
-		resource->setVertexArray((VertexArrayResource *)this->getResourceManager()->addResource(OpenGLUtilites::generateVertexBuffer(geometry))); //make sure to add generated resources to resource manager or they're leaked
+		resource->setVertexArray((VertexArrayResource *)response.addResource(OpenGLUtilites::generateVertexBuffer(geometry))); //make sure to add generated resources to resource manager or they're leaked
 		if(geometry->getMaterial() != null) {
 			resource->setMaterial(geometry->getMaterial());
 
 			if(!geometry->getMaterial()->getAmbientTexture().empty()) {
-				TextureResource *texture = (TextureResource *)getResourceManager()->load(geometry->getMaterial()->getDiffuseTexture(), MimeTypes::TEXTURE);
+				TextureResource *texture = (TextureResource *)getResourceManager()->load(geometry->getMaterial()->getDiffuseTexture(), MimeTypes::TEXTURE, request.getLabels(), request.getOptions());
 				if(texture != null) {
 					resource->setTexture(texture);
 				} else {
@@ -62,7 +57,7 @@ public:
 			}
 
 			if(!geometry->getMaterial()->getDiffuseTexture().empty()) {
-				TextureResource *texture = (TextureResource *)getResourceManager()->load(geometry->getMaterial()->getDiffuseTexture(), MimeTypes::TEXTURE);
+				TextureResource *texture = (TextureResource *)getResourceManager()->load(geometry->getMaterial()->getDiffuseTexture(), MimeTypes::TEXTURE, request.getLabels(), request.getOptions());
 				if(texture != null) {
 					resource->setTexture(texture);
 				} else {
@@ -71,7 +66,7 @@ public:
 			}
 
 			if(!geometry->getMaterial()->getBumptTexture().empty()) {
-				TextureResource *texture = (TextureResource *)getResourceManager()->load(geometry->getMaterial()->getBumptTexture(), MimeTypes::TEXTURE);
+				TextureResource *texture = (TextureResource *)getResourceManager()->load(geometry->getMaterial()->getBumptTexture(), MimeTypes::TEXTURE, request.getLabels(), request.getOptions());
 				if(texture != null) {
 					resource->setNormalMap(texture);
 				} else {
@@ -80,7 +75,7 @@ public:
 			}
 
 			if(!geometry->getMaterial()->getSpecularTexture().empty()) {
-				TextureResource *texture = (TextureResource *)getResourceManager()->load(geometry->getMaterial()->getSpecularTexture(), MimeTypes::TEXTURE);
+				TextureResource *texture = (TextureResource *)getResourceManager()->load(geometry->getMaterial()->getSpecularTexture(), MimeTypes::TEXTURE, request.getLabels(), request.getOptions());
 				if(texture != null) {
 					resource->setSpecularMap(texture);
 				} else {

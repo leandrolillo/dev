@@ -20,15 +20,13 @@ public:
         this->produces(MimeTypes::HEIGHTMAP);
     }
 
-    virtual Resource *load(ResourceLoadRequest &request) const override {
-    	ResourceLoadRequest imageRequest(request);
-        ImageResource *image = (ImageResource *)this->getResourceManager()->load(imageRequest.acceptMimeType(MimeTypes::IMAGE));
+    virtual void load(ResourceLoadRequest &request, ResourceLoadResponse &response) const override {
+        ImageResource *image = (ImageResource *)this->getResourceManager()->load(ResourceLoadRequest(request).acceptMimeType(MimeTypes::IMAGE));
         if(image == null) {
         	logger->error("Could not load image [%s] - skipping heightmap creation", request.getFilePath().c_str());
         }
 
-        HeightMapResource *resource = new HeightMapResource(image, vector(2, 80, 2));
-        return resource;
+        response.addResource(new HeightMapResource(image, vector(2, 80, 2)));
     }
 private:
 

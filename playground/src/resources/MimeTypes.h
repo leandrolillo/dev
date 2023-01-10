@@ -14,6 +14,7 @@ class MimeTypes {
 public:
 	Logger *logger = LoggerFactory::getLogger("ResourceLoadRequest");
 
+	inline static const String TXT = "text/plain";
 	inline static const String JSON = "application/json";
 
 	inline static const String PNG = "image/png";
@@ -66,6 +67,8 @@ public:
 	                return PNG;
 	            } else if (extension == "tga") {
 	                return TGA;
+	            } else if (extension == "txt") {
+	                return TXT;
 	            } else if (extension == "json") {
 	                return JSON;
 	            } else if (extension == "glsl") {

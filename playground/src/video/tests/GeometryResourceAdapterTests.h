@@ -11,6 +11,7 @@
 #include <Tests.h>
 #include <ResourceManager.h>
 #include <GeometryResourceAdapter.h>
+#include "../../resources/tests/mock/ResourceLoadResponseMock.h"
 
 class GeometryResourceAdapterTests : public UnitTest
 {
@@ -36,7 +37,9 @@ public:
 		logger->info("Testing resource adapter [%s]", resourceAdapter->toString().c_str());
 
 		ResourceLoadRequest request(Paths::normalize("tests/geometry.json", runner->getContainer()->getResourceManager()->getRootFolder()));
-		Resource *resource = resourceAdapter->load(request.acceptMimeType(MimeTypes::GEOMETRYCOLLECTION));
+		ResourceLoadResponseMock response(request, resourceManager);
+		resourceAdapter->load(request.acceptMimeType(MimeTypes::GEOMETRYCOLLECTION), response);
+		Resource *resource = response.getLastAdded();
 		assertNotNull(defaultAssertMessage, resource);
 	}
 

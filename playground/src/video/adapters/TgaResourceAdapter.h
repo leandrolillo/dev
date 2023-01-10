@@ -24,7 +24,7 @@ public:
 		this->produces(MimeTypes::IMAGE);
 	}
 
-	virtual Resource *load(ResourceLoadRequest &request) const override {
+	virtual void load(ResourceLoadRequest &request, ResourceLoadResponse &response) const override {
 		ImageResource *resource = new ImageResource(0, "image/tga");
 
 		struct tgaHeader {
@@ -45,24 +45,24 @@ public:
 		if (request.getFileParser().read(&header, sizeof(header), 1) != 1) {
 			logger->error("%s has incomplete tga header\n",
 					request.getFilePath().c_str());
-			return null;
+			return;
 		}
 		if (header.data_type_code != 2) {
 			logger->error("[%s] compressed tga not supported\n",
 					request.getFilePath().c_str());
-			return null;
+			return;
 		}
 		if (header.bits_per_pixel != 24) {
 			logger->error("%s is not a 24-bit uncompressed RGB tga file\n",
 					request.getFilePath().c_str());
-			return null;
+			return;
 		}
 
 		for (int i = 0; i < header.id_length; ++i)
 			if (request.getFileParser().takeByte() == EOF) {
 				logger->error("%s has incomplete id string\n",
 						request.getFilePath().c_str());
-				return null;
+				return;
 			}
 
 		unsigned int color_map_size = le_short(header.color_map_length)
@@ -71,7 +71,7 @@ public:
 			if (request.getFileParser().takeByte() == EOF) {
 				logger->error("%s has incomplete color map\n",
 						request.getFilePath().c_str());
-				return null;
+				return;
 			}
 
 		resource->setAncho(le_short(header.width));
@@ -86,10 +86,10 @@ public:
 			logger->error("%s has incomplete image\n",
 					request.getFilePath().c_str());
 			dispose(resource);
-			return null;
+			return;
 		}
 
-		return (resource);
+		response.addResource(resource);
 	}
 	virtual void dispose(Resource *resource) const override {
 		if (resource->getMimeType() == "image/tga") {

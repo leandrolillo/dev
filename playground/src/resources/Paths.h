@@ -10,6 +10,7 @@
 
 #include "JavaLike.h"
 #include "StringUtils.h"
+#include <sys/stat.h>
 
 class Paths {
 public:
@@ -71,9 +72,12 @@ public:
 	 * Return the folder part of a path to a file.
 	 */
 	static String getDirname(const String &filePath) {
-		unsigned long location = filePath.find_last_of('/');
-		return (location == std::string::npos ? "." : filePath.substr(0, location + 1));
+		if(isFile(filePath)) {
+			unsigned long location = filePath.find_last_of('/');
+			return (location == std::string::npos ? "." : filePath.substr(0, location));
+		}
 
+		return filePath;
 	}
 
 	/**
@@ -84,8 +88,37 @@ public:
 		return (location == std::string::npos ? filePath : filePath.substr(location + 1, filePath.size() - location));
 	}
 
-	//TODO: This should inspect filePath and return the longest path that is a real file/directory
+	/*
+	 * Returns whether the path is a folder (and implicitly we can read it) or not
+	 */
+	static bool isFolder(const String &path) {
+		struct stat sb;
+		return stat(path.c_str(), &sb) == 0 && S_ISDIR(sb.st_mode);
+	}
+
+	/*
+	 * Returns whether the path is a file (and implicitly we can read it) or not
+	 */
+	static bool isFile(const String &path) {
+		struct stat sb;
+		return stat(path.c_str(), &sb) == 0 && S_ISREG(sb.st_mode);
+	}
+
+	/**
+	 * inspect uri and return the longest path that is a real file/directory
+	 */
 	static String getActualPath(const String &uri) {
+		std::vector<String> folders = StringUtils::split(uri, '/');
+
+		String path = uri;
+		while(folders.size() != 0) {
+			if(isFile(path)) {
+				return path;
+			}
+			folders.pop_back();
+			path = StringUtils::join(folders, '/');
+		}
+
 		return uri;
 	}
 private:

@@ -1,7 +1,7 @@
 # Blender 3.3.0
 # www.blender.org
 mtllib corvette.mtl
-o chevrolet_corvete_
+o chevrolet_corvete
 v 0.273884 1.429042 1.536523
 v 2.192626 1.115908 1.236357
 v 3.695985 0.639273 1.078101

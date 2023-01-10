@@ -159,7 +159,12 @@ public:
         ResourceManager *resourceManager = this->getResourceManager();
 
         treeTexture = (TextureResource *)resourceManager->load("images/lowPolyTree.png", MimeTypes::TEXTURE);
-        if((tree = (VertexArrayResource *)resourceManager->load("geometry/lowPolyTree.obj", MimeTypes::VERTEXARRAY)) == null) {
+
+        /**
+         * If the object has no name in the obj file, we put the filename as the object name, thus we have to request it with a duplicated name.
+         * Review the single object use case to see if there's a better option
+         */
+        if((tree = (VertexArrayResource *)resourceManager->load("geometry/lowPolyTree.obj/lowPolyTree.obj", MimeTypes::VERTEXARRAY)) == null) {
         	logger->error("Could not load tree model");
         	return false;
         }

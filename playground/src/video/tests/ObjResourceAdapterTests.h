@@ -8,7 +8,8 @@
 #pragma once
 
 #include <Tests.h>
-#include "../../resources/tests/ResourceManagerMock.h"
+#include "../../resources/tests/mock/ResourceManagerMock.h"
+#include "../../resources/tests/mock/ResourceLoadResponseMock.h"
 #include <ObjResourceAdapter.h>
 
 class ObjResourceAdapterTests : public UnitTest
@@ -29,12 +30,11 @@ public:
 		ResourceManagerMock resourceManager(runner->getContainer()->getResourceManager()->getRootFolder());
 		ResourceAdapter *resourceAdapter = resourceManager.addAdapter(std::unique_ptr<ResourceAdapter>(new ObjResourceAdapter()));
 
-		assertNotNull(defaultAssertMessage, resourceAdapter);
-		assertNotNull(defaultAssertMessage, resourceAdapter->getResourceManager());
-		logger->info("Testing resource adapter [%s]", resourceAdapter->toString().c_str());
 
 		ResourceLoadRequest request(Paths::normalize("tests/axes.obj", runner->getContainer()->getResourceManager()->getRootFolder()));
-		Resource *resource = resourceAdapter->load(request.acceptMimeType(MimeTypes::GEOMETRYCOLLECTION));
+		ResourceLoadResponseMock response(request, resourceManager);
+		resourceAdapter->load(request.acceptMimeType(MimeTypes::GEOMETRYCOLLECTION), response);
+		Resource *resource = response.getLastAdded();
 		assertNotNull(defaultAssertMessage, resource);
 	}
 

@@ -43,7 +43,7 @@ public:
 		return result;
 	}
 
-	virtual Resource* load(ResourceLoadRequest &request) const override {
+	virtual void load(ResourceLoadRequest &request, ResourceLoadResponse &response) const override {
 		AudioResource *audioResource = null;
 
 		struct ChunkHeader {
@@ -163,7 +163,7 @@ public:
 			delete dataChunk;
 		}
 
-		return audioResource;
+		response.addResource(audioResource);
 	}
 	virtual void dispose(Resource *resource) const override {
 		AudioResource *audioResource = (AudioResource*) resource;

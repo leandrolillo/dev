@@ -15,7 +15,7 @@
 #include<map>
 
 #define defaultAssertMessage StringFormatter::format("Assertion Failed in [%s], at line [%d]", __FILE__, __LINE__)
-#define assertMessage(message) StringFormatter::format("Assertion Failed in [%s], at line [%d]", __FILE__, __LINE__).append(message)
+#define assertMessage(message) StringFormatter::format("Assertion Failed in [%s], at line [%d] ", __FILE__, __LINE__).append(message)
 
 class UnitTest {
     std::map<String, void (UnitTest::*)(PlaygroundRunner *)> tests;
@@ -118,7 +118,11 @@ public:
     }
 
     void assertNotNull(const String &message, void *pointer) {
-    	assertFalse(message, pointer == null);
+    	assertFalse(StringFormatter::format("%s. Expected: [%d]. Actual: [%d]", message.c_str(), null, pointer), pointer == null);
+    }
+
+    void assertNull(const String &message, void *pointer) {
+    	assertEquals(message, null, pointer);
     }
 
     void assertEquals(const String &message, const vector &expected, const vector &actual)

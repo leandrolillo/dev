@@ -19,7 +19,7 @@ protected:
 
 private:
 	unsigned long id; // id makes sense to business only - thus can be repeated. It is not a sequential primary key for all resources
-	String fileName;
+	String uri;
 	String mimeType;
 	std::set<String> labels;
 
@@ -48,12 +48,12 @@ public:
 		this->mimeType = mimeType;
 	}
 
-	const String& getFileName() const {
-		return fileName;
+	const String& getUri() const {
+		return uri;
 	}
 
-	void setFileName(const String & fileName) {
-		this->fileName = fileName;
+	void setUri(const String & fileName) {
+		this->uri = fileName;
 	}
 
 	const std::set<String>& getLabels() const {
@@ -69,7 +69,7 @@ public:
 	}
 
 	virtual String toString() const {
-		return String("Resource(id:" + std::to_string(this->getId()) + ") [" + this->getMimeType() + "] [" + this->fileName + "]");
+		return String("Resource(id:" + std::to_string(this->getId()) + ") [" + this->getMimeType() + "] [" + this->uri + "]");
 	}
 };
 

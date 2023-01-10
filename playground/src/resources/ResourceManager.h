@@ -118,11 +118,11 @@ public:
 		return load(request.acceptMimeType(outputMimeType).withLabels(labels));
 	}
 
-	Resource* load(const String &fileName, const String &outputMimeType, std::set<String> labels = {}) {
+	Resource* load(const String &fileName, const String &outputMimeType, std::set<String> labels = {}, std::map<String, String> options = {}) {
 		logger->debug("Load [%s] [%s]", outputMimeType.c_str(), fileName.c_str(), fileName.c_str());
 
 		ResourceLoadRequest request(Paths::normalize(fileName, this->rootFolder));
-		return load(request.acceptMimeType(outputMimeType).withLabels(labels));
+		return load(request.acceptMimeType(outputMimeType).withLabels(labels).withOptions(options));
 	}
 
 	/**
@@ -221,7 +221,7 @@ private:
 	}
 
 	const String getCacheKey(const Resource &resource) {
-		return getCacheKey(resource.getFileName(), resource.getMimeType());
+		return getCacheKey(resource.getUri(), resource.getMimeType());
 	}
 
 	const String getCacheKey(const ResourceLoadRequest &resourceLoadRequest) {

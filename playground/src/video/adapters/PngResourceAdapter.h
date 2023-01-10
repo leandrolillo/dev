@@ -21,7 +21,7 @@ class PngResourceAdapter : public ResourceAdapter {
 			this->produces(MimeTypes::IMAGE);
 		}
 
-		virtual Resource *load(ResourceLoadRequest &request) const override {
+		virtual void load(ResourceLoadRequest &request, ResourceLoadResponse &response) const override {
 			unsigned char *pBitmap;
 			unsigned int width, height;
 			int  bit_depth;
@@ -35,24 +35,24 @@ class PngResourceAdapter : public ResourceAdapter {
 
 			if (!png_check_sig(sig, 8)) {
 				logger->error( "Not a valid png file");
-				return(null);   /* bad signature */
+				return;   /* bad signature */
 			}
 
 			/* could pass pointers to user-defined error handlers instead of NULLs: */
 			if(!(png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, null, null, null))) {
 				logger->error( "could not create read struct: out of memory");
-				return(null);
+				return;
 			}
 
 			if(!(info_ptr = png_create_info_struct(png_ptr))) {
 				png_destroy_read_struct(&png_ptr, null, null);
 				logger->error( "Could not create info struct: out of memory");
-				return(null);
+				return;
 			}
 
 			if (setjmp(png_jmpbuf(png_ptr))) {
 				png_destroy_read_struct(&png_ptr, &info_ptr, null);
-				return(null);
+				return;
 			}
 
 			png_init_io(png_ptr, request.getFileParser().getStream());
@@ -71,7 +71,7 @@ class PngResourceAdapter : public ResourceAdapter {
 
 			if (setjmp(png_jmpbuf(png_ptr))) {
 				png_destroy_read_struct(&png_ptr, &info_ptr, null);
-				return null;
+				return;
 			}
 
 			if (color_type == PNG_COLOR_TYPE_PALETTE || (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8) || png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS)) {
@@ -94,13 +94,13 @@ class PngResourceAdapter : public ResourceAdapter {
 			if ((image_data =  new unsigned char [image_rowbytes * height]) == null) {
 				png_destroy_read_struct(&png_ptr, &info_ptr, null);
 				logger->error("Could not create image data: out of memory");
-				return null;
+				return;
 			}
 			if ((row_pointers = new png_bytep[height]) == null) {
 				png_destroy_read_struct(&png_ptr, &info_ptr, null);
 				logger->error("Could not create row pointers: out of memory");
 				delete image_data;
-				return null;
+				return;
 			}
 
 			for (i = 0;  i < height; i++)
@@ -118,7 +118,7 @@ class PngResourceAdapter : public ResourceAdapter {
 
 			if (!(pBitmap = new unsigned char[(wimage_rowbytes * height)])) {
 				logger->error("could not create bitmap pointer: out of memory");
-				return(null);
+				return;
 			}
 
 			if(channels == 3) {
@@ -151,7 +151,7 @@ class PngResourceAdapter : public ResourceAdapter {
 			resource->setBpp(bit_depth);
 			resource->setData(pBitmap);
 
-			return resource;
+			response.addResource(resource);
 		}
 
 		virtual void dispose(Resource *resource) const override {

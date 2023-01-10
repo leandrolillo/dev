@@ -9,19 +9,8 @@
 #define SRC_RESOURCES_TESTS_RESOURCEMANAGERTESTS_H_
 
 #include <Tests.h>
-#include "ResourceManagerMock.h"
-
-class ResourceAdapterMock : public ResourceAdapter {
-public:
-	ResourceAdapterMock(const std::set<String> &outputMimeTypes, String inputMimeType) {
-		this->setOutputMimeTypes(outputMimeTypes);
-		this->accepts(inputMimeType);
-	}
-
-	virtual Resource* load(ResourceLoadRequest &request) const override {
-		return null;
-	}
-};
+#include "mock/ResourceManagerMock.h"
+#include "mock/ResourceAdapterMock.h"
 
 
 class ResourceManagerTests : public UnitTest
@@ -38,12 +27,14 @@ public:
         this->addTest("ResourceManagerTests::testAddResourceAdapter", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&ResourceManagerTests::testAddResourceAdapter));
         this->addTest("ResourceManagerTests::testAddResource", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&ResourceManagerTests::testAddResource));
         this->addTest("ResourceManagerTests::testUnload", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&ResourceManagerTests::testUnload));
+        this->addTest("ResourceManagerTests::testLoad", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&ResourceManagerTests::testLoad));
     }
 
 	void testAddResourceAdapter(PlaygroundRunner *runner) {
 		ResourceManagerMock resourceManager(runner->getContainer()->getResourceManager()->getRootFolder());
 
-		ResourceAdapter *resourceAdapter = resourceManager.addAdapter(std::unique_ptr<ResourceAdapter>(new ResourceAdapterMock(std::set<String>{"test/outputMimeType"}, "test/inputMimeType")));
+		ResourceAdapter *resourceAdapter = resourceManager.addAdapter(std::unique_ptr<ResourceAdapter>(
+						new ResourceAdapterMock(std::set<String>{"test/outputMimeType"}, "test/inputMimeType")));
 		assertNotNull(defaultAssertMessage, resourceAdapter);
 		assertNotNull(defaultAssertMessage, resourceAdapter->getResourceManager());
 		logger->info("Testing resource adapter [%s]", resourceAdapter->toString().c_str());
@@ -51,25 +42,59 @@ public:
 		assertEquals(defaultAssertMessage, 1, resourceManager.getAdaptersCount());
 	}
 
+	void testLoad(PlaygroundRunner *runner) {
+		ResourceManagerMock resourceManager(runner->getContainer()->getResourceManager()->getRootFolder());
+
+		ResourceAdapterMock *resourceAdapter = (ResourceAdapterMock *)resourceManager.addAdapter(std::unique_ptr<ResourceAdapter>(
+				new ResourceAdapterMock(std::set<String>{"test/outputMimeType", "test/anotherOutputMimeType"}, "test/inputMimeType")));
+
+		/* Should populate default values */
+		resourceAdapter->withLoadResult(new Resource(1, ""));
+		Resource *actual = resourceManager.load(ResourceLoadRequest("/test/filename").withParent(resourceManager.getRootFolder()).acceptMimeType("test/outputMimeType").withInputMimeType("test/inputMimeType").withLabels(std::set<String> {"test"}));
+		assertNotNull(defaultAssertMessage, actual);
+		assertEquals(defaultAssertMessage, "test/outputMimeType", actual->getMimeType());
+		assertEquals(defaultAssertMessage, "/test/filename", actual->getUri());
+		assertEquals(defaultAssertMessage, 1, actual->getLabels().size());
+		assertEquals(defaultAssertMessage, 1, resourceManager.getResourcesCount());
+
+		/* unless already set */
+		Resource *mockResult = new Resource(1, "test/outputMimeType");
+		mockResult->setUri("/test/anotherFilename");
+		resourceAdapter->withLoadResult(mockResult);
+		actual = resourceManager.load(ResourceLoadRequest("/test/anotherFilename").withParent(resourceManager.getRootFolder()).acceptMimeType("test/outputMimeType").withInputMimeType("test/inputMimeType"));
+		assertNotNull(defaultAssertMessage, actual);
+		assertEquals(defaultAssertMessage, "test/outputMimeType", actual->getMimeType());
+		assertEquals(defaultAssertMessage, "/test/anotherFilename", actual->getUri());
+		assertEquals(defaultAssertMessage, 0, actual->getLabels().size());
+		assertEquals(defaultAssertMessage, 2, resourceManager.getResourcesCount());
+
+		/* Make sure we get the proper mimetype or null*/
+		actual = resourceManager.load(ResourceLoadRequest("test/filename").withParent(resourceManager.getRootFolder()).acceptMimeType("test/anotherOutputMimeType").withInputMimeType("test/inputMimeType"));
+		assertNull(defaultAssertMessage, actual);
+		assertEquals(defaultAssertMessage, 2, resourceManager.getResourcesCount());
+
+	}
+
+
 
 	void testAddResource(PlaygroundRunner *runner) {
 		ResourceManagerMock resourceManager(runner->getContainer()->getResourceManager()->getRootFolder());
 
 		Resource *resource = new Resource(1, "test/mimetype");
-		resource->setFileName("/test/filename");
+		resource->setUri("/test/filename");
 		resourceManager.addResource(resource);
 		resource->toString(); //any better way to try to trigger illegal access?
 		assertEquals(defaultAssertMessage, 1, resourceManager.getResourcesCount());
 
 		resource = new Resource(2, "test/mimetype");
-		resource->setFileName("/test/filename2");
+		resource->setUri("/test/filename2");
 		resourceManager.addResource(resource);
 		resource->toString(); //any better way to try to trigger illegal access?
 		assertEquals(defaultAssertMessage, 2, resourceManager.getResourcesCount());
 
 		resource = resourceManager.load("/test/filename", "test/mimetype");
 		assertNotNull("Resource not found in cache", resource);
-		assertEquals("filename does not match", "/test/filename", resource->getFileName());
+		assertEquals("filename does not match", "/test/filename", resource->getUri());
 		assertEquals("mimetype does not match", "test/mimetype", resource->getMimeType());
 
 		/**
@@ -85,23 +110,23 @@ public:
 		ResourceManagerMock resourceManager(runner->getContainer()->getResourceManager()->getRootFolder());
 
 		Resource *resource = new Resource(1, "test/mimetype");
-		resource->setFileName("test/filename1");
+		resource->setUri("test/filename1");
 		resource->addLabel("ephemeral");
 		resourceManager.addResource(resource);
 
 		resource = new Resource(2, "test/mimetype");
-		resource->setFileName("test/filename2");
+		resource->setUri("test/filename2");
 		resource->addLabel("not ephemeral");
 		resource->addLabel("level 1");
 		resourceManager.addResource(resource);
 
 		resource = new Resource(3, "test/mimetype");
-		resource->setFileName("test/filename3");
+		resource->setUri("test/filename3");
 		resource->addLabel("permanent");
 		resourceManager.addResource(resource);
 
 		resource = new Resource(4, "test/mimetype");
-		resource->setFileName("test/filename4");
+		resource->setUri("test/filename4");
 		resourceManager.addResource(resource);
 
 //		/*

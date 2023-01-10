@@ -40,7 +40,7 @@ class ShaderProgramResourceAdapter: public OpenGLResourceAdapter {
 			shadersMimeTypes["tesellationShaders"] = MimeTypes::TESELLATIONSHADER;
 		}
 
-		virtual Resource *load(ResourceLoadRequest &request) const override {
+		virtual void load(ResourceLoadRequest &request, ResourceLoadResponse &response) const override {
 			GLenum glError = glGetError();
 
 			JsonParser parser(request.getFileParser());
@@ -91,7 +91,7 @@ class ShaderProgramResourceAdapter: public OpenGLResourceAdapter {
 			if (!operationSuccessful) {
 				logger->error("Failed to link program - [%d]: [%s]\n", operationSuccessful, getInfoLog(resource->getId()).c_str());
 				dispose(resource);
-				return null;
+				return;
 			}
 
 			Resource *vertexArray = this->getResourceManager()->load("core/sphere.json", MimeTypes::VERTEXARRAY);
@@ -103,7 +103,7 @@ class ShaderProgramResourceAdapter: public OpenGLResourceAdapter {
 				if (!operationSuccessful) {
 					logger->error("Failed to validate program - [%d]: [%s]\n", operationSuccessful, getInfoLog(resource->getId()).c_str());
 					dispose(resource);
-					return null;
+					return;
 				}
 			}
 
@@ -116,7 +116,7 @@ class ShaderProgramResourceAdapter: public OpenGLResourceAdapter {
 			if(glError != GL_NO_ERROR) {
 				logger->error("Error loading texture [%s]: 0x[%x]", request.getFilePath().c_str(), glError);
 				dispose(resource);
-				return null;
+				return;
 			}
 
 			glUseProgram(resource->getId());
@@ -127,7 +127,7 @@ class ShaderProgramResourceAdapter: public OpenGLResourceAdapter {
 			logger->verbose("color attrib location = [%d]", glGetAttribLocation(resource->getId(), "color"));
 
 
-			return resource;
+			response.addResource(resource);
 		}
 
 		virtual void dispose(Resource *resource) const override {

@@ -1,14 +1,11 @@
 Tech debts
-- resource adapters should have thesemimetypes: 
+- resource adapters should have these mimetypes: 
 	- input mimetype (similar to content-type in http requests)	
-	- output mimetype (similar to accept in http requests) - should have as many as the adapter produces
-	- dispose mimetypes since they might delete types different than the one returned - and make sure everything is getting deleted. This might be unnecessary if having multiple output mimetypes that cover everything.
+	- output mimetype (similar to accept in http requests) - should have as many as the adapter produces. 
+		REVIEW adapters dispose everything they load
 
-- add "options" to resourceLoadRequest and use them to set the texture options in order to support mipmaps in terrain demo
-
-- Add a resource load response that takes care of normalizing resources properties like uri, name, path, mimetype, labels, etc. 
-	- Currently that only happens for the returned object in a load adapter, but the adapter might load several objects with addResource method.
-	- also it might be better to load everything in resource manager and then use the cache to return a particular resource, instead of having a load method returning one object.
+- review resource adapters chaining load/addResource calls. Unify resourceManager/resourceLoadRequest/resourceLoadResponse in a single class?
+	- issue is getResourceManager()->load(...) is not propagating labels and options unless calling with a resourceLoadRequest clone.
 
 - troubleshoot skybox renderer and grid renderer - they cause the application to crash thus are disabled (if possible cover issue with unit tests)
 

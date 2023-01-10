@@ -26,7 +26,7 @@ class ShaderResourceAdapter: public OpenGLResourceAdapter {
 			return response;
 		}
 	public:
-		virtual Resource *load(ResourceLoadRequest &request) const override {
+		virtual void load(ResourceLoadRequest &request, ResourceLoadResponse &response) const override {
 			ShaderResource *resource = null;
 
 			int shaderSize = request.getFileParser().size();
@@ -35,7 +35,7 @@ class ShaderResourceAdapter: public OpenGLResourceAdapter {
 			if(request.getFileParser().read(shaderCode, sizeof(char), shaderSize) != (unsigned int)shaderSize)
 			{
 				logger->error("Error reading shader source [%s]", request.getFilePath().c_str());
-				return null;
+				return;
 			}
 			shaderCode[request.getFileParser().size()] = '\0';
 
@@ -52,12 +52,12 @@ class ShaderResourceAdapter: public OpenGLResourceAdapter {
 				logger->error("Failed to compile [%s] [%s]: [%s]\n", request.getOutputMimeType().c_str(), request.getFilePath().c_str(), getInfoLog(shaderId).c_str());
 				logger->debug("Shader code: \n%s", shaderCode);
 				dispose(resource);
-				return null;
+				return;
 			} else {
 				logger->debug("[%s] [%s] compilation successful.", request.getFilePath().c_str(), request.getOutputMimeType().c_str());
 			}
 
-			return resource;
+			response.addResource(resource);
 		}
 
 		virtual void dispose(Resource *resource) const override {

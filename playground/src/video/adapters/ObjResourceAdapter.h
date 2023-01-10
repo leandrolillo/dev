@@ -20,7 +20,7 @@ public:
         this->accepts(MimeTypes::WAVEFRONT_OBJ);
     }
 
-    virtual Resource *load(ResourceLoadRequest &request) const override {
+    virtual void load(ResourceLoadRequest &request, ResourceLoadResponse &response) const override {
         TextParser textParser(request.getFileParser());
 
     	/**
@@ -37,9 +37,9 @@ public:
         while ((token = textParser.peekToken()) != FileParser::eof) {
             if (token == "o" || token == "v" || token == "vn" || token == "vt" || token == "f") {
             	GeometryResource *object = parseObject(textParser, vertices, normals, textCoords, materials);
-            	object->setFileName(Paths::add(request.getFilePath(), object->getName()));
+            	object->setUri(Paths::add(request.getFilePath(), object->getName()));
 
-            	this->getResourceManager()->addResource(object);
+            	response.addResource(object);
 
             	objects->addObject(object);
             } else if (token == "mtllib") {
@@ -56,7 +56,7 @@ public:
 //        logger->info("Parsed [%s] file, converting to geometry...", request.getFilePath().c_str());
 
 
-        return objects;
+        response.addResource(objects);
     }
 
     GeometryResource *parseObject(TextParser &textParser,
@@ -66,7 +66,7 @@ public:
 		MaterialCollection *materials) const {
 
         GeometryResource *geometry = new GeometryResource(0);
-        geometry->setFileName(textParser.getFilename());
+        geometry->setUri(textParser.getFilename());
         geometry->setName(Paths::getBasename(textParser.getFilename()));
         geometry->setType("triangles");
 

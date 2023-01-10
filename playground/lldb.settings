@@ -10,11 +10,11 @@ type summary add -s "${var.fileParser.filename} ${var.fileParser.line}:${var.fil
 type summary add -s "${var.uri}|${var.outputMimeType} <- ${var.inputMimeType}" ResourceLoadRequest
 type summary add -s "${var.inputMimeType}->${var.outputMimeType}" ResourceAdapter
 
-type summary add -s "(id:${var.id}) [${var.mimeType}] [${var.fileName}] [${var.labels}]" Resource
-type summary add -s "(id:${var.id}) [${var.mimeType}] [${var.fileName}] [${var.labels}]" TextureResource
-type summary add -s "(id:${var.id}) [${var.mimeType}] [${var.fileName}] [${var.labels}]" CubeMapResource
-type summary add -s "(id:${var.id}) [${var.mimeType}] [${var.fileName}] [${var.labels}]" VertexArrayResource
-type summary add -s "(id:${var.id}) [${var.mimeType}] [${var.vertexArray}] [${var.texture}] [${var.labels}]" MeshResource
+type summary add -s "(id:${var.id})[${var.mimeType}][${var.uri}] [${var.labels}]" Resource
+type summary add -s "(id:${var.id})[${var.mimeType}][${var.uri}] [${var.labels}]" TextureResource
+type summary add -s "(id:${var.id})[${var.mimeType}][${var.uri}] [${var.labels}]" CubeMapResource
+type summary add -s "(id:${var.id})[${var.mimeType}][${var.uri}] [${var.labels}]" VertexArrayResource
+type summary add -s "(id:${var.id})[${var.mimeType}][${var.uri}] [${var.vertexArray}] [${var.texture}] [${var.labels}]" MeshResource
 
 type summary add -s "${var.shader}" Renderer
 type summary add -s "${var.shader - ${var.cubeMap} - ${var.box}" SkyboxRenderer

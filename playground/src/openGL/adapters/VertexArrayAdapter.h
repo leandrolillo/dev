@@ -23,23 +23,20 @@ public:
 	/**
 	 * Temporarily returns a single VERTEXARRAY but it also loads all other meshes in the file, leaving them available in the resource manager caché
 	 */
-	virtual Resource *load(ResourceLoadRequest &request) const override {
-		ResourceLoadRequest geometryCollectionRLR(request);
+	virtual void load(ResourceLoadRequest &request, ResourceLoadResponse &response) const override {
 		GeometryCollection *geometryCollection = (GeometryCollection*) this->getResourceManager()->load(
-				geometryCollectionRLR.acceptMimeType(MimeTypes::GEOMETRYCOLLECTION).withAdditionalLabels(std::set<String> { ResourceManager::EphemeralLabel })
+				ResourceLoadRequest(request).acceptMimeType(MimeTypes::GEOMETRYCOLLECTION).withAdditionalLabels(std::set<String> { ResourceManager::EphemeralLabel })
 		);
 		if (geometryCollection == null || geometryCollection->getObjects().empty()) {
 		    logger->error("Could not load geometry from %s with mimetype %s", request.getFilePath().c_str(), MimeTypes::GEOMETRYCOLLECTION.c_str());
-		    return null;
+		    return;
 		}
 
-		Resource *result = null;
 		for(auto & geometry : geometryCollection->getObjects()) {
-			Resource *resource = this->getResourceManager()->addResource(OpenGLUtilites::generateVertexBuffer(geometry.second)); //make sure we add it to resource manager to avoid leaks
-			result = (result == null ? resource: result);
+			response.addResource(OpenGLUtilites::generateVertexBuffer(geometry.second)); //make sure we add it to resource manager to avoid leaks
 		}
 
-		return result;
+		//response.addResource(vertexArrayCollection);
 	}
 
 	virtual void dispose(Resource *resource) const override {

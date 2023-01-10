@@ -130,7 +130,7 @@ public:
          * OpenGL defaults so that something is rendered with minimum configuration.
          */
         defaultTexture = new TextureResource(this->generateDefaultTexture());
-        defaultTexture->setFileName("OpenGLRunner::defaultTextureResource");
+        defaultTexture->setUri("OpenGLRunner::defaultTextureResource");
         this->getContainer()->getResourceManager()->addResource(defaultTexture);
 
 

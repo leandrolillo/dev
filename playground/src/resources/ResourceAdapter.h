@@ -10,10 +10,12 @@
 
 #include "Resource.h"
 #include "ResourceLoadRequest.h"
-#include "ResourceManager.h"
+#include "ResourceLoadResponse.h"
+
 #include<vector>
 
 class ResourceManager;
+class ResourceLoadResponse;
 
 class ResourceAdapter {
 private:
@@ -38,7 +40,7 @@ public:
 	}
 
 
-	virtual Resource* load(ResourceLoadRequest &request) const = 0;
+	virtual void load(ResourceLoadRequest &request, ResourceLoadResponse &response) const = 0;
 	virtual void dispose(Resource *resource) const {};
 
 	const String& getInputMimeType() const {

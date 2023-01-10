@@ -20,7 +20,7 @@ public:
 		this->produces(MimeTypes::IMAGE);
 	}
 
-	virtual Resource *load(ResourceLoadRequest &request) const override {
+	virtual void load(ResourceLoadRequest &request, ResourceLoadResponse &response) const override {
 		struct jpeg_decompress_struct cinfo;
 		struct jpeg_error_mgr jerr;
 
@@ -58,7 +58,7 @@ public:
 
 		jpeg_destroy_decompress(&cinfo);
 
-		return (resource);
+		response.addResource(resource);
 	}
 
 	virtual void dispose(Resource *resource) const override {

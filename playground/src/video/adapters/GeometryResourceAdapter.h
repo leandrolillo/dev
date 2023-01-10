@@ -23,12 +23,12 @@ public:
 		this->accepts(MimeTypes::JSON);
 	}
 
-	virtual Resource *load(ResourceLoadRequest &request) const override {
+	virtual void load(ResourceLoadRequest &request, ResourceLoadResponse &response) const override {
 		JsonParser parser(request.getFileParser());
 		GeometryCollection *geometryCollection = new GeometryCollection;
 		GeometryResource *resource = new GeometryResource(0);
 		resource->setName(Paths::getBasename(request.getFilePath()));
-		resource->setFileName(request.getFilePath());
+		resource->setUri(request.getFilePath());
 
 		bool generateNormals = false;
 		bool generateIndexes = false;
@@ -87,10 +87,10 @@ public:
 		log("normals ", resource->getNormals());
 		log("textureCoordinates ", resource->getTextureCoordinates());
 
-		getResourceManager()->addResource(resource);
+		response.addResource(resource);
 		geometryCollection->addObject(resource);
 
-		return geometryCollection;
+		response.addResource(geometryCollection);
 	}
 
 	/**

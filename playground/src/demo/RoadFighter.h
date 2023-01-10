@@ -52,17 +52,35 @@ public:
 //        	return false;
 //        }
 
-        if((carMesh = (MeshResource *)this->getResourceManager()->load("roadFighter/corvette.obj", MimeTypes::MESH)) == null) {
+//    	MeshCollection *meshCollection;
+//
+//        if((meshCollection = (MeshResource *)this->getResourceManager()->load("roadFighter/axes.obj",
+//        		MimeTypes::MESHCOLLECTION,
+//				std::set<String> {},
+//				std::map<String, String> {{"texture-filter", "nearest"}})) == null) {
+//        	logger->error("Could not load mesh collection");
+//        	return false;
+//        }
+
+        if((carMesh = (MeshResource *)this->getResourceManager()->load("roadFighter/corvette.obj/chevrolet_corvete",
+        		MimeTypes::MESH,
+				std::set<String> {},
+				std::map<String, String> {{"texture-filter", "nearest"}})) == null) {
         	logger->error("Could not load car mesh");
         	return false;
         }
 
-        if((texturedBoxMesh = (MeshResource *)this->getResourceManager()->load("roadFighter/texturedCube.obj", MimeTypes::MESH)) == null) {
+        if((texturedBoxMesh = (MeshResource *)this->getResourceManager()->load("roadFighter/texturedCube.obj/Cube",
+        		MimeTypes::MESH,
+				std::set<String> {},
+				std::map<String, String> {{"texture-filter", "nearest"}})) == null) {
         	logger->error("Could not load textured box mesh");
         	return false;
         }
 
-        if((axesMesh = (MeshResource *)this->getResourceManager()->load("roadFighter/axes.obj", MimeTypes::MESH)) == null) {
+        if((axesMesh = (MeshResource *)this->getResourceManager()->load("roadFighter/axes.obj/Axes", MimeTypes::MESH,
+        		std::set<String> {},
+				std::map<String, String> {{"texture-filter", "nearest"}})) == null) {
         	logger->error("Could not load axes model");
         	return false;
         }

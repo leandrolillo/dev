@@ -9,9 +9,9 @@
 const String ResourceManager::EphemeralLabel = {"ephemeral"};
 
 ResourceAdapter * ResourceManager::addAdapter(std::unique_ptr<ResourceAdapter> adapterUniquePtr) { //should this accept a unique_ptr and move it?
-	logger->info("Adding adapter");
+	logger->debug("Adding adapter");
 	if(adapterUniquePtr.get() != null && adapterUniquePtr->isValid()) {
-		logger->info("Adapter [%s] is valid - proceeding to add it", adapterUniquePtr->toString().c_str());
+		logger->debug("Adapter [%s] is valid - proceeding to add it", adapterUniquePtr->toString().c_str());
 
 		ResourceAdapter * adapter = adapterUniquePtr.get();
 		if(resourceAdapters.find(adapter) == resourceAdapters.end()) {
@@ -19,7 +19,7 @@ ResourceAdapter * ResourceManager::addAdapter(std::unique_ptr<ResourceAdapter> a
 			resourceAdapters.insert(std::move(adapterUniquePtr));
 			adapter->setResourceManager(this);
 
-			logger->info("Adapter [%s] added to set with resourceManager [%d]", adapter->toString().c_str(), adapter->getResourceManager());
+			logger->debug("Adapter [%s] added to set with resourceManager [%d]", adapter->toString().c_str(), adapter->getResourceManager());
 		} else {
 			logger->warn("Skipping adapter [%s] - already managed", adapter->toString().c_str());
 		}
@@ -28,7 +28,7 @@ ResourceAdapter * ResourceManager::addAdapter(std::unique_ptr<ResourceAdapter> a
 			String key = adapter->getInputMimeType().empty() ? outputMimeType  + "|" : outputMimeType + "|" + adapter->getInputMimeType();
 			loadAdaptersCache[key] = adapter;
 
-			logger->info("Adapter [%s] added to manage [%s] with key [%s]", adapter->toString().c_str(), outputMimeType.c_str(), key.c_str());
+			logger->debug("Adapter [%s] added to manage [%s] with key [%s]", adapter->toString().c_str(), outputMimeType.c_str(), key.c_str());
 		}
 
 		return adapter;
@@ -42,10 +42,15 @@ ResourceAdapter * ResourceManager::addAdapter(std::unique_ptr<ResourceAdapter> a
 }
 
 Resource* ResourceManager::load(ResourceLoadRequest &resourceLoadRequest) {
-	Resource *response = null;
+	Resource *result = null;
 	try {
-		response = getCacheResource(getCacheKey(resourceLoadRequest));
-		if (response == null) {
+		/**
+		 * Find the resource in the cache. If not there, then trigger loading via adapter.
+		 * Adapter loads as many objects as it wants and puts them in resource manager cache
+		 * Finally return the single cached object matching the request.
+		 */
+		result = getCacheResource(getCacheKey(resourceLoadRequest));
+		if (result == null) {
 			if(resourceLoadRequest.isValid()) {
 					logger->verbose("Resource was not cached previously");
 
@@ -56,43 +61,42 @@ Resource* ResourceManager::load(ResourceLoadRequest &resourceLoadRequest) {
 								adapter->toString().c_str());
 
 						try {
-							response = adapter->load(resourceLoadRequest);
+							ResourceLoadResponse response(resourceLoadRequest, *this);
+							adapter->load(resourceLoadRequest, response);
 						} catch(Exception &exception) {
 							logger->error("Could not load %s with adapter [%s]: %s", resourceLoadRequest.toString().c_str(), adapter->toString().c_str(), exception.getMessage().c_str());
 						} catch(...) {
 							;
 						}
-						if (response != null) { // TODO: add a response object that takes care of all this?
-							if(response->getFileName() == "") {
-								response->setFileName(resourceLoadRequest.getFilePath());
-							}
-
-							response->setMimeType(resourceLoadRequest.getOutputMimeType());
-							response->setLabels(resourceLoadRequest.getLabels());
-							logger->debug("Loaded [%s]", response->toString().c_str());
-						} else {
-							logger->warn(
-									"Could not load %s with adapter [%s]",
-									resourceLoadRequest.toString().c_str(),
-									adapter->toString().c_str());
-						}
 					} else {
 						logger->error("No adapter found for loading %s", resourceLoadRequest.toString().c_str());
 					}
-				addResource(response);
 			} else {
 				logger->error("Invalid Resource load request %s: %s ", resourceLoadRequest.toString().c_str(), resourceLoadRequest.errors().c_str());
 			}
+
+			/**
+			 * The returned object is always read from the cache - even if the adapter logic was invoked.
+			 */
+			result = getCacheResource(getCacheKey(resourceLoadRequest));
+			if(result == null) {
+				logger->warn("Could not load [%s]", resourceLoadRequest.toString().c_str());
+			} else if(result->getMimeType() != resourceLoadRequest.getOutputMimeType()) {
+				logger->warn("Could not load [%s] with mimetype [%s] (found with mimetype[%s])", resourceLoadRequest.toString().c_str(), resourceLoadRequest.getOutputMimeType().c_str(), result->getMimeType().c_str());
+				result = null;
+			}
+
 		} else {
 			logger->debug("Getting %s from cache", resourceLoadRequest.toString().c_str());
 		}
+
 	} catch (Exception &e) {
 		logger->error("Error loading [%s]: [%s]",
 				resourceLoadRequest.toString().c_str(),
 				e.getMessage().c_str());
 	}
 
-	return response;
+	return result;
 }
 
 /**

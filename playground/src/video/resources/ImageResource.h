@@ -89,7 +89,7 @@ class ImageResource : public Resource
 		}
 
         virtual String toString() const {
-            return "Image(id:" + std::to_string(this->getId()) + ") [" + this->getMimeType() + "] [" + this->getFileName() + "]: ["
+            return "Image(id:" + std::to_string(this->getId()) + ") [" + this->getMimeType() + "] [" + this->getUri() + "]: ["
                     + std::to_string(this->getAlto()) + "x" + std::to_string(this->getAlto()) + "x" + std::to_string(this->getBpp()) + "]";
         }
 	};

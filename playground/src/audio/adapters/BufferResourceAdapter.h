@@ -35,7 +35,7 @@ public:
 
 		return AL_FORMAT_STEREO16;
 	}
-	virtual Resource* load(ResourceLoadRequest &request) const override {
+	virtual void load(ResourceLoadRequest &request, ResourceLoadResponse &response) const override {
 		ALenum error = 0;
 
 		ResourceLoadRequest audioRequest(request);
@@ -47,7 +47,7 @@ public:
 			logger->error(
 					"Error loading bufferResource: could not load audio from [%s]",
 					request.getFilePath().c_str());
-			return (null);
+			return;
 		}
 
 		ALuint ALbuffer = 0;
@@ -56,7 +56,7 @@ public:
 		if ((error = alGetError()) != AL_NO_ERROR) {
 			logger->error("Error creating resource for [%s]: %d",
 					request.getFilePath().c_str(), error);
-			return null;
+			return;
 		}
 
 		alBufferData(ALbuffer, asOpenALFormat(audioResource->getFormat()),
@@ -66,10 +66,10 @@ public:
 			logger->error("Error setting buffer data for [%s]: %d",
 					request.getFilePath().c_str(), error);
 			alDeleteBuffers(1, &ALbuffer);
-			return (null);
+			return;
 		}
 
-		return new BufferResource(ALbuffer);
+		response.addResource(new BufferResource(ALbuffer));
 
 	}
 	virtual void dispose(Resource *resource) const override {

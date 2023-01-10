@@ -22,7 +22,7 @@ class TextureResourceAdapter: public OpenGLResourceAdapter {
 			//this->setInputMimeType(MimeTypes::IMAGE); //TODO: if at some point use a tree search of chained adapters the input mimetype should be image. In the meantime leave it blank as a wildcard.
 		}
 
-		virtual Resource *load(ResourceLoadRequest &request) const override {
+		virtual void load(ResourceLoadRequest &request, ResourceLoadResponse &response) const override {
 			ImageResource *imageResource = (ImageResource *)this->getResourceManager()->load(ResourceLoadRequest(request).acceptMimeType(MimeTypes::IMAGE).withAdditionalLabels(std::set<String> {ResourceManager::EphemeralLabel}));
 
 			TextureResource *resource = null;
@@ -39,15 +39,14 @@ class TextureResourceAdapter: public OpenGLResourceAdapter {
 					glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, imageResource->getAncho(), imageResource->getAlto(), 0, GL_BGR, GL_UNSIGNED_BYTE, imageResource->getData());
 
 
-//TODO: Move this to resorceLoadRequests options or labels
-//				glGenerateMipmap(GL_TEXTURE_2D);
-//				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-//				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-
+				if(request.getOption("texture-filter") == "nearest") {
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+				} else {
+					glGenerateMipmap(GL_TEXTURE_2D);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+				}
 
 				glBindTexture(GL_TEXTURE_2D, 0);
 
@@ -55,11 +54,11 @@ class TextureResourceAdapter: public OpenGLResourceAdapter {
                 if (!(errorMessage = getGlError()).empty()) {
                     logger->error("Error loading texture [%s]: [%s]", request.getFilePath().c_str(), errorMessage.c_str());
                     dispose(resource);
-                    return null;
+                    return;
                 }
 			}
 
-			return resource;
+			response.addResource(resource);
 		}
 		virtual void dispose(Resource *resource) const override {
             logger->info("Disposing of Texture Resource  %s", resource->toString().c_str());

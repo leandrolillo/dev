@@ -20,13 +20,13 @@ public:
 	MeshCollection() : Resource(0, "video/meshes") {
 	}
 
-	void addMesh(MaterialResource *material) {
-		if(material != null && !material->getName().empty()) {
-			materials[material->getName()] = material;
+	void addMesh(MeshResource *mesh) {
+		if(mesh != null && !mesh->getName().empty()) {
+			materials[mesh->getName()] = mesh;
 		}
 	}
 
-	MaterialResource *getMesh(const String &name) const {
+	MeshResource *getMesh(const String &name) const {
 		auto iterator = materials.find(name);
 		if(iterator == materials.end()) {
 			return null;

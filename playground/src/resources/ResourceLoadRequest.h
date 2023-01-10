@@ -12,6 +12,7 @@
 #include "Resource.h"
 #include "Paths.h"
 #include <set>
+#include <map>
 
 class ResourceLoadRequest {
 private:
@@ -19,54 +20,20 @@ private:
 	String uri;
 	String inputMimeType;
 	String outputMimeType;
-	std::set<String> labels = {};
+	std::set<String> labels;
 	std::shared_ptr<FileParser> fileParser;
 	const Resource *parent = null;
+	std::map<String, String>options;
+	std::vector<String>parents;
 
 public:
 	ResourceLoadRequest(const String &uri) {
 		this->uri = uri;
-		this->inputMimeType = MimeTypes::guessMimeType(this->uri);
 	}
 
 	ResourceLoadRequest(std::shared_ptr<FileParser> &fileParser) : fileParser(fileParser) {
 		this->uri = fileParser.get()->getFilename();
-		this->inputMimeType = MimeTypes::guessMimeType(this->uri);
 	}
-
-//    /* Rule of five and copy-and-swap -- this is only necessary if fileParser is a resource not to be shared*/
-//    friend void swap(ResourceLoadRequest& first, ResourceLoadRequest& second)
-//	{
-//		// enable ADL (not necessary in our case, but good practice)
-//		using std::swap;
-//
-//		// by swapping the members of two objects, the two objects are effectively swapped
-//		swap(first.uri, second.uri);
-//		swap(first.inputMimeType, second.inputMimeType);
-//		swap(first.outputMimeType, second.outputMimeType);
-//		swap(first.labels, second.labels);
-//		swap(first.parent, second.parent);
-//		swap(first.fileParser, second.fileParser);
-//	}
-//
-//
-//	ResourceLoadRequest(const ResourceLoadRequest &other) {
-//		this->uri = other.uri;
-//		this->inputMimeType = other.inputMimeType;
-//		this->outputMimeType = other.outputMimeType;
-//		this->labels = other.labels;
-//		this->parent = other.parent;
-//		this->fileParser = other.fileParser; // copy or share?
-//	}
-//
-//	ResourceLoadRequest(ResourceLoadRequest && other) {
-//		swap(*this, other);
-//	}
-//
-//	ResourceLoadRequest &operator=(ResourceLoadRequest other) {
-//		swap(*this, other);
-//		return *this;
-//	}
 
 	//TODO: review if it would be better to return new objects - would be safer and shorter syntax while giving up performance
 	ResourceLoadRequest &acceptMimeType(const String &mimeType) {
@@ -76,6 +43,11 @@ public:
 
 	ResourceLoadRequest &produceMimeType(const String &mimeType) {
 		this->outputMimeType = mimeType;
+		return *this;
+	}
+
+	ResourceLoadRequest &withInputMimeType(const String &mimeType) {
+		this->inputMimeType = mimeType;
 		return *this;
 	}
 
@@ -90,10 +62,27 @@ public:
 		return *this;
 	}
 
-	ResourceLoadRequest &withParent(const Resource *resource) {
-		this->parent = resource;
+	ResourceLoadRequest &withOptions(const std::map<String, String> &options) {
+		this->options = options;
 		return *this;
 	}
+
+	ResourceLoadRequest &withOption(const String &key, const String &value) {
+		this->options[key] = value;
+		return *this;
+	}
+
+	ResourceLoadRequest &withParent(const Resource *resource) {
+		if(resource != null) {
+			this->parents.push_back(Paths::getActualPath(resource->getUri()));
+		}
+		return *this;
+	}
+
+	ResourceLoadRequest &withParent(const String &parent) {
+			this->parents.push_back(parent);
+			return *this;
+		}
 
 	const String &getUri() const {
 		return this->uri;
@@ -107,10 +96,19 @@ public:
 	}
 
 	const String getFilePath() const {
-		return Paths::getActualPath(Paths::relative(parent == null ? "" : parent->getFileName(), this->uri));
+		String path = "";
+		for(auto &parent : parents) {
+			path = Paths::relative(path, parent);
+		}
+
+		return Paths::getActualPath(Paths::relative(path, this->uri));
 	}
 
-	const String& getInputMimeType() const {
+	const String& getInputMimeType() {
+		if(this->inputMimeType.empty()) {
+			this->inputMimeType = MimeTypes::guessMimeType(getFilePath());
+		}
+
 		return inputMimeType;
 	}
 
@@ -118,11 +116,29 @@ public:
 		return labels;
 	}
 
+	const std::map<String, String> &getOptions() const {
+		return this->options;
+	}
+
+	String getOption(const String &key) const {
+		auto iterator = this->options.find(key);
+		if(this->options.find(key) != this->options.end()) {
+			return iterator->second;
+		}
+
+		return "";
+	}
+
+	bool hasOption(const String &key) const {
+		return getOption(key).empty();
+	}
+
+
 	const String& getOutputMimeType() const {
 		return outputMimeType;
 	}
 
-	String errors() const {
+	String errors() {
 		String errors;
 
 		if(uri.empty()) {
@@ -133,19 +149,19 @@ public:
 			errors.append("Output mimetype is required");
 		}
 
-		if(inputMimeType.empty()) {
+		if(getInputMimeType().empty()) {
 			errors.append("Could not determine input mimeType and it was not provided");
 		}
 
 		return errors;
 	}
 
-	bool isValid() const {
+	bool isValid() {
 		return errors().empty();
 	}
 
-	String toString() const {
-		return StringFormatter::format("[%s]->[%s] [%s]", getInputMimeType().c_str(), getOutputMimeType().c_str(), getUri().c_str());
+	String toString() {
+		return StringFormatter::format("[%s]<-[%s] [%s]", getOutputMimeType().c_str(), getInputMimeType().c_str(), getUri().c_str());
 	}
 };
 

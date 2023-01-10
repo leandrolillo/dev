@@ -21,7 +21,7 @@ class SourceResourceAdapter: public ResourceAdapter {
 			this->produces(MimeTypes::AUDIOSOURCE);
 		}
 
-		virtual Resource *load(ResourceLoadRequest &request) const override {
+		virtual void load(ResourceLoadRequest &request, ResourceLoadResponse &response) const override {
 			ALenum error = 0;
 
 			logger->debug("loading audio/source from [%s]", request.getFilePath().c_str());
@@ -32,23 +32,23 @@ class SourceResourceAdapter: public ResourceAdapter {
 			);
 			if(buffer == null) {
 				logger->error("Error creating source: could not load buffer for [%s]", request.getFilePath().c_str());
-				return null;
+				return;
 			}
 
 			ALuint sourceId;
 			alGenSources(1, &sourceId);
 			if((error = alGetError()) != AL_NO_ERROR) {
 				logger->error("Error creating source for [%s]: %d", request.getFilePath().c_str(), error);
-				return null;
+				return;
 			}
 
 			alSourcei (sourceId, AL_BUFFER, (ALuint) buffer->getId());
 			if((error = alGetError()) != AL_NO_ERROR) {
 				logger->error("Error setting properties for source [%s]: %d", request.getFilePath().c_str(), error);
-				return(null);
+				return;
 			}
 
-			return(new Source(sourceId));
+			response.addResource(new Source(sourceId));
 		}
 		virtual void dispose(Resource *resource) const override {
 			logger->debug("Deleting source [%ld]", resource->getId());

@@ -14,7 +14,7 @@
 class ShaderResource : public Resource
 {
 	public:
-		ShaderResource(unsigned int id) : Resource(id, MimeTypes::VERTEXSHADER)
+		ShaderResource(unsigned int id) : Resource(id, "" /*MimeTypes::VERTEXSHADER*/) // we are using the same resource for multiple mimetypes, so let resource manager populate it.
 		{
 
 		}

@@ -9,6 +9,8 @@
 #define SRC_JAVALIKE_STRINGUTILS_H_
 
 #include <JavaLike.h>
+#include <sstream>
+#include <vector>
 
 class StringUtils {
 public:
@@ -27,6 +29,32 @@ public:
 		).base(), text.end());
 
 		return text;
+	}
+
+	static std::vector<String> split(String text, char separator) {
+		std::vector<String> result;
+
+		String token;
+		std::istringstream stream(text);
+		while(std::getline(stream, token, separator)) {
+			result.push_back(token);
+		}
+
+		return result;
+	}
+
+	static String join(std::vector<String> &tokens, char separator) {
+		String result;
+
+		for(std::vector<String>::iterator tokenIterator = tokens.begin(); tokenIterator != tokens.end(); tokenIterator++) {
+			result += *tokenIterator;
+
+			if(tokenIterator != tokens.end() - 1 ) {
+				result += separator;
+			}
+		}
+
+		return result;
 	}
 };
 #endif /* SRC_JAVALIKE_STRINGUTILS_H_ */

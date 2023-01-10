@@ -24,12 +24,30 @@ public:
 
 	void testGetDirname(PlaygroundRunner *runner) {
 		String actual = Paths::getDirname("");
-		assertEquals(defaultAssertMessage, ".", actual);
+		assertEquals(defaultAssertMessage, "", actual);
+
+		actual = Paths::getDirname("/home");
+		assertEquals(defaultAssertMessage, "/home", actual);
+
+		actual = Paths::getDirname(runner->getResourceManager()->getRootFolder() + "tests/fileToParse.txt");
+		assertEquals(defaultAssertMessage, runner->getResourceManager()->getRootFolder() + "tests", actual);
+
+		/** If it does not exist, returns the path as is */
+		actual = Paths::getDirname(runner->getResourceManager()->getRootFolder() + "tests/unexistingFileToParse.txt");
+		assertEquals(defaultAssertMessage, runner->getResourceManager()->getRootFolder() + "tests/unexistingFileToParse.txt", actual);
+
 	}
 
 	void testGetBasename(PlaygroundRunner *runner) {
 		String actual = Paths::getBasename("");
 		assertEquals(defaultAssertMessage, "", actual);
+
+		actual = Paths::getBasename(runner->getResourceManager()->getRootFolder() + "tests/fileToParse.txt");
+		assertEquals(defaultAssertMessage, "fileToParse.txt", actual);
+
+		/** If file does not exist, what should this return?*/
+		actual = Paths::getBasename(runner->getResourceManager()->getRootFolder() + "tests/unExistingFileToParse.txt");
+		assertEquals(defaultAssertMessage, "unExistingFileToParse.txt", actual);
 	}
 
     void testAdd(PlaygroundRunner *runner)
