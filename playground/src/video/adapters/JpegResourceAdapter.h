@@ -60,13 +60,5 @@ public:
 
 		response.addResource(resource);
 	}
-
-	virtual void dispose(Resource *resource) const override {
-		ImageResource *jpegResource = (ImageResource*) resource;
-
-		if (jpegResource->getData() != null)
-			delete (unsigned char*) jpegResource->getData();
-	}
-
 };
 #endif /* JPEGRESOURCEADAPTER_H_ */

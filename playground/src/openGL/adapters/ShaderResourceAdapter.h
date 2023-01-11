@@ -12,6 +12,10 @@
 
 class ShaderResourceAdapter: public OpenGLResourceAdapter {
 	public:
+		ShaderResourceAdapter() {
+			this->accepts(MimeTypes::GLSL);
+		}
+
 		virtual void load(ResourceLoadRequest &request, ResourceLoadResponse &response) const override {
 			ShaderResource *resource = null;
 

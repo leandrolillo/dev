@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include "al.h"
 
-#include "../resources/OggResource.h"
+#include "../resources/AudioResource.h"
 #include <ResourceAdapter.h>
 
 class OggResourceAdapter : public ResourceAdapter {
@@ -50,7 +50,7 @@ class OggResourceAdapter : public ResourceAdapter {
 			for(int index = 0; index < vorbisComment->comments; index++)
 				logger->debug("	%s", vorbisComment->user_comments[index]);
 
-			OggResource * resource = new OggResource(0);
+			AudioResource * resource = new AudioResource(0);
 
 			resource->setFormat(vorbisInfo->channels == 1 ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16);
 			resource->setFrequency(vorbisInfo->rate);
@@ -79,13 +79,6 @@ class OggResourceAdapter : public ResourceAdapter {
 			resource->setData(bufferData);
 			resource->setSize(bufferData->size());
 			return(resource);
-		}
-		virtual void dispose(Resource *resource) const override {
-			OggResource *oggResource = (OggResource *)resource;
-
-			((std::vector <char> *)oggResource->getData())->clear();
-
-			delete ((std::vector <char> *)oggResource->getData());
 		}
 };
 

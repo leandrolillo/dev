@@ -165,13 +165,6 @@ public:
 
 		response.addResource(audioResource);
 	}
-	virtual void dispose(Resource *resource) const override {
-		AudioResource *audioResource = (AudioResource*) resource;
-
-		if (!audioResource->getData().empty()) {
-			audioResource->getData().clear();
-		}
-	}
 };
 
 #endif /* WAVRESOURCEADAPTER_H_ */

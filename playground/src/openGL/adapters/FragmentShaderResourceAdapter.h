@@ -16,7 +16,6 @@ public:
 	FragmentShaderResourceAdapter() {
 		logger = LoggerFactory::getLogger("video/FragmentShaderResourceAdapter");
 		this->produces(MimeTypes::FRAGMENTSHADER);
-		this->accepts(MimeTypes::GLSL);
 	}
 };
 

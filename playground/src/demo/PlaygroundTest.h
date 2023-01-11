@@ -6,7 +6,6 @@
 #include <Tests.h>
 #include <Math3d.h>
 
-#include <resources/OggResource.h>
 #include <stdio.h>
 
 #include<tests/Math3dTests.h>
@@ -266,10 +265,10 @@ class PlaygroundTestsRunner: public PlaygroundRunner, UnitTest {
 			assertTrue("WAV resource not loaded", resource != null);
 			assertTrue("WAV resource data not loaded", !resource->getData().empty());
 			assertEquals("WAV mimetype invalid", "audio/wav", resource->getMimeType());
-
 		}
+
 		void testLoadOgg() {
-			OggResource *resource = (OggResource *)this->getContainer()->getResourceManager()->load("tests/audio.ogg");
+			AudioResource *resource = (AudioResource *)this->getContainer()->getResourceManager()->load("tests/audio.ogg");
 			assertTrue("OGG resource not loaded", resource != null);
 			assertTrue("OGG resource data not loaded", !resource->getData().empty());
 			assertEquals("OGG mimetype invalid", "audio/ogg", resource->getMimeType());

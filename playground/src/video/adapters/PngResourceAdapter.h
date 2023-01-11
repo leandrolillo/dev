@@ -153,22 +153,6 @@ class PngResourceAdapter : public ResourceAdapter {
 
 			response.addResource(resource);
 		}
-
-		virtual void dispose(Resource *resource) const override {
-			if(resource->getMimeType() == "image/png") {
-				ImageResource *pngResource = (ImageResource *)resource;
-
-				if(pngResource->getData() != null) {
-					delete (unsigned char *)pngResource->getData();
-					pngResource->setData(null);
-				}
-
-				pngResource->setAlto(0);
-				pngResource->setAncho(0);
-				pngResource->setBpp(0);
-
-			}
-		}
 	};
 
 #endif /* PNGRESOURCEADAPTER_H_ */

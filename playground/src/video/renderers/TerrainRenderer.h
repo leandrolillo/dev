@@ -57,8 +57,12 @@ public:
         return true;
     }
 
+    bool isEnabled() const override {
+    	return Renderer::isEnabled() && !terrainTiles.empty();
+    }
+
 	void render(const Camera &camera) override {
-	    if(videoRunner != null && shader != null && !terrainTiles.empty()) {
+	    if(isEnabled()) {
             videoRunner->useProgramResource(shader);
 
             this->sendLight(light);

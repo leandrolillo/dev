@@ -17,6 +17,7 @@ protected:
     const ShaderProgramResource *shader = null;
     VideoRunner *videoRunner = null;
     ResourceManager *resourceManager = null;
+    bool enabled = true;
 public:
 
 //    Renderer(VideoRunner *videoRunner) {
@@ -61,6 +62,14 @@ public:
     };
 
     virtual void render(const Camera &camera) = 0;
+
+    virtual bool isEnabled() const {
+    	return this->videoRunner != null && shader != null && this->enabled;
+    }
+
+    void setEnabled(bool enabled) {
+    	this->enabled = enabled;
+    }
 
 };
 

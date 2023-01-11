@@ -41,7 +41,11 @@ public:
 
 
 	virtual void load(ResourceLoadRequest &request, ResourceLoadResponse &response) const = 0;
-	virtual void dispose(Resource *resource) const {};
+	virtual void dispose(Resource *resource) const {
+		if(resource != null) {
+			logger->warn("NOT disposing [%s] since dispose method is not overridden", resource->toString().c_str());
+		}
+	};
 
 	const String& getInputMimeType() const {
 		return inputMimeType;

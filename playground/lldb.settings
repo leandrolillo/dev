@@ -8,7 +8,7 @@ type summary add -s "${var.filename} ${var.line}:${var.column}" FileParser
 type summary add -s "${var.fileParser.filename} ${var.fileParser.line}:${var.fileParser.column}" JsonParser
 
 type summary add -s "${var.uri}|${var.outputMimeType} <- ${var.inputMimeType}" ResourceLoadRequest
-type summary add -s "${var.inputMimeType}->${var.outputMimeType}" ResourceAdapter
+type summary add -s "${var.outputMimeTypes}<-${var.inputMimeType}" ResourceAdapter
 
 type summary add -s "(id:${var.id})[${var.mimeType}][${var.uri}] [${var.labels}]" Resource
 type summary add -s "(id:${var.id})[${var.mimeType}][${var.uri}] [${var.labels}]" TextureResource

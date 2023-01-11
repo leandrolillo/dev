@@ -102,7 +102,7 @@ public:
     }
 
     void render(const Camera &camera) override {
-        if(videoRunner != null && shader != null) {
+        if(isEnabled()) {
             videoRunner->useProgramResource(shader);
 
             videoRunner->sendVector("viewPosition", camera.getPosition());

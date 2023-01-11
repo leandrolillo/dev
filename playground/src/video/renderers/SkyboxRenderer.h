@@ -50,9 +50,7 @@ public:
     }
 
     void render(const Camera &camera) override {
-    	return; //TODO: troubleshoot skybox renderer causing crashes.
-
-        if (videoRunner != null && this->shader != null && this->box != null && this->cubeMap != null) {
+        if (isEnabled()) {
             videoRunner->useProgramResource(shader);
             videoRunner->setTexture(0, "textureUnit", cubeMap, GL_TEXTURE_CUBE_MAP);
             videoRunner->sendMatrix("matrices.p", camera.getProjectionMatrix());
@@ -64,9 +62,11 @@ public:
             videoRunner->useProgramResource(null);
             videoRunner->setTexture(0, null, GL_TEXTURE_CUBE_MAP);
         }
-//        else {
-//            logger->error("not rendering!: videoRunner, shader, box or cubeMap are not set");
-//        }
+    }
+
+    bool isEnabled() const override {
+    	return false;
+    	//return Renderer::isEnabled() && this->box != null && this->cubeMap != null;
     }
 };
 

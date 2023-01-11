@@ -34,7 +34,7 @@ public:
     void render(const Camera &camera) override {
     	return; //TODO: troubleshoot grid renderer crashing program.
 
-        if(videoRunner != null && shader != null) {
+        if(isEnabled()) {
             videoRunner->useProgramResource(shader);
 
             glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

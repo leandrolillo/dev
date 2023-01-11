@@ -10,7 +10,6 @@
 #include <Exception.h>
 #include <set>
 #include <vector>
-#include <unordered_map>
 #include <stdio.h>
 #include <algorithm>
 
@@ -58,8 +57,8 @@ protected:
 	std::set<std::unique_ptr<ResourceAdapter>, resourceAdapterComparator> resourceAdapters; // Define adapter before resources so that they are initialized before them, and deleted after them.
 	std::set<std::unique_ptr<Resource>, resourceComparator> resources; // Define adapter before resources so that they are initialized before them, and deleted after them.
 
-	std::unordered_map<String, Resource *> resourcesCache;
-	std::unordered_map<String, ResourceAdapter *> adaptersCache;
+	std::map<String, Resource *> resourcesCache;
+	std::map<String, ResourceAdapter *> adaptersCache;
 
 	String rootFolder;
 public:
@@ -85,42 +84,6 @@ public:
 	}
 
 	ResourceAdapter *addAdapter(std::unique_ptr<ResourceAdapter> adapter);
-
-	/**
-	 * Find Adapter suitable for handling the request
-	 */
-	ResourceAdapter *getAdapter(ResourceLoadRequest &request) const {
-		/**
-		 * Look for adapter matching output mimetype and empty input mimetype first - kind of a input mimetype wildcard
-		 */
-		auto adaptersPair = adaptersCache.find(request.getOutputMimeType() + "|");
-		if(adaptersPair != adaptersCache.end()) {
-			return adaptersPair->second;
-		}
-
-		/**
-		 * Then look for a precise match of output and input mimetype
-		 */
-		adaptersPair = adaptersCache.find(request.getOutputMimeType() + "|" + request.getInputMimeType());
-		return adaptersPair == adaptersCache.end() ? null : adaptersPair->second;
-	}
-
-	/**
-	 * Find Adapter suitable for handling the resource
-	 */
-
-	ResourceAdapter *getAdapter(const Resource *resource) const {
-		auto adaptersPair = adaptersCache.end();
-
-		if(resource != null && !resource->getMimeType().empty()) {
-			auto adaptersPair = adaptersCache.find(resource->getMimeType() + "|");
-			if(adaptersPair != adaptersCache.end()) {
-				return adaptersPair->second;
-			}
-		}
-
-		return adaptersPair == adaptersCache.end() ? null : adaptersPair->second;
-	}
 
 	Resource* load(const String &fileName) {
 		logger->debug("Load [%s]", fileName.c_str());
@@ -230,6 +193,42 @@ public:
 	}
 
 private:
+	/**
+	 * Find Adapter suitable for handling the request
+	 */
+	ResourceAdapter *getAdapter(ResourceLoadRequest &request) const {
+		/**
+		 * Look for adapter matching output mimetype and empty input mimetype first - kind of a input mimetype wildcard
+		 */
+		auto adaptersPair = adaptersCache.find(request.getOutputMimeType() + "|");
+		if(adaptersPair != adaptersCache.end()) {
+			return adaptersPair->second;
+		}
+
+		/**
+		 * Then look for a precise match of output and input mimetype
+		 */
+		adaptersPair = adaptersCache.find(request.getOutputMimeType() + "|" + request.getInputMimeType());
+		return adaptersPair == adaptersCache.end() ? null : adaptersPair->second;
+	}
+
+	/**
+	 * Find Adapter suitable for handling the resource
+	 */
+
+	ResourceAdapter *getAdapter(const Resource *resource) const {
+		auto adaptersPair = adaptersCache.end();
+
+		if(resource != null && !resource->getMimeType().empty()) {
+			auto adaptersPair = adaptersCache.find(resource->getMimeType() + "|");
+			if(adaptersPair != adaptersCache.end()) {
+				return adaptersPair->second;
+			}
+		}
+
+		return null;
+	}
+
 	const String getCacheKey(const String &filename, const String &mimeType) const {
 		if(filename.empty() || mimeType.empty()) {
 			throw InvalidArgumentException("Can not get cache key from empty values - filename: [%s] mimeType[%s]", filename.c_str(), mimeType.c_str());

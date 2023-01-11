@@ -78,8 +78,7 @@ public:
 		resource->setAlto(le_short(header.height));
 		resource->setBpp(header.bits_per_pixel >> 3);
 
-		unsigned int size = resource->getAncho() * resource->getAlto()
-				* resource->getBpp();
+		unsigned int size = resource->getAncho() * resource->getAlto() * resource->getBpp();
 		resource->setData(new char[size]);
 
 		if (request.getFileParser().read(resource->getData(), 1, size) != size) {
@@ -90,17 +89,6 @@ public:
 		}
 
 		response.addResource(resource);
-	}
-	virtual void dispose(Resource *resource) const override {
-		if (resource->getMimeType() == "image/tga") {
-			ImageResource *tgaResource = (ImageResource*) resource;
-
-			logger->debug("Disposing of tga");
-			if (tgaResource->getData() != null) {
-				delete (unsigned char*) tgaResource->getData();
-				tgaResource->setData(null);
-			}
-		}
 	}
 };
 #endif /* TGARESOURCEADAPTER_H_ */
