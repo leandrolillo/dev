@@ -26,6 +26,52 @@ class ImageResource : public Resource
 		{
 		}
 
+	    /* Rule of five and copy-and-swap*/
+	    friend void swap(ImageResource& first, ImageResource& second)
+		{
+			// enable ADL (not necessary in our case, but good practice)
+			using std::swap;
+
+			Resource::swap(first, second);
+
+			// by swapping the members of two objects, the two objects are effectively swapped
+			swap(first.data, second.data);
+			swap(first.alto, second.alto);
+			swap(first.ancho, second.ancho);
+			swap(first.bpp, second.bpp);
+			swap(first.format, second.format);
+		}
+
+	    ImageResource(const ImageResource &other) : Resource(other) {
+	    	this->alto = other.alto;
+	    	this->ancho = other.ancho;
+	    	this->bpp = other.bpp;
+	    	this->format = other.format;
+
+			unsigned int size = alto * ancho * bpp;
+			data = new char[size];
+
+	    	memcpy(data, other.data, size);
+	    }
+
+	    ImageResource(ImageResource && other) : Resource(other) {
+	    	swap(*this, other);
+	    }
+
+	    ImageResource &operator =(ImageResource other) {
+	    	swap(*this, other);
+	    	return *this;
+	    }
+
+		~ImageResource() {
+			if(data != null) {
+				delete data;
+				data = null;
+				alto = ancho = 0;
+				bpp = format = 0;
+			}
+		}
+
 		unsigned int getAlto() const
 		{
 			return alto;

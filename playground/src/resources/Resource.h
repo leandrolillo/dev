@@ -28,6 +28,20 @@ public:
 		setId(id);
 		setMimeType(mimeType);
 	}
+
+    /* Not required by this class, but saves work to children classes if they need to implement rule of five/copy and swap*/
+    /*friend*/ static void swap(Resource &first, Resource &second)
+	{
+		// enable ADL (not necessary in our case, but good practice)
+		using std::swap;
+
+		// by swapping the members of two objects, the two objects are effectively swapped
+		swap(first.labels, second.labels); /*TODO: check if we need to copy these fields or we can delegate to resource*/
+		swap(first.mimeType, second.mimeType);
+		swap(first.uri, second.uri);
+	}
+
+
 	virtual ~Resource() {
 		logger->debug("Destroying [%s]", this->toString().c_str());
 	}

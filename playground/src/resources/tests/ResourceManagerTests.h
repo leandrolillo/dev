@@ -25,6 +25,7 @@ public:
         this->addTest("ResourceManagerTests::testFileParser", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&ResourceManagerTests::testFileParser));
 
         this->addTest("ResourceManagerTests::testAddResourceAdapter", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&ResourceManagerTests::testAddResourceAdapter));
+        this->addTest("ResourceManagerTests::testGetResourceAdapter", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&ResourceManagerTests::testGetResourceAdapter));
         this->addTest("ResourceManagerTests::testAddResource", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&ResourceManagerTests::testAddResource));
         this->addTest("ResourceManagerTests::testUnload", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&ResourceManagerTests::testUnload));
         this->addTest("ResourceManagerTests::testLoad", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&ResourceManagerTests::testLoad));
@@ -40,6 +41,10 @@ public:
 		logger->info("Testing resource adapter [%s]", resourceAdapter->toString().c_str());
 
 		assertEquals(defaultAssertMessage, 1, resourceManager.getAdaptersCount());
+	}
+
+	void testGetResourceAdapter(PlaygroundRunner *runner) {
+		assertFail("Implement getResourceAdapter tests for requests and resources");
 	}
 
 	void testLoad(PlaygroundRunner *runner) {

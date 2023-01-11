@@ -11,20 +11,6 @@
 #include <resources/ShaderResource.h>
 
 class ShaderResourceAdapter: public OpenGLResourceAdapter {
-	private:
-		String getInfoLog(GLuint object) const
-		{
-			GLint log_length;
-			char *log;
-
-			glGetShaderiv(object, GL_INFO_LOG_LENGTH, &log_length);
-			log = new char[log_length];
-			glGetShaderInfoLog(object, log_length, null, log);
-			String response(log);
-			delete log;
-
-			return response;
-		}
 	public:
 		virtual void load(ResourceLoadRequest &request, ResourceLoadResponse &response) const override {
 			ShaderResource *resource = null;
@@ -67,5 +53,20 @@ class ShaderResourceAdapter: public OpenGLResourceAdapter {
 				shaderResource->setId(0);
 			}
 		}
+	private:
+		String getInfoLog(GLuint object) const
+		{
+			GLint log_length;
+			char *log;
+
+			glGetShaderiv(object, GL_INFO_LOG_LENGTH, &log_length);
+			log = new char[log_length];
+			glGetShaderInfoLog(object, log_length, null, log);
+			String response(log);
+			delete log;
+
+			return response;
+		}
+
 };
 #endif /* SHADERRESOURCEADAPTER_H_ */
