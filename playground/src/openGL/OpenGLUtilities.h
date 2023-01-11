@@ -22,7 +22,7 @@ protected:
 	static Logger *getLogger() {
 		if(logger == null) {
 			logger = LoggerFactory::getLogger("openGL/OpenGLUtilities");
-			logger->setLogLevel(LogLevel::DEBUG);
+			//logger->setLogLevel(LogLevel::DEBUG);
 		}
 
 		return logger;

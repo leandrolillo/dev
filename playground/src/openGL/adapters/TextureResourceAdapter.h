@@ -61,7 +61,7 @@ class TextureResourceAdapter: public OpenGLResourceAdapter {
 			response.addResource(resource);
 		}
 		virtual void dispose(Resource *resource) const override {
-            logger->info("Disposing of Texture Resource  %s", resource->toString().c_str());
+            logger->debug("Disposing of Texture Resource  %s", resource->toString().c_str());
 
 			TextureResource *textureResource = (TextureResource *)resource;
 			unsigned int textureHandler = textureResource->getId();
