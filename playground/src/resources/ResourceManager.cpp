@@ -26,7 +26,7 @@ ResourceAdapter * ResourceManager::addAdapter(std::unique_ptr<ResourceAdapter> a
 
 		for(auto &outputMimeType : adapter->getOutputMimeTypes()) {
 			String key = adapter->getInputMimeType().empty() ? outputMimeType  + "|" : outputMimeType + "|" + adapter->getInputMimeType();
-			loadAdaptersCache[key] = adapter;
+			adaptersCache[key] = adapter;
 
 			logger->debug("Adapter [%s] added to manage [%s] with key [%s]", adapter->toString().c_str(), outputMimeType.c_str(), key.c_str());
 		}
@@ -103,12 +103,14 @@ Resource* ResourceManager::load(ResourceLoadRequest &resourceLoadRequest) {
  * Disposes of the resource by calling the appropriate adapter dispose method. This frees allocated resources but does not remove the resource from internal caches - caller needs to do so as it would break iteration logic.
  */
 void ResourceManager::dispose(Resource *resource) const {
-	if(resource != null && resource->getMimeType() != "") {
-		logger->info("Disposing of resource [%s]", resource->toString().c_str());
+	if(resource != null) {
+		logger->debug("Disposing of resource [%s]", resource->toString().c_str());
 
-		auto adapterIterator = disposeAdaptersCache.find(resource->getMimeType());
-		if(adapterIterator != disposeAdaptersCache.end()) {
-			adapterIterator->second->dispose(resource);
+		ResourceAdapter *adapter = this->getAdapter(resource);
+		if(adapter != null) {
+			adapter->dispose(resource);
+		} else {
+			logger->warn("NO Adapter found for disposing [%s]: [%s]", resource->getMimeType().c_str(), resource->toString().c_str());
 		}
 
 	} else {
@@ -128,7 +130,7 @@ ResourceManager::~ResourceManager() {
      */
 	for(const auto &resource : resources) {
 		if(resource != null) {
-			logger->info("Disposing of resource [%s]", resource.get()->toString().c_str());
+			logger->debug("Disposing of resource [%s]", resource.get()->toString().c_str());
 			dispose(resource.get());
 		}
 	}

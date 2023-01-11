@@ -58,9 +58,8 @@ protected:
 	std::set<std::unique_ptr<ResourceAdapter>, resourceAdapterComparator> resourceAdapters; // Define adapter before resources so that they are initialized before them, and deleted after them.
 	std::set<std::unique_ptr<Resource>, resourceComparator> resources; // Define adapter before resources so that they are initialized before them, and deleted after them.
 
-	std::unordered_map<String, Resource *> resourceCache;
-	std::unordered_map<String, ResourceAdapter *> loadAdaptersCache;
-	std::unordered_map<String, ResourceAdapter *> disposeAdaptersCache;
+	std::unordered_map<String, Resource *> resourcesCache;
+	std::unordered_map<String, ResourceAdapter *> adaptersCache;
 
 	String rootFolder;
 public:
@@ -71,13 +70,13 @@ public:
 	ResourceManager& operator= (const ResourceManager&) = delete;
 
 	ResourceManager(const String &rootFolder) {
-		logger->setLogLevel(LogLevel::DEBUG);
+		//logger->setLogLevel(LogLevel::DEBUG);
 		this->rootFolder = rootFolder;
 	}
 
 	void logStatus() {
 		logger->debug("Resource Manager status:");
-		logger->debug("Resources %d", resourceCache.size());
+		logger->debug("Resources %d", resourcesCache.size());
 		logger->debug("Resource adapters: %d", resourceAdapters.size());
 	}
 
@@ -88,20 +87,39 @@ public:
 	ResourceAdapter *addAdapter(std::unique_ptr<ResourceAdapter> adapter);
 
 	/**
-	 * Find Adapter matching output MimeType and input mimetype - give priority to those adapters with empty input mimecard (kind of a wildcard)
+	 * Find Adapter suitable for handling the request
 	 */
 	ResourceAdapter *getAdapter(ResourceLoadRequest &request) const {
-		String key = request.getOutputMimeType() + "|";
-
-		auto adaptersPair = loadAdaptersCache.find(request.getOutputMimeType() + "|");
-		if(adaptersPair != loadAdaptersCache.end()) {
+		/**
+		 * Look for adapter matching output mimetype and empty input mimetype first - kind of a input mimetype wildcard
+		 */
+		auto adaptersPair = adaptersCache.find(request.getOutputMimeType() + "|");
+		if(adaptersPair != adaptersCache.end()) {
 			return adaptersPair->second;
 		}
 
-		key = request.getOutputMimeType() + "|" + request.getInputMimeType();
+		/**
+		 * Then look for a precise match of output and input mimetype
+		 */
+		adaptersPair = adaptersCache.find(request.getOutputMimeType() + "|" + request.getInputMimeType());
+		return adaptersPair == adaptersCache.end() ? null : adaptersPair->second;
+	}
 
-		adaptersPair = loadAdaptersCache.find(request.getOutputMimeType() + "|" + request.getInputMimeType());
-		return adaptersPair == loadAdaptersCache.end() ? null : adaptersPair->second;
+	/**
+	 * Find Adapter suitable for handling the resource
+	 */
+
+	ResourceAdapter *getAdapter(const Resource *resource) const {
+		auto adaptersPair = adaptersCache.end();
+
+		if(resource != null && !resource->getMimeType().empty()) {
+			auto adaptersPair = adaptersCache.find(resource->getMimeType() + "|");
+			if(adaptersPair != adaptersCache.end()) {
+				return adaptersPair->second;
+			}
+		}
+
+		return adaptersPair == adaptersCache.end() ? null : adaptersPair->second;
 	}
 
 	Resource* load(const String &fileName) {
@@ -144,7 +162,7 @@ public:
 				if(resources.find(resource) == resources.end()) {
 					resources.insert(std::unique_ptr<Resource>(resource));
 				}
-				resourceCache[key] = resource;
+				resourcesCache[key] = resource;
 			}
 		}
 
@@ -159,7 +177,7 @@ public:
 
 			if(iterator != resources.end()) {
 				this->dispose(resource);
-				this->resourceCache.erase(getCacheKey(*resource));
+				this->resourcesCache.erase(getCacheKey(*resource));
 				return resources.erase(iterator);
 			}
 		}
@@ -176,7 +194,7 @@ public:
 
 		if(iterator != resources.end()) {
 			this->dispose(iterator->get());
-			this->resourceCache.erase(getCacheKey(*iterator->get()));
+			this->resourcesCache.erase(getCacheKey(*iterator->get()));
 			resources.erase(iterator);
 		}
 	}
@@ -229,9 +247,9 @@ private:
 	}
 
 	Resource *getCacheResource(const String &cacheKey) {
-		auto pair = resourceCache.find(cacheKey);
+		auto pair = resourcesCache.find(cacheKey);
 
-		if(pair != resourceCache.end()) {
+		if(pair != resourcesCache.end()) {
 			return pair->second;
 		}
 
