@@ -14,7 +14,7 @@
 #include <stdlib.h>
 #include "al.h"
 
-#include "../resources/AudioResource.h"
+#include "../resources/Resource.h"
 #include <ResourceAdapter.h>
 
 class OggResourceAdapter : public ResourceAdapter {

@@ -213,14 +213,20 @@ private:
 	}
 
 	/**
-	 * Find Adapter suitable for handling the resource
+	 * Find Adapter suitable for handling the resource - currently used for dispose logic
 	 */
 
 	ResourceAdapter *getAdapter(const Resource *resource) const {
 		auto adaptersPair = adaptersCache.end();
 
 		if(resource != null && !resource->getMimeType().empty()) {
-			auto adaptersPair = adaptersCache.find(resource->getMimeType() + "|");
+			auto adaptersPair = adaptersCache.lower_bound(resource->getMimeType() + "|");
+			if(adaptersPair != adaptersCache.end()) {
+				return adaptersPair->second;
+			}
+
+			/* this was the original code - leaving it here just in case but I think it has no effect */
+			adaptersPair = adaptersCache.find(resource->getMimeType() + "|");
 			if(adaptersPair != adaptersCache.end()) {
 				return adaptersPair->second;
 			}
