@@ -17,4 +17,4 @@ type summary add -s "(id:${var.id})[${var.mimeType}][${var.uri}] [${var.labels}]
 type summary add -s "(id:${var.id})[${var.mimeType}][${var.uri}] [${var.vertexArray}] [${var.texture}] [${var.labels}]" MeshResource
 
 type summary add -s "${var.shader}" Renderer
-type summary add -s "${var.shader - ${var.cubeMap} - ${var.box}" SkyboxRenderer
+type summary add -s "${var.shader} - ${var.cubeMap} - ${var.box}" SkyboxRenderer

@@ -1,25 +1,15 @@
 Tech debts
-- resource adapters should have these mimetypes: 
-	- input mimetype (similar to content-type in http requests)	
-	- output mimetype (similar to accept in http requests) - should have as many as the adapter produces. 
-		REVIEW adapters dispose everything they load - 
-		Looks like the generic/intermediate resources (image, geometry, resource, etc.) are not being deleted.
-			two options: delete on resource class or delete in all of the adapters that produce those with some helper.
-		Shaders are also leaking for some reason.
-
 - review resource adapters chaining load/addResource calls. Unify resourceManager/resourceLoadRequest/resourceLoadResponse in a single class?
-	- issue is getResourceManager()->load(...) is not propagating labels and options unless calling with a resourceLoadRequest clone.
+	- issue is getResourceManager()->load(...) is not propagating labels nor options unless calling with a resourceLoadRequest clone.
 
-- troubleshoot skybox renderer and grid renderer - they cause the application to crash thus are disabled (if possible cover issue with unit tests)
+- troubleshoot grid renderer - they cause the application to crash thus are disabled (if possible cover issue with unit tests)
 
-- unit tests!
+- unit tests - keep adding. Each issue fixed should have an unit test
 
 - replace printf by streams and toString() by << operator
 
 - review RAII and 5 of 5 principle (move semantics) in resources/playground classes.
 	specially in file parser / text parser and resources.
-
-- what should be a resource identifier: filepath+name+mimetype - uri+mimetype where uri is fullpath/name? This has implications in cache key and cache storage itself.
 
 - review design of particle manager/collision detector / geometry vs particles / etc. Too much vector passing and copying. Review polymorfism / std::vector<unique_ptr> usage.
 

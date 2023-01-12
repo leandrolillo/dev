@@ -51,7 +51,7 @@ public:
 //	    texture = (TextureResource *)this->getContainer()->getResourceManager()->load("images/fern.png", MimeTypes::TEXTURE);
 //        obj = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/fern.obj", MimeTypes::VERTEXARRAY);
         texture = (TextureResource *)this->getContainer()->getResourceManager()->load("images/lowPolyTree.png", MimeTypes::TEXTURE);
-        obj = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/lowPolyTree.obj", MimeTypes::VERTEXARRAY);
+        obj = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/lowPolyTree.obj/lowPolyTree.obj", MimeTypes::VERTEXARRAY);
 
 //	    texture = (TextureResource *)this->getContainer()->getResourceManager()->load("images/lowPolyTree.png", MimeTypes::TEXTURE);
         //obj = (VertexArrayResource *)this->getContainer()->getResourceManager()->load("geometry/bunny.obj", MimeTypes::VERTEXARRAY);

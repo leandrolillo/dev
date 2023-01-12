@@ -20,6 +20,7 @@ protected:
     bool enabled = true;
 public:
 
+// 		This did not work for some reason
 //    Renderer(VideoRunner *videoRunner) {
 //        this->videoRunner = videoRunner;
 //    }
@@ -27,6 +28,8 @@ public:
     virtual ~Renderer() {}
 
     void setVideoRunner(VideoRunner *videoRunner) {
+
+    	//This logic tries to make sure the video runner is valid. Maybe it would be better to use a reference here.
         if(videoRunner != null && videoRunner->getContainer() != null && videoRunner->getContainer()->getResourceManager() != null) {
             this->videoRunner = videoRunner;
             this->resourceManager = videoRunner->getContainer()->getResourceManager();

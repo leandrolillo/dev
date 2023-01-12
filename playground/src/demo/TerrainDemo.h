@@ -143,6 +143,13 @@ public:
 			geometryRenderer(defaultRenderer) {
 	}
 
+    virtual void onResize(unsigned int height, unsigned int width) override {
+    	/**
+    	 * perspective projection zFar needs to be at least the size of skybox hypotenuse (sqrt(skybox size^2 + skybox size^2)
+    	 */
+        camera.setProjectionMatrix(Camera::perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 600.0));
+    }
+
     virtual bool init() override {
     	logger->info("-----------------");
     	logger->info("| Terrain Demo");
@@ -203,7 +210,7 @@ public:
         terrainBoundingVolume->addChildren(new HeightMapGeometry(vector(-terrain->getHeightMap()->getWidth(), 0, -terrain->getHeightMap()->getDepth()), terrain->getHeightMap()));
 
         skyboxRenderer.setVideoRunner(video);
-        skyboxRenderer.setSize(500);
+        skyboxRenderer.setSize(300);
 
         physics->getParticleManager()->addForce(&this->gravity);
         physics->getParticleManager()->addScenery(terrainBoundingVolume.get());

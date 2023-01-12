@@ -17,8 +17,8 @@ class SkyboxRenderer: public Renderer {
 private:
     Logger *logger = LoggerFactory::getLogger("SkyboxRenderer");
 
-    const CubeMapResource *cubeMap;
-    const VertexArrayResource *box;
+    const CubeMapResource *cubeMap = null;
+    const VertexArrayResource *box = null;
     real size = 300;
 public:
     void setCubeMap(const CubeMapResource *cubeMap) {
@@ -65,8 +65,7 @@ public:
     }
 
     bool isEnabled() const override {
-    	return false;
-    	//return Renderer::isEnabled() && this->box != null && this->cubeMap != null;
+    	return Renderer::isEnabled() && this->box != null && this->cubeMap != null;
     }
 };
 

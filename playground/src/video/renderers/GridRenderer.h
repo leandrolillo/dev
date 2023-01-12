@@ -16,7 +16,7 @@ class GridRenderer : public Renderer {
 private:
     Logger *logger = LoggerFactory::getLogger("TerrainRenderer");
 
-    const VertexArrayResource *plane;
+    const VertexArrayResource *plane = null;
 
 public:
     bool init() override {
@@ -32,8 +32,6 @@ public:
     }
 
     void render(const Camera &camera) override {
-    	return; //TODO: troubleshoot grid renderer crashing program.
-
         if(isEnabled()) {
             videoRunner->useProgramResource(shader);
 
@@ -50,6 +48,11 @@ public:
             videoRunner->useProgramResource(null);
         }
     }
+
+    bool isEnabled() const override {
+    	return Renderer::isEnabled() && this->plane != null;
+    }
+
 };
 
 
