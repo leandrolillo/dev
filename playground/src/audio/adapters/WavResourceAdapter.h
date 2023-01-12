@@ -129,13 +129,13 @@ public:
 									* formatChunk->numberOfChannels,
 							dataChunk->data.size());
 
-					audioResource = new AudioResource(0, "audio/wav");
+					audioResource = new AudioResource();
 					audioResource->setFormat(
 							formatChunk->numberOfChannels == 1 ?
 									formatChunk->numberBytesPerSample == 1 ?
-											MONO8 : MONO16
+											AudioFormat::MONO8 : AudioFormat::MONO16
 							: formatChunk->numberBytesPerSample == 1 ?
-									STEREO8 : STEREO16);
+									AudioFormat::STEREO8 : AudioFormat::STEREO16);
 					audioResource->setFrequency(
 							formatChunk->numberOfSamplesPerSec);
 					audioResource->setData(dataChunk->data);

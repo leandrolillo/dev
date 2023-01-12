@@ -9,7 +9,7 @@
 #define SRC_BATTLEROAD_H_
 
 #include "base/BaseDemo.h"
-#include <MeshResource.h>
+#include <MeshResource.h> *
 
 class RoadFighterRunner: public BaseDemoRunner {
 //    ParticleManager particleManager;
@@ -21,6 +21,8 @@ class RoadFighterRunner: public BaseDemoRunner {
 	VertexArrayResource *carVertexArray = null;
 	VertexArrayResource *axesVertexArray = null;
 //	TextureResource *texture = null;
+
+	Source *backgroundMusic = null;
 
 public:
     bool init() override {
@@ -84,6 +86,9 @@ public:
         	logger->error("Could not load axes model");
         	return false;
         }
+
+        backgroundMusic = this->audio->createSource("roadFighter/background.ogg", vector(0, 0, 0), vector(0, 0, 0), true);
+        audio->playSource(backgroundMusic);
 
         return true;
     }

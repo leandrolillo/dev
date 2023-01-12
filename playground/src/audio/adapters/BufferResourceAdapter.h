@@ -23,13 +23,13 @@ public:
 
 	ALenum asOpenALFormat(AudioFormat format) const {
 		switch (format) {
-		case MONO8:
+		case AudioFormat::MONO8:
 			return AL_FORMAT_MONO8;
-		case MONO16:
+		case AudioFormat::MONO16:
 			return AL_FORMAT_MONO16;
-		case STEREO8:
+		case AudioFormat::STEREO8:
 			return AL_FORMAT_STEREO8;
-		case STEREO16:
+		case AudioFormat::STEREO16:
 			return AL_FORMAT_STEREO16;
 		}
 

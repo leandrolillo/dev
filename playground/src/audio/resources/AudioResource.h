@@ -3,8 +3,8 @@
 
 #include<Resource.h>
 
-enum AudioFormat {
-	MONO8,
+enum class AudioFormat {
+	MONO8 = 8,
 	MONO16,
 	STEREO8,
 	STEREO16
@@ -18,9 +18,9 @@ class AudioResource : public Resource
 		std::vector<char> data;
 
 	public:
-		AudioResource(unsigned int id, String mimeType) : Resource(id, mimeType) {
+		AudioResource() : Resource(0, MimeTypes::AUDIO) {
 			frequency = 0;
-			format = MONO8;
+			format = AudioFormat::MONO8;
 		}
 		std::vector<char> getData() const {
 			return data;

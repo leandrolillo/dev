@@ -38,10 +38,10 @@ class AudioRunner: public PlaygroundRunner {
 		}
 
 		virtual bool init() override {
-			this->getContainer()->getResourceManager()->addAdapter(std::unique_ptr<ResourceAdapter>(new SourceResourceAdapter));
-			this->getContainer()->getResourceManager()->addAdapter(std::unique_ptr<ResourceAdapter>(new BufferResourceAdapter));
-//			this->getContainer()->getResourceManager()->addAdapter(new OggResourceAdapter);
-			this->getContainer()->getResourceManager()->addAdapter(std::unique_ptr<ResourceAdapter>(new WavResourceAdapter));
+			this->getResourceManager()->addAdapter(std::unique_ptr<ResourceAdapter>(new SourceResourceAdapter));
+			this->getResourceManager()->addAdapter(std::unique_ptr<ResourceAdapter>(new BufferResourceAdapter));
+			this->getResourceManager()->addAdapter(std::unique_ptr<ResourceAdapter>(new OggResourceAdapter));
+			this->getResourceManager()->addAdapter(std::unique_ptr<ResourceAdapter>(new WavResourceAdapter));
 
 			device = alcOpenDevice(null);
 			if(device == null) {
@@ -72,7 +72,7 @@ class AudioRunner: public PlaygroundRunner {
 
 		Source *createSource(String fileName, const vector &position = vector(0, 0, 0), const vector &velocity = vector(0, 0, 0), bool loop = true)
 		{
-			Source *source = (Source *)this->getContainer()->getResourceManager()->load(fileName, MimeTypes::AUDIOSOURCE);
+			Source *source = (Source *)this->getResourceManager()->load(fileName, MimeTypes::AUDIOSOURCE);
 			if(source != null)
 			{
 				source->setPosition(position);
@@ -97,22 +97,25 @@ class AudioRunner: public PlaygroundRunner {
 
 		Source * playSource(Source *source)
 		{
-			if(source != null)
-			alSourcePlay(source->getId());
+			if(source != null) {
+				alSourcePlay(source->getId());
+			}
 			return source;
 		}
 
 		Source *stopSource(Source *source)
 		{
-			if(source != null)
-			alSourceStop(source->getId());
+			if(source != null) {
+				alSourceStop(source->getId());
+			}
 			return source;
 		}
 
 		Source *pauseSource(Source *source)
 		{
-			if(source != null)
-			alSourcePause(source->getId());
+			if(source != null) {
+				alSourcePause(source->getId());
+			}
 			return source;
 		}
 

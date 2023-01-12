@@ -5,7 +5,7 @@ target_include_directories(video INTERFACE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_C
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
 
 # LibJpeg
-find_package(JPEG REQUIRED) # could not make this f****g library work -> incompatibilities between detected header and library files
+find_package(JPEG REQUIRED)
 target_link_libraries(video INTERFACE ${JPEG_LIBRARY})
 target_include_directories(video INTERFACE ${JPEG_INCLUDE_DIR})
 

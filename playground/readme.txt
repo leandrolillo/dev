@@ -7,6 +7,8 @@ already installed: openAl, openGl
 brew install libjpeg
 brew install libpng
 brew install sdl2
+brew install libogg
+brew install libvorbis
 
 -------------
 Building:
