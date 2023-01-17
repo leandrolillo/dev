@@ -81,6 +81,8 @@ class PhysicsDemoRunner: public BaseDemoRunner {
 
 	LightResource light = LightResource(vector(0, 0, 3), vector(0.4f, 0.4f, 0.4f), vector(0.5f, 0.5f, 0.5f), vector(1, 1, 1), 1.0);
 	MaterialResource material = MaterialResource(vector(0.5, 0.5, 0.5), vector(0.7, 0.7, 0.7), vector(1, 1, 1), 32);
+
+	MeshResource *basketball = null;
 public:
 	PhysicsDemoRunner() :   ground(new Plane(vector(0, 0, 0), vector(0, 1, 0))),
 	                        spherePlatform(new Sphere(vector(0, 0, 0), 0.1)),
@@ -97,6 +99,7 @@ public:
         bounceSource = audio->createSource("audio/twang3.wav", vector(0, 0, 0), vector(0, 0, 0), false);
 
         textureResource = (TextureResource *)this->getContainer()->getResourceManager()->load("images/basketball.png", MimeTypes::TEXTURE);
+        basketball = (MeshResource *)this->getResourceManager()->load("geometry/basketball.json", MimeTypes::MESH);
 
         gridRenderer.setVideoRunner(video);
         skyboxRenderer.setVideoRunner(video);
@@ -151,21 +154,27 @@ public:
         defaultRenderer.drawLine(matriz_4x4::identidad, vector(0, -1, 0), vector(0, 1, 0));
         defaultRenderer.drawLine(matriz_4x4::identidad, vector(0, 0, -1), vector(0, 0, 1));
 
+
+        //defaultRenderer.drawObject(matriz_4x4::traslacion(spherePlatform.getPosition()) * matriz_4x4::zoom(0.1, 0.1, 0.1), basketball);
         defaultRenderer.setTexture(textureResource);
-        defaultRenderer.drawSphere(matriz_4x4::traslacion(spherePlatform.getPosition()), 0.1);
         defaultRenderer.drawBox(matriz_4x4::traslacion(aabbPlatform.getPosition()),
                 2.0 * ((AABB *)aabbPlatform.getBoundingVolume())->getHalfSizes().x,
                 2.0 * ((AABB *)aabbPlatform.getBoundingVolume())->getHalfSizes().y,
                 2.0 * ((AABB *)aabbPlatform.getBoundingVolume())->getHalfSizes().z);
+
+        //defaultRenderer.drawSphere(matriz_4x4::traslacion(spherePlatform.getPosition()) * matriz_4x4::zoom(0.1, 0.1, 0.1));
+        defaultRenderer.drawObject(matriz_4x4::traslacion(spherePlatform.getPosition()) * matriz_4x4::zoom(0.1, 0.1, 0.1), basketball);
         for(auto &particle : this->particles)
         {
             if(particle->getStatus() == true) {
-                //defaultRenderer.setMaterial(&materials[(particleIterator - particles.begin()) % 3]);
-                defaultRenderer.setMaterial(&material);
-                defaultRenderer.drawSphere(matriz_4x4::traslacion(particle->getPosition()), 0.1);
+				//defaultRenderer.setMaterial(&materials[(particleIterator - particles.begin()) % 3]);
+				defaultRenderer.setTexture(textureResource);
+				defaultRenderer.setMaterial(&material);
+//				defaultRenderer.drawSphere(matriz_4x4::traslacion(particle->getPosition()) * matriz_4x4::zoom(0.1, 0.1, 0.1));
+
+                defaultRenderer.drawObject(matriz_4x4::traslacion(particle->getPosition()) * matriz_4x4::zoom(0.1, 0.1, 0.1), basketball);
             }
         }
-
 		defaultRenderer.render(camera);
 		skyboxRenderer.render(camera);
 		gridRenderer.render(camera);

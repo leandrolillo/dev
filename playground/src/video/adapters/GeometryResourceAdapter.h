@@ -38,8 +38,12 @@ public:
 		while ((token = parser.readToken()) != END_OBJECT && token != FileParser::eof) {
             parser.readValueSeparator();
 
-			if (token == "vertices") {
+			if(token == "name") {
+				resource->setName(parser.readString());
+			} else if (token == "vertices") {
 				resource->setVertices(parser.readVector3Array());
+			} else if (token == "material") {
+				resource->setMaterial(parseMaterial(parser, response));
 			} else if (token == "textureCoordinates") {
 				resource->setTextureCoordinates(parser.readVector2Array());
 			} else if (token == "normals") {
@@ -155,6 +159,55 @@ private:
 				}
 			}
 		}
+	}
+
+	MaterialResource *parseMaterial(JsonParser &parser, ResourceLoadResponse &response) const {
+		String token;
+		parser.readStartObject();
+		MaterialResource *material = new MaterialResource(vector(0.8, 0.8, 0.8), vector(0.8, 0.8, 0.8), vector(0.8, 0.8, 0.8), 1.0);
+
+		while ((token = parser.readToken()) != END_OBJECT && token != FileParser::eof) {
+            parser.readValueSeparator();
+
+            if (token == "name") {
+            	material->setName(parser.readString());
+            } else if (token == "ambient") {
+        		material->setAmbient(parser.readVector3());
+        	} else if (token == "specular") {
+        		material->setSpecular(parser.readVector3());
+        	} else if (token == "diffuse") {
+        		material->setDiffuse(parser.readVector3());
+        	} else if (token == "emissive") {
+        		material->setEmissive(parser.readVector3());
+        	} else if (token == "shininess") {
+        		material->setShininess(parser.readReal());
+        	} else if (token == "alpha") {
+        		material->setAlpha(parser.readReal());
+        	} else if (token == "d") {
+        		material->setAlpha(1.0 - parser.readReal());
+        	} else if (token == "ambientTexture") {
+        		material->setAmbientTexture(response.getFullPath(parser.readString()));
+        	} else if (token == "diffuseTexture") {
+        		material->setDiffuseTexture(response.getFullPath(parser.readString()));
+        	} else if (token == "specularTexture") {
+        		material->setSpecularTexture(response.getFullPath(parser.readString()));
+        	} else if (token == "alphaTexture") {
+        		material->setAlphaTexture(parser.readString());
+        	} else if (token == "bumpTexture" ) {
+        		material->setBumptTexture(response.getFullPath(parser.readString()));
+			} else {
+				logger->error("Unexpected token: [%s] at (%d, %d)",
+						token.c_str(), parser.getLine(), parser.getColumn());
+				parser.takeLine();
+			}
+
+			if (parser.peekToken() == ",") {
+				parser.readToken();
+			}
+		}
+
+		return (MaterialResource *)response.addResource(material);
+
 	}
 
 	void log(String prefix, std::vector<vector2> array) const {

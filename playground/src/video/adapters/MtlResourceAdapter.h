@@ -28,7 +28,7 @@ public:
         String token;
         while ((token = textParser.takeToken()) != FileParser::eof) {
             if (token == "newmtl") {
-            	MaterialResource *material = parseMaterial(textParser, textParser.takeLine());
+            	MaterialResource *material = parseMaterial(textParser, textParser.takeLine(), response);
             	material->setUri(Paths::add(request.getFilePath(), material->getName()));
             	material->setMimeType(MimeTypes::WAVEFRONT_MATERIAL);
 
@@ -43,7 +43,7 @@ public:
         response.addResource(materials);
     }
 
-    MaterialResource *parseMaterial(TextParser &textParser, const String &name) const {
+    MaterialResource *parseMaterial(TextParser &textParser, const String &name, ResourceLoadResponse &response) const {
     	MaterialResource *material = new MaterialResource(name, vector(0.8, 0.8, 0.8), vector(0.8, 0.8, 0.8), vector(0.8, 0.8, 0.8), 1.0);
 
         String token;
@@ -63,15 +63,15 @@ public:
         	} else if (token == "d") {
         		material->setAlpha(1.0 - textParser.readReal());
         	} else if (token == "map_Ka") {
-        		material->setAmbientTexture(Paths::relative(textParser.getFilename(), textParser.takeLine()));
+        		material->setAmbientTexture(response.getFullPath(textParser.takeLine()));
         	} else if (token == "map_Kd") {
-        		material->setDiffuseTexture(Paths::relative(textParser.getFilename(), textParser.takeLine()));
+        		material->setDiffuseTexture(response.getFullPath(textParser.takeLine()));
         	} else if (token == "map_Ks") {
-        		material->setSpecularTexture(Paths::relative(textParser.getFilename(), textParser.takeLine()));
+        		material->setSpecularTexture(response.getFullPath(textParser.takeLine()));
         	} else if (token == "map_d") {
         		material->setAlphaTexture(textParser.takeLine());
         	} else if (token == "map_bump" || token == "bump") {
-        		material->setBumptTexture(Paths::relative(textParser.getFilename(), textParser.takeLine()));
+        		material->setBumptTexture(response.getFullPath(textParser.takeLine()));
         	} else {
                 String line = textParser.takeLine().c_str();
                 logger->warn("skipping [%s] [%s]", token.c_str(), line.c_str());

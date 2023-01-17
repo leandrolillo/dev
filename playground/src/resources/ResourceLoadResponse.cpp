@@ -6,6 +6,12 @@
  */
 #include "ResourceLoadResponse.h"
 
+String ResourceLoadResponse::getFullPath(const String &path) const {
+	return Paths::relative(this->request.getFilePath(), path, this->resourceManager.getRootFolder());
+
+}
+
+
 Resource *ResourceLoadResponse::addResource(Resource *resource) {
 	if(resource != null) {
 		if(resource->getUri().empty()) {

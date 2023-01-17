@@ -313,7 +313,13 @@ class matriz_3x3: public BaseMatrix {
 		}
 
 		const matriz_3x3 inversa(void) const {
-			real det = this->determinante();
+			return inversa(this->determinante());
+		}
+
+		/**
+		 * Assumes determinant parameter is correctly calculated. Otherwise the result is undetermined.
+		 */
+		const matriz_3x3 inversa(real det) const {
 			if(det == 0.0f) {
 				throw InvalidArgumentException("Could not calculate inverse of singular matrix (det=0). This is the matrix equivalent of a division by zero");
 			} else {

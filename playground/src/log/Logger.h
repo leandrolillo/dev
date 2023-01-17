@@ -15,6 +15,7 @@
 #include <time.h>
 #include<sys/stat.h>
 #include <set>
+#include <map>
 #include <string.h>
 #include <errno.h>
 
@@ -29,6 +30,9 @@ enum class LogLevel {
 constexpr LogLevel DEFAULT_LOG_LEVEL = LogLevel::INFO;
 //constexpr LogLevel DEFAULT_LOG_LEVEL = LogLevel::DEBUG;
 
+/**
+ * Appenders
+ */
 class Appender {
 protected:
     String target;
@@ -59,6 +63,30 @@ private:
 
 public:
     FileAppender(String target) : Appender(target) {
+    	getFileHandler();
+    }
+
+    /* Rule of five and copy-and-swap*/
+    friend void swap(FileAppender& first, FileAppender& second)
+	{
+		// enable ADL (not necessary in our case, but good practice)
+		using std::swap;
+
+		// by swapping the members of two objects, the two objects are effectively swapped
+		swap(first.fileHandler, second.fileHandler);
+		swap(first.target, second.target);
+	}
+
+    FileAppender(const FileAppender &other) : FileAppender(other.target) {
+    }
+
+    FileAppender(FileAppender && other) : FileAppender(other.target) {
+    	swap(*this, other);
+    }
+
+    FileAppender &operator =(FileAppender other) {
+    	swap(*this, other);
+    	return *this;
     }
 
     ~FileAppender() {
@@ -161,12 +189,16 @@ public:
     }
 };
 
+
+/**
+ * Logger
+ */
+
 class Logger {
 protected:
     String basename;
-    std::set<Appender*> appenders;
+    std::map<LogLevel, std::set<Appender*>> appendersByLogLevel;
     LogLevel logLevel = LogLevel::INFO;
-    //static FILE *fileHandler;
 
 public:
     Logger(const String &basename) {
@@ -186,33 +218,50 @@ public:
     }
 
 protected:
-    void messageAppenders(const String &message) {
-        for (auto appender : appenders) {
-            appender->append(message.c_str());
-            appender->flush();
-        }
+    std::map<LogLevel, String> logLevelToString = {{LogLevel::VERBOSE, "VERBOSE"}, {LogLevel::DEBUG, "DEBUG"}, {LogLevel::INFO, "INFO"}, {LogLevel::WARN, "WARNING"}, {LogLevel::ERROR, "ERROR"}};
+
+    void messageAppenders(LogLevel &logLevel, const String &message) {
+    	auto iterator = appendersByLogLevel.find(logLevel);
+
+    	if(iterator != appendersByLogLevel.end()) {
+			auto &appenders = iterator->second;
+
+			for (auto &appender : appenders) {
+				appender->append(message.c_str());
+				appender->flush();
+			}
+    	}
     }
 
-    void printMessage(const char *type, const char *formato, va_list *args) {
-        if (!this->appenders.empty()) {
+    void printMessage(LogLevel logLevel, const char *formato, va_list *args) {
+        if (this->appendersByLogLevel.find(logLevel) != appendersByLogLevel.end()) {
             char textBuffer[256];
             strftime(textBuffer, sizeof(textBuffer), "%d/%m/%Y %H:%M:%S", Appender::getCurrentTime());
 
-            messageAppenders(StringFormatter::format("%s - %s - %s: ", textBuffer, type, basename.c_str()));
-            messageAppenders(StringFormatter::formatVarArgs(formato, args));
-            messageAppenders("\n");
+            messageAppenders(logLevel, StringFormatter::format("%s - %s - %s: ", textBuffer, logLevelToString.at(logLevel).c_str(), basename.c_str()));
+            messageAppenders(logLevel, StringFormatter::formatVarArgs(formato, args));
+            messageAppenders(logLevel, "\n");
         }
     }
+
 public:
-    void addAppender(Appender *appender) {
-        this->appenders.insert(appender);
+    void addAppender(LogLevel logLevel, Appender *appender) {
+        this->appendersByLogLevel[logLevel].insert(appender);
     }
+
+    void addAppender(Appender *appender) {
+    	this->appendersByLogLevel[LogLevel::VERBOSE].insert(appender);
+		this->appendersByLogLevel[LogLevel::DEBUG].insert(appender);
+		this->appendersByLogLevel[LogLevel::INFO].insert(appender);
+		this->appendersByLogLevel[LogLevel::ERROR].insert(appender);
+		this->appendersByLogLevel[LogLevel::WARN].insert(appender);
+	}
 
     void info(const char *formato, ...) {
         if(logLevel >= LogLevel::INFO) {
             va_list args;
             va_start(args, formato);
-            printMessage("FINE ", formato, &args);
+            printMessage(LogLevel::INFO, formato, &args);
             va_end(args);
         }
     }
@@ -221,19 +270,19 @@ public:
         if(logLevel >= LogLevel::DEBUG) {
 			va_list args;
 			va_start(args, formato);
-			printMessage("DEBUG ", formato, &args);
+			printMessage(LogLevel::DEBUG, formato, &args);
 			va_end(args);
         }
     }
     void error(const char *formato, ...) {
         va_list args;
         va_start(args, formato);
-        printMessage("SEVERE ", formato, &args);
+        printMessage(LogLevel::ERROR, formato, &args);
         va_end(args);
 
         //This does not seem to be very reliable
         if (errno != 0 && strlen(strerror(errno)) > 0) {
-            printMessage(StringFormatter::format("SEVERE [%d]: ", errno).c_str(), strerror(errno), &args);
+            printMessage(LogLevel::ERROR, StringFormatter::format("errno [%d]: [%s]", errno, strerror(errno)).c_str(), &args);
             errno = 0;
         }
     }
@@ -242,7 +291,7 @@ public:
         if(logLevel >= LogLevel::WARN) {
             va_list args;
             va_start(args, formato);
-            printMessage("WARNING ", formato, &args);
+            printMessage(LogLevel::WARN, formato, &args);
             va_end(args);
         }
     }
@@ -251,11 +300,15 @@ public:
         if(logLevel >= LogLevel::VERBOSE) {
 			va_list args;
 			va_start(args, formato);
-			printMessage("VERBOSE ", formato, &args);
+			printMessage(LogLevel::VERBOSE, formato, &args);
 			va_end(args);
         }
     }
 };
+
+/**
+ * Logger Factory
+ */
 
 class LoggerFactory {
 private:
@@ -289,11 +342,10 @@ public:
             }
         }
 
-        //getFileHandler();
-
         Logger *logger = new Logger(basename);
         logger->setLogLevel(DEFAULT_LOG_LEVEL);
         logger->addAppender(getAppender("playground.log"));
+        logger->addAppender(LogLevel::ERROR, getAppender("stdout"));
 
         LoggerFactory::loggers.insert(std::unique_ptr<Logger>(logger));
 

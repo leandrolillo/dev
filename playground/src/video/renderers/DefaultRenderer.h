@@ -14,6 +14,8 @@
 #include<resources/LightResource.h>
 #include<VideoRunner.h>
 
+#include "../SceneNode.h"
+
 #include<vector>
 
 class WorldObject {
@@ -32,8 +34,9 @@ public:
          * drawLine functionality which generates singular matrixes.
          */
         matriz_3x3 reducedModelMatrix = (matriz_3x3) modelMatrix;
-        if(!equalsZero(reducedModelMatrix.determinante())) {
-            this->normalMatrix = reducedModelMatrix.inversa().traspuesta();
+        real determinante = reducedModelMatrix.determinante();
+        if(!equalsZero(determinante)) {
+            this->normalMatrix = reducedModelMatrix.inversa(determinante).traspuesta();
         } else {
             this->normalMatrix = matriz_3x3::identidad;
         }
@@ -65,7 +68,8 @@ private:
     const MaterialResource *currentMaterial = null;
     const LightResource *light = null;
 
-    std::unordered_map<const TextureResource *, std::vector<const WorldObject>>objectsByTexture;
+    std::map<const TextureResource *, std::vector<WorldObject>>objectsByTexture;
+    std::map<const MeshResource *, std::vector<matriz_4x4>>objectsByMesh;
 
     const VertexArrayResource *axes = null;
     const VertexArrayResource *sphere = null;
@@ -104,22 +108,42 @@ public:
     void render(const Camera &camera) override {
         if(isEnabled()) {
             videoRunner->useProgramResource(shader);
-
             videoRunner->sendVector("viewPosition", camera.getPosition());
             this->sendLight(light);
 
             const MaterialResource *lastMaterial = null;
 
-            for(auto &textureIterator : this->objectsByTexture)
-            {
-            	if(textureIterator.second.size() > 0) {
-					if(textureIterator.first != null) {
-						videoRunner->setTexture(0, "textureUnit", textureIterator.first);
-					} else {
-						videoRunner->setTexture(0, "textureUnit", videoRunner->getDefaultTexture());
-					}
+            for(auto &iterator : this->objectsByMesh) {
+            	const MeshResource *mesh = iterator.first;
+            	auto &bases = iterator.second;
+            	if(bases.size() > 0) {
+            		videoRunner->setTexture(0, "textureUnit", mesh->getTexture() != null ? mesh->getTexture() : videoRunner->getDefaultTexture());
+            		this->sendMaterial(mesh->getMaterial());
 
-					for (auto &object : textureIterator.second) {
+            		for (auto &base : bases) {
+						videoRunner->sendMatrix("matrices.model", base);
+						videoRunner->sendMatrix("matrices.pvm", camera.getProjectionViewMatrix() * base);
+
+            			matriz_3x3 reducedModelMatrix = (matriz_3x3) base;
+            			real determinante = reducedModelMatrix.determinante();
+
+						videoRunner->sendMatrix("matrices.normal",
+								!equalsZero(determinante) ?
+										reducedModelMatrix.inversa(determinante).traspuesta() :
+										matriz_3x3::identidad);
+						videoRunner->drawVertexArray(mesh->getVertexArray());
+            		}
+            	}
+            }
+
+            for(auto &iterator : this->objectsByTexture)
+            {
+            	const TextureResource *texture = iterator.first;
+            	auto &worldObjects = iterator.second;
+            	if(worldObjects.size() > 0) {
+					videoRunner->setTexture(0, "textureUnit", texture != null ? texture : videoRunner->getDefaultTexture());
+
+					for (auto &object : worldObjects) {
 						if(lastMaterial != object.getMaterial()) {
 							lastMaterial = object.getMaterial();
 							if(lastMaterial != null) {
@@ -149,8 +173,12 @@ public:
 
     void drawObject(const matriz_4x4 &modelMatrix, const MeshResource *object) {
     	if(object != null) {
-    		this->objectsByTexture[object->getTexture()].push_back(WorldObject(modelMatrix, object->getVertexArray(), object->getMaterial()));
+    		this->objectsByMesh[object].push_back(modelMatrix);
     	}
+    }
+
+    void drawObject(const SceneNode &object) {
+    	this->objectsByMesh[&(object.getMesh())].push_back(object.getBase());
     }
 
     void drawAxes(const matriz_4x4 &modelMatrix, real length = 1.0f) {
@@ -180,6 +208,7 @@ public:
     	this->setTexture(videoRunner != null ? videoRunner->getDefaultTexture() : null);
         this->setMaterial(&defaultMaterial);
         this->objectsByTexture.clear();
+        this->objectsByMesh.clear();
     }
 private:
     const VertexArrayResource *getSphere() {

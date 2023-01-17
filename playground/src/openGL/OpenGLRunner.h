@@ -139,9 +139,6 @@ public:
             return false;
         }
 
-        //TODO: Remove sleep after figuring why we have random crashes at startup - may be related to opengl initialization and syncs.
-        sleep(1);
-
         return true;
     }
 
@@ -527,8 +524,10 @@ public:
                 }
             }
 
+            //glBindVertexArray(0);
             glDisableVertexAttribArray(0);
         }
+
     }
 
     TextureResource *getDefaultTexture() const override {
