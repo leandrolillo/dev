@@ -1,6 +1,4 @@
 Tech debts
-- logger warnings and erros should go to console through console appender. Allow appender configuration by log level?
-
 - review resource adapters chaining load/addResource calls. Unify resourceManager/resourceLoadRequest/resourceLoadResponse in a single class?
 	- issue is getResourceManager()->load(...) is not propagating labels nor options unless calling with a resourceLoadRequest clone.
 

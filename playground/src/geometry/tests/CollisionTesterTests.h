@@ -26,6 +26,13 @@ public:
         this->addTest("CollisionTesterTests::testSphereContacts", static_cast<void (UnitTest::*)(PlaygroundRunner *)>(&CollisionTesterTests::testSphereContacts));
     }
 
+    /**
+     * Provide a sample usage of a polymorfic geometry intersection use case - using std::unique_ptr
+     */
+    void testGeometryIntersections(PlaygroundRunner *runner) {
+
+    }
+
     void testSphereIntersections(PlaygroundRunner *runner)
     {
         CollisionTester intersectionTester;

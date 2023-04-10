@@ -18,8 +18,10 @@ enum class GeometryType {
     PLANE,
     LINE,
     AABB,
+	OOBB,
     HIERARCHY,
-    HEIGHTMAP
+    HEIGHTMAP,
+	FRUSTUM
 };
 
 
@@ -204,6 +206,9 @@ public:
 	}
 };
 
+/**
+ * Loose ends: the bounding volume should be refreshed upon children transformations
+ */
 class HierarchicalGeometry : public Geometry {
     std::unique_ptr<Geometry> boundingVolume;
     std::vector<std::unique_ptr<Geometry>> children;
@@ -276,6 +281,27 @@ public:
     vector normalAt(real x, real z) const {
     	return this->heightMap->normalAt(x - this->getPosition().x, z - this->getPosition().z);
     }
+};
+
+/**
+ * Loose ends
+ *  - contact and collision tests are gona be generic same as hierarchy - maybe could use a single method and add pairs automatically
+ * 	- we should check the planes create a closed solid
+ */
+class Frustum : public Geometry {
+	std::vector<Plane> halfSpaces;
+public:
+	Frustum(const std::vector<Plane> &halfSpaces) : Geometry(vector(0, 0, 0)) {
+		this->halfSpaces = halfSpaces;
+	}
+
+	GeometryType getType() const override {
+		return GeometryType::FRUSTUM;
+	}
+
+	const std::vector<Plane>& getHalfSpaces() const {
+		return halfSpaces;
+	}
 };
 
 #endif /* SRC_PHYSICS_GEOMETRY_GEOMETRY_H_ */

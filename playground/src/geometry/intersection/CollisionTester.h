@@ -28,57 +28,80 @@ public:
     virtual ~CollisionTester() {
     }
     
+    /**
+     * TODO: should only add supported tests and generate a report with these (maybe toString?)
+     */
     void addIntersectionTests() {
         this->addIntersectionTest(GeometryType::LINE, GeometryType::SPHERE, &CollisionTester::lineSphere);
         this->addIntersectionTest(GeometryType::LINE, GeometryType::PLANE, &CollisionTester::linePlane);
         this->addIntersectionTest(GeometryType::LINE, GeometryType::LINE, &CollisionTester::lineLine);
         this->addIntersectionTest(GeometryType::LINE, GeometryType::AABB, &CollisionTester::lineAabb);
-        this->addIntersectionTest(GeometryType::LINE, GeometryType::HIERARCHY, &CollisionTester::lineHierarchy);
+        this->addIntersectionTest(GeometryType::LINE, GeometryType::OOBB, &CollisionTester::lineOobb);
 
         this->addIntersectionTest(GeometryType::PLANE, GeometryType::SPHERE, &CollisionTester::planeSphere);
         this->addIntersectionTest(GeometryType::PLANE, GeometryType::PLANE, &CollisionTester::planePlane);
         this->addIntersectionTest(GeometryType::PLANE, GeometryType::AABB, &CollisionTester::planeAabb);
-        this->addIntersectionTest(GeometryType::PLANE, GeometryType::HIERARCHY, &CollisionTester::planeHierarchy);
+        this->addIntersectionTest(GeometryType::PLANE, GeometryType::OOBB, &CollisionTester::planeOobb);
 
         this->addIntersectionTest(GeometryType::SPHERE, GeometryType::SPHERE, &CollisionTester::sphereSphere);
         this->addIntersectionTest(GeometryType::SPHERE, GeometryType::AABB, &CollisionTester::sphereAabb);
-        this->addIntersectionTest(GeometryType::SPHERE, GeometryType::HIERARCHY, &CollisionTester::sphereHierarchy);
+        this->addIntersectionTest(GeometryType::SPHERE, GeometryType::OOBB, &CollisionTester::sphereOobb);
         this->addIntersectionTest(GeometryType::SPHERE, GeometryType::HEIGHTMAP, &CollisionTester::sphereHeightmap);
 
         this->addIntersectionTest(GeometryType::AABB, GeometryType::AABB, &CollisionTester::aabbAabb);
-        this->addIntersectionTest(GeometryType::AABB, GeometryType::HIERARCHY, &CollisionTester::aabbHierarchy);
+        this->addIntersectionTest(GeometryType::AABB, GeometryType::OOBB, &CollisionTester::aabbOobb);
 
-        this->addIntersectionTest(GeometryType::HIERARCHY, GeometryType::HIERARCHY, &CollisionTester::hierarchyHierarchy);
+        this->addIntersectionTest(GeometryType::OOBB, GeometryType::OOBB, &CollisionTester::oobbOobb);
     }
+
+    /**
+     * TODO: should only add supported tests and generate a report with these (maybe toString?)
+     */
+
     void addContactTests() {
         this->addContactTest(GeometryType::LINE, GeometryType::SPHERE, &CollisionTester::lineSphereContact);
         this->addContactTest(GeometryType::LINE, GeometryType::PLANE, &CollisionTester::linePlaneContact);
         this->addContactTest(GeometryType::LINE, GeometryType::LINE, &CollisionTester::lineLineContact);
         this->addContactTest(GeometryType::LINE, GeometryType::AABB, &CollisionTester::lineAabbContact);
-        this->addContactTest(GeometryType::LINE, GeometryType::HIERARCHY, &CollisionTester::lineHierarchyContact);
+        this->addContactTest(GeometryType::LINE, GeometryType::OOBB, &CollisionTester::lineOobbContact);
 
         this->addContactTest(GeometryType::PLANE, GeometryType::SPHERE, &CollisionTester::planeSphereContact);
         this->addContactTest(GeometryType::PLANE, GeometryType::PLANE, &CollisionTester::planePlaneContact);
         this->addContactTest(GeometryType::PLANE, GeometryType::AABB, &CollisionTester::planeAabbContact);
-        this->addContactTest(GeometryType::PLANE, GeometryType::HIERARCHY, &CollisionTester::planeHierarchyContact);
+        this->addContactTest(GeometryType::PLANE, GeometryType::OOBB, &CollisionTester::planeOobbContact);
 
         this->addContactTest(GeometryType::SPHERE, GeometryType::SPHERE, &CollisionTester::sphereSphereContact);
         this->addContactTest(GeometryType::SPHERE, GeometryType::AABB, &CollisionTester::sphereAabbContact);
-        this->addContactTest(GeometryType::SPHERE, GeometryType::HIERARCHY, &CollisionTester::sphereHierarchyContact);
+        this->addContactTest(GeometryType::SPHERE, GeometryType::OOBB, &CollisionTester::sphereOobbContact);
         this->addContactTest(GeometryType::SPHERE, GeometryType::HEIGHTMAP, &CollisionTester::sphereHeightmapContact);
 
         this->addContactTest(GeometryType::AABB, GeometryType::AABB, &CollisionTester::aabbAabbContact);
-        this->addContactTest(GeometryType::AABB, GeometryType::HIERARCHY, &CollisionTester::aabbHierarchyContact);
+        this->addContactTest(GeometryType::AABB, GeometryType::OOBB, &CollisionTester::aabbOobbContact);
 
-        this->addContactTest(GeometryType::HIERARCHY, GeometryType::HIERARCHY, &CollisionTester::hierarchyHierarchyContact);
+        this->addContactTest(GeometryType::OOBB, GeometryType::OOBB, &CollisionTester::oobbOobbContact);
     }
 
     virtual void addIntersectionTest(const GeometryType &typeOp1, const GeometryType &typeOp2, bool (CollisionTester::*intersectionTest)(const Geometry &, const Geometry &) const) {
         intersectionTestsTable[std::pair<const GeometryType &, const GeometryType &>(typeOp1, typeOp2)] = intersectionTest;
+
+        //TODO: check we're not adding more than desired
+        intersectionTestsTable[std::pair<const GeometryType &, const GeometryType &>(typeOp1, GeometryType::FRUSTUM)] = &CollisionTester::geometryFrustum;
+        intersectionTestsTable[std::pair<const GeometryType &, const GeometryType &>(typeOp2, GeometryType::FRUSTUM)] = &CollisionTester::geometryFrustum;
+
+        intersectionTestsTable[std::pair<const GeometryType &, const GeometryType &>(typeOp1, GeometryType::HIERARCHY)] = &CollisionTester::geometryHierarchy;
+        intersectionTestsTable[std::pair<const GeometryType &, const GeometryType &>(typeOp2, GeometryType::HIERARCHY)] = &CollisionTester::geometryHierarchy;
+        intersectionTestsTable[std::pair<const GeometryType &, const GeometryType &>(GeometryType::HIERARCHY, GeometryType::HIERARCHY)] = &CollisionTester::geometryHierarchy; // TODO: this might be a special case
+
+        intersectionTestsTable[std::pair<const GeometryType &, const GeometryType &>(GeometryType::HIERARCHY, GeometryType::FRUSTUM)] = &CollisionTester::geometryFrustum; // TODO: this might be a special case
     }
 
     virtual void addContactTest(const GeometryType &typeOp1, const GeometryType &typeOp2, std::vector<GeometryContact> (CollisionTester::*contactTest)(const Geometry &, const Geometry &) const) {
         contactTestsTable[std::pair<const GeometryType &, const GeometryType &>(typeOp1, typeOp2)] = contactTest;
+
+        //TODO: check we're not adding more than desired
+        contactTestsTable[std::pair<const GeometryType &, const GeometryType &>(typeOp1, GeometryType::HIERARCHY)] = &CollisionTester::geometryHierarchyContact;
+        contactTestsTable[std::pair<const GeometryType &, const GeometryType &>(typeOp2, GeometryType::HIERARCHY)] = &CollisionTester::geometryHierarchyContact;
+        contactTestsTable[std::pair<const GeometryType &, const GeometryType &>(GeometryType::HIERARCHY, GeometryType::HIERARCHY)] = &CollisionTester::geometryHierarchyContact; // TODO: this might be a special case
     }
 
 
@@ -129,6 +152,53 @@ public:
      *
      *****/
 
+    bool geometryHierarchy(const Geometry &geometry, const Geometry &hierarchicalGeometry) const {
+    	const HierarchicalGeometry &hierarchy = (const HierarchicalGeometry &)hierarchicalGeometry;
+
+    	if(this->intersects(geometry, hierarchy.getBoundingVolume())) {
+        for(auto & currentChildren: hierarchy.getChildren()) {
+            if(this->intersects(geometry, *currentChildren.get())) {
+            	return true;
+            }
+        }
+
+    	}
+      return false;
+    }
+
+
+    std::vector<GeometryContact> geometryHierarchyContact(const Geometry &geometry, const Geometry &hierarchyGeometry) const {
+        const HierarchicalGeometry &hierarchy = (const HierarchicalGeometry &)hierarchyGeometry;
+
+
+        if(this->intersects(geometry, hierarchy.getBoundingVolume())) {
+            std::vector<GeometryContact> response;
+
+            for(auto & currentChildren: hierarchy.getChildren()) {
+                std::vector<GeometryContact> currentChildrenContacts = this->detectCollision(geometry, *currentChildren.get());
+                response.insert( response.end(), currentChildrenContacts.begin(), currentChildrenContacts.end());
+            }
+
+            return response;
+        }
+
+        return std::vector<GeometryContact>();
+    }
+
+    bool geometryFrustum(const Geometry &geometry, const Geometry &frustumGeometry) const {
+      const Frustum &frustum = (const Frustum &)frustumGeometry;
+
+    	for(auto plane : frustum.getHalfSpaces()) {
+    		if(!this->intersects(geometry, plane)) {
+    			return false;
+    		}
+    	}
+
+    	return true;
+    }
+
+
+
     /**
      * point sphere test
      */
@@ -165,12 +235,12 @@ public:
            return false;
     }
 
-    bool lineHierarchy(const Geometry &line, const Geometry &hierarchy) const {
+    bool lineOobb(const Geometry &line, const Geometry &oobb) const {
            return false;
     }
 
     /**
-     * Plane intersection test
+     * Plane intersection test - This is actually a half space / sphere test
      */
     bool planeSphere(const Geometry &planeGeometry, const Geometry &sphereGeometry) const {
         Plane &plane = (Plane &)planeGeometry;
@@ -187,8 +257,8 @@ public:
             return false;
     }
 
-    bool planeHierarchy(const Geometry &planeGeometry, const Geometry &hierarchyGeometry) const {
-           return false;
+    bool planeOobb(const Geometry &plane, const Geometry &oobb) const {
+            return false;
     }
 
     /**
@@ -210,18 +280,18 @@ public:
         return pointInSphere(aabb.closestPoint(sphere.getOrigin()), sphere);
     }
 
-    bool sphereHierarchy(const Geometry &sphere, const Geometry &hierarchy) const {
-           return false;
+    bool sphereOobb(const Geometry &sphere, const Geometry &oobb) const {
+        return false;
     }
 
     bool sphereHeightmap(const Geometry &sphereGeometry, const Geometry &heightMapGeometry) const {
    		const Sphere &sphere = (const Sphere &)sphereGeometry;
    		const HeightMapGeometry &heightmap = (const HeightMapGeometry &)heightMapGeometry;
 
-	   vector aabbClosestPoint = heightmap.closestPoint(sphere.getOrigin());
-	   aabbClosestPoint.y = heightmap.getHeightMap()->heightAt(aabbClosestPoint.x - heightmap.getPosition().x, aabbClosestPoint.z - heightmap.getPosition().z);
+		vector aabbClosestPoint = heightmap.closestPoint(sphere.getOrigin());
+		aabbClosestPoint.y = heightmap.getHeightMap()->heightAt(aabbClosestPoint.x - heightmap.getPosition().x, aabbClosestPoint.z - heightmap.getPosition().z);
 
-	   return pointInSphere(aabbClosestPoint, sphere);
+		return pointInSphere(aabbClosestPoint, sphere);
    	}
 
 
@@ -232,16 +302,16 @@ public:
         return false;
     }
 
-    bool aabbHierarchy(const Geometry &aabb, const Geometry &hierarchy) const {
-       return false;
+    bool aabbOobb(const Geometry &aabb, const Geometry &anotherObb) const {
+        return false;
     }
 
-    /**
-     * Hierarchy intersection tests
-     */
 
-    bool hierarchyHierarchy(const Geometry &hierarchy, const Geometry &anotherHierarchy) const {
-       return false;
+    /**
+     * OOBB intersection tests
+     */
+    bool oobbOobb(const Geometry &oobb, const Geometry &anotherOobb) const {
+        return false;
     }
 
 
@@ -281,17 +351,14 @@ public:
 
         return std::vector<GeometryContact>();
     }
-    std::vector<GeometryContact> lineHierarchyContact(const Geometry &lineGeometry, const Geometry &hierarchyGeometry) const {
-        const Line &line = (const Line &)lineGeometry;
-        const HierarchicalGeometry &hierarchy = (const HierarchicalGeometry &)hierarchyGeometry;
 
+    std::vector<GeometryContact> lineOobbContact(const Geometry &lineGeometry, const Geometry &oobbGeometry) const {
         return std::vector<GeometryContact>();
     }
 
 
-
     /**
-     * Plane contact determination
+     * Plane contact determination - This is actually a half space / sphere test
      */
     std::vector<GeometryContact> planeSphereContact(const Geometry &planeGeometry, const Geometry &sphereGeometry) const {
         const Plane & plane = (const Plane &)planeGeometry;
@@ -326,10 +393,7 @@ public:
         return std::vector<GeometryContact>();
     }
 
-    std::vector<GeometryContact> planeHierarchyContact(const Geometry &planeGeometry, const Geometry &hierarchyGeometry) const {
-        const Plane & plane = (const Plane &)planeGeometry;
-        const HierarchicalGeometry & hierarchy = (const HierarchicalGeometry &)hierarchyGeometry;
-
+    std::vector<GeometryContact> planeOobbContact(const Geometry &planeGeometry, const Geometry &oobbGeometry) const {
         return std::vector<GeometryContact>();
     }
 
@@ -377,24 +441,10 @@ public:
         return std::vector<GeometryContact>();
     }
 
-    std::vector<GeometryContact> sphereHierarchyContact(const Geometry &sphereGeometry, const Geometry &hierarchyGeometry) const {
-        const Sphere &sphere = (const Sphere &)sphereGeometry;
-        const HierarchicalGeometry &hierarchy = (const HierarchicalGeometry &)hierarchyGeometry;
-
-
-        if(this->intersects(sphereGeometry, hierarchy.getBoundingVolume())) {
-            std::vector<GeometryContact> response;
-
-            for(auto & currentChildren: hierarchy.getChildren()) {
-                std::vector<GeometryContact> currentChildrenContacts = this->detectCollision(sphereGeometry, *currentChildren.get());
-                response.insert( response.end(), currentChildrenContacts.begin(), currentChildrenContacts.end());
-            }
-
-            return response;
-        }
-
-        return std::vector<GeometryContact>();
+    std::vector<GeometryContact> sphereOobbContact(const Geometry &sphereGeometry, const Geometry &oobbGeometry) const {
+    	return std::vector<GeometryContact>();
     }
+
 
     /**
      * Non-accurate heightmap test. Returns data of the point directly below the sphere
@@ -432,20 +482,15 @@ public:
         return std::vector<GeometryContact>();
     }
 
-    std::vector<GeometryContact> aabbHierarchyContact(const Geometry &aabbGeometry, const Geometry &hierarchyGeometry) const {
-        const AABB &aabb = (const AABB &)aabbGeometry;
-        const HierarchicalGeometry &hierarchy = (const HierarchicalGeometry &)hierarchyGeometry;
-
+    std::vector<GeometryContact> aabbOobbContact(const Geometry &aabbGeometry, const Geometry &anotherOobbGeometry) const {
         return std::vector<GeometryContact>();
     }
 
-    /**
-     * Hierarchy contact determination
-     */
-    std::vector<GeometryContact> hierarchyHierarchyContact(const Geometry &hierarchyGeometry, const Geometry &anotherHierarchyGeometry) const {
-        const HierarchicalGeometry &hierarchy = (const HierarchicalGeometry &)hierarchyGeometry;
-        const HierarchicalGeometry &anotherHierarchy = (const HierarchicalGeometry &)anotherHierarchyGeometry;
 
+    /**
+     * OOBB contact determination
+     */
+    std::vector<GeometryContact> oobbOobbContact(const Geometry &oobbGeometry, const Geometry &anotherOobbGeometry) const {
         return std::vector<GeometryContact>();
     }
 };
