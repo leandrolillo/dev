@@ -1,5 +1,11 @@
 Tech debts
-- review resource adapters chaining load/addResource calls. Unify resourceManager/resourceLoadRequest/resourceLoadResponse in a single class?
+- Add toString to playground that will return the current playground information:
+	- name?
+	- all runners toString
+		- each runner would add its relevant information
+			- e.g.: collision tester pairs
+
+- review resource adapters chaining load/addResource calls. Unify resourceManager/resourceLoadRequest/resourceLoadResponse in a single class (make it simpler)?
 	- issue is getResourceManager()->load(...) is not propagating labels nor options unless calling with a resourceLoadRequest clone.
 
 - load of a collection with only one object: currently we have to provide an mandatory object name, even if there' only one object in the collection (and even if that object gets a default name)
@@ -37,6 +43,8 @@ New stuff:
 
 
 - Add menu for selecting demo. At least add cli parameters to allow selecting demo - anything better than commenting lines in main.cpp
+
+- add option to stop background music
 
 - TerrainDemo: 
 	- Add class to compose several terrain patches and make calculations to determine which patch. 

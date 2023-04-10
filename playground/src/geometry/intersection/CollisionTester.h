@@ -145,7 +145,7 @@ public:
         return std::vector<GeometryContact>();
     }
 
-
+protected:
     /*****
      *
      * Intersection Tests

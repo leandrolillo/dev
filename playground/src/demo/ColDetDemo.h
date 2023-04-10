@@ -73,8 +73,13 @@ public:
     CollisionDetectionDemoRunner() : ground(new Plane(vector(0, 0, 0), vector(0, 1, 0))), geometryRenderer(defaultRenderer) {
     }
 
+    virtual void onResize(unsigned int height, unsigned int width) override {
+    	BaseDemoRunner::onResize(height, width);
+      //camera.setProjectionMatrix(Camera::orthographicProjection(5.0, (double) width / (double) height, -20.0, 100.0));
+    }
+
+
     void reset() {
-//		video->setMousePosition(video->getScreenWidth() >> 1, video->getScreenHeight() >> 1);
         camera.setViewMatrix(matriz_4x4::traslacion(vector(0.0f, -0.5f, -10.0f)));
 
         real radius = (real) 0.5;
@@ -243,33 +248,35 @@ public:
 
     void onKeyDown(unsigned int key, unsigned int keyModifier) override {
         switch (key) {
-			case '+':
-				camera.setPosition(camera.getPosition() - vector(0.0, 0.0, 0.1));
-			break;
-			case '-':
-				camera.setPosition(camera.getPosition() + vector(0.0, 0.0, 0.1));
-			break;
-			case SDLK_LEFT:
-				camera.setPosition(camera.getPosition() - vector(0.1, 0.0, 0.0));
-			break;
-			case SDLK_RIGHT:
-				camera.setPosition(camera.getPosition() + vector(0.1, 0.0, 0.0));
-			break;
-        	case SDLK_UP:
-        		camera.setPosition(camera.getPosition() + vector(0.0, 0.1, 0.0));
-        	break;
-        	case SDLK_DOWN:
-        		camera.setPosition(camera.getPosition() - vector(0.0, 0.1, 0.0));
-        		break;
-            case SDLK_BACKSPACE:
-                reset();
-                break;
-            case SDLK_SPACE:
-            	particleManager.resolveContacts(0.1);
-                break;
+					case '+':
+					case SDLK_KP_PLUS:
+						camera.setPosition(camera.getPosition() - vector(0.0, 0.0, 0.1));
+					break;
+					case '-':
+					case SDLK_KP_MINUS:
+						camera.setPosition(camera.getPosition() + vector(0.0, 0.0, 0.1));
+					break;
+					case SDLK_LEFT:
+						camera.setPosition(camera.getPosition() - vector(0.1, 0.0, 0.0));
+					break;
+					case SDLK_RIGHT:
+						camera.setPosition(camera.getPosition() + vector(0.1, 0.0, 0.0));
+					break;
+					case SDLK_UP:
+						camera.setPosition(camera.getPosition() + vector(0.0, 0.1, 0.0));
+					break;
+					case SDLK_DOWN:
+						camera.setPosition(camera.getPosition() - vector(0.0, 0.1, 0.0));
+						break;
+					case SDLK_BACKSPACE:
+							reset();
+							break;
+					case SDLK_SPACE:
+						particleManager.resolveContacts(0.1);
+							break;
         }
+        logger->info("Camera position: %s", camera.getPosition().toString().c_str());
     }
-
 };
 
 void CollidingParticle::setRunner(CollisionDetectionDemoRunner *runner) {

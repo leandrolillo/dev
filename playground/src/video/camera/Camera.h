@@ -45,6 +45,26 @@ public:
                 0.0,                            0.0,                            -1.0,                               0.0);
     }
 
+    static matriz_4x4 orthographicProjection(double fovy, double aspect, double near, double far) {
+    	double right = fovy * aspect * 0.5;
+    	double left = fovy * aspect * -0.5;
+    	double top = fovy * 0.5;
+    	double bottom = fovy * -0.5;
+
+			/**
+			 * from glOrtho man page at https://www.lri.fr/~mbl/ENS/IG2/docs/opengl1.1/glOrtho.html
+			 */
+			double tx = -(right + left) / (right - left);
+			double ty = -(top + bottom) / (top - bottom);
+			double tz = -(far + near) / (far - near);
+
+			return matriz_4x4(
+							2.0 / (right - left),   0.0,                            		0.0,    							tx,
+							0.0,                       		2.0 / (top - bottom),   			0.0,    							ty,
+							0.0,                          0.0,                          -2.0 / (far - near), 	tz,
+							0.0,                          0.0,                          0.0, 									1.0);
+    }
+
 public:
     /**
      * Mode, view and projection matrixes
@@ -54,9 +74,9 @@ public:
     }
 
     void setProjectionMatrix(const matriz_4x4 &projectionMatrix) {
-            this->projectionMatrix = projectionMatrix;
-            this->projectionViewMatrix = this->projectionMatrix * this->viewMatrix;
-        }
+			this->projectionMatrix = projectionMatrix;
+			this->projectionViewMatrix = this->projectionMatrix * this->viewMatrix;
+		}
 
     const matriz_4x4 &getProjectionViewMatrix() const {
         return this->projectionViewMatrix;
