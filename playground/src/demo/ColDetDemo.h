@@ -277,6 +277,10 @@ public:
         }
         logger->info("Camera position: %s", camera.getPosition().toString().c_str());
     }
+
+    virtual String toString() const override {
+    		return "CollisionDetectionDemoRunner(id:" + std::to_string(this->getId()) + ")\n    * " + this->intersectionTester.toString();
+    }
 };
 
 void CollidingParticle::setRunner(CollisionDetectionDemoRunner *runner) {

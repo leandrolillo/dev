@@ -33,25 +33,25 @@ public:
      */
     void addIntersectionTests() {
         this->addIntersectionTest(GeometryType::LINE, GeometryType::SPHERE, &CollisionTester::lineSphere);
-        this->addIntersectionTest(GeometryType::LINE, GeometryType::PLANE, &CollisionTester::linePlane);
-        this->addIntersectionTest(GeometryType::LINE, GeometryType::LINE, &CollisionTester::lineLine);
-        this->addIntersectionTest(GeometryType::LINE, GeometryType::AABB, &CollisionTester::lineAabb);
-        this->addIntersectionTest(GeometryType::LINE, GeometryType::OOBB, &CollisionTester::lineOobb);
+//        this->addIntersectionTest(GeometryType::LINE, GeometryType::PLANE, &CollisionTester::linePlane);
+//        this->addIntersectionTest(GeometryType::LINE, GeometryType::LINE, &CollisionTester::lineLine);
+//        this->addIntersectionTest(GeometryType::LINE, GeometryType::AABB, &CollisionTester::lineAabb);
+//        this->addIntersectionTest(GeometryType::LINE, GeometryType::OOBB, &CollisionTester::lineOobb);
 
         this->addIntersectionTest(GeometryType::PLANE, GeometryType::SPHERE, &CollisionTester::planeSphere);
-        this->addIntersectionTest(GeometryType::PLANE, GeometryType::PLANE, &CollisionTester::planePlane);
-        this->addIntersectionTest(GeometryType::PLANE, GeometryType::AABB, &CollisionTester::planeAabb);
-        this->addIntersectionTest(GeometryType::PLANE, GeometryType::OOBB, &CollisionTester::planeOobb);
+//        this->addIntersectionTest(GeometryType::PLANE, GeometryType::PLANE, &CollisionTester::planePlane);
+//        this->addIntersectionTest(GeometryType::PLANE, GeometryType::AABB, &CollisionTester::planeAabb);
+//        this->addIntersectionTest(GeometryType::PLANE, GeometryType::OOBB, &CollisionTester::planeOobb);
 
         this->addIntersectionTest(GeometryType::SPHERE, GeometryType::SPHERE, &CollisionTester::sphereSphere);
         this->addIntersectionTest(GeometryType::SPHERE, GeometryType::AABB, &CollisionTester::sphereAabb);
-        this->addIntersectionTest(GeometryType::SPHERE, GeometryType::OOBB, &CollisionTester::sphereOobb);
+//        this->addIntersectionTest(GeometryType::SPHERE, GeometryType::OOBB, &CollisionTester::sphereOobb);
         this->addIntersectionTest(GeometryType::SPHERE, GeometryType::HEIGHTMAP, &CollisionTester::sphereHeightmap);
 
-        this->addIntersectionTest(GeometryType::AABB, GeometryType::AABB, &CollisionTester::aabbAabb);
-        this->addIntersectionTest(GeometryType::AABB, GeometryType::OOBB, &CollisionTester::aabbOobb);
-
-        this->addIntersectionTest(GeometryType::OOBB, GeometryType::OOBB, &CollisionTester::oobbOobb);
+//        this->addIntersectionTest(GeometryType::AABB, GeometryType::AABB, &CollisionTester::aabbAabb);
+//        this->addIntersectionTest(GeometryType::AABB, GeometryType::OOBB, &CollisionTester::aabbOobb);
+//
+//        this->addIntersectionTest(GeometryType::OOBB, GeometryType::OOBB, &CollisionTester::oobbOobb);
     }
 
     /**
@@ -59,26 +59,26 @@ public:
      */
 
     void addContactTests() {
-        this->addContactTest(GeometryType::LINE, GeometryType::SPHERE, &CollisionTester::lineSphereContact);
-        this->addContactTest(GeometryType::LINE, GeometryType::PLANE, &CollisionTester::linePlaneContact);
-        this->addContactTest(GeometryType::LINE, GeometryType::LINE, &CollisionTester::lineLineContact);
-        this->addContactTest(GeometryType::LINE, GeometryType::AABB, &CollisionTester::lineAabbContact);
-        this->addContactTest(GeometryType::LINE, GeometryType::OOBB, &CollisionTester::lineOobbContact);
+//        this->addContactTest(GeometryType::LINE, GeometryType::SPHERE, &CollisionTester::lineSphereContact);
+//        this->addContactTest(GeometryType::LINE, GeometryType::PLANE, &CollisionTester::linePlaneContact);
+//        this->addContactTest(GeometryType::LINE, GeometryType::LINE, &CollisionTester::lineLineContact);
+//        this->addContactTest(GeometryType::LINE, GeometryType::AABB, &CollisionTester::lineAabbContact);
+//        this->addContactTest(GeometryType::LINE, GeometryType::OOBB, &CollisionTester::lineOobbContact);
 
         this->addContactTest(GeometryType::PLANE, GeometryType::SPHERE, &CollisionTester::planeSphereContact);
-        this->addContactTest(GeometryType::PLANE, GeometryType::PLANE, &CollisionTester::planePlaneContact);
-        this->addContactTest(GeometryType::PLANE, GeometryType::AABB, &CollisionTester::planeAabbContact);
-        this->addContactTest(GeometryType::PLANE, GeometryType::OOBB, &CollisionTester::planeOobbContact);
+//        this->addContactTest(GeometryType::PLANE, GeometryType::PLANE, &CollisionTester::planePlaneContact);
+//        this->addContactTest(GeometryType::PLANE, GeometryType::AABB, &CollisionTester::planeAabbContact);
+//        this->addContactTest(GeometryType::PLANE, GeometryType::OOBB, &CollisionTester::planeOobbContact);
 
         this->addContactTest(GeometryType::SPHERE, GeometryType::SPHERE, &CollisionTester::sphereSphereContact);
         this->addContactTest(GeometryType::SPHERE, GeometryType::AABB, &CollisionTester::sphereAabbContact);
-        this->addContactTest(GeometryType::SPHERE, GeometryType::OOBB, &CollisionTester::sphereOobbContact);
+//        this->addContactTest(GeometryType::SPHERE, GeometryType::OOBB, &CollisionTester::sphereOobbContact);
         this->addContactTest(GeometryType::SPHERE, GeometryType::HEIGHTMAP, &CollisionTester::sphereHeightmapContact);
 
-        this->addContactTest(GeometryType::AABB, GeometryType::AABB, &CollisionTester::aabbAabbContact);
-        this->addContactTest(GeometryType::AABB, GeometryType::OOBB, &CollisionTester::aabbOobbContact);
-
-        this->addContactTest(GeometryType::OOBB, GeometryType::OOBB, &CollisionTester::oobbOobbContact);
+//        this->addContactTest(GeometryType::AABB, GeometryType::AABB, &CollisionTester::aabbAabbContact);
+//        this->addContactTest(GeometryType::AABB, GeometryType::OOBB, &CollisionTester::aabbOobbContact);
+//
+//        this->addContactTest(GeometryType::OOBB, GeometryType::OOBB, &CollisionTester::oobbOobbContact);
     }
 
     virtual void addIntersectionTest(const GeometryType &typeOp1, const GeometryType &typeOp2, bool (CollisionTester::*intersectionTest)(const Geometry &, const Geometry &) const) {

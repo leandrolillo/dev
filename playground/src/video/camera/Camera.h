@@ -124,6 +124,9 @@ public:
         return this->zFar;
     }
 
+    /**
+     * from https://antongerdelan.net/opengl/raycasting.html
+     */
     vector4 getRayDirection(unsigned int x, unsigned int y, unsigned int width, unsigned int height) const {
         vector4 homogeneousClipCoordinates = vector4(
                 (real)2 * (real)x / (real)width - (real)1,
