@@ -110,11 +110,16 @@ public:
 	void setEnabled(unsigned char enabled) {
 		this->_enabled = enabled;
 	}
+
+	virtual String toString() const {
+		return "PlaygroundRunner(id:" + std::to_string(this->getId()) + ")";
+	}
 };
 
 class Playground {
 private:
 	Logger *logger = LoggerFactory::getLogger("core/Playground.h");
+	String name;
 	String resourcesRootFolder;
 	std::vector<std::unique_ptr<PlaygroundRunner>> runners;
 	std::unordered_map<unsigned char, PlaygroundRunner *> runners_by_id;
@@ -132,10 +137,12 @@ private:
 
 
 public:
-	Playground() : Playground("Lean/dev/media/"){
+	Playground(const String &rootFolder) : resourceManager(rootFolder) {
 	}
 
-	Playground(const String &rootFolder) : resourceManager(rootFolder) {
+	Playground *withName(const String name) {
+		this->name = name;
+		return this;
 	}
 
 	virtual ResourceManager *getResourceManager() {
@@ -208,13 +215,13 @@ public:
 			logger->debug("Initializing runner [%d]", currentRunner->getId());
 
 			try {
-                if (!currentRunner->init()) {
-                    logger->error("Failed to initialize runner [%d]", currentRunner->getId());
-                    return false;
-                }
+				if (!currentRunner->init()) {
+						logger->error("Failed to initialize runner [%d]", currentRunner->getId());
+						return false;
+				}
 			} catch(const Exception &exception) {
-			    logger->error("Failed to initialize runner [%d]: [%s]", currentRunner->getId(), exception.toString().c_str());
-			    return false;
+				logger->error("Failed to initialize runner [%d]: [%s]", currentRunner->getId(), exception.toString().c_str());
+				return false;
 			} catch (const std::out_of_range& e) {
 				logger->error("Failed to initialize runner [%d] - out of range: [%s]", currentRunner->getId(), e.what());
 				return false;
@@ -222,8 +229,8 @@ public:
 				logger->error("Failed to initialize runner [%d] - std::exception: [%s]", currentRunner->getId(), stdException.what());
 				return false;
 			} catch(...) {
-                logger->error("Failed to initialize runner [%d]", currentRunner->getId());
-                return false;
+				logger->error("Failed to initialize runner [%d]", currentRunner->getId());
+				return false;
 			}
 
 			unsigned char interests = currentRunner->getInterests();
@@ -267,10 +274,7 @@ public:
 	}
 
 	virtual void run() {
-		logger->info("");
-		logger->info("--------------");
-		logger->info("Playground Run"),
-		logger->info("--------------");
+		logger->debug("Playground - run");
 
 		this->getResourceManager()->logStatus();
 
@@ -279,6 +283,8 @@ public:
 			init();
 			status = PlaygroundStatus::INITIALIZED;
 		}
+
+		logger->info("\n -------------------\n| Running %s\n -------------------", this->toString().c_str());
 
 		if (status == PlaygroundStatus::INITIALIZED) {
 			if (initRunners()) {
@@ -400,6 +406,15 @@ public:
 		for (auto currentRunner : mouseWheelObservers) {
 			currentRunner->onMouseWheel(wheel);
 		}
+	}
+
+	virtual String toString() const {
+		String runnersToString;
+		for(auto const &runner : this->runners) {
+			runnersToString += "  *" + runner->toString() + "\n";
+		}
+
+		return "Playground" + (this->name.empty() ? "" : " [" + this->name + "]") + (runnersToString.empty() ? "" : ":\n" + runnersToString);
 	}
 
 	virtual ~Playground() {

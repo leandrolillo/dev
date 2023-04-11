@@ -616,6 +616,11 @@ protected:
         else
             throw InvalidArgumentException("Invalid primitive type: [%s]", typeString.c_str());
     }
+
+  	virtual String toString() const override {
+  		return "OpenGLRunner(id:" + std::to_string(this->getId()) + ")";
+  	}
+
 };
 
 int playgroundEventFilter(void *context, SDL_Event *event) {

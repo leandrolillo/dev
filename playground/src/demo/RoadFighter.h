@@ -26,10 +26,6 @@ class RoadFighterRunner: public BaseDemoRunner {
 
 public:
     bool init() override {
-    	logger->info("-----------------");
-    	logger->info("| Road fighter");
-    	logger->info("-----------------");
-
     	if(!BaseDemoRunner::init()) {
     		return false;
     	}
@@ -162,7 +158,6 @@ public:
 //                break;
 //        }
 //    }
-
 };
 
 class RoadFighter: public Playground {

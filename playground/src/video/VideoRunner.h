@@ -114,6 +114,10 @@ public:
 
 	//TODO: get rid of this method
 	virtual TextureResource *getDefaultTexture() const = 0;
+
+	virtual String toString() const override {
+		return "VideoRunner(id:" + std::to_string(this->getId()) + ")";
+	}
 };
 
 const unsigned char VideoRunner::ID = 0;

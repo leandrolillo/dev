@@ -73,32 +73,37 @@ public:
 	}
 
 
-    virtual void onKeyDown(unsigned int key, unsigned int keyModifier) override {
-        switch (key) {
-			case '+':
-				camera.setPosition(camera.getPosition() - vector(0.0, 0.0, 0.1));
-			break;
-			case '-':
-				camera.setPosition(camera.getPosition() + vector(0.0, 0.0, 0.1));
-			break;
-			case SDLK_LEFT:
-				camera.setPosition(camera.getPosition() - vector(0.1, 0.0, 0.0));
-			break;
-			case SDLK_RIGHT:
-				camera.setPosition(camera.getPosition() + vector(0.1, 0.0, 0.0));
-			break;
-        	case SDLK_UP:
-        		camera.setPosition(camera.getPosition() + vector(0.0, 0.1, 0.0));
-        	break;
-        	case SDLK_DOWN:
-        		camera.setPosition(camera.getPosition() - vector(0.0, 0.1, 0.0));
-        		break;
+  virtual void onKeyDown(unsigned int key, unsigned int keyModifier) override {
+			switch (key) {
+		case '+':
+			camera.setPosition(camera.getPosition() - vector(0.0, 0.0, 0.1));
+		break;
+		case '-':
+			camera.setPosition(camera.getPosition() + vector(0.0, 0.0, 0.1));
+		break;
+		case SDLK_LEFT:
+			camera.setPosition(camera.getPosition() - vector(0.1, 0.0, 0.0));
+		break;
+		case SDLK_RIGHT:
+			camera.setPosition(camera.getPosition() + vector(0.1, 0.0, 0.0));
+		break;
+				case SDLK_UP:
+					camera.setPosition(camera.getPosition() + vector(0.0, 0.1, 0.0));
+				break;
+				case SDLK_DOWN:
+					camera.setPosition(camera.getPosition() - vector(0.0, 0.1, 0.0));
+					break;
 //            case SDLK_BACKSPACE:
 //                break;
 //            case SDLK_SPACE:
 //                break;
-        }
-    }
+			}
+	}
+
+	virtual String toString() const {
+		return logger->getBasename() + "(id:" + std::to_string(this->getId()) + ")";
+	}
+
 
 };
 #endif

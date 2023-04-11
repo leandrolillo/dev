@@ -151,10 +151,6 @@ public:
     }
 
     virtual bool init() override {
-    	logger->info("-----------------");
-    	logger->info("| Terrain Demo");
-    	logger->info("-----------------");
-
     	if(!BaseDemoRunner::init()) {
     		return false;
     	}

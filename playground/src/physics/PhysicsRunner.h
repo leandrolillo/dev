@@ -106,6 +106,11 @@ public:
 
 		return LoopResult::CONTINUE;
 	}
+
+	virtual String toString() const override {
+		return "PhysicsRunner(id:" + std::to_string(this->getId()) + ")";
+	}
+
 };
 
 const unsigned char PhysicsRunner::ID = 4;

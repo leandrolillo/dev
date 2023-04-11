@@ -18,10 +18,10 @@ enum class GeometryType {
     PLANE,
     LINE,
     AABB,
-	OOBB,
+		OOBB,
     HIERARCHY,
     HEIGHTMAP,
-	FRUSTUM
+		FRUSTUM
 };
 
 

@@ -134,6 +134,11 @@ class AudioRunner: public PlaygroundRunner {
 
 		}
 
+		virtual String toString() const override {
+			return "AudioRunner(id:" + std::to_string(this->getId()) + ")";
+		}
+
+
 		virtual ~AudioRunner()
 		{
 			alcMakeContextCurrent(NULL);

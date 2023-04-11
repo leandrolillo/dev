@@ -93,6 +93,11 @@ class PlaygroundTestsRunner: public PlaygroundRunner, UnitTest {
 			return true;
 		}
 
+  	virtual String toString() const override {
+  		return "PlaygroundTestsRunner(id:" + std::to_string(this->getId()) + ")";
+  	}
+
+
 		void testMousePicking(PlaygroundRunner *runner)
         {
 		    vector4 point(0, 0, -1, 0);

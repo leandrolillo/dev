@@ -145,7 +145,45 @@ public:
         return std::vector<GeometryContact>();
     }
 
+    virtual String toString() const {
+    	String contactMappings;
+    	for(auto &mapping : this->contactTestsTable) {
+    		contactMappings += (contactMappings.empty() ? "" : ", ") + toString(mapping.first.first) + "<->" + toString(mapping.first.second);
+    	}
+
+    	String intersectionMappings;
+    	for(auto &mapping : this->intersectionTestsTable) {
+    		intersectionMappings += (intersectionMappings.empty() ? "" : ", ") + toString(mapping.first.first) + "<->" + toString(mapping.first.second);
+    	}
+
+    	return "CollisionTester(intersectionChecks: [" + intersectionMappings + "], contactChecks: [" + contactMappings + "]";
+    }
+
+
 protected:
+    String toString(GeometryType geometryType) const {
+    	switch(geometryType) {
+    		case GeometryType::SPHERE:
+    		return "SPHERE";
+    		case GeometryType::LINE:
+    			return "LINE";
+    		case GeometryType::PLANE:
+    		  return "PLANE";
+    		case GeometryType::AABB:
+    		  return "AABB";
+    		case GeometryType::OOBB:
+    		  return "OOBB";
+    		case GeometryType::HIERARCHY:
+    		  return "HIERARCHY";
+    		case GeometryType::FRUSTUM:
+    		  return "FRUSTUM";
+    		case GeometryType::HEIGHTMAP:
+    		  return "HEIGHTMAP";
+    	}
+
+    	return "UNKNOWN";
+
+    }
     /*****
      *
      * Intersection Tests
