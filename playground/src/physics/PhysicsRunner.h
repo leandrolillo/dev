@@ -8,29 +8,20 @@
 #ifndef SRC_PHYSICS_PHYSICSRUNNER_H_
 #define SRC_PHYSICS_PHYSICSRUNNER_H_
 
-#include<OpenGLRunner.h>
 #include<Playground.h>
 #include<ParticleManager.h>
 
 class PhysicsRunner: public PlaygroundRunner {
 	Logger *logger = LoggerFactory::getLogger("physics/PhysicsRunner");
 
-	/**
-	 * TODO: Get rid of this dependency (it exists for timing functions).
-	 */
-	VideoRunner *videoRunner = null;
-
 	ParticleManager particleManager;
 
-	unsigned long to = 0;
-	real invPerformanceFreq = 1.0f;
-
+	Chronometer *stopWatch = null;
 	real playbackSpeed = 1.0f;
 
 	/**
 	 * stats
 	 */
-	real elapsedTime = 0.0f;
 	unsigned long frames = 0;
 public:
 	static const unsigned char ID;
@@ -50,14 +41,14 @@ public:
 	    this->playbackSpeed = playbackspeed;
 	}
 
-	bool init() override {
-		videoRunner = (VideoRunner*) this->getContainer()->getRequiredRunner(VideoRunner::ID);
+	virtual bool afterInit() override {
+		this->stopWatch = &this->getContainer()->getStopWatch();
 
-		invPerformanceFreq = (real)1 / (real)videoRunner->getPerformanceFreq();
 		this->start();
 
 		return true;
 	}
+
 
 	void beforeLoop() override {
 		this->particleManager.clearAccumulators();
@@ -66,7 +57,7 @@ public:
 	void start() {
 		logger->info("starting physics runner");
 		if(!this->getEnabled()) {
-			to = videoRunner->getPerformanceCounter();
+			this->stopWatch->start();
 		}
 		this->setEnabled(true);
 
@@ -85,18 +76,15 @@ public:
 	}
 
 	LoopResult doLoop() override {
-		unsigned long tf = videoRunner->getPerformanceCounter();
-		real dt = (real)(tf - to) * invPerformanceFreq;
-		to = tf;
+		real dt = this->stopWatch->getElapsedTime();
 
 		this->particleManager.step(dt * playbackSpeed);
 
 		/**
 		 * stats
 		 */
-		elapsedTime += dt;
-		frames++;
-//      real fps = (real)frames / elapsedTime;
+//		frames++;
+//      real fps = (real)frames / this->stopWatch->getTotalTime();
 //		printf("Elapsed time: %.2f, frames: %u, fps:%.2f. View position: %s - count = %d\r",
 //				elapsedTime,
 //				frames,

@@ -147,7 +147,7 @@ public:
     	/**
     	 * perspective projection zFar needs to be at least the size of skybox hypotenuse (sqrt(skybox size^2 + skybox size^2)
     	 */
-        camera.setProjectionMatrix(Camera::perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 600.0));
+        camera.setPerspectiveProjectionFov(45.0, (GLfloat) width / (GLfloat) height, 0.1, 600.0);
     }
 
     virtual bool init() override {

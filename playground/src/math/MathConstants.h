@@ -40,6 +40,10 @@
 		constexpr real two_pi = (real)2 * M_PI;
 		constexpr real pi_over_180 = M_PI  / 180.0;
 		constexpr real one_over_pi_over_180 = 180.0 / M_PI;
+
+		/*
+		 * 180º = PI radians / 360º = 2 * PI radians
+		 */
 		#define radian(angulo) (angulo * pi_over_180)
 		#define grado(angulo) (angulo * one_over_pi_over_180)
 	#endif

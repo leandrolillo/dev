@@ -109,6 +109,9 @@ public:
 				case GeometryType::LINE:
 					render((const Line *)geometry);
 				break;
+				case GeometryType::FRUSTUM:
+					render((const Frustum *)geometry);
+				break;
 			}
 		}
 	}
@@ -143,6 +146,12 @@ public:
 			}
 		} else {
 			this->render(&hierarchy->getBoundingVolume());
+		}
+	}
+
+	void render(const Frustum *frustum) const {
+		for( auto &plane: frustum->getHalfSpaces()) {
+			render(&plane);
 		}
 	}
 

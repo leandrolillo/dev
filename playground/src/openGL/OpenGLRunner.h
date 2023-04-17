@@ -139,6 +139,9 @@ public:
             return false;
         }
 
+        //start stopWatch();
+        this->start();
+
         return true;
     }
 

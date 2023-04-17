@@ -40,7 +40,7 @@ public:
     }
 
     virtual void onResize(unsigned int height, unsigned int width) override {
-        camera.setProjectionMatrix(Camera::perspectiveProjection(45.0, (double) width / (double) height, 2, 300.0));
+        camera.setPerspectiveProjectionFov(45.0, (double) width / (double) height, 2, 300.0);
     }
 
     virtual bool init() override {

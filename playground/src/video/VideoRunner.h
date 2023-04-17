@@ -23,7 +23,7 @@
 #include "resources/VertexArrayResource.h"
 
 
-class VideoRunner : public PlaygroundRunner {
+class VideoRunner : public PlaygroundRunner, public Chronometer {
 public:
 	static const unsigned char ID;
 protected:
@@ -78,14 +78,16 @@ public:
 		this->getResourceManager()->addAdapter(std::unique_ptr<ResourceAdapter>(new ObjResourceAdapter()));
 		this->getResourceManager()->addAdapter(std::unique_ptr<ResourceAdapter>(new MtlResourceAdapter()));
 
+		this->getContainer()->setStopWatch(this);
+
 		return true;
 	}
 
-	/**
-	 * Performance counters
-	 */
-	virtual unsigned long getPerformanceCounter() const = 0;
-	virtual unsigned long getPerformanceFreq() const = 0;
+//	/**
+//	 * Performance counters
+//	 */
+//	virtual unsigned long getPerformanceCounter() const = 0;
+//	virtual unsigned long getPerformanceFreq() const = 0;
 
 	/**
 	 * Shader methods - should this go to a shader class?

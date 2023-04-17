@@ -46,14 +46,15 @@ public:
         this->_isSelected = selected;
     }
 
-    void setRunner(CollisionDetectionDemoRunner *runner);
-    void afterIntegrate(real dt);
-    void onCollision(const ParticleContact &contact);
+//    void setRunner(CollisionDetectionDemoRunner *runner);
+//    void afterIntegrate(real dt);
+//    void onCollision(const ParticleContact &contact);
 };
 
 class CollisionDetectionDemoRunner: public BaseDemoRunner {
     ParticleManager particleManager;
     const CollisionTester &intersectionTester = *(particleManager.getCollisionDetector().getIntersectionTester());
+    Camera anotherCamera;
 
     std::vector<std::unique_ptr<CollidingParticle>> collidingParticles;
     Particle ground;
@@ -134,19 +135,19 @@ public:
         video->enable(BLEND, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         collidingParticles.push_back(std::unique_ptr<CollidingParticle>(new CollidingParticle(new Sphere(vector(0, 0, 0), (real) 0.5))));
-        collidingParticles.back()->setRunner(this);
+//        collidingParticles.back()->setRunner(this);
         particleManager.addParticle(collidingParticles.back().get());
 
         collidingParticles.push_back(std::unique_ptr<CollidingParticle>(new CollidingParticle(new Sphere(vector(0, 0, 0), (real) 0.5))));
-        collidingParticles.back()->setRunner(this);
+ //       collidingParticles.back()->setRunner(this);
         particleManager.addParticle(collidingParticles.back().get());
 
         collidingParticles.push_back(std::unique_ptr<CollidingParticle>(new CollidingParticle(new AABB(vector(0, 0, 0), vector(0.5, 0.5, 0.5)))));
-        collidingParticles.back()->setRunner(this);
+  //      collidingParticles.back()->setRunner(this);
         particleManager.addParticle(collidingParticles.back().get());
 
         collidingParticles.push_back(std::unique_ptr<CollidingParticle>(new CollidingParticle(new AABB(vector(0, 0, 0), vector(1, 1, 1)))));
-        collidingParticles.back()->setRunner(this);
+//        collidingParticles.back()->setRunner(this);
         particleManager.addParticle(collidingParticles.back().get());
 
 
@@ -155,7 +156,7 @@ public:
         hierarchicalGeometry->addChildren(new Sphere(vector(0.5, 0, 0), 0.5));
 
         collidingParticles.push_back(std::unique_ptr<CollidingParticle>(new CollidingParticle(hierarchicalGeometry)));
-        collidingParticles.back()->setRunner(this);
+//        collidingParticles.back()->setRunner(this);
         particleManager.addParticle(collidingParticles.back().get());
 
         particleManager.addParticle(&ground);
@@ -181,6 +182,7 @@ public:
         std::vector<ParticleContact> contacts = particleManager.getContacts();
 
         geometryRenderer.render(&particleManager);
+        geometryRenderer.render(&anotherCamera.getFrustum());
 
         defaultRenderer.render(camera);
         skyboxRenderer.render(camera);
@@ -189,15 +191,15 @@ public:
         return LoopResult::CONTINUE;
     }
 
-    void onCollision(CollidingParticle *sphereParticle) {
-        //sphereParticle->setIsColliding(true);
-    }
-
-    void afterIntegrate(CollidingParticle *particle) {
-        if (particle->getPosition().modulo() > 100) {
-            particle->setStatus(false);
-        }
-    }
+//    void onCollision(CollidingParticle *sphereParticle) {
+//        //sphereParticle->setIsColliding(true);
+//    }
+//
+//    void afterIntegrate(CollidingParticle *particle) {
+//        if (particle->getPosition().modulo() > 100) {
+//            particle->setStatus(false);
+//        }
+//    }
 
     void onMouseMove(int x, int y, int dx, int dy, unsigned int buttons) override {
             Line line(camera.getPosition(),
@@ -225,9 +227,9 @@ public:
     }
 
 	void onMouseWheel(int wheel) override {
-		logger->info("Mouse wheel %d", wheel);
-	    camera.setPosition(camera.getPosition() - vector(0.0, 0.0, std::min(1.0, 0.1 * wheel)));
-	    logger->info("Camera position: %s", camera.getPosition().toString().c_str());
+		logger->debug("Mouse wheel %d", wheel);
+		camera.setPosition(camera.getPosition() - vector(0.0, 0.0, std::min(1.0, 0.1 * wheel)));
+		logger->debug("Camera position: %s", camera.getPosition().toString().c_str());
 	}
 
 
@@ -274,8 +276,26 @@ public:
 					case SDLK_SPACE:
 						particleManager.resolveContacts(0.1);
 							break;
+					case 'w':
+					case 'W':
+						anotherCamera.setPosition(anotherCamera.getPosition() + vector(0.0, 0.1, 0.0) * this->getContainer()->getStopWatch().getElapsedTime());
+						break;
+					case 's':
+					case 'S':
+						anotherCamera.setPosition(anotherCamera.getPosition() - vector(0.0, 0.1, 0.0) * this->getContainer()->getStopWatch().getElapsedTime());
+						break;
+
+					case 'a':
+					case 'A':
+						anotherCamera.setPosition(anotherCamera.getPosition() + vector(0.1, 0.0, 0.0) * this->getContainer()->getStopWatch().getElapsedTime());
+						break;
+					case 'd':
+					case 'D':
+						anotherCamera.setPosition(anotherCamera.getPosition() - vector(0.1, 0.0, 0.0) * this->getContainer()->getStopWatch().getElapsedTime());
+						break;
+
         }
-        logger->info("Camera position: %s", camera.getPosition().toString().c_str());
+        logger->debug("Camera position: %s", camera.getPosition().toString().c_str());
     }
 
     virtual String toString() const override {
@@ -283,22 +303,22 @@ public:
     }
 };
 
-void CollidingParticle::setRunner(CollisionDetectionDemoRunner *runner) {
-    this->runner = runner;
-}
+//void CollidingParticle::setRunner(CollisionDetectionDemoRunner *runner) {
+//    this->runner = runner;
+//}
 
-void CollidingParticle::afterIntegrate(real dt) {
-    if (runner != null) {
-        runner->afterIntegrate(this);
-    }
-}
-
-void CollidingParticle::onCollision(const ParticleContact &contact) {
-    if (runner != null) {
-        runner->onCollision(this);
-    }
-
-}
+//void CollidingParticle::afterIntegrate(real dt) {
+//    if (runner != null) {
+//        runner->afterIntegrate(this);
+//    }
+//}
+//
+//void CollidingParticle::onCollision(const ParticleContact &contact) {
+//    if (runner != null) {
+//        runner->onCollision(this);
+//    }
+//
+//}
 
 class CollisionDetectionPlayground: public Playground {
 public:

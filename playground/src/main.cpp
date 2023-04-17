@@ -14,35 +14,37 @@
 
 #include "demo/PlaygroundTest.h"
 
+static String repository = {"/Users/leandro/huevadas/projects/dev/media/"};
 int main(int, char**){
-    TestsPlayground *playgroundtests = new TestsPlayground("/Users/leandro/huevadas/projects/dev/media/");
+    TestsPlayground *playgroundtests = new TestsPlayground(repository);
     playgroundtests->withName("Playground Tests")->run();
     delete playgroundtests;
 
-//    PlaygroundGeneralDemo *playground = new PlaygroundGeneralDemo("/Users/leandro/huevadas/projects/dev/media/");
+//    PlaygroundGeneralDemo *playground = new PlaygroundGeneralDemo(repository);
 //    playground->run();
 //    delete playground;
 //
-//    ObjDemoPlayground *objPlayground = new ObjDemoPlayground("/Users/leandro/huevadas/projects/dev/media/");
+//    ObjDemoPlayground *objPlayground = new ObjDemoPlayground(repository);
 //    objPlayground->run();
 //    delete objPlayground;
 //
-//    CollisionDetectionPlayground *colDetplayground = new CollisionDetectionPlayground("/Users/leandro/huevadas/projects/dev/media/");
-//    colDetplayground->withName("Collision Detection Playground")->run();
-//    delete colDetplayground;
-//
-//    PlaygroundTerrainDemo * terrainPlayground = new PlaygroundTerrainDemo("/Users/leandro/huevadas/projects/dev/media/");
-//    terrainPlayground->withName("Terrain Demo")->run();
-//    delete terrainPlayground;
+
+    CollisionDetectionPlayground *colDetplayground = new CollisionDetectionPlayground(repository);
+    colDetplayground->withName("Collision Detection Playground")->run();
+    delete colDetplayground;
+
+    PlaygroundTerrainDemo * terrainPlayground = new PlaygroundTerrainDemo(repository);
+    terrainPlayground->withName("Terrain Demo")->run();
+    delete terrainPlayground;
 
 
-    PhysicsPlayground *physicsPlayground = new PhysicsPlayground("/Users/leandro/huevadas/projects/dev/media/");
+    PhysicsPlayground *physicsPlayground = new PhysicsPlayground(repository);
     physicsPlayground->withName("Physics")->run();
     delete physicsPlayground;
-
-    RoadFighter *roadFighter = new RoadFighter("/Users/leandro/huevadas/projects/dev/media/");
-    roadFighter->withName("Road Fighter")->run();
-    delete roadFighter;
+//
+//    RoadFighter *roadFighter = new RoadFighter(repository);
+//    roadFighter->withName("Road Fighter")->run();
+//    delete roadFighter;
 
     printf("done\n");
     return 0;

@@ -13,6 +13,8 @@
 #include <JavaLike.h>
 #include <vector>
 #include <unordered_map>
+#include <math3d.h>
+#include <InvalidStateException.h>
 
 enum class PlaygroundStatus {
 	CREATED,
@@ -82,6 +84,9 @@ public:
 		return 0;
 	}
 
+	/**
+	 * TODO: Should move these methods to a separate interface (abstract class)?
+	 */
 	virtual void onResize(unsigned int height, unsigned width) {
 	}
 
@@ -116,6 +121,46 @@ public:
 	}
 };
 
+/**
+ * Performance counter and performance frequency are platform specific - thus have to be provided by some runner
+ */
+class Chronometer {
+	real invPerformanceFreq = -1.0f;
+	unsigned long to = 0;
+	unsigned long initialTime = 0;
+public:
+	virtual unsigned long getPerformanceCounter() const = 0;
+	virtual unsigned long getPerformanceFreq() const = 0;
+
+
+	void start() {
+		this->to = getPerformanceCounter();
+
+		if(invPerformanceFreq < 0.0) {
+			invPerformanceFreq = (real)1 / (real)getPerformanceFreq();
+		}
+
+		if(initialTime == 0) {
+			initialTime = this->to;
+		}
+	}
+
+	real getElapsedTime() {
+		unsigned long tf = getPerformanceCounter();
+		real dt = (real)(tf - to) * invPerformanceFreq;
+		to = tf;
+		return dt;
+	}
+
+	real getTotalTime() {
+		unsigned long tf = getPerformanceCounter();
+		return (real)(tf - initialTime) * invPerformanceFreq;
+	}
+
+	virtual ~Chronometer() {
+	}
+};
+
 class Playground {
 private:
 	Logger *logger = LoggerFactory::getLogger("core/Playground.h");
@@ -132,9 +177,9 @@ private:
 	std::vector<PlaygroundRunner *> mouseButtonDownObservers;
 	std::vector<PlaygroundRunner *> mouseButtonUpObservers;
 	std::vector<PlaygroundRunner *> mouseWheelObservers;
+	Chronometer *stopWatch = null;
 
 	ResourceManager resourceManager; //MUST be defined after runners so that it is initialized after them and deleted before them.
-
 
 public:
 	Playground(const String &rootFolder) : resourceManager(rootFolder) {
@@ -155,6 +200,17 @@ public:
 
 	void setStatus(const PlaygroundStatus &status) {
 		this->status = status;
+	}
+
+	void setStopWatch(Chronometer *stopWatch) {
+		this->stopWatch = stopWatch;
+	}
+
+	Chronometer &getStopWatch() {
+		if(this->stopWatch == null) {
+			throw new InvalidStateException("StopWatch not registered - you need to include at least one playground runner that provides a stopwatch");
+		}
+		return *this->stopWatch;
 	}
 
 	PlaygroundRunner *getRequiredRunner(const unsigned char id) const {

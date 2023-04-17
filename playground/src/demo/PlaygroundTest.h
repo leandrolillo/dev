@@ -106,7 +106,7 @@ class PlaygroundTestsRunner: public PlaygroundRunner, UnitTest {
 		    unsigned int height = 480;
 
 		    Camera camera;
-		    camera.setProjectionMatrix(Camera::perspectiveProjection(45.0, (GLfloat) width / (GLfloat) height, 0.1, 300.0));
+		    camera.setPerspectiveProjectionFov(45.0, (GLfloat) width / (GLfloat) height, 0.1, 300.0);
 		    camera.setViewMatrix(matriz_4x4::identidad);
 
 		    vector rayDirection = camera.getRayDirection(320, 240, width, height);

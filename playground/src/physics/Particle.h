@@ -44,13 +44,13 @@ public:
 	    another.boundingVolume = nullptr;
 	}
 
-    virtual ~Particle() {
+	virtual ~Particle() {
 
-    }
+	}
 
-    virtual const Geometry *getBoundingVolume() const {
-        return this->boundingVolume.get();
-    }
+	virtual const Geometry *getBoundingVolume() const {
+			return this->boundingVolume.get();
+	}
 
 	virtual void afterIntegrate(real dt) {
 	}

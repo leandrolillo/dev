@@ -84,6 +84,10 @@ public:
         return this->normal;
     }
 
+    virtual void setNormal(const vector &normal) {
+    	this->normal = normal;
+    }
+
     String toString() const override {
         return "Plane(origin: " + this->getOrigin().toString() + ", normal: " + this->normal.toString() + ")";
     }
@@ -301,6 +305,10 @@ public:
 
 	const std::vector<Plane>& getHalfSpaces() const {
 		return halfSpaces;
+	}
+
+	Plane &getHalfSpace(unsigned int index) {
+		return halfSpaces[index];
 	}
 };
 

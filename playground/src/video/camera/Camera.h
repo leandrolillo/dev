@@ -9,6 +9,7 @@
 #define SRC_VIDEO_CAMERA_H_
 
 #include<Math3d.h>
+#include <Geometry.h>
 
 class Camera {
 protected:
@@ -21,51 +22,49 @@ protected:
     vector position;
     matriz_3x3 orientation;
 
+    real near = 0.1;
+    real far = 300;
+    vector topNormal;
+    vector bottomNormal;
+    vector leftNormal;
+    vector rightNormal;
 
-    //TODO: Review how to get these values from projection (if it applies)
-    real zNear = (real)0.1;
-    real zFar = (real)300;
-public:
-    static matriz_4x4 perspectiveProjection(double fovy, double aspect, double zNear, double zFar) {
-        double fW, fH;
-        fH = tan(fovy / 360.0 * M_PI) * zNear;
-        fW = fH * aspect;
-        double left = -fW;
-        double right = fW;
-        double bottom = -fH;
-        double top = fH;
+    Frustum frustum;
+    bool frustumUpdated = false;
 
-        /**
-         * from glFrustrum man page at https://www.lri.fr/~mbl/ENS/IG2/docs/opengl1.1/glFrustum.html
-         */
-        return matriz_4x4(
-                2.0 * zNear / (right - left),   0.0,                            (right + left) / (right - left),    0.0,
-                0.0,                            2.0 * zNear / (top - bottom),   (top + bottom) / (top - bottom),    0.0,
-                0.0,                            0.0,                            -(zFar + zNear) / (zFar - zNear),   -(2.0 * zFar * zNear) / (zFar - zNear),
-                0.0,                            0.0,                            -1.0,                               0.0);
+protected:
+    void setProjectionMatrix(const matriz_4x4 &projectionMatrix) {
+			this->projectionMatrix = projectionMatrix;
+			this->projectionViewMatrix = this->projectionMatrix * this->viewMatrix;
+		}
+
+    void updateFrustrumNormals(real height, real width, real near, real far) {
+    	vector front = orientation.columna(2);
+    	vector right = orientation.columna(0);
+    	vector up = orientation.columna(1);
+
+    	/**
+    	 * Update frustrum normals according to the new camera projection - might need to refactor for orthographic projection
+    	 */
+    	topNormal = right ^ (front * near + up * height * 0.5);
+    	bottomNormal = right ^ (front * near - up* height * 0.5);
+
+    	rightNormal = up ^ (front * near + right * width * 0.5);
+    	leftNormal = up ^ (front * near - right * width * 0.5);
+
+    	/**
+    	 * Keep track of Z near and far
+    	 */
+    	this->near = near;
+    	this->far = far;
+
+			frustumUpdated = false;
     }
 
-    static matriz_4x4 orthographicProjection(double fovy, double aspect, double near, double far) {
-    	double right = fovy * aspect * 0.5;
-    	double left = fovy * aspect * -0.5;
-    	double top = fovy * 0.5;
-    	double bottom = fovy * -0.5;
-
-			/**
-			 * from glOrtho man page at https://www.lri.fr/~mbl/ENS/IG2/docs/opengl1.1/glOrtho.html
-			 */
-			double tx = -(right + left) / (right - left);
-			double ty = -(top + bottom) / (top - bottom);
-			double tz = -(far + near) / (far - near);
-
-			return matriz_4x4(
-							2.0 / (right - left),   0.0,                            		0.0,    							tx,
-							0.0,                       		2.0 / (top - bottom),   			0.0,    							ty,
-							0.0,                          0.0,                          -2.0 / (far - near), 	tz,
-							0.0,                          0.0,                          0.0, 									1.0);
-    }
 
 public:
+    Camera() : frustum({ Plane(vector(), vector(1, 0, 0)), Plane(vector(), vector(1, 0, 0)), Plane(vector(), vector(1, 0, 0)), Plane(vector(), vector(1, 0, 0)), Plane(vector(), vector(1, 0, 0)), Plane(vector(), vector(1, 0, 0)) }){
+    }
     /**
      * Mode, view and projection matrixes
      */
@@ -73,10 +72,53 @@ public:
         return this->projectionMatrix;
     }
 
-    void setProjectionMatrix(const matriz_4x4 &projectionMatrix) {
-			this->projectionMatrix = projectionMatrix;
-			this->projectionViewMatrix = this->projectionMatrix * this->viewMatrix;
-		}
+    void setPerspectiveProjectionFov(real fovy, real aspect, real near, real far) {
+        real height = 2.0 * tan(radian(fovy) * 0.5) * near; // half height = tan of half the fov times near
+        setPerspectiveProjection(height, height * aspect, near, far);
+    }
+
+
+    void setPerspectiveProjection(real height, real width, real near, real far) {
+        real  left = width * -0.5;
+        real right = width * 0.5;
+        real bottom = height * -0.5;
+        real top = height * 0.5;
+
+
+        /**
+         * from glFrustrum man page at https://www.lri.fr/~mbl/ENS/IG2/docs/opengl1.1/glFrustum.html
+         */
+        setProjectionMatrix(matriz_4x4(
+                2.0 * near / (right - left),   0.0,                            (right + left) / (right - left),    0.0,
+                0.0,                            2.0 * near / (top - bottom),   (top + bottom) / (top - bottom),    0.0,
+                0.0,                            0.0,                            -(far + near) / (far - near),   -(2.0 * far * near) / (far - near),
+                0.0,                            0.0,                            -1.0,                               0.0));
+
+        updateFrustrumNormals(height, width, near, far);
+    }
+
+    void setOrthographicProjection(real height, real width, real near, real far) {
+    	real top = height * 0.5;
+    	real bottom = height * -0.5;
+    	real right = width * 0.5;
+    	real left = width * -0.5;
+
+			/**
+			 * from glOrtho man page at https://www.lri.fr/~mbl/ENS/IG2/docs/opengl1.1/glOrtho.html
+			 */
+			real tx = -(right + left) / (right - left);
+			real ty = -(top + bottom) / (top - bottom);
+			real tz = -(far + near) / (far - near);
+
+			setProjectionMatrix(matriz_4x4(
+							2.0 / (right - left),   0.0,                            		0.0,    							tx,
+							0.0,                       		2.0 / (top - bottom),   			0.0,    							ty,
+							0.0,                          0.0,                          -2.0 / (far - near), 	tz,
+							0.0,                          0.0,                          0.0, 									1.0));
+
+			updateFrustrumNormals(height, width, near, far);
+    }
+
 
     const matriz_4x4 &getProjectionViewMatrix() const {
         return this->projectionViewMatrix;
@@ -87,6 +129,9 @@ public:
         this->orientation = (matriz_3x3)viewMatrix;
         this->position = -(vector3)((matriz::rotacion(orientation.traspuesta()) * this->viewMatrix).columna(3));
         this->projectionViewMatrix = this->projectionMatrix * this->viewMatrix;
+
+  			this->frustumUpdated = false;
+
     }
 
     const matriz_4x4 &getViewMatrix() const {
@@ -102,6 +147,8 @@ public:
 
         this->viewMatrix = matriz::rotacion(orientation) * matriz::traslacion(-position);
         this->projectionViewMatrix = this->projectionMatrix * this->viewMatrix;
+
+        this->frustumUpdated = false;
     }
 
     const vector getPosition() const {
@@ -113,15 +160,44 @@ public:
 
         this->viewMatrix = matriz::rotacion(orientation) * matriz::traslacion(-position);
         this->projectionViewMatrix = this->projectionMatrix * this->viewMatrix;
+
+        this->frustumUpdated = false;
     }
 
-
     real getZNear() const {
-        return this->zNear;
+        return this->near;
     }
 
     real getZFar() const {
-        return this->zFar;
+        return this->far;
+    }
+
+    const Frustum &getFrustum() {
+    	if(!frustumUpdated) {
+    		frustum.getHalfSpace(0).setOrigin(this->position);
+    		frustum.getHalfSpace(0).setNormal(this->orientation * leftNormal);
+
+    		frustum.getHalfSpace(0).setOrigin(this->position);
+    		frustum.getHalfSpace(0).setNormal(this->orientation * rightNormal);
+
+    		frustum.getHalfSpace(0).setOrigin(this->position);
+    		frustum.getHalfSpace(0).setNormal(this->orientation * topNormal);
+
+    		frustum.getHalfSpace(0).setOrigin(this->position);
+    		frustum.getHalfSpace(0).setNormal(this->orientation * bottomNormal);
+
+
+      	vector front = orientation.columna(2);
+    		frustum.getHalfSpace(0).setOrigin(this->position + front * this->near);
+    		frustum.getHalfSpace(0).setNormal(front);
+
+    		frustum.getHalfSpace(0).setOrigin(this->position + front * this->far);
+    		frustum.getHalfSpace(0).setNormal(-front);
+
+    		frustumUpdated = true;
+    	}
+
+    	return frustum;
     }
 
     /**
