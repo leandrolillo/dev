@@ -63,12 +63,6 @@ class PhysicsDemoRunner: public BaseDemoRunner {
 	real invPerformanceFreq = 1.0f;
 
 	/**
-	 * stats
-	 */
-	real elapsedTime = 0.0f;
-	unsigned long frames = 0;
-
-	/**
 	 * Renderers - defaultRenderer inherited from base demo
 	 */
 	SkyboxRenderer skyboxRenderer;
@@ -85,8 +79,8 @@ class PhysicsDemoRunner: public BaseDemoRunner {
 	MeshResource *basketball = null;
 public:
 	PhysicsDemoRunner() :   ground(new Plane(vector(0, 0, 0), vector(0, 1, 0))),
-	                        spherePlatform(new Sphere(vector(0, 0, 0), 0.1)),
-	                        aabbPlatform(new AABB(vector(0, 1, 0), vector(0.5, 0.05, 0.05))) {
+	                        spherePlatform(new Sphere(vector(0.0, 0.0, 0.0), 0.1)),
+	                        aabbPlatform(new AABB(vector(0.0, 1.0, 0.0), vector(0.5, 0.05, 0.05))) {
 	}
 
     bool init() override {
@@ -140,47 +134,44 @@ public:
 
 		video->setMousePosition(video->getScreenWidth() >> 1, video->getScreenHeight() >> 1);
 
-        camera.setPosition(vector(1.0f, 0.0f, 5.0f));
-        spherePlatform.setPosition(vector(0, 0.5, 0));
-        elapsedTime = 0;
+		camera.setPosition(vector(1.0f, 0.0f, 5.0f));
+		spherePlatform.setPosition(vector(0, 0.5, 0));
 	}
 
 	LoopResult doLoop() override {
-	    elapsedTime += 0.01;
-
-	    defaultRenderer.clear();
-	    defaultRenderer.drawAxes(matriz_4x4::identidad);
-        defaultRenderer.drawLine(matriz_4x4::identidad, vector(-1, 0, 0), vector(1, 0, 0));
-        defaultRenderer.drawLine(matriz_4x4::identidad, vector(0, -1, 0), vector(0, 1, 0));
-        defaultRenderer.drawLine(matriz_4x4::identidad, vector(0, 0, -1), vector(0, 0, 1));
+		defaultRenderer.clear();
+		defaultRenderer.drawAxes(matriz_4x4::identidad);
+		defaultRenderer.drawLine(matriz_4x4::identidad, vector(-1, 0, 0), vector(1, 0, 0));
+		defaultRenderer.drawLine(matriz_4x4::identidad, vector(0, -1, 0), vector(0, 1, 0));
+		defaultRenderer.drawLine(matriz_4x4::identidad, vector(0, 0, -1), vector(0, 0, 1));
 
 
-        //defaultRenderer.drawObject(matriz_4x4::traslacion(spherePlatform.getPosition()) * matriz_4x4::zoom(0.1, 0.1, 0.1), basketball);
-        defaultRenderer.setTexture(textureResource);
-        defaultRenderer.drawBox(matriz_4x4::traslacion(aabbPlatform.getPosition()),
-                2.0 * ((AABB *)aabbPlatform.getBoundingVolume())->getHalfSizes().x,
-                2.0 * ((AABB *)aabbPlatform.getBoundingVolume())->getHalfSizes().y,
-                2.0 * ((AABB *)aabbPlatform.getBoundingVolume())->getHalfSizes().z);
+		//defaultRenderer.drawObject(matriz_4x4::traslacion(spherePlatform.getPosition()) * matriz_4x4::zoom(0.1, 0.1, 0.1), basketball);
+		defaultRenderer.setTexture(textureResource);
+		defaultRenderer.drawBox(matriz_4x4::traslacion(aabbPlatform.getPosition()),
+						2.0 * ((AABB *)aabbPlatform.getBoundingVolume())->getHalfSizes().x,
+						2.0 * ((AABB *)aabbPlatform.getBoundingVolume())->getHalfSizes().y,
+						2.0 * ((AABB *)aabbPlatform.getBoundingVolume())->getHalfSizes().z);
 
-        //defaultRenderer.drawSphere(matriz_4x4::traslacion(spherePlatform.getPosition()) * matriz_4x4::zoom(0.1, 0.1, 0.1));
-        defaultRenderer.drawObject(matriz_4x4::traslacion(spherePlatform.getPosition()) * matriz_4x4::zoom(0.1, 0.1, 0.1), basketball);
-        for(auto &particle : this->particles)
-        {
-            if(particle->getStatus() == true) {
-				//defaultRenderer.setMaterial(&materials[(particleIterator - particles.begin()) % 3]);
-				defaultRenderer.setTexture(textureResource);
-				defaultRenderer.setMaterial(&material);
+		//defaultRenderer.drawSphere(matriz_4x4::traslacion(spherePlatform.getPosition()) * matriz_4x4::zoom(0.1, 0.1, 0.1));
+		defaultRenderer.drawObject(matriz_4x4::traslacion(spherePlatform.getPosition()) * matriz_4x4::zoom(0.1, 0.1, 0.1), basketball);
+		for(auto &particle : this->particles)
+		{
+				if(particle->getStatus() == true) {
+					//defaultRenderer.setMaterial(&materials[(particleIterator - particles.begin()) % 3]);
+					defaultRenderer.setTexture(textureResource);
+					defaultRenderer.setMaterial(&material);
 //				defaultRenderer.drawSphere(matriz_4x4::traslacion(particle->getPosition()) * matriz_4x4::zoom(0.1, 0.1, 0.1));
 
-                defaultRenderer.drawObject(matriz_4x4::traslacion(particle->getPosition()) * matriz_4x4::zoom(0.1, 0.1, 0.1), basketball);
-            }
-        }
+					defaultRenderer.drawObject(matriz_4x4::traslacion(particle->getPosition()) * matriz_4x4::zoom(0.1, 0.1, 0.1), basketball);
+				}
+		}
 		defaultRenderer.render(camera);
 		skyboxRenderer.render(camera);
 		gridRenderer.render(camera);
 
-        spherePlatform.setVelocity(vector(sin(elapsedTime + M_PI_2), 0, 0));
-        aabbPlatform.setVelocity(vector(-sin(elapsedTime + M_PI_2), 0, 0));
+		spherePlatform.setVelocity(vector(sin(this->getStopWatch().getTotalTime() + M_PI_2), 0, 0));
+		aabbPlatform.setVelocity(vector(-sin(this->getStopWatch().getTotalTime() + M_PI_2), 0, 0));
 
 		return LoopResult::CONTINUE;
 	}

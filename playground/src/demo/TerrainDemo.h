@@ -280,9 +280,9 @@ public:
 
 		terrainRenderer.render(camera);
 		skyboxRenderer.render(camera);
-	    defaultRenderer.render(camera);
+	  defaultRenderer.render(camera);
 
-		inputController->update(0);
+		inputController->update(this->getStopWatch().getElapsedTime());
 
 		return LoopResult::CONTINUE;
 	}
@@ -339,12 +339,12 @@ public:
 	    inputController->mouseButtonUp(button, x, y);
 	}
 
-    virtual void onMouseMove(int x, int y, int dx, int dy, unsigned int buttons) override {
-        if(dx != 0 || dy != 0) {
-            inputController->mouseMove(x, y, dx, dy);
-            this->video->setMousePosition(video->getScreenWidth() >> 1, video->getScreenHeight() >> 1);
-        }
-    }
+	virtual void onMouseMove(int x, int y, int dx, int dy, unsigned int buttons) override {
+		if(dx != 0 || dy != 0) {
+				inputController->mouseMove(x, y, dx, dy);
+				this->video->setMousePosition(video->getScreenWidth() >> 1, video->getScreenHeight() >> 1);
+		}
+	}
 
 	void onMouseWheel(int wheel) override {
 	    inputController->mouseWheel(wheel);

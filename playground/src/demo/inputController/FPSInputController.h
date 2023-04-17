@@ -85,25 +85,25 @@ public:
         switch (key) {
             case 'w':
             case 'W':
-                velocity.z = -0.1;
+                velocity.z = -3;
                 break;
             case 's':
             case 'S':
-                velocity.z = 0.1;
+                velocity.z = 3;
                 break;
             case 'a':
             case 'A':
-                velocity.x = -0.1;
+                velocity.x = -3;
                 break;
             case 'd':
             case 'D':
-                velocity.x = 0.1;
+                velocity.x = 3;
                 break;
         }
     }
 
     virtual void update(real dt) override {
-        this->setPosition(this->constrainPosition(this->position + camera.getOrientation() * velocity + vector(0.0, -1.0, 0.0)));
+        this->setPosition(this->constrainPosition(this->position + camera.getOrientation() * velocity * dt + vector(0.0, -1.0, 0.0)));
     }
 
 
