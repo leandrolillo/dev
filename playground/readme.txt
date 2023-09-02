@@ -4,11 +4,14 @@ Dependencies:
 
 already installed: openAl, openGl
 
+brew install cmake
 brew install libjpeg
 brew install libpng
 brew install sdl2
 brew install libogg
 brew install libvorbis
+
+or singleline: brew install cmake libjpeg libpng sdl2 libogg libvorbis
 
 -------------
 Building:
