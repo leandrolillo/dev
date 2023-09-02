@@ -35,6 +35,10 @@ protected:
 	vector forceAccumulator;
 
 public:
+	Particle(std::unique_ptr<Geometry> *geometry) {
+	   this->boundingVolume = std::move(geometry);
+	}
+
 	Particle(Geometry *geometry) {
 	   this->boundingVolume = std::unique_ptr<Geometry>(geometry);
 	}

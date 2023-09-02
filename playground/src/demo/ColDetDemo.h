@@ -31,7 +31,6 @@ class CollisionDetectionDemoRunner;
 
 class CollidingParticle: public Particle {
 private:
-    CollisionDetectionDemoRunner *runner = null;
     bool _isSelected = false;
 
 public:
@@ -45,10 +44,22 @@ public:
     void setSelected(bool selected) {
         this->_isSelected = selected;
     }
+};
 
-//    void setRunner(CollisionDetectionDemoRunner *runner);
-//    void afterIntegrate(real dt);
-//    void onCollision(const ParticleContact &contact);
+class CameraParticle : public CollidingParticle {
+	Camera &camera;
+public:
+	CameraParticle(Camera &camera) : CollidingParticle(&camera.getFrustum()), camera(camera){
+	}
+
+	void setPosition(const vector &position) {
+		camera.setPosition(position);
+	}
+
+	const vector &getPosition() const {
+		return this->camera.getPosition();
+	}
+
 };
 
 class CollisionDetectionDemoRunner: public BaseDemoRunner {
@@ -82,6 +93,7 @@ public:
 
     void reset() {
         camera.setViewMatrix(matriz_4x4::traslacion(vector(0.0f, -0.5f, -10.0f)));
+        anotherCamera.setViewMatrix(matriz_4x4::identidad);
 
         real radius = (real) 0.5;
         if(collidingParticles.size() > 0) {
@@ -135,21 +147,16 @@ public:
         video->enable(BLEND, GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
         collidingParticles.push_back(std::unique_ptr<CollidingParticle>(new CollidingParticle(new Sphere(vector(0, 0, 0), (real) 0.5))));
-//        collidingParticles.back()->setRunner(this);
         particleManager.addParticle(collidingParticles.back().get());
 
         collidingParticles.push_back(std::unique_ptr<CollidingParticle>(new CollidingParticle(new Sphere(vector(0, 0, 0), (real) 0.5))));
- //       collidingParticles.back()->setRunner(this);
         particleManager.addParticle(collidingParticles.back().get());
 
         collidingParticles.push_back(std::unique_ptr<CollidingParticle>(new CollidingParticle(new AABB(vector(0, 0, 0), vector(0.5, 0.5, 0.5)))));
-  //      collidingParticles.back()->setRunner(this);
         particleManager.addParticle(collidingParticles.back().get());
 
         collidingParticles.push_back(std::unique_ptr<CollidingParticle>(new CollidingParticle(new AABB(vector(0, 0, 0), vector(1, 1, 1)))));
-//        collidingParticles.back()->setRunner(this);
         particleManager.addParticle(collidingParticles.back().get());
-
 
         HierarchicalGeometry *hierarchicalGeometry = new HierarchicalGeometry(new AABB(vector(0, 0, 0), vector(1, 0.5, 0.5)));
         hierarchicalGeometry->addChildren(new Sphere(vector(-0.5, 0, 0), 0.5));
@@ -160,6 +167,10 @@ public:
         particleManager.addParticle(collidingParticles.back().get());
 
         particleManager.addParticle(&ground);
+
+        collidingParticles.push_back(std::unique_ptr<CollidingParticle>(new CameraParticle(anotherCamera)));
+        particleManager.addParticle(collidingParticles.back().get());
+
 
         geometryRenderer.setCollidingParticleBMaterial(&blue);
 
@@ -274,28 +285,45 @@ public:
 							reset();
 							break;
 					case SDLK_SPACE:
-						particleManager.resolveContacts(0.1);
+						particleManager.resolveContacts(this->getStopWatch().getElapsedTime());
 							break;
 					case 'w':
 					case 'W':
-						anotherCamera.setPosition(anotherCamera.getPosition() + vector(0.0, 0.1, 0.0) * this->getContainer()->getStopWatch().getElapsedTime());
+						anotherCamera.setPosition(anotherCamera.getPosition() + vector(0.0, 10.0, 0.0) * this->getStopWatch().getElapsedTime());
 						break;
 					case 's':
 					case 'S':
-						anotherCamera.setPosition(anotherCamera.getPosition() - vector(0.0, 0.1, 0.0) * this->getContainer()->getStopWatch().getElapsedTime());
+						anotherCamera.setPosition(anotherCamera.getPosition() - vector(0.0, 10.0, 0.0) * this->getStopWatch().getElapsedTime());
 						break;
-
 					case 'a':
 					case 'A':
-						anotherCamera.setPosition(anotherCamera.getPosition() + vector(0.1, 0.0, 0.0) * this->getContainer()->getStopWatch().getElapsedTime());
+						anotherCamera.setPosition(anotherCamera.getPosition() - vector(10.0, 0.0, 0.0) * this->getStopWatch().getElapsedTime());
 						break;
 					case 'd':
 					case 'D':
-						anotherCamera.setPosition(anotherCamera.getPosition() - vector(0.1, 0.0, 0.0) * this->getContainer()->getStopWatch().getElapsedTime());
+						anotherCamera.setPosition(anotherCamera.getPosition() + vector(10.0, 0.0, 0.0) * this->getStopWatch().getElapsedTime());
+						break;
+					case 'q':
+					case 'Q':
+						anotherCamera.setOrientation(anotherCamera.getOrientation() * matriz_3x3::matrizRotacion(0.0, radian(10 * this->getStopWatch().getTotalTime()), 0.0));
+						break;
+					case 'e':
+					case 'E':
+						anotherCamera.setOrientation(matriz_3x3::matrizRotacion(0.0, -10 * radian(this->getStopWatch().getElapsedTime()), 0.0) * anotherCamera.getOrientation());
+						break;
+					case 'z':
+					case 'Z':
+						anotherCamera.setOrientation(matriz_3x3::matrizRotacion(radian(10 * this->getStopWatch().getElapsedTime()), 0.0, 0.0) * anotherCamera.getOrientation());
+						break;
+					case 'c':
+					case 'C':
+						anotherCamera.setOrientation(matriz_3x3::matrizRotacion(radian(10 * this->getStopWatch().getElapsedTime()), 0.0, 0.0) * anotherCamera.getOrientation());
 						break;
 
+
         }
-        logger->debug("Camera position: %s", camera.getPosition().toString().c_str());
+//        logger->info("Another camera position: %s - dt: %f", anotherCamera.getPosition().toString().c_str(), this->getStopWatch().getElapsedTime());
+//        logger->debug("Camera position: %s", camera.getPosition().toString().c_str());
     }
 
     virtual String toString() const override {

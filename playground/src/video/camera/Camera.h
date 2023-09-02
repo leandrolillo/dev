@@ -43,14 +43,16 @@ protected:
     	vector right = orientation.columna(0);
     	vector up = orientation.columna(1);
 
+    	vector frontTimesNear = front * near;
+
     	/**
     	 * Update frustrum normals according to the new camera projection - might need to refactor for orthographic projection
     	 */
-    	topNormal = right ^ (front * near + up * height * 0.5);
-    	bottomNormal = right ^ (front * near - up* height * 0.5);
+    	topNormal = ((frontTimesNear + up * height * 0.5) ^ right ).normalizado();
+    	bottomNormal = (right ^ (frontTimesNear - up * height * 0.5)).normalizado();
 
-    	rightNormal = up ^ (front * near + right * width * 0.5);
-    	leftNormal = up ^ (front * near - right * width * 0.5);
+    	rightNormal = (up ^ (frontTimesNear + right * width * 0.5)).normalizado();
+    	leftNormal = ((frontTimesNear - right * width * 0.5) ^ up).normalizado();
 
     	/**
     	 * Keep track of Z near and far
@@ -61,9 +63,34 @@ protected:
 			frustumUpdated = false;
     }
 
+    void updateFrustum() {
+  		frustum.getHalfSpace(0).setOrigin(-this->position);
+  		frustum.getHalfSpace(0).setNormal(this->orientation.traspuesta() * leftNormal);
+
+  		frustum.getHalfSpace(1).setOrigin(-this->position);
+  		frustum.getHalfSpace(1).setNormal(this->orientation.traspuesta() * rightNormal);
+
+  		frustum.getHalfSpace(2).setOrigin(-this->position);
+  		frustum.getHalfSpace(2).setNormal(this->orientation.traspuesta() * topNormal);
+
+  		frustum.getHalfSpace(3).setOrigin(-this->position);
+  		frustum.getHalfSpace(3).setNormal(this->orientation.traspuesta() * bottomNormal);
+
+    	vector front = orientation.columna(2);
+  		frustum.getHalfSpace(4).setOrigin(-this->position + front * this->near);
+  		frustum.getHalfSpace(4).setNormal(this->orientation.traspuesta() * -front);
+
+  		frustum.getHalfSpace(5).setOrigin(-this->position + front * this->far * 0.1);
+  		frustum.getHalfSpace(5).setNormal(this->orientation.traspuesta() * front);
+    }
+
 
 public:
     Camera() : frustum({ Plane(vector(), vector(1, 0, 0)), Plane(vector(), vector(1, 0, 0)), Plane(vector(), vector(1, 0, 0)), Plane(vector(), vector(1, 0, 0)), Plane(vector(), vector(1, 0, 0)), Plane(vector(), vector(1, 0, 0)) }){
+    	/**
+    	 * Default to perspective projection.
+    	 */
+    	setPerspectiveProjectionFov(45.0, 800.0/600.0, 2, 30);
     }
     /**
      * Mode, view and projection matrixes
@@ -77,7 +104,9 @@ public:
         setPerspectiveProjection(height, height * aspect, near, far);
     }
 
-
+    /**
+     * This is opengl style perspective projection, where height and width are the dimensions on the near plane
+     */
     void setPerspectiveProjection(real height, real width, real near, real far) {
         real  left = width * -0.5;
         real right = width * 0.5;
@@ -172,28 +201,9 @@ public:
         return this->far;
     }
 
-    const Frustum &getFrustum() {
+    Frustum &getFrustum() {
     	if(!frustumUpdated) {
-    		frustum.getHalfSpace(0).setOrigin(this->position);
-    		frustum.getHalfSpace(0).setNormal(this->orientation * leftNormal);
-
-    		frustum.getHalfSpace(0).setOrigin(this->position);
-    		frustum.getHalfSpace(0).setNormal(this->orientation * rightNormal);
-
-    		frustum.getHalfSpace(0).setOrigin(this->position);
-    		frustum.getHalfSpace(0).setNormal(this->orientation * topNormal);
-
-    		frustum.getHalfSpace(0).setOrigin(this->position);
-    		frustum.getHalfSpace(0).setNormal(this->orientation * bottomNormal);
-
-
-      	vector front = orientation.columna(2);
-    		frustum.getHalfSpace(0).setOrigin(this->position + front * this->near);
-    		frustum.getHalfSpace(0).setNormal(front);
-
-    		frustum.getHalfSpace(0).setOrigin(this->position + front * this->far);
-    		frustum.getHalfSpace(0).setNormal(-front);
-
+    		this->updateFrustum();
     		frustumUpdated = true;
     	}
 

@@ -89,7 +89,7 @@ public:
     }
 
     String toString() const override {
-        return "Plane(origin: " + this->getOrigin().toString() + ", normal: " + this->normal.toString() + ")";
+        return "Plane(origin: " + this->getOrigin().toString("%.6f") + ", normal: " + this->normal.toString("%.6f") + ")";
     }
 
     GeometryType getType() const override {

@@ -27,6 +27,7 @@ private:
     MaterialResource const *sceneryMaterial=&white;
     MaterialResource const *contactMaterial=&green;
 
+    Logger *logger = LoggerFactory::getLogger("GeometryRenderer");
 
 public:
 	GeometryRenderer(DefaultRenderer &renderer) : renderer(renderer) {		}
@@ -127,12 +128,22 @@ public:
 		renderer.drawSphere(matriz::traslacion(sphere->getOrigin()), sphere->getRadius());
 	}
 
-	void render(const Plane *plane) const {
-		renderer.drawBox(matriz_4x4::base(matriz_3x3::matrizRotacion(0, plane->getNormal()), plane->getOrigin()) , 10, 0.01, 10);
+
+	/**
+	 * I'm sure there's a better way of doing this
+	 */
+	void render(const Plane *plane, real width = 10.0, real height = 0.01, real depth = 10.0) const {
+		vector j = plane->getNormal();
+		vector i(1, 0, 0);
+		i = (i - (j * (j * i))).normalizado();
+		vector k = i ^ j;
+
+		matriz_3x3 orientacion(i, j, k);
+
+		renderer.drawBox(matriz_4x4::base(orientacion, plane->getOrigin()), width, height, depth);
 	}
 
 	void render(const Line *line) const {
-
 	}
 
 	void render(const HeightMapGeometry *heightmap) const {
@@ -150,8 +161,14 @@ public:
 	}
 
 	void render(const Frustum *frustum) const {
+		logger->info("");
+		logger->info("Rendering frustum");
 		for( auto &plane: frustum->getHalfSpaces()) {
-			render(&plane);
+
+			logger->info("	Rendering plane %s", plane.toString().c_str());
+
+			renderer.drawLine(matriz_4x4::identidad, plane.getOrigin(), plane.getOrigin() + plane.getNormal() * 10);
+			render(&plane, 1, 0.01, 1);
 		}
 	}
 

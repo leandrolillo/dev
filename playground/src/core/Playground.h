@@ -339,6 +339,10 @@ public:
 
 	virtual void loop() {
 		try {
+			if(this->stopWatch != null) {
+				this->stopWatch->update();
+			}
+
 			logger->verbose("Calling enabled runners beforeLoop");
 			for (auto &currentRunner : runners) {
 				if (currentRunner->getEnabled()) {

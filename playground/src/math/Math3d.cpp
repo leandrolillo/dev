@@ -274,6 +274,10 @@ void matriz_2x2::operator *=(const real &op1) {
 	const matriz_3x3 matriz_3x3::matrizRotacion(const vector &eulerAngles) {
 	    return matrizRotacion(eulerAngles.x, eulerAngles.y, eulerAngles.z);
 	}
+
+	/**
+	 * x, y, z (euler angles) en radianes
+	 */
 	const matriz_3x3 matriz_3x3::matrizRotacion(real x, real y, real z) {
 		real cx = (real)cos(x), sx = (real)sin(x);
 		real cy = (real)cos(y), sy = (real)sin(y);
@@ -285,6 +289,9 @@ void matriz_2x2::operator *=(const real &op1) {
 			-sy, 		sx * cy, 					cx * cy);
 	}
 
+	/**
+	 * angulo en radianes
+	 */
 	const matriz_3x3 matriz_3x3::matrizRotacion(real angulo, real x, real y, real z) {
 		real c, s, umc, nxny1cos, nxnz1cos, nynz1cos;
 		c = (real)cos(angulo);
@@ -338,6 +345,13 @@ void matriz_2x2::operator *=(const real &op1) {
 		this->_20 = op1._20; this->_21 = op1._21; this->_22 = op1._22;
 	}
 
+	matriz_3x3::matriz_3x3(vector column0, vector column1, vector column2) : BaseMatrix(3, 3) {
+		this->_00 = column0.x; this->_01 = column1.x; this->_02 = column2.x;
+		this->_10 = column0.y; this->_11 = column1.y; this->_12 = column2.y;
+		this->_20 = column0.z; this->_21 = column1.z; this->_22 = column2.z;
+	}
+
+
 	matriz_3x3::operator matriz_4x4 () const{
 		return(matriz_4x4(	_00, _01, _02, 0.0, 
 							_10, _11, _12, 0.0,
@@ -345,19 +359,19 @@ void matriz_2x2::operator *=(const real &op1) {
 							0.0, 0.0, 0.0, 1.0));
 	}
 
-    const vector matriz_3x3::fila(unsigned int fila) const {
-        if (fila > 2)
-            throw InvalidArgumentException("Index Out of Bounds - matriz_3x3::fila(...)");
+	const vector matriz_3x3::fila(unsigned int fila) const {
+			if (fila > 2)
+					throw InvalidArgumentException("Index Out of Bounds - matriz_3x3::fila(...)");
 
-        return vector(m[fila * 3], m[fila * 3 + 1], m[fila * 3 + 2]);
-    }
+			return vector(m[fila * 3], m[fila * 3 + 1], m[fila * 3 + 2]);
+	}
 
-    const vector matriz_3x3::columna(unsigned int columna) const {
-        if (columna > 2)
-            throw InvalidArgumentException("Index Out of Bounds - matriz_3x3::columna(...)");
+	const vector matriz_3x3::columna(unsigned int columna) const {
+			if (columna > 2)
+					throw InvalidArgumentException("Index Out of Bounds - matriz_3x3::columna(...)");
 
-        return vector(m[0 * 3 + columna], m[1 * 3 + columna], m[2 * 3 + columna]);
-    }
+			return vector(m[0 * 3 + columna], m[1 * 3 + columna], m[2 * 3 + columna]);
+	}
 
 
 //	const matriz_3x3 matriz_3x3::HacerRotacion(real x, real y, real z) { //Construye una rotaci�n en �ngulos [radianes] de Euler
@@ -446,7 +460,7 @@ void matriz_2x2::operator *=(const real &op1) {
 //		this->_02 = vec3.x; this->_12 = vec3.y; this->_22 = vec3.z;
 //	}
 //
-//	const matriz_3x3 matriz_3x3::Ortonormalizada(void) const { // Devuelve una matriz que es la ortonormalizada de la matriz a la cual se le aplic� la operaci�n
+//	const matriz_3x3 matriz_3x3::Ortonormalizada(void) const {
 //		vector3 vec1(this->_00, this->_10, this->_20);
 //		vector3 vec2(this->_01, this->_11, this->_21);
 //		vector3 vec3;

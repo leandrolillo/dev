@@ -65,3 +65,13 @@ Games:
 
 robotica - brazo (curso)
 scalectric - o vehículos (autos, trenes, naves) que sigan una ruta predefinida con escenarios de fondo
+
+Kboom
+Destruir la tierra (o algún planeta) mediante asteroides que se lanzan desde fuera del sistema solar.
+efemeride planetaria (https://ssd.jpl.nasa.gov/?ephemerides#planets)
+regiones del sistema solar
+Roles de los planetas (como saturno que actúa de escudo - era saturno?)
+visualizaciones de gases del meteoro de acuerdo a composición
+potencial educativo.
+
+
