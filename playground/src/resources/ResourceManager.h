@@ -13,7 +13,9 @@
 #include <stdio.h>
 #include <algorithm>
 
-
+/**
+ * Comparator to enable sets of unique_ptr<ResourceAdapter>
+ */
 struct resourceAdapterComparator
 {
     using is_transparent = void;
@@ -32,6 +34,9 @@ struct resourceAdapterComparator
 };
 
 
+/**
+ * Comparator to enable sets of unique_ptr<Resource>
+ */
 struct resourceComparator
 {
     using is_transparent = void;

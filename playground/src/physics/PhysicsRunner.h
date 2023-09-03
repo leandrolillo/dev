@@ -76,7 +76,7 @@ public:
 	}
 
 	LoopResult doLoop() override {
-		real dt = this->stopWatch->update();
+		real dt = this->stopWatch->getElapsedTime();
 
 		this->particleManager.step(dt * playbackSpeed);
 

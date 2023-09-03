@@ -14,8 +14,10 @@
 
 #include "demo/PlaygroundTest.h"
 
-static String repository = {"/Users/leandro/huevadas/projects/dev/media/"};
-int main(int, char**){
+int main(int argn, char** argv){
+
+	String repository = Paths::getDirname(argv[0]) + "/../../media"; //assumes executable lies in playground/target folder
+
     TestsPlayground *playgroundtests = new TestsPlayground(repository);
     playgroundtests->withName("Playground Tests")->run();
     delete playgroundtests;
@@ -41,7 +43,7 @@ int main(int, char**){
     PhysicsPlayground *physicsPlayground = new PhysicsPlayground(repository);
     physicsPlayground->withName("Physics")->run();
     delete physicsPlayground;
-//
+
 //    RoadFighter *roadFighter = new RoadFighter(repository);
 //    roadFighter->withName("Road Fighter")->run();
 //    delete roadFighter;
