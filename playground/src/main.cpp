@@ -67,7 +67,9 @@ class InputParser{
  */
 int main(int argc, char** argv){
 
-	String repository = Paths::add(Paths::getDirname(argv[0]), "../../media"); //assumes executable lies in playground/target folder
+	//String repository = Paths::add(Paths::getDirname(argv[0]), "../../media"); //assumes executable lies in playground/target folder
+	String repository = "./target/../../media";
+	String defaultPlaygroundName = "physics";
 
 
 	//TODO: Move this to a list of playgrounds and pick the one to run based on its name. Also list available names from this list.
@@ -80,6 +82,9 @@ int main(int argc, char** argv){
 	{
 		String playgroundName = StringUtils::toLowercase(StringUtils::trim(input.getArg(0)));
 		std::remove_if(playgroundName.begin(), playgroundName.end(), [](unsigned char ch) { return !std::isspace(ch); });
+		if(playgroundName == "") {
+			playgroundName = defaultPlaygroundName;
+		}
 
 	    TestsPlayground *playgroundtests = new TestsPlayground(repository);
 	    playgroundtests->withName("Playground Tests")->run();

@@ -31,7 +31,7 @@ public:
 
 		String actual = response.getFullPath("~/images/basketball.png");
 
-		assertEquals(defaultAssertMessage, "./target/../../media/images/basketball.png", actual);
+		assertEquals(defaultAssertMessage, (String)std::__fs::filesystem::absolute("./target/../../media") + "/images/basketball.png", actual);
 
 	}
 
