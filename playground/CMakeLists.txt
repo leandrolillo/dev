@@ -1,9 +1,6 @@
-#cmake_minimum_required (VERSION 2.6)
-
-
 add_definitions(-w) # hide warnings
 
-cmake_minimum_required(VERSION 3.1.3)
+cmake_minimum_required(VERSION 3.5)
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)  # not necessary, but encouraged
 
