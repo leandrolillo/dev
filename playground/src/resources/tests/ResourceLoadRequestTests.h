@@ -57,7 +57,7 @@ public:
 		/* Uri with name - relative to root */
 		ResourceLoadRequest requestB("tests/fileToParse.txt/name");
 		actual = requestB.withParent(runner->getResourceManager()->getRootFolder()) .getFilePath();
-		assertEquals(defaultAssertMessage, runner->getResourceManager()->getRootFolder() + "tests/fileToParse.txt", actual);
+		assertEquals(defaultAssertMessage, Paths::add(runner->getResourceManager()->getRootFolder(), "tests/fileToParse.txt"), actual);
 
 		/* Uri with name - and parent - returns the object as well since filename does not exist */
 		ResourceLoadRequest requestC("tests/filename.json/name");

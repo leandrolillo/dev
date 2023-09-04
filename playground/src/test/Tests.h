@@ -48,7 +48,7 @@ public:
         for(auto iterator : tests)
         {
             try {
-                logger->info("- Running test [%s]...", iterator.first.c_str());
+                logger->debug("- Running test [%s]...", iterator.first.c_str());
                 void (UnitTest::*currentTest)(PlaygroundRunner *);
                 currentTest = iterator.second;
 

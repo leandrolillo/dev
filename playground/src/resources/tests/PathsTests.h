@@ -29,12 +29,12 @@ public:
 		actual = Paths::getDirname("/home");
 		assertEquals(defaultAssertMessage, "/home", actual);
 
-		actual = Paths::getDirname(runner->getResourceManager()->getRootFolder() + "tests/fileToParse.txt");
-		assertEquals(defaultAssertMessage, runner->getResourceManager()->getRootFolder() + "tests", actual);
+		actual = Paths::getDirname(Paths::add(runner->getResourceManager()->getRootFolder(), "tests/fileToParse.txt"));
+		assertEquals(defaultAssertMessage, Paths::add(runner->getResourceManager()->getRootFolder(), "tests"), actual);
 
 		/** If it does not exist, returns the path as is */
-		actual = Paths::getDirname(runner->getResourceManager()->getRootFolder() + "tests/unexistingFileToParse.txt");
-		assertEquals(defaultAssertMessage, runner->getResourceManager()->getRootFolder() + "tests/unexistingFileToParse.txt", actual);
+		actual = Paths::getDirname(Paths::add(runner->getResourceManager()->getRootFolder(), "tests/unexistingFileToParse.txt"));
+		assertEquals(defaultAssertMessage, Paths::add(runner->getResourceManager()->getRootFolder(), "tests/unexistingFileToParse.txt"), actual);
 
 	}
 

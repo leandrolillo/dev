@@ -31,18 +31,18 @@ int main(int argn, char** argv){
 //    delete objPlayground;
 //
 
-    CollisionDetectionPlayground *colDetplayground = new CollisionDetectionPlayground(repository);
-    colDetplayground->withName("Collision Detection Playground")->run();
-    delete colDetplayground;
+//    CollisionDetectionPlayground *colDetplayground = new CollisionDetectionPlayground(repository);
+//    colDetplayground->withName("Collision Detection Playground")->run();
+//    delete colDetplayground;
+//
+//    PlaygroundTerrainDemo * terrainPlayground = new PlaygroundTerrainDemo(repository);
+//    terrainPlayground->withName("Terrain Demo")->run();
+//    delete terrainPlayground;
 
-    PlaygroundTerrainDemo * terrainPlayground = new PlaygroundTerrainDemo(repository);
-    terrainPlayground->withName("Terrain Demo")->run();
-    delete terrainPlayground;
 
-
-    PhysicsPlayground *physicsPlayground = new PhysicsPlayground(repository);
-    physicsPlayground->withName("Physics")->run();
-    delete physicsPlayground;
+//    PhysicsPlayground *physicsPlayground = new PhysicsPlayground(repository);
+//    physicsPlayground->withName("Physics")->run();
+//    delete physicsPlayground;
 
 //    RoadFighter *roadFighter = new RoadFighter(repository);
 //    roadFighter->withName("Road Fighter")->run();
