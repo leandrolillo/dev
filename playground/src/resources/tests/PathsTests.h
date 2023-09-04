@@ -79,6 +79,9 @@ public:
     	actual = Paths::add("/home/assets/", "~/resource.json");
     	assertEquals(defaultAssertMessage, "/home/assets/resource.json", actual);
 
+    	actual = Paths::add("./target/../../media", "~/images/basketball.png");
+    	assertEquals(defaultAssertMessage, "./target/../../media/images/basketball.png", actual);
+
     	// edge cases
     	actual = Paths::add("", "resource.json");
     	assertEquals(defaultAssertMessage, "resource.json", actual);

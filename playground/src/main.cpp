@@ -67,7 +67,7 @@ class InputParser{
  */
 int main(int argc, char** argv){
 
-	String repository = Paths::getDirname(argv[0]) + "/../../media"; //assumes executable lies in playground/target folder
+	String repository = Paths::add(Paths::getDirname(argv[0]), "../../media"); //assumes executable lies in playground/target folder
 
 
 	//TODO: Move this to a list of playgrounds and pick the one to run based on its name. Also list available names from this list.
@@ -81,15 +81,15 @@ int main(int argc, char** argv){
 		String playgroundName = StringUtils::toLowercase(StringUtils::trim(input.getArg(0)));
 		std::remove_if(playgroundName.begin(), playgroundName.end(), [](unsigned char ch) { return !std::isspace(ch); });
 
-
-		printf("Running playground [%s]\n", playgroundName.c_str());
-
 	    TestsPlayground *playgroundtests = new TestsPlayground(repository);
 	    playgroundtests->withName("Playground Tests")->run();
 	    delete playgroundtests;
 
+
+		printf("\n\nRunning playground [%s]\n", playgroundName.c_str());
+
 	    if(playgroundName == "generaldemo") {
-			Playground *playground = new PlaygroundGeneralDemo(repository);
+	    	Playground *playground = new PlaygroundGeneralDemo(repository);
 			playground->withName("GeneralDemo")->run();
 			delete playground;
 	    } else if(playgroundName == "ObjDemo") {
@@ -108,10 +108,12 @@ int main(int argc, char** argv){
 	    	Playground *playground = new PhysicsPlayground(repository);
 			playground->withName("Physics")->run();
 			delete playground;
-	    } else if(playgroundName == "roadFighter") {
+	    } else if(playgroundName == "roadfighter") {
 	    	Playground *playground = new RoadFighter(repository);
 			playground->withName("Road Fighter")->run();
 			delete playground;
+	    } else {
+	    	printf("Unknown playground [%s]\n", playgroundName.c_str());
 	    }
 	}
 

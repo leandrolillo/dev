@@ -14,6 +14,7 @@
 #include "../physics/tests/ContactResolverTests.h"
 #include "../resources/tests/PathsTests.h"
 #include "../resources/tests/ResourceLoadRequestTests.h"
+#include "../resources/tests/ResourceLoadResponseTests.h"
 #include "../resources/tests/ResourceManagerTests.h"
 
 #include "../video/tests/GeometryResourceAdapterTests.h"
@@ -25,10 +26,12 @@ class PlaygroundTestsRunner: public PlaygroundRunner, UnitTest {
         Math3dTests math3dTests;
 		ResourceManagerTests resourceManagerTests;
 		ResourceLoadRequestTests resourceLoadRequestTests;
+		ResourceLoadResponseTests resourceLoadResponseTests;
         CollisionTesterTests collisionTesterTests;
 		CollisionDetectorTests collisionDetectorTests;
 		ContactResolverTests collisionResolverTests;
 		PathsTests pathsTests;
+
 		GeometryResourceAdapterTests geometryResourceAdapterTests;
 		ObjResourceAdapterTests objResourceAdapterTests;
 
@@ -63,6 +66,7 @@ class PlaygroundTestsRunner: public PlaygroundRunner, UnitTest {
             this->testsManager.addTest(pathsTests);
             this->testsManager.addTest(resourceManagerTests);
             this->testsManager.addTest(resourceLoadRequestTests);
+            this->testsManager.addTest(resourceLoadResponseTests);
             this->testsManager.addTest(math3dTests);
             this->testsManager.addTest(collisionTesterTests);
             this->testsManager.addTest(collisionDetectorTests);
