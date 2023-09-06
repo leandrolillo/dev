@@ -38,7 +38,7 @@ protected:
 public:
 
     void resolveVelocity(const ParticleContact &contact, real dt) const {
-        real separatingVelocity = calculateSeparatingVelocity(contact);
+        real separatingVelocity = contact.getRelativeSpeed();
         if(separatingVelocity <= 0.0) {
             real newSepVelocity = -separatingVelocity * contact.getRestitution();
 
