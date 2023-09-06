@@ -176,10 +176,15 @@ public:
 		return LoopResult::CONTINUE;
 	}
 
-	void onCollision(BulletParticle *bulletParticle) {
-	    bounceSource->setPosition(bulletParticle->getPosition());
-	    audio->updateSource(bounceSource);
-        audio->playSource(bounceSource);
+	void onCollision(BulletParticle *bulletParticle, const ParticleContact &contact) {
+		//logger->info("Collision relative speed: %f - sound: %s", contact.getRelativeSpeed(), contact.getRelativeSpeed() < -0.1 ? "on" : "off");
+
+		if(contact.getRelativeSpeed() < -0.5) {
+			logger->info("Collision relative speed: %f - sound on", contact.getRelativeSpeed());
+			bounceSource->setPosition(bulletParticle->getPosition());
+			audio->updateSource(bounceSource);
+			audio->playSource(bounceSource);
+		}
 	}
 
 	void afterIntegrate(BulletParticle *bulletParticle) {
@@ -228,20 +233,20 @@ public:
 	void onMouseWheel(int wheel) override {
         camera.setPosition(camera.getPosition() - vector(0.0f, 0.0f, wheel));
         audio->updateListener(camera.getPosition());
-        logger->debug("camera: %s", camera.getPosition().toString("%.2f").c_str());
+        //logger->debug("camera: %s", camera.getPosition().toString("%.2f").c_str());
 	}
 
 	void onMouseMove(int x, int y, int dx, int dy, unsigned int buttons) override {
         camera.setPosition(camera.getPosition() - vector(0.1f * dx, 0.1f * dy, 0));
         audio->updateListener(camera.getPosition());
-        logger->debug("camera: %s", camera.getPosition().toString("%.2f").c_str());
+        //logger->debug("camera: %s", camera.getPosition().toString("%.2f").c_str());
 	}
 
 	void onMouseButtonDown(unsigned char button, int x, int y) override {
 		fire(camera.getPosition());
 
 		float randomDx = ((real)rand()/(real)RAND_MAX * 0.1 - 0.05);
-		logger->info("RandomDx %f", randomDx);
+		//logger->info("RandomDx %f", randomDx);
 		fire(vector(randomDx, 2.0, 0.0), true);
 	}
 
@@ -280,7 +285,7 @@ void BulletParticle::afterIntegrate(real dt) {
 
 void BulletParticle::onCollisionResolved(const ParticleContact &contact) {
     if(runner != null) {
-        runner->onCollision(this);
+        runner->onCollision(this, contact);
     }
 
 }

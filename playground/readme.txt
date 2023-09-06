@@ -4,6 +4,10 @@ Dependencies:
 
 already installed: openAl, openGl
 
+#requires clang command line installed and running thus we have to install xcode and then xcode cli
+
+xcode-select --install
+
 brew install cmake
 brew install libjpeg
 brew install libpng
@@ -25,6 +29,12 @@ Building:
 	
 'make' for generating executable file in target directory
 
+---------------------------
+Debuging with lldb in osx - developers group
+---------------------------
+You might need to add your user to developers group in order to use lldb: 
+
+	sudo dscl . append /Groups/_developer GroupMembership llillo
 
 sample command line for rebuilding, running and tailing the log file:
 --------------------------------------------------------------------

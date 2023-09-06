@@ -30,13 +30,13 @@ public:
 		);
 		if (geometryCollection == null || geometryCollection->getObjects().empty()) {
 		    logger->error("Could not load geometry from %s with mimetype %s", request.getFilePath().c_str(), geometryMimeType.c_str());
-		}
+		} else {
+			for(auto &geometry : geometryCollection->getObjects()) {
+				response.addResource(buildMesh(geometry.second, request, response));
+			}
 
-		for(auto &geometry : geometryCollection->getObjects()) {
-			response.addResource(buildMesh(geometry.second, request, response));
+			response.addResource(geometryCollection);
 		}
-
-		response.addResource(geometryCollection);
 	}
 
 	MeshResource * buildMesh(const GeometryResource *geometry, ResourceLoadRequest &request, ResourceLoadResponse &response) const {

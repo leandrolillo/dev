@@ -12,8 +12,11 @@
 #include <vector>
 #include <stdio.h>
 #include <algorithm>
+#include <filesystem>
 
-
+/**
+ * Comparator to enable sets of unique_ptr<ResourceAdapter>
+ */
 struct resourceAdapterComparator
 {
     using is_transparent = void;
@@ -32,6 +35,9 @@ struct resourceAdapterComparator
 };
 
 
+/**
+ * Comparator to enable sets of unique_ptr<Resource>
+ */
 struct resourceComparator
 {
     using is_transparent = void;
@@ -70,7 +76,7 @@ public:
 
 	ResourceManager(const String &rootFolder) {
 		//logger->setLogLevel(LogLevel::DEBUG);
-		this->rootFolder = rootFolder;
+		this->rootFolder = std::__fs::filesystem::absolute(rootFolder); //for now it has to be an absolute path or there will be issues with resource loading
 	}
 
 	void logStatus() {

@@ -31,6 +31,12 @@ public:
 		return text;
 	}
 
+	//TODO: this should return a new string?
+	static String toLowercase(String text) {
+		std::transform(text.begin(), text.end(), text.begin(), [](unsigned char c){ return std::tolower(c); });
+		return text;
+	}
+
 	static std::vector<String> split(String text, char separator) {
 		std::vector<String> result;
 

@@ -57,14 +57,16 @@ New stuff:
 	- evolve this demo to be a planet and then a solar system.
 
 Games: 
-- Battle city:
-
+- Battle city
+- road fighter 
 - tanques vs naves
 - defend the tower
 - scenery (with train or racing cars - lightning mcqueen and cruz, wind/rain, vegetation and animals, water, day/night transition, sun and moon, etc.)
 
 robotica - brazo (curso)
 scalectric - o vehículos (autos, trenes, naves) que sigan una ruta predefinida con escenarios de fondo
+
+nave de futurama
 
 Kboom
 Destruir la tierra (o algún planeta) mediante asteroides que se lanzan desde fuera del sistema solar.
@@ -73,5 +75,3 @@ regiones del sistema solar
 Roles de los planetas (como saturno que actúa de escudo - era saturno?)
 visualizaciones de gases del meteoro de acuerdo a composición
 potencial educativo.
-
-
