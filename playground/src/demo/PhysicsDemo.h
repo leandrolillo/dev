@@ -136,6 +136,7 @@ public:
 
 		camera.setPosition(vector(1.0f, 0.0f, 5.0f));
 		spherePlatform.setPosition(vector(0, 0.5, 0));
+		aabbPlatform.setPosition(vector(0, 1.0, 0.0));
 	}
 
 	LoopResult doLoop() override {
@@ -180,7 +181,7 @@ public:
 		//logger->info("Collision relative speed: %f - sound: %s", contact.getRelativeSpeed(), contact.getRelativeSpeed() < -0.1 ? "on" : "off");
 
 		if(contact.getRelativeSpeed() < -0.5) {
-			logger->info("Collision relative speed: %f - sound on", contact.getRelativeSpeed());
+			//logger->info("Collision relative speed: %f - sound on", contact.getRelativeSpeed());
 			bounceSource->setPosition(bulletParticle->getPosition());
 			audio->updateSource(bounceSource);
 			audio->playSource(bounceSource);

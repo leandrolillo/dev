@@ -1,4 +1,8 @@
 Tech debts
+- split the project into at least three separate repos: math, physics and playground
+- use cmake uri dependencies and git submodules
+- move all apps to the same branch and generate multiple binaries instead of one per branch
+
 - Add toString to playground that will return the current playground information:
 	- name?
 	- all runners toString
@@ -21,6 +25,7 @@ Tech debts
 
 - review RAII and 5 of 5 principle (move semantics) in resources/playground classes.
 	specially in file parser / text parser and resources.
+	- resources that contain graphics handles (such as vertex shaders) shoudl be move only
 
 - review design of particle manager/collision detector / geometry vs particles / etc. Too much vector passing and copying. Review polymorfism / std::vector<unique_ptr> usage.
 
@@ -34,15 +39,13 @@ Tech debts
 ----------------
 
 New stuff:
+- blockout: following udemy learn advanced modern c++ 
 
 - Road fighter:
 	- Add support for loading single resources from a file containing multiple objects (obj files)
 	- Add textured object code support, so that I can load and display a 3d object instead of having to load the vertex array, texture and material separatedly. 
 	- Add labels to resources, so that we can unload a level resources and load next levels.
 
-
-
-- Add menu for selecting demo. At least add cli parameters to allow selecting demo - anything better than commenting lines in main.cpp
 
 - add option to stop background music
 

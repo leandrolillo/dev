@@ -76,7 +76,7 @@ public:
 
 	ResourceManager(const String &rootFolder) {
 		//logger->setLogLevel(LogLevel::DEBUG);
-		this->rootFolder = std::__fs::filesystem::absolute(rootFolder); //for now it has to be an absolute path or there will be issues with resource loading
+		this->rootFolder = std::filesystem::absolute(rootFolder); //for now it has to be an absolute path or there will be issues with resource loading
 	}
 
 	void logStatus() {

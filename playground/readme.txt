@@ -17,6 +17,8 @@ brew install libvorbis
 
 or singleline: brew install cmake libjpeg libpng sdl2 libogg libvorbis
 
+
+
 -------------
 Building:
 -------------
@@ -28,6 +30,8 @@ Building:
 	'cmake -DCMAKE_BUILD_TYPE=Release .' for release profile
 	
 'make' for generating executable file in target directory
+
+
 
 ---------------------------
 Debuging with lldb in osx - developers group
